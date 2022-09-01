@@ -26,7 +26,6 @@ generate_lava_job() {
 	set_run_env "uart1_file" "$uart1_log"
 
 	model="$model" \
-		cache_state_modelled="0" \
 		cluster_0_num_cores="1" \
 		cluster_1_num_cores="1" \
 		flashloader0_fwrite="flash0" \
@@ -35,6 +34,7 @@ generate_lava_job() {
 		secure_memory="0" \
 		uart0_out="$uart0_log" \
 		uart1_out="$uart1_log" \
+		use_pchannel_for_threads="1" \
 		gen_model_params
 
 	model="$model" gen_fvp_yaml

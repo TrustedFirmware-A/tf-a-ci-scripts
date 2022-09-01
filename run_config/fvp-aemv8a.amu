@@ -9,9 +9,9 @@ generate_lava_job() {
 	local model="base-aemv8a"
 
 	model="$model" \
-		amu_present="1" \
-		arch_version="8.4" \
-		cache_state_modelled="0" \
+	amu_present="1" \
+	arch_version="8.4" \
+	use_pchannel_for_threads="1" \
 		gen_model_params
 
 	model="$model" gen_fvp_yaml

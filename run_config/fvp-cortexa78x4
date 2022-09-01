@@ -12,7 +12,8 @@ generate_lava_job() {
 
 	model="$model" \
 	cluster_0_num_cores="4" \
-	cache_state_modelled="0" \
+	use_pchannel_for_threads="1" \
 	gen_model_params
+
 	model="$model" gen_fvp_yaml
 }

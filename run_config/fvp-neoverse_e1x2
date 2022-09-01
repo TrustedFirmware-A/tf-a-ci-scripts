@@ -12,7 +12,6 @@ generate_lava_job() {
 
 	model="$model" \
 	cluster_0_num_cores="2" \
-	cache_state_modelled="1" \
 	data_instance="cluster0.cpu0.thread0" \
 	gen_model_params
 

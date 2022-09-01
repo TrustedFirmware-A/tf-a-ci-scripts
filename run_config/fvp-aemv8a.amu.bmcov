@@ -9,12 +9,12 @@ generate_lava_job() {
 	local model="base-aemv8a"
 
 	model="$model" \
-		amu_present="1" \
-		arch_version="8.4" \
-		bmcov_plugin_path="${coverage_trace_plugin}" \
-		bmcov_plugin="1" \
-		cache_state_modelled="0" \
-		gen_model_params
+	amu_present="1" \
+	arch_version="8.4" \
+	bmcov_plugin_path="${coverage_trace_plugin}" \
+	bmcov_plugin="1" \
+	use_pchannel_for_threads="1" \
+	gen_model_params
 
 	model="$model" gen_fvp_yaml
 }

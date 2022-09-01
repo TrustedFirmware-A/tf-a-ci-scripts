@@ -10,10 +10,10 @@ generate_lava_job() {
 
 	model="$model" \
 	aarch32="1" \
-	cache_state_modelled="0" \
 	gicv3_gicv2_only="1" \
 	mpidr_layout="0" \
 	supports_multi_threading="0" \
+	use_pchannel_for_threads="1" \
 	gen_model_params
 
 	model="base-aemv8a-revb" gen_fvp_yaml

@@ -47,6 +47,7 @@ ${wait_debugger+-S}
 
 ${secure_memory+-C bp.secure_memory=$secure_memory}
 ${cache_state_modelled+-C cache_state_modelled=$cache_state_modelled}
+${use_pchannel_for_threads+-C pctl.use_pchannel_for_threads=$use_pchannel_for_threads}
 
 ${secure_ram_fill+-C bp.secureSRAM.fill1=0x00000000}
 ${secure_ram_fill+-C bp.secureSRAM.fill2=0x00000000}

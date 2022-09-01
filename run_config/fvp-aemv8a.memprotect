@@ -16,12 +16,12 @@ generate_lava_job() {
 	printf '\1\0\0\0' >"$image"
 
 	model="$model" \
-		cache_state_modelled="0" \
 		memprotect_addr="0xBFC0000" \
 		memprotect="$image" \
 		preload_bl33_bin="uboot.bin" \
 		preload_bl33="1" \
 		reset_to_bl31="1" \
+		use_pchannel_for_threads="1" \
 		gen_model_params
 
 	model="$model" gen_fvp_yaml

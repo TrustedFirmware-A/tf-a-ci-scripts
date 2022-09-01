@@ -13,10 +13,10 @@ generate_lava_job() {
 
 	model="$model" \
 		aarch32="1" \
-		cache_state_modelled="0" \
 		memprotect_addr="0xBFC0000" \
 		memprotect="$image" \
 		reset_to_spmin="1" \
+		use_pchannel_for_threads="1" \
 		gen_model_params
 
 	model="$model" gen_fvp_yaml
