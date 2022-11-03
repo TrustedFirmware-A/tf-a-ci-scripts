@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2020, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2022, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -405,20 +405,75 @@ result=0
 
 set +e
 pushd "$pid_dir"
+
+timeout=3600
+
+echo
+
 while :; do
-	wait -n
+	readarray -d '' all < <(find "${pid_dir}" -name 'uart*.pid' -print0)
+	readarray -d '' succeeded < <(find "${pid_dir}" -name 'uart*.success' -print0)
+	readarray -d '' failed < <(find "${pid_dir}" -name 'uart*.fail' -print0)
 
-	# Exit failure if we've any failures
-	if [ "$(wc -l < <(find -name '*.fail'))" -ne 0 ]; then
-		result=1
+	all=("${all[@]##${pid_dir}/uart}")
+	all=("${all[@]%%.pid}")
+
+	succeeded=("${succeeded[@]##${pid_dir}/uart}")
+	succeeded=("${succeeded[@]%%.success}")
+
+	failed=("${failed[@]##${pid_dir}/uart}")
+	failed=("${failed[@]%%.fail}")
+
+	completed=("${succeeded[@]}" "${failed[@]}")
+
+	readarray -t remaining < <( \
+		comm -23 \
+			<(printf '%s\n' "${all[@]}" | sort) \
+			<(printf '%s\n' "${completed[@]}" | sort) \
+	)
+
+	if [ ${#remaining[@]} = 0 ]; then
 		break
 	fi
 
-	# We're done if the payload UART exits success
-	if [ -f "$pid_dir/uart$payload_uart.success" ]; then
-		break
+	echo "Waiting ${timeout}s for ${#remaining[@]} UART(s): ${remaining[@]}"
+
+	if [[ " ${completed[@]} " =~ " ${payload_uart} " ]]; then
+		echo "- Payload (UART ${payload_uart}) completed!"
+
+		for uart in "${remaining[@]}"; do
+			pid=$(cat "${pid_dir}/uart${uart}.pid")
+
+			echo "- Terminating UART ${uart} script (PID ${pid})..."
+
+			kill -SIGINT ${pid} || true # Send Ctrl+C - don't force-kill it!
+		done
 	fi
+
+	if [ ${timeout} = 0 ]; then
+		echo "- Timeout exceeded! Killing model (PID ${model_pid})..."
+
+		kill_and_reap "${model_pid}"
+	fi
+
+	timeout=$((${timeout} - 5)) && sleep 5
 done
+
+echo
+
+if [ ${#failed[@]} != 0 ]; then
+	echo "${#failed[@]} UART(s) did not match expectations:"
+	echo
+
+	for uart in "${failed[@]}"; do
+		echo " - UART ${uart}: uart${uart}_full.txt"
+	done
+
+	echo
+
+	result=1
+fi
+
 popd
 
 # Capture whether the model is running with the 'exit model parameter' or not.
