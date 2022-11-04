@@ -1,0 +1,13 @@
+#
+# Copyright (c) 2022 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Trusted Firmware for sgi platform
+#
+# Refer to handle-arguments.inc for the list of parameters.
+#
+
+# Trusted Firmware boot section
+source $ci_root/expect-lava/trusted-firmware.inc
+

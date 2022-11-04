@@ -1,0 +1,12 @@
+#
+# Copyright (c) 2022, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+# Trusted Firmware boot section
+source $ci_root/expect-lava/trusted-firmware.inc
+
+expect_string+=('i;Booting Secure Partition')
+
+source $ci_root/expect-lava/uart-hold.inc

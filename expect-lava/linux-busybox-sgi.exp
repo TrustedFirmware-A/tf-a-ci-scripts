@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2022 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for AArch32 Trusted Firmware + U-Boot + Linux boot process
+# with a AArch32 minimal initrd. The linux image must be a zImage and the
+# initrd must include the U-boot header.
+# TF with reset to BL1
+#
+
+# Linux kernel boot section
+source $ci_root/expect-lava/linux.inc
+
+# Busybox filesystem section
+source $ci_root/expect-lava/busybox.inc
