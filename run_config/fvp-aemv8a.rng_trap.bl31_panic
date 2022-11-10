@@ -9,7 +9,8 @@ generate_lava_job() {
 	local model="base-aemv8a"
 
 	uart="0" timeout="60" file="timeout.exp" track_expect
-	uart="1" timeout="60" file="crash_rng_trap_unhandled_exception_at_el3.exp" track_expect
+	uart="1" timeout="60" file="crash_rng_trap_unhandled_exception_at_el3.exp" \
+		set_primary="1" track_expect
 
 	# Due to a bug in the model, the FEAT_RNG_TRAP feature is not available
 	# in models that implement versions lower than 8.8, even though this is

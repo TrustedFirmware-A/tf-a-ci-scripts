@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2022, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -85,8 +85,6 @@ expect_string "cntv_cval_el0"
 expect_string "cntkctl_el1"
 expect_string "sp_el0"
 expect_string "isr_el1"
-expect_string "dacr32_el2"
-expect_string "ifsr32_el2"
 expect_string "icc_hppir0_el1"
 expect_string "icc_hppir1_el1"
 expect_string "icc_ctlr_el3"

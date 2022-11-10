@@ -15,7 +15,7 @@ generate_lava_job() {
 	local model="base-aemv8a"
 
 	uart="0" timeout="60" file="timeout_test.exp" track_expect
-	uart="1" timeout="60" file="crash_test.exp" track_expect
+	uart="1" timeout="60" file="crash_test.exp" set_primary="1" track_expect
 
 	model="$model" arch_version="8.4" fault_inject="1" gen_model_params
 	model="$model" gen_fvp_yaml

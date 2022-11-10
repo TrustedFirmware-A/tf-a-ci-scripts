@@ -9,7 +9,8 @@ generate_lava_job() {
 	local model="base-aemva"
 
 	uart="0" timeout="60" file="timeout_test.exp" track_expect
-	uart="1" timeout="60" file="unhandled_exception_at_el3.exp" track_expect
+	uart="1" timeout="60" file="unhandled_exception_at_el3.exp" \
+		set_primary="1" track_expect
 
 	model="$model" \
 		ete_plugin="1" \

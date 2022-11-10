@@ -19,7 +19,7 @@ generate_lava_job() {
 	local model="base-aemv8a"
 
 	uart="0" timeout="60" file="timeout_spmin_roxlattables.exp" track_expect
-	uart="1" timeout="60" file="crash_panic.exp" track_expect
+	uart="1" timeout="60" file="crash_panic.exp" set_primary="1" track_expect
 
 	model="$model" aarch32="1" gen_model_params
 	model="$model" gen_fvp_yaml

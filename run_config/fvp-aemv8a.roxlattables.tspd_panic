@@ -20,7 +20,7 @@ generate_lava_job() {
 	local model="base-aemv8a"
 
 	uart="0" timeout="60" file="timeout.exp" track_expect
-	uart="1" timeout="60" file="crash_panic.exp" track_expect
+	uart="1" timeout="60" file="crash_panic.exp" set_primary="1" track_expect
 	uart="2" timeout="60" file="readonly_el1_xlat_tables.exp" track_expect
 
 	model="$model" gen_model_params
