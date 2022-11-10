@@ -1,0 +1,59 @@
+This directory contains code related to long-term support management of TF-A.
+
+lts-triage.py
+=============
+
+Purpose of this script is to check a patch and determine if that patch qualifies
+as a candidate for one of the LTS branches.
+
+Currently it focuses on cpu errata while it contains basic support for security
+patches. It computes a crude score:
+
+1 point if subject line matches tokens for cpu errata or security
+1 point for "report_errata ERRATA" in a lib/cpus/aarch{32,64}/*.S file
+1 point for "- ``ERRATA_" in docs/design/cpu-specific-build-macros.rst file
+
+Note that the script only looks at commits which are not merge commits.
+
+Running it:
+-----------
+
+To run it, provide it a path to a TF-A git repo. Here's help output for convenience:
+
+$ python lts/lts-triage.py -h
+usage: lts-triage.py [-h] --repo REPO [--branch BRANCH] [--sample_size SAMPLE_SIZE] [--debug]
+
+check patches for LTS candidacy
+
+options:
+  -h, --help            show this help message and exit
+  --repo REPO           path to tf-a git repo
+  --branch BRANCH       branch to check. default = integration
+  --sample_size SAMPLE_SIZE
+                        how many patches to scan. default = 20
+  --debug               print debug logs
+
+Below is an example output. On left is commit hash of each of the commits
+observed by this script and on right is score assigned to it.
+
+$ python lts/lts-triage.py --repo ../trusted-firmware-a/
+888eafa00b99aa06b4ff688407336811a7ff439a:    3
+79544126943a90d31d81177655be11f75330ffed:    3
+43438ad1ad6651964e9ae75d35f40aed8d86d088:    3
+028c4e42d8f632d40081b88f66d0d05c7d7c9b23:    0
+20155112c5d2fb296fef40a12b1c6ce12f49b1c8:    0
+4090ac33f44bd24d73161032faa817eb03f2e41d:    0
+cf58b2d41cb0d24239b98de98264b31690711549:    0
+e74d658181e5e69b6b5e16b40adc1ffef4c1efb9:    1
+ad6eb1951b986f30635025bbdf29e257b6b1e362:    0
+8a6a9560b5dcccfb68064c0c8c9b4b47981c6ac7:    0
+93cec697deb654303379cae8f25a31dc8b90cd31:    0
+a194255d75ed9e2ef56bd6e14349a3e7d86af934:    0
+98a43d9f6c22498d9e1a6e7ace1bc6d23ac58d5a:    0
+07dc8ba93b319de2bf0be0c287373db74019878e:    0
+c6877763cd3a286983df160c8207368174c1b820:    0
+03ebf409c711e9f2006cedded7dc415dfe566975:    1
+de7e9b562afccd6d71df1abf1907f48d164a3a7e:    0
+720e7b66f2353ef7ed32a8f85f8396fbc0766ffc:    0
+62a93aa7afcd022f06d322c36979f0aa02713beb:    0
+b5f06d3dfad8c27bdf528b083ef919ce4022c52d:    0
