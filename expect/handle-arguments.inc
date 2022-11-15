@@ -22,6 +22,10 @@ if { [postprocessing] != 1 } {
     set telnet_pid [spawn cat $uart_log_file]
 }
 
+trap {
+    puts "<<test not yet complete, ignoring SIGINT>>"
+} SIGINT
+
 expect_after {
     eof {
         puts "<<stream closed prematurely, exiting>>"
