@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2022 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -9,11 +9,5 @@
 source [file join [file dirname [info script]] handle-arguments.inc]
 
 expect_string "Booting trusted firmware test framework" "Starting TFTF"
-expect {
-        timeout {
-		puts "<<Timeout expected - Success>>"
-                exit_uart 0
-        }
-}
 
-exit_uart -1
+source [file join [file dirname [info script]] timeout.inc]
