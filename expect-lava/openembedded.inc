@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021 Arm Limited. All rights reserved.
+# Copyright (c) 2021-2022 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -11,3 +11,4 @@
 expect_string+=('i;INIT:')
 expect_string+=('i;root@genericarmv8:~#')
 expect_string+=('i;(Power down|System halted);;;shutdown -h now')
+expect_string+=('i;;;;@')
