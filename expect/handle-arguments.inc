@@ -23,12 +23,12 @@ if { [postprocessing] != 1 } {
 }
 
 trap {
-    puts "<<test not yet complete, ignoring SIGINT>>"
+    message "test not yet complete, ignoring SIGINT"
 } SIGINT
 
 expect_after {
     eof {
-        puts "<<stream closed prematurely, exiting>>"
+        message "stream closed prematurely, exiting"
         exit -1
     }
 

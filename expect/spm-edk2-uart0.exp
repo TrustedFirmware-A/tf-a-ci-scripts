@@ -16,13 +16,13 @@ source [file join [file dirname [info script]] trusted-firmware.inc]
 # EDK2 section
 expect {
 	"UEFI firmware" {
-		puts "<<EDK2 starting>>"
+		message "EDK2 starting"
 	}
 }
 
 expect {
 	"UEFI Interactive Shell" {
-		puts "<<EDK2 shell starting>>"
+		message "EDK2 shell starting"
 	}
 }
 
@@ -41,19 +41,19 @@ expect {
 expect {
 	"FS0:" {
 		send "UefiInfo.efi\r"
-		puts "<<Loading UEFI application>>"
+		message "Loading UEFI application"
 	}
 }
 
 expect {
 	-re "Loading driver at .* UefiInfo.efi" {
-		puts "<<UEFI application is being loaded>>"
+		message "UEFI application is being loaded"
 	}
 }
 
 expect {
 	"FS0:" {
-		puts "<<UEFI application loaded>>"
+		message "UEFI application loaded"
 	}
 }
 

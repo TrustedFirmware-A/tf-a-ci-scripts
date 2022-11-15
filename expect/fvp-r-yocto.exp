@@ -11,39 +11,39 @@ source [file join [file dirname [info script]] handle-arguments.inc]
 # FVP-R BL1
 expect {
 	"Booting Trusted Firmware" {
-		puts "<<Booting Trusted Firmware>>"
+		message "Booting Trusted Firmware"
 	}
 }
 
 expect {
 	"BL1: Booting BL33" {
-		puts "<<Booting BL33>>"
+		message "Booting BL33"
 	}
 }
 
 # Uboot
 expect {
 	"U-Boot" {
-		puts "<<Entered Uboot>>"
+		message "Entered Uboot"
 	}
 }
 
 # Yocto
 expect {
 	"Booting Linux on physical CPU" {
-		puts "<<Booting Linux>>"
+		message "Booting Linux"
 	}
 }
 
 expect {
 	"fvp-baser-aemv8r64 login:" {
-		puts "<<Yocto Login Prompt Received>>"
+		message "Yocto Login Prompt Received"
 		send "root\n"
 	}
 }
 
 expect {
 	"#" {
-		puts "<<Successfully Reached Yocto Shell>>"
+		message "Successfully Reached Yocto Shell"
 	}
 }

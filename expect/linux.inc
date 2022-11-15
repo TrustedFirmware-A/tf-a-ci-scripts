@@ -15,6 +15,6 @@ if {[info exists ::env(num_cpus)]} {
 	set num_cpus 8
 }
 
-expect_string "Linux version" "Linux starting"
-expect_re "SMP: Total of $num_cpus processors activated" "Brought up secondary CPUs"
-expect_string "Freeing unused kernel memory" "End of Linux boot"
+expect_string "Linux version" "Linux printed its version"
+expect_re "SMP: Total of $num_cpus processors activated" "Linux successfully brought up all secondary cores"
+expect_string "Freeing unused kernel memory" "Linux booted successfully"

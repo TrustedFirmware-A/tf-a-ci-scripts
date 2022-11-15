@@ -8,6 +8,6 @@
 
 source [file join [file dirname [info script]] handle-arguments.inc]
 
-expect_string "Booting trusted firmware test framework" "Starting TFTF"
+expect_string "Booting trusted firmware test framework" "TFTF is booting"
 
 source [file join [file dirname [info script]] timeout.inc]

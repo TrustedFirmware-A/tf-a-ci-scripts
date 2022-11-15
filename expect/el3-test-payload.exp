@@ -15,6 +15,6 @@ source [file join [file dirname [info script]] trusted-firmware.inc]
 
 source [file join [file dirname [info script]] utils.inc]
 
-expect_string "Booting the EL3 test payload" "EL3 Test Payload: Started"
-expect_string "All CPUs booted!" "EL3 Test Payload: SUCCESS!"
+expect_string "Booting the EL3 test payload" "the EL3 test payload is booting"
+expect_string "All CPUs booted!" "the EL3 test payload booted successfully"
 exit_uart 0

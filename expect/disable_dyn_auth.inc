@@ -10,8 +10,8 @@ source [file join [file dirname [info script]] handle-arguments.inc]
 # This script tries to catch if dynamic authentication of images is enabled
 # during trusted board boot(BL2). The authentication is done using certificates.
 
-expect_string "BL1: Booting BL2" "BL2 booting"
-expect_string "Disabling authentication of images dynamically" "Authentication disabled dynamically"
+expect_string "BL1: Booting BL2" "BL2 is booting"
+expect_string "Disabling authentication of images dynamically" "dynamic authentication was disabled"
 expect {
 	# Catch all loading of authentication certificates i.e.,
 	# TRUSTED_BOOT_FW_CERT_ID         U(6)
@@ -26,10 +26,10 @@ expect {
 	# NON_TRUSTED_FW_CONTENT_CERT_ID  U(15)
 
 	-re "Loading image id=(6|7|8|9|10|11|12|13|14|15) at address " {
-		puts "<<Dynamic Authentication not disabled>>"
+		message "dynamic authentication is still enabled"
 		exit_uart -1
 	}
 	"BL1: Booting BL31" {
-		puts "BL31 Booting"
+		message "BL31 is booting"
 	}
     }

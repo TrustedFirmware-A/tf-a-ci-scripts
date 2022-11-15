@@ -9,7 +9,7 @@ source [file join [file dirname [info script]] handle-arguments.inc]
 expect {
         "buildroot login:" {
                 send "\n\nroot\n"
-                puts "<<Linux Booted>>"
+                message "Linux Booted"
         }
 }
 
@@ -32,9 +32,8 @@ expect_string "Test: Ensure Duplicate Memory Lend Requests are Rejected."
 
 expect {
         "Total Failures: 0" {
-                puts "<<SUCCESS>>"
+                message "SUCCESS"
         }
 }
 
 exit_uart 0
-

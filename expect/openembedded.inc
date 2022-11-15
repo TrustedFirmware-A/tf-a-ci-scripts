@@ -8,9 +8,9 @@
 # This script is not standalone and should be sourced by a top expect script.
 #
 
-expect_string "INIT:" "Init"
-expect_string "root@genericarmv8:~#" "Linux prompt"
+expect_string "INIT:" "Linux is booting"
+expect_string "root@genericarmv8:~#" "Linux reached the root prompt"
 send "shutdown -h now\r"
 
-expect_re "(Power down|System halted)" "TEST SUCCESS"
+expect_re "(Power down|System halted)" "Linux shut down successfully"
 exit_uart 0

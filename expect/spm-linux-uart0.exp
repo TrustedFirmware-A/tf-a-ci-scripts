@@ -8,7 +8,7 @@ source [file join [file dirname [info script]] handle-arguments.inc]
 
 expect {
 	"Please press Enter to activate this console." {
-		puts "<<Linux PVM booted>>"
+		message "Linux PVM booted"
 		send "\r"
 	}
 }
@@ -21,7 +21,7 @@ expect {
 
 expect {
 	"Hafnium successfully loaded with 1 VMs:" {
-		puts "<<Hafnium driver started>>"
+		message "Hafnium driver started"
 	}
 }
 

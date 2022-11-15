@@ -5,6 +5,6 @@
 #
 
 trap {
-    puts "<<received SIGINT, exiting>>"
+    message "received SIGINT, exiting"
     exit_uart 0
 } SIGINT

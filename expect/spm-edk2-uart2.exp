@@ -12,25 +12,25 @@ source [file join [file dirname [info script]] handle-arguments.inc]
 
 expect {
 	"SPM Version" {
-		puts "<<Secure Partition booting>>"
+		message "Secure Partition booting"
 	}
 }
 
 expect {
 	"MmMain Done!" {
-		puts "<<Secure Partition booted>>"
+		message "Secure Partition booted"
 	}
 }
 
 expect {
 	"Received event - 0xC4000041 on cpu"  {
-		puts "<<Received event>>"
+		message "Received event"
 	}
 }
 
 expect {
 	"MmEntryPoint Done"  {
-		puts "<<Secure Partition done>>"
+		message "Secure Partition done"
 	}
 }
 

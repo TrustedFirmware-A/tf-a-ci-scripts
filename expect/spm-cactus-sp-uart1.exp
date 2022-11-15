@@ -11,7 +11,7 @@ source [file join [file dirname [info script]] trusted-firmware.inc]
 
 expect {
 	"Booting Secure Partition"  {
-		puts "<<SP entry>>"
+		message "SP entry"
 	}
 }
 

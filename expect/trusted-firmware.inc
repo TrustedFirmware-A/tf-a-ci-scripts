@@ -14,19 +14,19 @@ if {![info exists ::env(skip_early_boot_msgs)]} {
 	expect_string "Booting Trusted Firmware"
 
 	expect {
-		"BL1: Booting BL2" { puts "<<BL2 booting>>" }
+		"BL1: Booting BL2" { message "BL2 booting" }
 
 		# Catch all 3 possible BL2 loading error messages, namely:
 		#   "Failure in pre image load handling of BL2"
 		#   "Failed to load BL2 firmware."
 		#   "Failure in post image load handling of BL2"
 		-re "Fail.*load.*BL2" {
-			puts "<<BL2 loading error>>"
+			message "BL2 loading error"
 			exit_uart -1
 		}
 	    }
 
 	expect_string "BL1: Booting BL31"
 } else {
-	puts "<<Skipping early boot messages from BL1 and BL2>>"
+	message "Skipping early boot messages from BL1 and BL2"
 }

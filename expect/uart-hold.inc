@@ -16,5 +16,5 @@ set timeout -1
 
 source [file join [file dirname [info script]] terminable.inc]
 
-puts "<<test complete, waiting for EOF or SIGINT>>"
+message "test complete, waiting for EOF or SIGINT"
 expect eof

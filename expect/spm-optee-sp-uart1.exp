@@ -8,13 +8,13 @@ source [file join [file dirname [info script]] handle-arguments.inc]
 
 expect {
 	"OP-TEE version: "  {
-		puts "<<OP-TEE version>>"
+		message "OP-TEE version"
 	}
 }
 
 expect {
 	"Primary CPU switching to normal world boot"  {
-		puts "<<OP-TEE initialized>>"
+		message "OP-TEE initialized"
 	}
 }
 

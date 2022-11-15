@@ -36,31 +36,47 @@ proc exit_uart {status} {
 }
 
 proc exit_timeout {} {
-	# Allow UART output to flush
-	sleep 1
-	puts "<<TIMEOUT>>"
+	message "timeout exceeded, exiting"
 	exit_uart -1
+}
+
+proc message {string} {
+	puts "<<$string>>"
+}
+
+proc found {value {message ""}} {
+	if {$message eq ""} {
+		message "found: \"$value\""
+	} else {
+		message "found: \"$value\" ($message)"
+	}
+}
+
+proc not_found {value {message ""}} {
+	if {$message eq ""} {
+		message "not found: \"$value\""
+	} else {
+		message "not found: \"$value\" ($message)"
+	}
 }
 
 # Expect a given string, and an optional message to be output when it's found.
 # If not supplied, the message defaults to the string itself.
 proc expect_string {the_string {the_message ""}} {
-	if {$the_message eq ""} {
-		set the_message $the_string
-	}
+	message "waiting for: \"$the_string\""
 
 	expect {
 		$the_string {
-			puts "<<$the_message>>"
+			found "$the_string" "$the_message"
 		}
 
 		eof {
-			puts "<<not found: \"$the_string\">>"
+			not_found "$the_string"
 			exit -1
 		}
 
 		timeout {
-			puts "<<Not found: $the_string>>"
+			not_found "$the_string"
 			exit_timeout
 		}
 	}
@@ -70,22 +86,20 @@ proc expect_string {the_string {the_message ""}} {
 # it's found. If not supplied, the message defaults to the regular expression
 # itself.
 proc expect_re {the_re {the_message ""}} {
-	if {$the_message eq ""} {
-		set the_message $the_re
-	}
+	message "waiting for: \"$the_re\""
 
 	expect {
 		-re $the_re {
-			puts "<<$the_message>>"
+			found "$the_re" "$the_message"
 		}
 
 		eof {
-			puts "<<not found: \"$the_re\">>"
+			not_found "$the_re"
 			exit -1
 		}
 
 		timeout {
-			puts "<<Not found: $the_re>>"
+			not_found "$the_re"
 			exit_timeout
 		}
 	}

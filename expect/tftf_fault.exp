@@ -10,7 +10,7 @@ source [file join [file dirname [info script]] handle-arguments.inc]
 
 # Expect the test to have set a fault message
 if {![info exists ::env(tftf_fault_msg)]} {
-	puts "Fault message not set"
+	message "Fault message not set"
 	exit_uart -1
 }
 

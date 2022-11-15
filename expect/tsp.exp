@@ -22,7 +22,7 @@ source [file join [file dirname [info script]] handle-arguments.inc]
 set tsp_resp_proof [get_param tsp_resp_proof 1000]
 set tsp_resp_count 0
 
-expect_string "TSP: Built" "TSP booted"
+expect_string "TSP: Built" "TSP booted successfully"
 
 # TSPD prints more messages only when built with INFO or above.
 set tsp_debug [get_param tsp_debug]
@@ -35,7 +35,7 @@ if {$tsp_debug != ""} {
 			"TSP: cpu" {
 				incr tsp_resp_count
 				if {$tsp_resp_count >= $tsp_resp_proof} {
-					puts "<<TSP $tsp_resp_count responses; sufficient>>"
+					message "TSP $tsp_resp_count responses; sufficient"
 					break
 				}
 			}
