@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021 Arm Limited. All rights reserved.
+# Copyright (c) 2021-2022 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -13,17 +13,11 @@ expect {
 	"Booting Trusted Firmware" {
 		puts "<<Booting Trusted Firmware>>"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 expect {
 	"BL1: Booting BL33" {
 		puts "<<Booting BL33>>"
-	}
-	timeout {
-		exit_uart -1
 	}
 }
 
@@ -32,18 +26,12 @@ expect {
 	"U-Boot" {
 		puts "<<Entered Uboot>>"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 # Yocto
 expect {
 	"Booting Linux on physical CPU" {
 		puts "<<Booting Linux>>"
-	}
-	timeout {
-		exit_uart -1
 	}
 }
 
@@ -52,16 +40,10 @@ expect {
 		puts "<<Yocto Login Prompt Received>>"
 		send "root\n"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 expect {
 	"#" {
 		puts "<<Successfully Reached Yocto Shell>>"
-	}
-	timeout {
-		exit_uart -1
 	}
 }

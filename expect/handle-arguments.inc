@@ -21,3 +21,14 @@ if { [postprocessing] != 1 } {
     set uart_log_file [get_param uart_log_file]
     set telnet_pid [spawn cat $uart_log_file]
 }
+
+expect_after {
+    eof {
+        puts "<<stream closed prematurely, exiting>>"
+        exit -1
+    }
+
+    timeout {
+        exit_timeout
+    }
+}

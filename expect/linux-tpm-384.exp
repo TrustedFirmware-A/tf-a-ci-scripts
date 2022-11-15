@@ -22,10 +22,6 @@ expect {
         "TCG_EfiSpecIDEvent:" {
                 set digest_log [open $TFA_DIGEST w]
         }
-
-        timeout {
-                exit_timeout
-        }
 }
 
 expect {
@@ -42,19 +38,11 @@ expect {
         -exact "Booting BL31" {
                 close $digest_log
         }
-
-        timeout {
-                exit_timeout
-        }
 }
 
 expect {
         "login" {
                 send "root\n"
-        }
-
-        timeout {
-                exit_timeout
         }
 }
 
@@ -63,18 +51,10 @@ expect {
                 # Load the fTPM driver
                 send "ftpm\n"
         }
-
-        timeout {
-                exit_timeout
-        }
 }
 
 expect {
         "#" { }
-
-        timeout {
-                exit_timeout
-        }
 }
 
 # Iterate over the rest of PCRs and check that they all are zeros.
@@ -87,10 +67,6 @@ for {set i 1} {$i < 11} {incr i} {
                 -re $non_zero_pcr {
                         exit_uart -1
                 }
-
-                timeout {
-                        exit_timeout
-                }
         }
 }
 
@@ -100,10 +76,6 @@ for {set i 1} {$i < 11} {incr i} {
 expect {
         "#" {
                 spawn diff -s $TFA_DIGEST ftpm_event_log
-        }
-
-        timeout {
-                exit_timeout
         }
 }
 

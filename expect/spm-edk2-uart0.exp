@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2022 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -18,17 +18,11 @@ expect {
 	"UEFI firmware" {
 		puts "<<EDK2 starting>>"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 expect {
 	"UEFI Interactive Shell" {
 		puts "<<EDK2 shell starting>>"
-	}
-	timeout {
-		exit_uart -1
 	}
 }
 
@@ -36,17 +30,11 @@ expect {
 	"any other key to continue." {
 		send "\r"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 expect {
 	"Shell>" {
 		send "fs0:\r"
-	}
-	timeout {
-		exit_uart -1
 	}
 }
 
@@ -55,26 +43,17 @@ expect {
 		send "UefiInfo.efi\r"
 		puts "<<Loading UEFI application>>"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 expect {
 	-re "Loading driver at .* UefiInfo.efi" {
 		puts "<<UEFI application is being loaded>>"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 expect {
 	"FS0:" {
 		puts "<<UEFI application loaded>>"
-	}
-	timeout {
-		exit_uart -1
 	}
 }
 

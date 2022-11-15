@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2022 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -14,17 +14,11 @@ expect {
 	"SPM Version" {
 		puts "<<Secure Partition booting>>"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 expect {
 	"MmMain Done!" {
 		puts "<<Secure Partition booted>>"
-	}
-	timeout {
-		exit_uart -1
 	}
 }
 
@@ -32,17 +26,11 @@ expect {
 	"Received event - 0xC4000041 on cpu"  {
 		puts "<<Received event>>"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 expect {
 	"MmEntryPoint Done"  {
 		puts "<<Secure Partition done>>"
-	}
-	timeout {
-		exit_uart -1
 	}
 }
 

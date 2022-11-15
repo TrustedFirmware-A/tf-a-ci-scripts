@@ -11,17 +11,11 @@ expect {
                 send "\n\nroot\n"
                 puts "<<Linux Booted>>"
         }
-        timeout {
-                exit_uart -1
-        }
 }
 
 expect {
         "#" {
                 send "ioctl 255\n"
-        }
-        timeout {
-                exit_uart -1
         }
 }
 
@@ -39,9 +33,6 @@ expect_string "Test: Ensure Duplicate Memory Lend Requests are Rejected."
 expect {
         "Total Failures: 0" {
                 puts "<<SUCCESS>>"
-        }
-        timeout {
-                exit_uart -1
         }
 }
 

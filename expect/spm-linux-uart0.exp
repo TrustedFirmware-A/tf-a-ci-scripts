@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2022, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -11,26 +11,17 @@ expect {
 		puts "<<Linux PVM booted>>"
 		send "\r"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 expect {
 	"/ # " {
 		send "insmod hafnium.ko\n"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 expect {
 	"Hafnium successfully loaded with 1 VMs:" {
 		puts "<<Hafnium driver started>>"
-	}
-	timeout {
-		exit_uart -1
 	}
 }
 

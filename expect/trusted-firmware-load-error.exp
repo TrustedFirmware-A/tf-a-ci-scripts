@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2022 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -10,5 +10,4 @@ source [file join [file dirname [info script]] handle-arguments.inc]
 expect {
 	"Loading of FW_CONFIG failed" { exit_uart 0 }
 	"BL1: Booting BL2"		{ exit_uart -1 }
-	timeout				{ exit_timeout }
 }

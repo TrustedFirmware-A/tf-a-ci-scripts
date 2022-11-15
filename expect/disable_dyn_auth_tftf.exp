@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 Arm Limited. All rights reserved.
+# Copyright (c) 2020-2022 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -23,9 +23,6 @@ expect {
 	-re "Tests Failed  : \[^0]" {
 		puts "<<TFTF Fail>>"
 		exit_uart -1
-	}
-	timeout {
-		exit_timeout
 	}
 }
 

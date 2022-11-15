@@ -10,17 +10,11 @@ expect {
 	"OP-TEE version: "  {
 		puts "<<OP-TEE version>>"
 	}
-	timeout {
-		exit_uart -1
-	}
 }
 
 expect {
 	"Primary CPU switching to normal world boot"  {
 		puts "<<OP-TEE initialized>>"
-	}
-	timeout {
-		exit_uart -1
 	}
 }
 
