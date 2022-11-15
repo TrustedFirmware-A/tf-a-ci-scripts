@@ -53,6 +53,12 @@ proc expect_string {the_string {the_message ""}} {
 		$the_string {
 			puts "<<$the_message>>"
 		}
+
+		eof {
+			puts "<<not found: \"$the_string\">>"
+			exit -1
+		}
+
 		timeout {
 			puts "<<Not found: $the_string>>"
 			exit_timeout
@@ -72,6 +78,12 @@ proc expect_re {the_re {the_message ""}} {
 		-re $the_re {
 			puts "<<$the_message>>"
 		}
+
+		eof {
+			puts "<<not found: \"$the_re\">>"
+			exit -1
+		}
+
 		timeout {
 			puts "<<Not found: $the_re>>"
 			exit_timeout
