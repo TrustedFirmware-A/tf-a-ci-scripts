@@ -51,7 +51,7 @@ for uartdir in $WORKSPACE/artefacts-lava/run/uart*; do
 
         export uart_log_file="${WORKSPACE}/lava-${uart}.log"
 
-        expect "${expscript}"
+        2>&1 expect "${expscript}" > "${WORKSPACE}/lava-${uart}-expect.log"
     )
 
     if [ $? != 0 ]; then
