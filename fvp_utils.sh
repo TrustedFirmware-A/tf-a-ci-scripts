@@ -537,45 +537,6 @@ gen_fvp_yaml() {
         source "${run_env}"
     fi
 
-    # TODO: Introduce a mechanism for mapping terminal names to UART indices.
-    #
-    # In the on-premises CI, the scripts figure out the FVP terminal names by
-    # first booting up the FVP, running an AWK script over it (the "ports
-    # script") which populates a Bash array with the real terminal names for
-    # each UART index, and then killing the FVP.
-    #
-    # In LAVA, we're supposed to know the terminal names beforehand to populate
-    # the console string and feedback regular expressions, which means we need
-    # to effectively run this process in reverse.
-    #
-    # To avoid having to introduce a whole new scheme for mapping the UARTs to
-    # their FVP terminal names, we're instead going to run the ports script over
-    # a list of all of the terminal names we have ever known, then use that to
-    # update the template file with the proper terminal names.
-    declare -a ports
-
-    local ports_input=$(mktempfile)
-    local ports_output=$(mktempfile)
-
-    cat > "${ports_input}" <<-EOF
-		terminal_0
-		terminal_1
-		terminal_2
-		terminal_3
-		terminal_s0
-		terminal_s1
-		terminal_uart_aon
-		terminal_uart_ap
-		terminal_uart0
-		terminal_uart1_ap
-	EOF
-
-    awk -v "num_uarts=$(get_num_uarts "${archive}")" \
-        -f "$(get_ports_script "${archive}")" \
-            "${ports_input}" > "${ports_output}"
-
-    source "${ports_output}"
-
     # Generate the LAVA job definition, minus the test expectations
     expand_template "${yaml_template_file}" > "${yaml_file}"
 

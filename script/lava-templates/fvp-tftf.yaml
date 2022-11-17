@@ -75,16 +75,16 @@ done)
       local: true
     image: ${model_dir}/${model_bin}
     version_string: ${version_string}
-    console_string: '${ports[$(get_payload_uart "${archive}")]:?}: Listening for serial connection on port (?P<PORT>\d+)'
+    console_string: 'terminal_\w+: Listening for serial connection on port (?P<PORT>$(get_uart_port "${archive:?}" "$(get_payload_uart "${archive:?}")"))'
     feedbacks:
 
-$(for port in "${ports[@]}"; do
-	if [ "${port}" = "${ports[$(get_payload_uart "${archive}")]}" ]; then
+$(for uart in $(seq 0 $(( $(get_num_uarts "${archive:?}") - 1 ))); do
+	if [ "${uart}" = "$(get_payload_uart "${archive:?}")" ]; then
 		continue
 	fi
 
 	cat <<-YAML
-      - '(?P<NAME>${port}): Listening for serial connection on port (?P<PORT>\d+)'
+      - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>$(get_uart_port "${archive:?}" "${uart}")))'
 	YAML
 done)
 

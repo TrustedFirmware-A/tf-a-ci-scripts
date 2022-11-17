@@ -9,60 +9,80 @@
 # plans prepare in artefacts-lava/run/. See expect-post/README.md for
 # more info about post-expect scripts.
 
-if [ -z "$WORKSPACE" ]; then
-    echo "Error: WORKSPACE is not set. This script is intended to be run from Jenkins build. (Or suitably set up local env)."
-    exit 1
-fi
-
-total=0
-failed=0
+ci_root="$(readlink -f "$(dirname "$0")/..")" && \
+    . "${ci_root}/utils.sh"
 
 # TODO: move dependency installation to the Dockerfile
 sudo DEBIAN_FRONTEND=noninteractive apt update && \
     sudo DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y expect ||
     exit 1
 
-for uartdir in $WORKSPACE/artefacts-lava/run/uart*; do
-    # In case no dirs exist and the glob above isn't expanded at all.
-    if [ ! -d "$uartdir" ]; then
-        break
-    fi
+archive="${WORKSPACE}/artefacts-lava"
 
+# Extract UART numbering from the FVP common log using the ports script
+declare -a ports=()
+
+ports_output="$(mktempfile)"
+
+awk -v "num_uarts=$(get_num_uarts "${archive}")" \
+    -f "$(get_ports_script "${archive}")" "${WORKSPACE}/lava-common.log" \
+        > "${ports_output}"
+
+. "${ports_output}" # Appends to `ports`
+
+total=0
+failed=0
+
+for uart in "${!ports[@]}"; do
     total=$((total + 1))
 
-    expscript_fragment=$(cat ${uartdir}/expect)
-    expscript=${WORKSPACE}/tf-a-ci-scripts/expect/${expscript_fragment}
+    uart_log_file="${WORKSPACE}/lava-uart${uart}.log"
+    uart_log_expect_file="${WORKSPACE}/lava-uart${uart}-expect.log"
+
+    if [ "${uart}" = "$(get_payload_uart "${archive}")" ]; then
+        mv "${WORKSPACE}/lava-common.log" "${uart_log_file}"
+    else
+        mv "${WORKSPACE}/lava-${ports[${uart}]:?}.log" "${uart_log_file}"
+    fi
+
+    expscript_stem="$(get_uart_expect_script "${archive}" "${uart}")"
+    expscript="${WORKSPACE}/tf-a-ci-scripts/expect/${expscript_stem}"
+
+    if [ -z "${expscript_stem}" ]; then
+        continue # Some UARTs may (legitimately) not have expectations
+    fi
 
     if [ ! -f "${expscript}" ]; then
-        echo "expect/${expscript_fragment}: MISS"
+        echo "expect/${expscript_stem}: MISS"
         failed=$((failed + 1))
 
         continue
     fi
 
-    uart=$(basename $uartdir)
-
     (
-        if [ -f "${uartdir}/env" ]; then
+        export uart_log_file # Required by the Expect script
+
+        if [ -f "$(get_uart_env_path "${archive}" "${uart}")/env" ]; then
             set -a
-            source "${uartdir}/env"
+
+            . "$(get_uart_env_path "${archive}" "${uart}")/env"
+
             set +a
         fi
 
-        export uart_log_file="${WORKSPACE}/lava-${uart}.log"
-
-        2>&1 expect "${expscript}" > "${WORKSPACE}/lava-${uart}-expect.log"
+        2>&1 expect "${expscript}" > "${uart_log_expect_file}"
     )
 
     if [ $? != 0 ]; then
-        echo "expect/${expscript_fragment}(${uart}): FAIL"
+        echo "expect/${expscript_stem}(UART${uart}): FAIL"
+
         failed=$((failed + 1))
     else
-        echo "expect/${expscript_fragment}(${uart}): pass"
+        echo "expect/${expscript_stem}(UART${uart}): PASS"
     fi
 done
 
-echo "Post expect scripts: total=$total failed=$failed"
+echo "Post-LAVA Expect scripts results: total=$total failed=$failed"
 
 if [ $failed -gt 0 ]; then
     exit 1

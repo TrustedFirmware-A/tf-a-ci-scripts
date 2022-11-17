@@ -259,6 +259,10 @@ track_expect() {
 
 	echo "UART$uart to be tracked with $file; timeout ${timeout}s"
 
+	if [ ! -z "${port}" ]; then
+		echo "${port}" > "$uart_dir/port"
+	fi
+
 	# The run script assumes UART0 to be primary. If we're asked to set any
 	# other UART to be primary, set a run environment variable to signal
 	# that to the run script

@@ -344,7 +344,7 @@ get_uart_env() {
 	if [ ! -v "${3:?}" ] && [ -f "$(get_uart_env_path "${1:?}" "${2:?}")/${3:?}" ]; then
 		cat "$(get_uart_env_path "${1:?}" "${2:?}")/${3:?}"
 	else
-		echo "${!3:?-${4}}"
+		echo "${!3-${4}}"
 	fi
 }
 
