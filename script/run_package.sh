@@ -136,12 +136,6 @@ echo
 pkg_bin_mode="${BIN_MODE:-release}"
 bin_mode="${bin_mode:-$pkg_bin_mode}"
 
-# Assume 0 is the primary UART to track
-primary_uart=0
-
-# Assume 4 UARTs by default
-num_uarts="${num_uarts:-4}"
-
 # Whether to display primary UART progress live on the console
 primary_live="${primary_live-$PRIMARY_LIVE}"
 
@@ -163,9 +157,6 @@ fi
 if [ -z "$model_path" ]; then
 	die "No model path set by package!"
 fi
-
-# Assume primary UART is used by test payload as well
-payload_uart="${payload_uart:-$primary_uart}"
 
 # Launch model with parameters
 model_out="$run_root/model_log.txt"
@@ -253,23 +244,6 @@ while :; do
 done
 
 model_pid="$(cat $pid_dir/model.pid)"
-ports_output="$(mktempfile)"
-if not_upon "$ports_script"; then
-	# Default AWK script to parse model ports
-	ports_script="$(mktempfile)"
-	cat <<'EOF' >"$ports_script"
-/terminal_0/ { ports[0] = $NF }
-/terminal_1/ { ports[1] = $NF }
-/terminal_2/ { ports[2] = $NF }
-/terminal_3/ { ports[3] = $NF }
-END {
-	for (i = 0; i < num_uarts; i++) {
-		if (ports[i] != "")
-			print "ports[" i "]=" ports[i]
-	}
-}
-EOF
-fi
 
 # Start a watchdog to kill ourselves if we wait too long for the model
 # response. Note that this is not the timeout for the whole test, but only for
@@ -288,15 +262,17 @@ kill "$$"
 ) &
 watchdog="$!"
 
+ports_output="$(mktempfile)"
+
 # Parse UARTs ports from early model output. Send a SIGSTOP to the model
 # as soon as it outputs all UART ports. This is to prevent the model
 # executing before the expect scripts get a chance to connect to the
 # UART thereby losing messages.
 model_fail=1
 while :; do
-	awk -v "num_uarts=$num_uarts" -f "$ports_script" "$model_out" \
-		> "$ports_output"
-	if [ $(wc -l < "$ports_output") -eq "$num_uarts" ]; then
+	awk -v "num_uarts=$(get_num_uarts "${run_cwd}")" \
+		-f "$(get_ports_script "${run_cwd}")" "$model_out" > "$ports_output"
+	if [ $(wc -l < "$ports_output") -eq "$(get_num_uarts "${run_cwd}")" ]; then
 		kill -SIGSTOP "$model_pid"
 		model_fail=0
 		break
@@ -327,7 +303,7 @@ fi
 declare -a ports
 source "$ports_output"
 rm -f "$ports_output"
-if [ "${#ports[@]}" -ne "$num_uarts" ]; then
+if [ "${#ports[@]}" -ne "$(get_num_uarts "${run_cwd}")" ]; then
 	echo "Failed to get UART port numbers"
 	kill_and_reap "$model_pid"
 	unset model_pid
@@ -335,7 +311,7 @@ fi
 
 # Launch expect scripts for all UARTs
 uarts=0
-for u in $(seq 0 $(( $num_uarts - 1 )) | tac); do
+for u in $(seq 0 $(( "$(get_num_uarts "${run_cwd}")" - 1 )) | tac); do
 	script="run/uart$u/expect"
 	if [ -f "$script" ]; then
 		script="$(cat "$script")"
@@ -345,7 +321,7 @@ for u in $(seq 0 $(( $num_uarts - 1 )) | tac); do
 
 	# Primary UART must have a script
 	if [ -z "$script" ]; then
-		if [ "$u" = "$primary_uart" ]; then
+		if [ "$u" = "$(get_primary_uart "${run_cwd}")" ]; then
 			die "No primary UART script!"
 		else
 			echo "Ignoring UART$u (no expect script provided)."
@@ -363,7 +339,7 @@ for u in $(seq 0 $(( $num_uarts - 1 )) | tac); do
 
 	full_log="$run_root/uart${u}_full.txt"
 
-	if [ "$u" = "$primary_uart" ]; then
+	if [ "$u" = "$(get_primary_uart "${run_cwd}")" ]; then
 		star="*"
 	else
 		star=" "
@@ -379,7 +355,7 @@ for u in $(seq 0 $(( $num_uarts - 1 )) | tac); do
 		set +a
 	fi
 
-	if [ "$u" = "$primary_uart" ] && upon "$primary_live"; then
+	if [ "$u" = "$(get_primary_uart "${run_cwd}")" ] && upon "$primary_live"; then
 		uart_port="${ports[$u]}" timeout="$timeout" \
 			name="$uart_name" launch expect -f "$ci_root/expect/$script" | \
 				tee "$full_log"
@@ -438,8 +414,8 @@ while :; do
 
 	echo "Waiting ${timeout}s for ${#remaining[@]} UART(s): ${remaining[@]}"
 
-	if [[ " ${completed[@]} " =~ " ${payload_uart} " ]]; then
-		echo "- Payload (UART ${payload_uart}) completed!"
+	if [[ " ${completed[@]} " =~ " $(get_payload_uart "${run_cwd}") " ]]; then
+		echo "- Payload (UART $(get_payload_uart "${run_cwd}")) completed!"
 
 		for uart in "${remaining[@]}"; do
 			pid=$(cat "${pid_dir}/uart${uart}.pid")

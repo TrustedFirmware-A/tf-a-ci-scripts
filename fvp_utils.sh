@@ -537,16 +537,6 @@ gen_fvp_yaml() {
         source "${run_env}"
     fi
 
-    # The following defaults are based on those used by `run_package.sh`!
-
-    local num_uarts="${num_uarts:-4}"
-
-    # The payload UART for most FVPs is the primary UART, and the primary UART
-    # for most FVPs is UART0, but there are some tests and platforms where that
-    # isn't the case.
-    local primary_uart="${primary_uart:-0}"
-    local payload_uart="${payload_uart:-${primary_uart}}"
-
     # TODO: Introduce a mechanism for mapping terminal names to UART indices.
     #
     # In the on-premises CI, the scripts figure out the FVP terminal names by
@@ -564,32 +554,27 @@ gen_fvp_yaml() {
     # update the template file with the proper terminal names.
     declare -a ports
 
-    if [ "${ports_script}" = "" ]; then
-        for ((i=0; i<${num_uarts}; i++)); do
-            ports[$i]="terminal_${i}"
-        done
-    else
-        local ports_input=$(mktempfile)
-        local ports_output=$(mktempfile)
+    local ports_input=$(mktempfile)
+    local ports_output=$(mktempfile)
 
-        cat > "${ports_input}" <<-EOF
-			terminal_0
-			terminal_1
-			terminal_2
-			terminal_3
-			terminal_s0
-			terminal_s1
-			terminal_uart_aon
-			terminal_uart_ap
-			terminal_uart0
-			terminal_uart1_ap
-		EOF
+    cat > "${ports_input}" <<-EOF
+		terminal_0
+		terminal_1
+		terminal_2
+		terminal_3
+		terminal_s0
+		terminal_s1
+		terminal_uart_aon
+		terminal_uart_ap
+		terminal_uart0
+		terminal_uart1_ap
+	EOF
 
-        awk -v "num_uarts=${num_uarts}" -f "${ports_script:?}" \
+    awk -v "num_uarts=$(get_num_uarts "${archive}")" \
+        -f "$(get_ports_script "${archive}")" \
             "${ports_input}" > "${ports_output}"
 
-        source "${ports_output}"
-    fi
+    source "${ports_output}"
 
     # Generate the LAVA job definition, minus the test expectations
     expand_template "${yaml_template_file}" > "${yaml_file}"
@@ -612,7 +597,7 @@ gen_fvp_yaml_expect() {
 
         # Only handle the primary UART through LAVA. The remaining UARTs are
         # validated after LAVA returns by the post-expect script.
-        if [ "${uart_number:?}" != "uart${primary_uart}" ]; then
+        if [ "${uart_number:?}" != "uart$(get_primary_uart "${archive}")" ]; then
             continue
         fi
 

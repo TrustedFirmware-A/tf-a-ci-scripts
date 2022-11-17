@@ -135,14 +135,11 @@ fi
 # Whether to display primary UART progress live on the console
 primary_live="${primary_live-$PRIMARY_LIVE}"
 
-# Assume 0 is the primary UART to track
-primary_uart="${primary_uart:-0}"
-
 # Assume 1 UARTs by default
-num_uarts="${num_uarts:-1}"
+num_uarts="$(get_num_uarts "${archive}" 1)"
 
 # Generate the environment configuration file for the FPGA host.
-for u in $(seq 0 $(( $num_uarts - 1 )) | tac); do
+for u in $(seq 0 $(( $(get_num_uarts "${archive}") - 1 )) | tac); do
 	descriptor="run/uart$u/descriptor"
 	if [ -f "$descriptor" ]; then
 		uart_descriptor="$(cat "$descriptor")"
@@ -230,12 +227,12 @@ sleep 65
 
 # If it's a test run, skip all the hoops and start a telnet connection to the FPGA.
 if upon "$test_run"; then
-	telnet "$remote_host" "$(cat "run/uart$primary_uart/port")"
+	telnet "$remote_host" "$(cat "run/uart$(get_primary_uart "${archive}")/port")"
 	exit 0
 fi
 
 # Launch expect scripts for all UARTs
-for u in $(seq 0 $(( $num_uarts - 1 )) | tac); do
+for u in $(seq 0 $(( $(get_num_uarts "${archive}") - 1 )) | tac); do
 	script="run/uart$u/expect"
 	if [ -f "$script" ]; then
 		script="$(cat "$script")"
@@ -245,7 +242,7 @@ for u in $(seq 0 $(( $num_uarts - 1 )) | tac); do
 
 	# Primary UART must have a script
 	if [ -z "$script" ]; then
-		if [ "$u" = "$primary_uart" ]; then
+		if [ "$u" = "$(get_primary_uart "${archive}")" ]; then
 			die "No primary UART script!"
 		else
 			echo "Ignoring UART$u (no expect script provided)."
@@ -267,7 +264,7 @@ for u in $(seq 0 $(( $num_uarts - 1 )) | tac); do
 
 	full_log="$run_root/uart${u}_full.txt"
 
-	if [ "$u" = "$primary_uart" ]; then
+	if [ "$u" = "$(get_primary_uart "${archive}")" ]; then
 		star="*"
 		uart_name="primary_uart"
 	else
@@ -283,7 +280,7 @@ for u in $(seq 0 $(( $num_uarts - 1 )) | tac); do
 		set +a
 	fi
 
-	if [ "$u" = "$primary_uart" ] && upon "$primary_live"; then
+	if [ "$u" = "$(get_primary_uart "${archive}")" ] && upon "$primary_live"; then
 		uart_port="$uart_port" remote_host="$remote_host" timeout="$timeout" \
 			name="$uart_name" launch expect -f "$ci_root/expect/$script" | \
 				tee "$full_log"

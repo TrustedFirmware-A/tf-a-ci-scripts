@@ -62,11 +62,11 @@ done)
       local: true
     image: ${model_dir}/${model_bin}
     version_string: ${version_string}
-    console_string: '${ports[${payload_uart:?}]:?}: Listening for serial connection on port (?P<PORT>\d+)'
+    console_string: '${ports[$(get_payload_uart "${archive}")]:?}: Listening for serial connection on port (?P<PORT>\d+)'
     feedbacks:
 
 $(for port in "${ports[@]}"; do
-	if [ "${port}" = "${ports[${payload_uart}]}" ]; then
+	if [ "${port}" = "${ports[$(get_payload_uart "${archive}")]}" ]; then
 		continue
 	fi
 

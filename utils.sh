@@ -258,6 +258,112 @@ get_kernel() {
 	url="${url:?}" filename="kernel.bin" fetch_and_archive
 }
 
+# Get the path to the run environment variables file.
+#
+# Run environment variables are the test-specific environment variables
+# configured by the CI's test configuration.
+#
+# Usage: get_run_env_path <archive>
+get_run_env_path() {
+	echo "${1:?}/run/env"
+}
+
+# Get a run environment variable.
+#
+# Run environment variables are the test-specific environment variables
+# configured by the CI's test configuration.
+#
+# Usage: get_run_env <archive> <variable> [default]
+get_run_env() {
+	if [ -f "$(get_run_env_path "${1:?}")" ] && [ ! -v "${2:?}" ]; then
+		. "$(get_run_env_path "${1:?}")"
+	fi
+
+	echo "${!2:-${3}}"
+}
+
+# Get the number of UARTs configured by the current test configuration. This
+# defaults to `4`.
+#
+# Usage: get_num_uarts <archive> [default]
+get_num_uarts() {
+	local default=4
+
+	get_run_env "${1:?}" num_uarts "${2-${default}}"
+}
+
+# Get the ports script configured by the current test configuration. This
+# defaults to `script/default-ports-script.awk`.
+#
+# Usage: get_ports_script <archive> [default]
+get_ports_script() {
+	local default="${ci_root}/script/default-ports-script.awk"
+
+	get_run_env "${1:?}" ports_script "${2-${default}}"
+}
+
+# Get the primary UART configured by the current test configuration. This
+# defaults to `0`.
+#
+# Usage: get_primary_uart <archive> [default]
+get_primary_uart() {
+	local default=0
+
+	get_run_env "${1:?}" primary_uart "${2-${default}}"
+}
+
+# Get the payload UART configured by the current test configuration. This
+# defaults to the primary UART.
+#
+# Usage: get_payload_uart <archive> [default]
+get_payload_uart() {
+	local default="$(get_primary_uart "${1:?}")"
+
+	get_run_env "${1:?}" payload_uart "${2-${default}}"
+}
+
+# Get the path to a UART's environment variable directory.
+#
+# UART environment variables are the UART-specific environment variables
+# configured by the CI's test configuration.
+#
+# Usage: get_uart_env_path <archive> <uart>
+get_uart_env_path() {
+	echo "${1:?}/run/uart${2:?}"
+}
+
+# Get a UART environment variable.
+#
+# UART environment variables are the UART-specific environment variables
+# configured by the CI's test configuration.
+#
+# Usage: get_uart_env <archive> <uart> <variable> [default]
+get_uart_env() {
+	if [ ! -v "${3:?}" ] && [ -f "$(get_uart_env_path "${1:?}" "${2:?}")/${3:?}" ]; then
+		cat "$(get_uart_env_path "${1:?}" "${2:?}")/${3:?}"
+	else
+		echo "${!3:?-${4}}"
+	fi
+}
+
+# Get the path to the Expect script for a given UART. This defaults to nothing.
+#
+# Usage: get_uart_expect_script <archive> <uart> [default]
+get_uart_expect_script() {
+	local default=
+
+	get_uart_env "${1:?}" "${2:?}" expect "${3-${default}}"
+}
+
+# Get the FVP port for a given UART. This defaults to `5000 + ${uart}`.
+#
+# Usage: get_uart_port <archive> <uart> [default]
+get_uart_port() {
+	local default="$(( 5000 + "${2:?}" ))"
+
+	get_uart_env "${1:?}" "${2:?}" port "${3-${default}}"
+}
+
 # Make a temporary directory/file insdie workspace, so that it doesn't need to
 # be cleaned up. Jenkins is setup to clean up workspace before a job runs.
 mktempdir() {
