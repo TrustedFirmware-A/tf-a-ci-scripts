@@ -366,6 +366,26 @@ get_uart_port() {
 	get_uart_env "${1:?}" "${2:?}" port "${3-${default}}"
 }
 
+# Set a UART environment variable.
+#
+# UART environment variables are the UART-specific environment variables
+# configured by the CI's test configuration.
+#
+# Usage: set_uart_env <archive> <uart> <variable> <value>
+set_uart_env() {
+	local path="$(get_uart_env_path "${1:?}" "${2:?}")"
+
+	mkdir -p "${path}" && \
+		echo "${4:?}" > "${path}/${3:?}"
+}
+
+# Set the FVP port for a given UART.
+#
+# Usage: set_uart_port <archive> <uart> <port>
+set_uart_port() {
+	set_uart_env "${1:?}" "${2:?}" port "${3:?}"
+}
+
 # Make a temporary directory/file insdie workspace, so that it doesn't need to
 # be cleaned up. Jenkins is setup to clean up workspace before a job runs.
 mktempdir() {

@@ -110,8 +110,12 @@ EOF
 
 generate_lava_job_template() {
 	# Hold scp terminal_s0
-	uart="0" file="hold_uart.exp" track_expect
-	uart="1" set_primary="1" file="linux-rd-busybox.exp" track_expect
+	uart="0" port="5002" file="hold_uart.exp" track_expect
+	uart="1" port="5003" file="linux-rd-busybox.exp" set_primary="1" \
+		track_expect
+
+	set_uart_port "${archive:?}" 2 5000
+	set_uart_port "${archive:?}" 3 5001
 
 	payload_type="linux" gen_fvp_yaml_template
 }
