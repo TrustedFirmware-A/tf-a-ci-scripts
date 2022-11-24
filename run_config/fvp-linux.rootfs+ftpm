@@ -14,9 +14,10 @@ post_tf_build() {
 }
 
 generate_lava_job_template() {
-	# Configure the uarts for tracking.
-	uart="0" timeout="600" file="linux-tpm.exp" track_expect
-	uart="1" timeout="600" file="tpm-logs.exp" track_expect
+	# These UARTs are swapped because of an Expect script order requirement
+	uart="1" port="5000" timeout="600" file="linux-tpm.exp" set_primary="1" \
+		track_expect
+	uart="0" port="5001" timeout="600" file="tpm-logs.exp" track_expect
 
 	set_run_env "ports_script" "$ci_root/model/ftpm-ports.awk"
 	set_run_env "num_uarts" "2"

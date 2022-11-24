@@ -26,3 +26,5 @@ for i in $(seq 2 11); do
     expect_string+=("i;#")
     expect_string+=("i;${zero_pcr};;;pcrread -ha $i")
 done
+
+expect_string+=("i;#;;;@") # Flush newline after final prompt
