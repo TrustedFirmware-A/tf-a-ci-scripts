@@ -17,12 +17,13 @@ fetch_tf_resource() {
 }
 
 generate_lava_job_template() {
-	uart="0" port="5002" file="trusted-firmware-sgi.exp" track_expect
+	uart="0" port="5004" file="trusted-firmware-sgi.exp" track_expect
 	uart="1" port="5003" file="linux-busybox-sgi.exp" timeout="1800" \
 		set_primary="1" track_expect
 
 	set_uart_port "${archive:?}" 2 5000
 	set_uart_port "${archive:?}" 3 5001
+	set_uart_port "${archive:?}" 4 5002
 
 	payload_type="linux" gen_fvp_yaml_template
 }
