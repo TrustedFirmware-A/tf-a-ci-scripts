@@ -30,10 +30,10 @@ generate_lava_job_template() {
 generate_lava_job() {
 	local model="tc0"
 
-	uart="0" port="5002" set_payload_uart="1" file="tftf-non-primary.exp" track_expect
+	uart="0" port="5002" set_primary="1" file="tftf-non-primary.exp" track_expect
 
 	uart="1" set_expect_variable "num_cpus" "8"
-	uart="1" port="5003" set_primary="1" file="spm-cactus-sp-uart1.exp" track_expect
+	uart="1" port="5003" file="spm-cactus-sp-uart1.exp" track_expect
 
 	set_run_env "ports_script" "$ci_root/model/tc-ports.awk"
 	set_run_env "num_uarts" "2"
