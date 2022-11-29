@@ -112,4 +112,8 @@ exclude_paths = [
     # Exclude the IO files
     ("drivers/io/io_dummy.c", "None of the upstream platforms using this file"),
 
+    # Exclude The following files used to wrap external test code
+    ("plat/arm/board/tc/rss_ap_test_stubs.c", "Only used for testing on arm/tc platform"),
+    ("plat/arm/board/tc/rss_ap_tests.c", "Only used for testing on arm/tc platform"),
+    ("plat/arm/board/tc/rss_ap_testsuites.c", "Only used for testing on arm/tc platform"),
 ]
