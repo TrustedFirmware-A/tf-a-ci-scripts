@@ -4,7 +4,7 @@ timeouts:
   job:
     minutes: 30
 
-priority: medium
+priority: ${LAVA_PRIORITY:-medium}
 visibility: public
 context:
   extra_nfsroot_args: ',vers=3'

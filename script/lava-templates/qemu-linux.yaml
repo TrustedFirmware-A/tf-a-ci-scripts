@@ -1,6 +1,6 @@
 device_type: qemu
 job_name: qemu-linux-${test_config}
-priority: medium
+priority: ${LAVA_PRIORITY:-medium}
 visibility: public
 
 metadata:

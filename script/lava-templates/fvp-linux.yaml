@@ -35,7 +35,7 @@ timeouts:
     fvp-deploy:
       minutes: 5
 
-priority: medium
+priority: ${LAVA_PRIORITY:-medium}
 visibility: public
 
 actions:

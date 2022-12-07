@@ -16,7 +16,7 @@ timeouts:
   action:
     minutes: 10
 
-priority: medium
+priority: ${LAVA_PRIORITY:-medium}
 visibility: public
 
 actions:

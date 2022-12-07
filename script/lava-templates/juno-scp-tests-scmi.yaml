@@ -15,7 +15,7 @@ timeouts:
     lava-test-monitor:
       seconds: 180
 
-priority: medium
+priority: ${LAVA_PRIORITY:-medium}
 visibility: public
 
 actions:
