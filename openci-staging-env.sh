@@ -6,9 +6,9 @@
 #
 
 #
-# Environmental settings for the OpenCI infrastructure.
+# Environmental settings for the OpenCI staging infrastructure.
 #
 
 nfs_volume="${WORKSPACE:?}/nfs"
-jenkins_url="http://ci.trustedfirmware.org"
+jenkins_url="http://ci.staging.trustedfirmware.org"
 tfa_downloads="https://downloads.trustedfirmware.org/tf-a"
