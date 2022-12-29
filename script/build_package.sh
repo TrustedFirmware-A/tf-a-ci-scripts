@@ -587,7 +587,7 @@ build_scp() {
 	# Always distclean when running on Jenkins. Skip distclean when running
 	# locally and explicitly requested.
 	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		make clean &>>"$build_log" || fail_build
+		make -f Makefile.cmake clean &>>"$build_log" || fail_build
 	fi
 
 	python3 -m venv .venv
