@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -116,4 +116,7 @@ exclude_paths = [
     ("plat/arm/board/tc/rss_ap_test_stubs.c", "Only used for testing on arm/tc platform"),
     ("plat/arm/board/tc/rss_ap_tests.c", "Only used for testing on arm/tc platform"),
     ("plat/arm/board/tc/rss_ap_testsuites.c", "Only used for testing on arm/tc platform"),
+
+    # Exclude the following files used for TC host tools (fiptool)
+    ("plat/arm/board/tc/plat_def_uuid_config.c", "Used to build TC fiptool"),
 ]
