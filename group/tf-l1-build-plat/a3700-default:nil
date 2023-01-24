@@ -33,7 +33,7 @@ pre_tf_build() {
 
 	if [ ! -d "cryptopp" ]; then
 		saveas="cryptopp.zip" \
-			url="$tfa_downloads/cryptopp/cryptopp565.zip" \
+			url="$tfa_downloads/cryptopp/cryptopp870.zip" \
 			fetch_file
 
 		unzip -d cryptopp "cryptopp.zip"
