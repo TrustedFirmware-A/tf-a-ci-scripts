@@ -325,6 +325,7 @@ gen_fvp_yaml() {
 
     # this function expects a template, quit if it is not present
     if [ ! -f "$yaml_template_file" ]; then
+        echo "warning: gen_fvp_yaml: template $yaml_template_file not available, skipping generating LAVA job"
 	return
     fi
 
