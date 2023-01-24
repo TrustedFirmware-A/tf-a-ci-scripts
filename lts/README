@@ -15,23 +15,33 @@ patches. It computes a crude score:
 
 Note that the script only looks at commits which are not merge commits.
 
+The script expects two branches: 'integration' and 'to_check'. 'integration' is
+the actual integration branch of the TF-A project while 'to_check' points to the
+tip of latest patch in the patchset that was submitted.
+
+The script needs to work out how many commits are in the current patchset which
+will be the ones it needs to triage. In order to do that the script looks at two
+parameters which are currently fixed in code. We can turn them into args if needed.
+First is REBASE_DEPTH which is the number of commits in integration branch to look
+for the common commit between patchset and integration branch. Second parameter is
+MAX_PATCHSET_DEPTH which is the maximum number of commits we expect in the patchset
+submitted.
+
 Running it:
 -----------
 
 To run it, provide it a path to a TF-A git repo. Here's help output for convenience:
 
 $ python lts/lts-triage.py -h
-usage: lts-triage.py [-h] --repo REPO [--branch BRANCH] [--sample_size SAMPLE_SIZE] [--debug]
+usage: lts-triage.py [-h] --repo REPO [--debug]
 
 check patches for LTS candidacy
 
 options:
   -h, --help            show this help message and exit
   --repo REPO           path to tf-a git repo
-  --branch BRANCH       branch to check. default = integration
-  --sample_size SAMPLE_SIZE
-                        how many patches to scan. default = 20
   --debug               print debug logs
+
 
 Below is an example output. On left is commit hash of each of the commits
 observed by this script and on right is score assigned to it.
