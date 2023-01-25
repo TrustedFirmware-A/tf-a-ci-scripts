@@ -256,8 +256,11 @@ track_expect() {
 
 	echo "$file" > "$uart_dir/expect"
 	echo "$timeout" > "$uart_dir/timeout"
+	if [ -n "$lava_timeout" ]; then
+		set_run_env "lava_timeout" "$lava_timeout"
+	fi
 
-	echo "UART$uart to be tracked with $file; timeout ${timeout}s"
+	echo "UART$uart to be tracked with $file; timeout ${timeout}s; lava_timeout ${lava_timeout:-N/A}s"
 
 	if [ ! -z "${port}" ]; then
 		echo "${port}" > "$uart_dir/port"
