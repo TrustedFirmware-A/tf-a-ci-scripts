@@ -12,11 +12,6 @@
 ci_root="$(readlink -f "$(dirname "$0")/..")" && \
     . "${ci_root}/utils.sh"
 
-# TODO: move dependency installation to the Dockerfile
-sudo DEBIAN_FRONTEND=noninteractive apt update && \
-    sudo DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y expect ||
-    exit 1
-
 archive="${WORKSPACE}/artefacts-lava"
 
 # Extract UART numbering from the FVP common log using the ports script
