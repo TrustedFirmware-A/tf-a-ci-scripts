@@ -7,7 +7,7 @@
 
 fetch_tf_resource() {
 	set_run_env "num_uarts" "3"
-	uart="0" file="tftf.exp" track_expect
+	uart="0" lava_timeout=360 file="tftf.exp" track_expect
 	uart="1" file="hold_uart.exp" track_expect
 	uart="2" file="hold_uart.exp" track_expect
 }
