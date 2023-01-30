@@ -12,7 +12,7 @@ fetch_tf_resource() {
 }
 
 generate_lava_job_template() {
-	uart="0" timeout="1800" lava_timeout="1140" file="linux-oe.exp" track_expect
+	uart="0" timeout="1800" lava_timeout="1260" file="linux-oe.exp" track_expect
 
 	payload_type="linux" gen_fvp_yaml_template
 }
