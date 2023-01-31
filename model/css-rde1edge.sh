@@ -8,6 +8,17 @@
 set_model_path "$warehouse/SysGen/SubSystemModels/11.17/29/models/$model_flavour/FVP_RD_E1_edge"
 
 cat <<EOF >"$model_param_file"
+-C board.terminal_0.start_port=5000
+-C board.terminal_1.start_port=5001
+-C css.mcp.terminal_uart0.start_port=5002
+-C css.mcp.terminal_uart1.start_port=5003
+-C css.scp.terminal_uart_aon.start_port=5004
+-C css.terminal_uart1_ap.start_port=5005
+-C css.terminal_uart_ap.start_port=5006
+-C soc.terminal_mcp.start_port=5007
+-C soc.terminal_s0.start_port=5008
+-C soc.terminal_s1.start_port=5009
+
 -C board.flashloader0.fname=$fip_bin
 -C css.cmn600.force_rnsam_internal=false
 -C css.cmn600.mesh_config_file=RD_N1_E1_cmn600.yml

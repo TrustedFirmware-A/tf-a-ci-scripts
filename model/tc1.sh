@@ -8,6 +8,13 @@
 set_model_path "$warehouse/SysGen/SubSystemModels/11.17/33/models/$model_flavour/FVP_TC1"
 
 cat <<EOF >"$model_param_file"
+-C board.terminal_0.start_port=5000
+-C board.terminal_1.start_port=5001
+-C css.terminal_uart1_ap.start_port=5002
+-C css.terminal_uart_ap.start_port=5003
+-C soc.terminal_s0.start_port=5004
+-C soc.terminal_s1.start_port=5005
+
 ${bl1_bin+-C css.trustedBootROMloader.fname=$bl1_bin}
 ${scp_rom_bin+-C css.scp.ROMloader.fname=$scp_rom_bin}
 ${fip_bin+-C board.flashloader0.fname=$fip_bin}

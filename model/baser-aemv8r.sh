@@ -15,6 +15,10 @@ fi
 
 # Write model command line options
 cat <<EOF >"$model_param_file"
+-C bp.terminal_0.start_port=5000
+-C bp.terminal_1.start_port=5001
+-C bp.terminal_2.start_port=5002
+-C bp.terminal_3.start_port=5003
 
 -C bp.pl011_uart0.unbuffered_output=1
 -C bp.pl011_uart0.untimed_fifos=true

@@ -9,6 +9,14 @@
 set_model_path "$warehouse/SysGen/SubSystemModels/$model_version/$model_build/models/$model_flavour/FVP_Morello"
 
 cat <<EOF >"$model_param_file"
+-C board.terminal_uart0_board.start_port=5000
+-C board.terminal_uart1_board.start_port=5001
+-C css.mcp.terminal_uart0.start_port=5002
+-C css.mcp.terminal_uart1.start_port=5003
+-C css.scp.terminal_uart_aon.start_port=5004
+-C css.terminal_uart1_ap.start_port=5005
+-C css.terminal_uart_ap.start_port=5006
+
 --data Morello_Top.css.scp.armcortexm7ct=$scp_rom_bin@0x0
 --data Morello_Top.css.mcp.armcortexm7ct=$mcp_rom_bin@0x0
 -C Morello_Top.soc.scp_qspi_loader.fname=$scp_fw_bin
