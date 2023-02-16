@@ -14,7 +14,6 @@ source .venv/bin/activate
     export PIP_CACHE_DIR=${project_filer}/pip-cache
 
     python3 -m pip install --upgrade pip
-    python3 -m pip install -r "${tf_root}/docs/requirements.txt" ||
-        python3 -m pip install -r "${tf_root}/docs/requirements.txt"  \
-            --no-cache-dir # Avoid cache concurrency issues
+    python3 -m pip install poetry==1.3.2 ||
+            python3 -m pip install poetry==1.3.2 --no-cache-dir
 )

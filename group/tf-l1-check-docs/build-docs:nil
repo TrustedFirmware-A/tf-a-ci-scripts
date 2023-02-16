@@ -6,6 +6,7 @@
 #
 
 pre_tf_build() {
+	poetry -C "$tf_root" install --with doc
 	targets="doc" set_tf_build_targets
 }
 
