@@ -451,6 +451,8 @@ make PLAT=rk3588 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
     ENABLE_STACK_PROTECTOR=strong all
 make PLAT=px30 $(common_flags) PLAT_RK_SECURE_DDR_MINILOADER=1 \
     ENABLE_STACK_PROTECTOR=strong all
+make PLAT=rk3568 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
+    ENABLE_STACK_PROTECTOR=strong all
 
 # Although we do several consecutive builds for the Tegra platform below, we
 # don't need to clean between each one because the Tegra makefiles specify
