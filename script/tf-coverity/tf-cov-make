@@ -73,6 +73,9 @@ clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=tspd USE_ROMLIB=1 \
 clean_build $fvp_common_flags SPD=trusty
 clean_build $fvp_common_flags SPD=trusty TRUSTY_SPD_WITH_GENERIC_SERVICES=1
 
+# ERRATA ABI
+clean_build $fvp_common_flags ERRATA_ABI_SUPPORT=1
+
 # SDEI
 clean_build $fvp_common_flags SDEI_SUPPORT=1 EL3_EXCEPTION_HANDLING=1
 
