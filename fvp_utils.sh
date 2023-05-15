@@ -701,6 +701,9 @@ EOF
        - message: '$f'
 EOF
                         done
+                        cat << EOF
+         exception: JobError
+EOF
                     elif [[ -n "${prompts}" && -n "${successes}" ]]; then
                         cat << EOF
    - name: interactive_${uart_number}_${key}
@@ -757,6 +760,9 @@ EOF
        - message: '$f'
 EOF
                         done
+                        cat << EOF
+         exception: JobError
+EOF
                     else
                         cat << EOF
    - name: interactive_${uart_number}_${key}
