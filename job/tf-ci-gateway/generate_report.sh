@@ -7,6 +7,19 @@
 
 set -ex
 
+# Jenkins Parameterized Trigger Plugin mangles job names as passed via
+# environment variables, replacing most non-alphanumeric chars with
+# underscore. The mangling is generally non-reversible, but we apply
+# "heuristics" based on our naming conventions.
+function unmangle_job_name() {
+    # Two numbers seperated by undescore was likely a version number originally,
+    # e.g. lts2.8 -> lts2_8.
+    s=$(python3 -c 'import sys, re; print(re.sub(r"(\d+)_(\d+)", r"\1.\2", sys.argv[1]))' "$1")
+    # Otherwise, we use hyphens as seperators.
+    s=$(echo $s | tr "_" "-")
+    echo $s
+}
+
 # Generate test report
 if [ "$CI_ROOT" ]; then
 	# Gather Coverity scan summary if it was performed as part of this job
@@ -21,9 +34,7 @@ if [ "$CI_ROOT" ]; then
 		worker_job="${worker_job:-tf-worker}"
 		lava_job="${lava_job:-tf-build-for-lava}"
 	else
-		# ${TRIGGERED_JOB_NAMES} has hyphens replaced with underscores.
-		# As we know that we use hyphen convention, translate it back.
-		triggered_job=$(echo ${TRIGGERED_JOB_NAMES} | tr "_" "-")
+		triggered_job=$(unmangle_job_name "${TRIGGERED_JOB_NAMES}")
 		worker_job="${worker_job:-${triggered_job}}"
 		lava_job="${lava_job:-${triggered_job}}"
 	fi
