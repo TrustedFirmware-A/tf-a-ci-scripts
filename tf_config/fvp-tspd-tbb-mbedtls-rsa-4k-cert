@@ -6,3 +6,4 @@ ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
 SPD=tspd
 TRUSTED_BOARD_BOOT=1
 KEY_SIZE=4096
+FVP_TRUSTED_SRAM_SIZE=384
