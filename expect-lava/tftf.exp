@@ -9,7 +9,8 @@
 source $ci_root/expect-lava/trusted-firmware.inc
 
 prompt='Booting trusted firmware test framework'
-expect_string+=("i;${prompt}")
+failures='Panic:'
+expect_string+=("i;${prompt};;${failures}")
 
 prompt='Running at NS-EL(1|2)'
 expect_string+=("i;${prompt}")
