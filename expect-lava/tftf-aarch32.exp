@@ -15,7 +15,8 @@ prompt='Running in AArch32 HYP mode'
 expect_string+=("i;${prompt}")
 
 prompt='Tests Failed  : 0'
-expect_string+=("i;${prompt}")
+failures='Unhandled exception on '
+expect_string+=("i;${prompt};;${failures}")
 
 prompt='Exiting tests.'
 failures='Tests Passed  : 0'
