@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2024 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+post_tf_archive() {
+	echo "Removing bl31.bin"
+	rm -f "$archive/bl31.bin"
+	touch "$archive/bl31.bin.deleted"
+}
