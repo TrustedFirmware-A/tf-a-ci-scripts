@@ -24,7 +24,11 @@ else
   if echo "$JENKINS_URL" | grep -q "oss.arm.com"; then
     source "$ci_root/arm-env.sh"
   elif echo "$JENKINS_URL" | grep -q "ci.trustedfirmware.org"; then
-    source "$ci_root/openci-env.sh"
+    if echo "$GERRIT_BRANCH" | grep -q "lts-v2.8"; then
+      source "$ci_root/openci-lts-v2.8-env.sh"
+    else
+      source "$ci_root/openci-env.sh"
+    fi
   elif echo "$JENKINS_URL" | grep -q "ci.staging.trustedfirmware.org"; then
     source "$ci_root/openci-staging-env.sh"
   fi
