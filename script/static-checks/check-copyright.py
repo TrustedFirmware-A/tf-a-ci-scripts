@@ -180,7 +180,7 @@ Instead of checking all files in the source tree, the script will consider
 only files that are modified by the latest patch(es).""",
                         action="store_true")
 
-    (rc, stdout, stderr) = utils.shell_command(['git', 'merge-base', 'HEAD', 'refs/remotes/origin/master'])
+    (rc, stdout, stderr) = utils.shell_command(['git', 'merge-base', 'HEAD', 'refs/remotes/origin/lts-v2.8'])
     if rc:
         print("Git merge-base command failed. Cannot determine base commit.")
         sys.exit(rc)

@@ -15,7 +15,7 @@ LOG_FILE=$(mktemp -t common.XXXX)
 
 if [[ "$2" == "patch" ]]; then
     cd "$1"
-    parent=$(git merge-base HEAD refs/remotes/origin/master | head -1)
+    parent=$(git merge-base HEAD refs/remotes/origin/lts-v2.8 | head -1)
     git diff ${parent}..HEAD --no-ext-diff --unified=0 --exit-code -a --no-prefix | awk '/^\+/ && /\r$/' &> "$LOG_FILE"
 else
   # For all the source and doc files
