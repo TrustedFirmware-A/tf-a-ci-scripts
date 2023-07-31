@@ -56,7 +56,7 @@ test group." | tee -a "$LOG_FILE"
   echo "# Check to detect whether newly added files are analysed by Coverity in the patch"
   TEST_CASE="Newly added files detection check for Coverity Scan analysis on patch(es)"
 # Extracting newly added source files added between commits.
-  git diff origin/integration...HEAD --name-only --diff-filter=A "*.c" &> "$TFA_PATCH_NEWFILES_LIST"
+  git diff origin/lts-v2.8...HEAD --name-only --diff-filter=A "*.c" &> "$TFA_PATCH_NEWFILES_LIST"
   if [ -s "$TFA_PATCH_NEWFILES_LIST" ]
   then
     file_updation_report
