@@ -1445,6 +1445,9 @@ for mode in $modes; do
 
 		source "$ci_root/script/install_python_deps_tf.sh"
 
+		fvp_tsram_size="$(get_tf_opt FVP_TRUSTED_SRAM_SIZE)"
+		fvp_tsram_size="${fvp_tsram_size:-256}"
+
 		archive="$build_archive"
 		tf_build_root="$tf_root/build"
 

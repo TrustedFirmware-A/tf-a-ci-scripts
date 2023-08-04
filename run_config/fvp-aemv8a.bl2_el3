@@ -8,8 +8,11 @@
 generate_lava_job() {
 	local model="base-aemv8a"
 
+	# BL2 is placed towards the middle of the Trusted SRAM based on (Total TSRAM / 2 + 0x2000)
+	local bl2_addr=$((0x4002000 + (fvp_tsram_size * 512)))
+
 	uart="0" set_expect_variable "skip_early_boot_msgs" "1"
 
-	model="$model" bl2_addr="0x4022000" bl2_at_el3="1" gen_model_params
+	model="$model" bl2_addr="${bl2_addr}" bl2_at_el3="1" gen_model_params
 	model="$model" gen_fvp_yaml
 }
