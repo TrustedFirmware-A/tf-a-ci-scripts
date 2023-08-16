@@ -12,10 +12,13 @@
 #  ci_root="$(readlink -f "$(dirname "$0")/..")"
 #
 
+set -ETe -o pipefail
+
 # Accept root of CI location from $CI_ROOT or $ci_root, in that order
 ci_root="${ci_root:-$CI_ROOT}"
 ci_root="${ci_root:?}"
 
+source "${ci_root}/backtrace.sh" && trap backtrace ERR
 source "${ci_root}/lava_utils.sh"
 
 # Optionally source a file containing environmental settings.

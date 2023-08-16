@@ -362,8 +362,8 @@ build_tf_extra() {
 fip_update() {
 	# Before the update process, check if the given image is supported by
 	# the fiptool. It's assumed that both fiptool and cert_create move in
-	# tandem, and therfore, if one has support, the other has it too.
-	if ! "$fiptool" update 2>&1 | grep -qe "\s\+--${bin_name:?}"; then
+	# tandem, and therefore, if one has support, the other has it too.
+	if ! ("$fiptool" update 2>&1 || true) | grep -qe "\s\+--${bin_name:?}"; then
 		return 1
 	fi
 
