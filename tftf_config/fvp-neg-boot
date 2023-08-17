@@ -1,0 +1,7 @@
+CROSS_COMPILE=aarch64-none-elf-
+NEW_TEST_SESSION=0
+PLAT=fvp
+TESTS=corrupt-fip
+USE_NVM=1
+FWU_BL_TEST=0
+
