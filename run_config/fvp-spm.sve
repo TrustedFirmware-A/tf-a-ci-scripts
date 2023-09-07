@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2021-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2024, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -22,10 +22,9 @@ generate_lava_job() {
 	# SPM(reference implementation of S-EL2 firmware) has SMMUv3 driver
 	# enabled to help with stage-2 translation and virtualization of
 	# upstream peripheral devices. Hence, enable the SMMUv3 IP in FVP
-	# by confuguring the appropriate parameters of the SMMUv3 AEM.
+	# by configuring the appropriate parameters of the SMMUv3 AEM.
 
 	model="$model" \
-		amu_present="1" \
 		arch_version="8.5" \
 		has_branch_target_exception="1" \
 		has_smmuv3_params="1" \
