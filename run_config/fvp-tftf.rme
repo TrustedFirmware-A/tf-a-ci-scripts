@@ -25,6 +25,7 @@ generate_lava_job() {
 	uart="3" file="hold_uart.exp" track_expect
 
 	model="$model" \
+		secure_memory="0" \
 		amu_present="1" \
 		arch_version="8.6" \
 		has_branch_target_exception="1" \
