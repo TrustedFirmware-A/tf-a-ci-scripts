@@ -1,3 +1,3 @@
 CROSS_COMPILE=aarch64-none-elf-
 PLAT=fvp
-TESTS=invalid-access
+TESTS=memory-access

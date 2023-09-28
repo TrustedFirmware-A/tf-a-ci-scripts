@@ -1,4 +1,4 @@
 CROSS_COMPILE=aarch64-none-elf-
 PLAT=fvp
-TESTS=invalid-access
+TESTS=memory-access
 ENABLE_REALM_PAYLOAD_TESTS=1
