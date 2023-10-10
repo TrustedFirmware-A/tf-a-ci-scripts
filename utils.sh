@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -642,7 +642,7 @@ scp_mcp_downloads="${scp_mcp_downloads:-$tfa_downloads/css_scp_2.11.0}"
 
 linaro_2001_release="${linaro_2001_release:-$tfa_downloads/linaro/20.01}"
 linaro_release="${linaro_release:-$linaro_2001_release}"
-mbedtls_version="${mbedtls_version:-2.28.1}"
+mbedtls_version="${mbedtls_version:-2.28.5}"
 
 # mbedTLS archive public hosting available at github.com
 mbedtls_archive="${mbedtls_archive:-https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/v${mbedtls_version}.tar.gz}"
