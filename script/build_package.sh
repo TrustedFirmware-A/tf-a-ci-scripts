@@ -532,6 +532,8 @@ build_tf() {
 Build command line:
 	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 $build_targets
 
+CC version:
+$(${CC-${CROSS_COMPILE}gcc} -v 2>&1)
 EOF
 
 	if not_upon "$local_ci"; then
