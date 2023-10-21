@@ -60,9 +60,9 @@ def gen_desc(group, test):
     build_config, run_config = test.split(":")
 
     # Test descriptors are always generated in the following order:
-    #  tf_config, tftf_config, spm_config, rmm_config
+    #  tf_config, tftf_config, spm_config, rmm_config, tfut_config
     # Fill missing configs to the right with "nil".
-    config_list = (build_config.split(",") + ["nil"] * 4)[:4]
+    config_list = (build_config.split(",") + ["nil"] * 5)[:5]
 
     # Perform any group-specific translation on the config
     config_list = translate_build_config(group, config_list)
