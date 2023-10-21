@@ -602,6 +602,8 @@ tf_m_tests_src_repo_url="${tf_m_tests_src_repo_url:-$TF_M_TESTS_REPO_URL}"
 tf_m_tests_src_repo_url="${tf_m_tests_src_repo_url:-https://$tforg_gerrit_url/TF-M/tf-m-tests}"
 tf_m_extras_src_repo_url="${tf_m_extras_src_repo_url:-$TF_M_EXTRAS_REPO_URL}"
 tf_m_extras_src_repo_url="${tf_m_extras_src_repo_url:-https://$tforg_gerrit_url/TF-M/tf-m-extras}"
+tfut_src_repo_url="${tfut_src_repo_url:-$TFUT_SRC_REPO_URL}"
+tfut_src_repo_url="${tfut_src_repo_url:-https://$tforg_gerrit_url/TF-A/tf-a-unit-tests}"
 
 tf_downloads="${tf_downloads:-file:///downloads/}"
 tfa_downloads="${tfa_downloads:-file:///downloads/tf-a}"
