@@ -23,7 +23,6 @@ exclude_paths = [
     ("drivers/marvell/mochi/ap807_setup.c", "Not used by any upstream marvell platform"),
     ("drivers/renesas/common/ddr/ddr_b/boot_init_dram_config.c",
      "It is used as a header file and is included in boot_init_dram.c .Since it is not explicitly compiled, such file cannot be converted into an instrumented binary for further analysis"),
-    ("drivers/auth/cryptocell/713/.*", "There is no dummy library to support 713 for now. This can be removed once we have this library in place"),
     ("drivers/scmi-msg/power_domain.c", "Not used by any upstream platform"),
 
     ("plat/arm/board/fvp/fconf/fconf_nt_config_getter.c", "Not currently used. Future functionality"),

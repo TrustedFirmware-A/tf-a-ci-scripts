@@ -83,7 +83,5 @@ MBED_TLS_SOURCES_TAG="mbedtls-2.28.5"
 
 ARMCLANG_PATH="$(set_armclang_toolchain)"
 
-CRYPTOCELL_LIB_PATH=/arm/projectscratch/ssg/trusted-fw/dummy-crypto-lib
-
 TBB_OPTIONS="TRUSTED_BOARD_BOOT=1 GENERATE_COT=1 MBEDTLS_DIR=$(pwd)/mbedtls"
 ARM_TBB_OPTIONS="$TBB_OPTIONS ARM_ROTPK_LOCATION=devel_rsa"
