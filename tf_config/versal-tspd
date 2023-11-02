@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=versal
+RESET_TO_BL31=1
+SPD=tspd
