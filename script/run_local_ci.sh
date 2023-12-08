@@ -48,7 +48,8 @@ all:
 
 EOF
 
-	# If serialized builds were requested
+	# If we're using local checkouts for either TF-A or TFTF, we must
+	# serialise builds
 	while [ "$i" -lt "$num" ]; do
 		{
 		printf "all: %04d_run %04d_build\n" "$i" "$i"
@@ -73,6 +74,8 @@ EOF
 # This function is invoked from the Makefile. Descriptor 5 points to the active
 # terminal.
 run_one_test() {
+	source "$ci_root/utils.sh"
+
 	id="${1%%_*}"
 	action="${1##*_}"
 	test_file="$(find -name "$id*.test" -printf "%f\n")"
@@ -89,6 +92,9 @@ run_one_test() {
 	set -a
 	source "$id/env"
 	set +a
+
+	run_config_tfa="$(echo "$RUN_CONFIG" | awk -F, '{print $1}')"
+	run_config_tfut="$(echo "$RUN_CONFIG" | awk -F, '{print $2}')"
 
 	# Makefiles don't like commas and colons in file names. We therefore
 	# replace them with _
@@ -136,10 +142,40 @@ run_one_test() {
 			;;
 
 		"run")
-			# Local runs for FVP, QEMU, or arm_fpga unless asked not to
-			if echo "$RUN_CONFIG" | grep -q "^\(fvp\|qemu\)" && \
+			#Run unit tests (TFUT)
+			if config_valid "$run_config_tfut" && not_upon "$skip_tfut_runs"; then
+				echo "running TFUT: $config_string" >&5
+				if bash $minus_x "$ci_root/script/run_unit_tests.sh"; then
+					if grep -q -e "--BUILD UNSTABLE--" \
+						"$log_file"; then
+						print_unstable "$config_string (tfut)" >&5
+					else
+						print_success "$config_string (tfut)" >&5
+					fi
+				else
+					{
+					print_failure "$config_string (tfut) (run)" >&5
+					if [ "$console_file" ]; then
+						echo "	see $console_file"
+					fi
+					} >&5
+					exit 1
+				fi
+			else
+				#No run config for TFUT
+				if grep -q -e "--BUILD UNSTABLE--" \
+					"$log_file"; then
+					print_unstable "$config_string (tfut) (not run)" >&5
+				else
+					print_success "$config_string (tfut) (not run)" >&5
+				fi
+			fi
+
+			#Run TF-A
+			if echo "$run_config_tfa" | grep -q "^\(fvp\|qemu\)" && \
 					not_upon "$skip_runs"; then
-				echo "running: $config_string" >&5
+				# Local runs for FVP, QEMU, or arm_fpga unless asked not to
+				echo "running TF-A: $config_string" >&5
 				if [ -n "$cc_enable" ]; then
 					# Enable of code coverage during run
 					if cc_enable="$cc_enable" trace_file_prefix=tr \
@@ -195,7 +231,7 @@ run_one_test() {
 				fi
 			else
 				# Local runs for arm_fpga platform
-				if echo "$RUN_CONFIG" | grep -q "^arm_fpga" && \
+				if echo "$run_config_tfa" | grep -q "^arm_fpga" && \
 					not_upon "$skip_runs"; then
 					echo "running: $config_string" >&5
 					if bash $minus_x "$ci_root/script/test_fpga_payload.sh"; then
@@ -300,11 +336,11 @@ test_groups="${test_groups:?}"
 local_count=0
 
 if [ -z "$tf_root" ]; then
-	in_red "NOTE: NOT using local work tree for TF"
+	in_red "NOTE: NOT using local work tree for TF-A"
 else
 	tf_root="$(readlink -f $tf_root)"
 	tf_refspec=
-	in_green "Using local work tree for TF"
+	in_green "Using local work tree for TF-A"
 	let "++local_count"
 fi
 
