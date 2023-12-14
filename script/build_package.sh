@@ -1224,16 +1224,22 @@ if [ -n "$cc_config" ] ; then
 	fi
 fi
 
-if [ "$spm_config" ] && assert_can_git_clone "spm_root"; then
-	# If the SPM repository has already been checked out, use
-	# that location. Otherwise, clone one ourselves.
-	echo "Cloning SPM..."
-	clone_url="${SPM_CHECKOUT_LOC:-$spm_src_repo_url}" where="$spm_root" \
-		refspec="$SPM_REFSPEC" clone_repo &>>"$build_log"
+if [ "$spm_config" ] ; then
+	if assert_can_git_clone "spm_root"; then
+		# If the SPM repository has already been checked out, use
+		# that location. Otherwise, clone one ourselves.
+		echo "Cloning SPM..."
+		clone_url="${SPM_CHECKOUT_LOC:-$spm_src_repo_url}" \
+			where="$spm_root" refspec="$SPM_REFSPEC" \
+			clone_repo &>>"$build_log"
+	fi
 
 	# Query git submodules
 	pushd "$spm_root"
-	git submodule update --init
+	# Check if submodules need initialising
+	if git submodule status | grep '^-'; then
+		git submodule update --init
+	fi
 	popd
 
 	show_head "$spm_root"
