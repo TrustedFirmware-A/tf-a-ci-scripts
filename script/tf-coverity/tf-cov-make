@@ -452,6 +452,8 @@ make PLAT=imx8mp $(common_flags) NEED_BL2=yes ${TBB_OPTIONS} all
 make PLAT=imx8qm $(common_flags) all
 make PLAT=imx8qx $(common_flags) all
 
+make PLAT=imx8ulp $(common_flags) all
+
 make PLAT=imx93 $(common_flags) all
 
 # Platforms for NXP Layerscape
