@@ -653,6 +653,12 @@ make ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
     BUILD_PLAT=build/stm32mp1-sdmmc/debug \
     bl2
 
+# STM32MP1 SDMMC boot BL2 with OP-TEE & FWU
+make ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
+    BUILD_PLAT=build/stm32mp1-sdmmc/debug \
+    PSA_FWU_SUPPORT=1 AARCH32_SP=optee \
+    bl2
+
 # STM32MP1 eMMC boot
 make ${stm32mp1_common_flags} STM32MP_EMMC=1 \
     BUILD_PLAT=build/stm32mp1-emmc/debug \
@@ -661,7 +667,8 @@ make ${stm32mp1_common_flags} STM32MP_EMMC=1 \
 # STM32MP1 Raw NAND boot
 make ${stm32mp1_common_flags} STM32MP_RAW_NAND=1 \
     BUILD_PLAT=build/stm32mp1-nand/debug \
-    AARCH32_SP=sp_min bl2 bl32
+    PSA_FWU_SUPPORT=1 AARCH32_SP=optee \
+    bl2
 
 # STM32MP1 SPI NAND boot
 make ${stm32mp1_common_flags} STM32MP_SPI_NAND=1 \
@@ -691,10 +698,16 @@ make ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
 
 stm32mp13_common_flags="${stm32mp1_common_flags} \
 			AARCH32_SP=optee \
+			PSA_FWU_SUPPORT=1 \
 			STM32MP13=1"
 
 # STM32MP13 SDMMC boot
 make ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
+    BUILD_PLAT=build/stm32mp1-mp13-sdmmc/debug bl2
+
+# STM32MP13 SDMMC boot with FWU
+make ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
+    PSA_FWU_SUPPORT=1 \
     BUILD_PLAT=build/stm32mp1-mp13-sdmmc/debug bl2
 
 # STM32MP13 TBBR
