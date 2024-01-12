@@ -11,7 +11,7 @@ set -e
 # group. That way, we can kill a background process group in one go.
 set -m
 ci_root="$(readlink -f "$(dirname "$0")/..")"
-source "$ci_root/utils.sh"
+source "$ci_root/script/run_common.sh"
 
 artefacts="${artefacts-$workspace/artefacts}"
 
@@ -82,34 +82,6 @@ cleanup() {
 	done < <(find -name '*.pid')
 
 	popd
-}
-
-# Launch a program. Have its PID saved in a file with given name with .pid
-# suffix. When the program exits, create a file with .success suffix, or one
-# with .fail if it fails. This function blocks, so the caller must '&' this if
-# they want to continue. Call must wait for $pid_dir/$name.pid to be created
-# should it want to read it.
-launch() {
-	local pid
-
-	"$@" &
-	pid="$!"
-	echo "$pid" > "$pid_dir/${name:?}.pid"
-	if wait "$pid"; then
-		touch "$pid_dir/$name.success"
-	else
-		touch "$pid_dir/$name.fail"
-	fi
-}
-
-# Provide signal as an argument to the trap function.
-trap_with_sig() {
-	local func
-
-	func="$1" ; shift
-	for sig ; do
-		trap "$func $sig" "$sig"
-	done
 }
 
 # Cleanup actions
