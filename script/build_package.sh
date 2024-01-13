@@ -1099,6 +1099,10 @@ tfut_config_file="$ci_root/tfut_config/$tfut_config"
 tf_patch_record="$workspace/tf_patches"
 tftf_patch_record="$workspace/tftf_patches"
 
+# Split run config into TF and TFUT components
+run_config_tfa="$(echo "$run_config" | awk -F, '{print $1}')"
+run_config_tfut="$(echo "$run_config" | awk -F, '{print $2}')"
+
 pushd "$workspace"
 
 if ! config_valid "$tf_config"; then
@@ -1149,8 +1153,8 @@ else
 	echo
 fi
 
-if ! config_valid "$run_config"; then
-	run_config=
+if ! config_valid "$run_config_tfa"; then
+	run_config_tfa=
 fi
 
 if { [ "$tf_config" ] || [ "$tfut_config" ]; } && assert_can_git_clone "tf_root"; then
@@ -1232,10 +1236,10 @@ if [ "$tfut_config" ] && assert_can_git_clone "tfut_root"; then
 	show_head "$tfut_root"
 fi
 
-if [ "$run_config" ]; then
-	# Get candidates for run config
+if [ "$run_config_tfa" ]; then
+	# Get candidates for TF-A run config
 	run_config_candidates="$("$ci_root/script/gen_run_config_candidates.py" \
-		"$run_config")"
+		"$run_config_tfa")"
 	if [ -z "$run_config_candidates" ]; then
 		die "No run config candidates!"
 	else
