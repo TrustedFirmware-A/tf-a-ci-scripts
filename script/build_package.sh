@@ -127,6 +127,15 @@ call_hook() {
 		done
 	fi
 
+	if [ "$run_config_tfut_candidates" ]; then
+		for config_fragment in $run_config_tfut_candidates; do
+			(
+			source "$ci_root/run_config_tfut/$config_fragment"
+			call_func "$func" "$config_fragment"
+			)
+		done
+	fi
+
 	# Also source test config file
 	(
 	unset "$func"
@@ -779,8 +788,12 @@ build_tfut() {
 		fi
 	fi
 
-	config=$(cat "$config_file" | grep -v "tests=")
-	cmake_config=$(echo "$config" | sed -e 's/^/\-D/')
+	#TODO: extract vars from env to use them for cmake
+
+	test -f "$config_file"
+
+	config=$(cat "$config_file" | grep -v "tests=") \
+		&& cmake_config=$(echo "$config" | sed -e 's/^/\-D/')
 
 	# Check if cmake is installed
 	if ! command -v cmake &> /dev/null
@@ -829,9 +842,9 @@ set_spm_build_targets() {
 	set_hook_var "spm_build_targets" "$targets"
 }
 
-set_tfut_build_targets() {
-	echo "Set build target to '${targets:?}'"
-	set_hook_var "tfut_build_targets" "$targets"
+add_tfut_build_targets() {
+	echo "Add TFUT build targets '${targets:?}'"
+	append_hook_var "tfut_build_targets" "$targets "
 }
 
 set_spm_out_dir() {
@@ -1259,6 +1272,20 @@ if [ "$run_config_tfa" ]; then
 	fi
 fi
 
+if [ "$run_config_tfut" ]; then
+	# Get candidates for run TFUT config
+	run_config_tfut_candidates="$("$ci_root/script/gen_run_config_candidates.py" \
+		"--unit-testing" "$run_config_tfut")"
+	if [ -z "$run_config_tfut_candidates" ]; then
+		die "No run TFUT config candidates!"
+	else
+		echo
+		echo "Chosen fragments:"
+		echo
+		echo "$run_config_tfut_candidates" | sed 's/^\|\n/\t/g'
+	fi
+fi
+
 call_hook "test_setup"
 echo
 
@@ -1548,6 +1575,9 @@ for mode in $modes; do
 		tfut_build_root="$tfut_root/build"
 
 		echo "Building Trusted Firmware UT ($mode) ..." |& log_separator
+
+		# Clean TFUT build targets
+		set_hook_var "tfut_build_targets" ""
 
 		# Call pre-build hook
 		call_hook pre_tfut_build

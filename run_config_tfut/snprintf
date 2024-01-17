@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2024, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tfut_build() {
+	targets="snprintf" add_tfut_build_targets
+}
