@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2019-2024, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tftf_build() {
+	source $tftf_config_file
+	python3 $ci_root/script/gen_smc_fuzz_setup.py -dts $tftf_root/$SMC_FUZZ_DTS -hdf $tftf_root/smc_fuzz/include/fuzz_names.h
+}
+
+generate_lava_job_template() {
+	uart="0" timeout="1200" file="tftf.exp" track_expect
+	uart="1" file="hold_uart.exp" track_expect
+
+	payload_type="tftf" gen_yaml_template
+}
