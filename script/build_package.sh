@@ -61,16 +61,6 @@ esac
 # File to save any environem
 hook_env_file="$(mktempfile)"
 
-# Check if a config is valid
-config_valid() {
-	local config="${1?}"
-	if [ -z "$config" ] || [ "$(basename "$config")" = "nil" ]; then
-		return 1
-	fi
-
-	return 0
-}
-
 # Echo from a build wrapper. Print to descriptor 3 that's opened by the build
 # function.
 echo_w() {

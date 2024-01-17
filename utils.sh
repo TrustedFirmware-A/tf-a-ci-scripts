@@ -560,6 +560,16 @@ set_cross_compile_gcc_linaro_toolchain() {
     echo "${cross_compile_path}/gcc-linaro-6.2.1-2016.11-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"
 }
 
+# Check if a config is valid
+config_valid() {
+	local config="${1?}"
+	if [ -z "$config" ] || [ "$(basename "$config")" = "nil" ]; then
+		return 1
+	fi
+
+	return 0
+}
+
 if is_jenkins_env; then
 	jenkins_run=1
 	umask 0002
