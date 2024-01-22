@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2020-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2024, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -468,38 +468,59 @@ docker_registry_append() {
 
 # generate GPT image and archive it
 gen_gpt_bin() {
-    raw_image="fip_gpt.bin"
-    img_uuid="FB90808A-BA9A-4D42-B9A2-A7A937144AEE"
-    img_bank_uuid=`uuidgen`
-    disk_uuid=`uuidgen`
-    bin="${1:?}"
+    fip_bin="$1"
+    gpt_image="fip_gpt.bin"
+    # the FIP partition type is not standardized, so generate one
+    fip_type_uuid=`uuidgen --sha1 --namespace @dns --name "fip_type_uuid"`
+    location_uuid=`uuidgen`
+    FIP_A_uuid=`uuidgen`
+    FIP_B_uuid=`uuidgen`
 
-    # maximum FIP size 2MB
-    fip_max_size=2097152
-    start_sector=34
-    sector_size=512
-    num_sectors=$(($fip_max_size/$sector_size))
-    bin_size=$(stat -c %s $bin)
-
-    if [[ $fip_max_size -lt $bin_size ]]
-    then
-           echo "FIP binary ($bin_size bytes) larger than max partition 1" \
-                "size ($fip_max_size byte)"
-           return
+    fip_max_size=$2
+    fip_bin_size=$(stat -c %s $fip_bin)
+    if [ $fip_max_size -lt $fip_bin_size ]; then
+        bberror "fip.bin ($fip_bin_size bytes) is larger than the GPT partition ($fip_max_size bytes)"
     fi
 
-    # create raw 5MB image
-    dd if=/dev/zero of=$raw_image bs=5M count=1
+    # create GPT image. The GPT contains 1 FIP partition: FIP_A.
+    # the GPT layout is the following:
+    #
+    #      +----------------------+
+    # LBA0 | Protective MBR       |
+    #      ------------------------
+    # LBA1 | Primary GPT Header   |
+    #      ------------------------
+    # LBA34| FIP_A                |
+    #      ------------------------
+    # LBA-1| Secondary GPT Header |
+    #      +----------------------+
 
-    # create GPT image
-    sgdisk -a 1 -U $disk_uuid -n 1:$start_sector:+$num_sectors \
-           -c 1:FIP_A -t 1:$img_uuid $raw_image -u $img_bank_uuid
+    sector_size=512 # in bytes
+    gpt_header_size=33 # in sectors
+    num_sectors_fip=`expr $fip_max_size / $sector_size`
+    start_sector_1=`expr 1 + $gpt_header_size` # size of MBR is 1 sector
+    num_sectors_gpt=`expr $start_sector_1 + $num_sectors_fip + $gpt_header_size`
+    gpt_size=`expr $num_sectors_gpt \* $sector_size`
 
-    echo "write binary $bin at sector $start_sector"
-    dd if=$bin of=$raw_image bs=$sector_size seek=$start_sector \
-       count=$num_sectors conv=notrunc
+    # create raw image
+    dd if=/dev/zero of=$gpt_image bs=$gpt_size count=1
 
-    archive_file "fip_gpt.bin"
+    # create the GPT layout
+    sgdisk $gpt_image \
+           --set-alignment 1 \
+           --disk-guid $location_uuid \
+           \
+           --new 1:$start_sector_1:+$num_sectors_fip \
+           --change-name 1:FIP_A \
+           --typecode 1:$fip_type_uuid \
+           --partition-guid 1:$FIP_A_uuid
+
+    # populate the GPT partitions
+    dd if=$fip_bin of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FIP_A$" | awk '{print $2}') count=$num_sectors_fip conv=notrunc
+
+    echo "Built $gpt_image"
+
+    archive_file "$gpt_image"
 }
 
 #corrupt GPT image header and archive it

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2021-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2024, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -10,7 +10,8 @@ post_tf_build() {
 }
 
 post_tf_archive() {
-	gen_gpt_bin "$archive/fip.bin"
+	# Maximum FIP size is 2MiB = 2097152
+	gen_gpt_bin "$archive/fip.bin" 2097152
 }
 
 generate_lava_job_template() {
