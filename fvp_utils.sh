@@ -472,6 +472,10 @@ gen_gpt_bin() {
     gpt_image="fip_gpt.bin"
     # the FIP partition type is not standardized, so generate one
     fip_type_uuid=`uuidgen --sha1 --namespace @dns --name "fip_type_uuid"`
+    # metadata partition type UUID, specified by the document:
+    # Platform Security Firmware Update for the A-profile Arm Architecture
+    # version: 1.0BET0
+    metadata_type_uuid="8a7a84a0-8387-40f6-ab41-a8b9a5a60d23"
     location_uuid=`uuidgen`
     FIP_A_uuid=`uuidgen`
     FIP_B_uuid=`uuidgen`
@@ -481,6 +485,16 @@ gen_gpt_bin() {
     if [ $fip_max_size -lt $fip_bin_size ]; then
         bberror "fip.bin ($fip_bin_size bytes) is larger than the GPT partition ($fip_max_size bytes)"
     fi
+
+    # maximum metadata size 512B.
+    # This is the current size of the metadata rounded up to an integer number of sectors.
+    metadata_max_size=512
+    metadata_file="metadata.bin"
+
+    # generate_fwu_metadata.py --metadata_file <file> \
+    #			       --image_data "[(image_type_uuid, location_uuid, [image_uuid1, image_uuid2,...])]"
+    python3 $ci_root/generate_fwu_metadata.py --metadata_file $metadata_file \
+                               --image_data "[('$fip_type_uuid', '$location_uuid', ['$FIP_A_uuid', '$FIP_B_uuid'])]"
 
     # create GPT image. The GPT contains 1 FIP partition: FIP_A.
     # the GPT layout is the following:
@@ -492,14 +506,24 @@ gen_gpt_bin() {
     #      ------------------------
     # LBA34| FIP_A                |
     #      ------------------------
+    #      | FIP_B                |
+    #      ------------------------
+    #      | FWU-Metadata         |
+    #      ------------------------
+    #      | Bkup-FWU-Metadata    |
+    #      ------------------------
     # LBA-1| Secondary GPT Header |
     #      +----------------------+
 
     sector_size=512 # in bytes
     gpt_header_size=33 # in sectors
     num_sectors_fip=`expr $fip_max_size / $sector_size`
+    num_sectors_metadata=`expr $metadata_max_size / $sector_size`
     start_sector_1=`expr 1 + $gpt_header_size` # size of MBR is 1 sector
-    num_sectors_gpt=`expr $start_sector_1 + $num_sectors_fip + $gpt_header_size`
+    start_sector_2=`expr $start_sector_1 + $num_sectors_fip`
+    start_sector_3=`expr $start_sector_2 + $num_sectors_fip`
+    start_sector_4=`expr $start_sector_3 + $num_sectors_metadata`
+    num_sectors_gpt=`expr $start_sector_4 + $num_sectors_metadata + $gpt_header_size`
     gpt_size=`expr $num_sectors_gpt \* $sector_size`
 
     # create raw image
@@ -513,10 +537,26 @@ gen_gpt_bin() {
            --new 1:$start_sector_1:+$num_sectors_fip \
            --change-name 1:FIP_A \
            --typecode 1:$fip_type_uuid \
-           --partition-guid 1:$FIP_A_uuid
+           --partition-guid 1:$FIP_A_uuid \
+	   \
+           --new 2:$start_sector_2:+$num_sectors_fip \
+           --change-name 2:FIP_B \
+           --typecode 2:$fip_type_uuid \
+           --partition-guid 2:$FIP_B_uuid \
+           \
+           --new 3:$start_sector_3:+$num_sectors_metadata \
+           --change-name 3:FWU-Metadata \
+           --typecode 3:$metadata_type_uuid \
+           \
+           --new 4:$start_sector_4:+$num_sectors_metadata \
+           --change-name 4:Bkup-FWU-Metadata \
+           --typecode 4:$metadata_type_uuid
 
     # populate the GPT partitions
     dd if=$fip_bin of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FIP_A$" | awk '{print $2}') count=$num_sectors_fip conv=notrunc
+    dd if=$fip_bin of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FIP_B$" | awk '{print $2}') count=$num_sectors_fip conv=notrunc
+    dd if=$metadata_file of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FWU-Metadata$" | awk '{print $2}') count=$num_sectors_metadata conv=notrunc
+    dd if=$metadata_file of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " Bkup-FWU-Metadata$" | awk '{print $2}') count=$num_sectors_metadata conv=notrunc
 
     echo "Built $gpt_image"
 
