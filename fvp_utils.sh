@@ -481,6 +481,7 @@ gen_gpt_bin() {
     FIP_B_uuid=`uuidgen`
 
     fip_max_size=$2
+    partition_alignment=${3:-1}
     fip_bin_size=$(stat -c %s $fip_bin)
     if [ $fip_max_size -lt $fip_bin_size ]; then
         bberror "fip.bin ($fip_bin_size bytes) is larger than the GPT partition ($fip_max_size bytes)"
@@ -531,7 +532,7 @@ gen_gpt_bin() {
 
     # create the GPT layout
     sgdisk $gpt_image \
-           --set-alignment 1 \
+           --set-alignment $partition_alignment \
            --disk-guid $location_uuid \
            \
            --new 1:$start_sector_1:+$num_sectors_fip \
