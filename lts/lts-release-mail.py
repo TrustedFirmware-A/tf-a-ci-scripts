@@ -8,6 +8,13 @@ import subprocess
 
 WORKDIR = "trusted-firmware-a"
 
+SKIP_PATTERNS = [
+    r"docs\(changelog\): ",
+    r"Merge changes from topic ",
+    r"Merge \".+\" into ",
+    r"Merge changes .+ into ",
+]
+
 
 def run(cmd):
     return subprocess.check_call(cmd, shell=True)
@@ -57,8 +64,12 @@ def main():
 
     subjects = []
     for l in os.popen("git log --oneline --reverse %s..%s" % (prev_release, args.release_tag)):
-        subjects.append(l.rstrip())
-    subjects = subjects[:-3]
+        skip = False
+        for pat in SKIP_PATTERNS:
+            if re.match(pat, l.split(" ", 1)[1]):
+                skip = True
+        if not skip:
+            subjects.append(l.rstrip())
 
     urls = []
     for s in subjects:
