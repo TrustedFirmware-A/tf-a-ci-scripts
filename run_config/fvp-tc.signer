@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2023, Arm Limited. All rights reserved.
+# Copyright (c) 2023-2024, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
 generate_lava_job() {
-        uart="1" timeout="60" port="5003" file="signer-id.exp" set_primary="1" \
+        uart="3" timeout="60" port="5001" file="signer-id.exp" set_primary="1" \
                 track_expect
+	uart="2" port="5000" file="hold_uart.exp" track_expect
 }

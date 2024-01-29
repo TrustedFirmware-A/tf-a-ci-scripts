@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -10,6 +10,9 @@ fetch_tf_resource() {
 	image="kernel" type="tc-kernel" get_boot_image
 	image="initrd" type="tc-ramdisk" get_boot_image
 
+	url="$tc_prebuilts/tc_fitimage.bin" saveas="tc_fitimage.bin" fetch_file
+	archive_file "tc_fitimage.bin"
+
 	# Use SCP binary from SCP build if it exists, or fetch pre-built ones.
 	if [ ! -f "$archive/scp_rom.bin" ]; then
 		# Pick the appropriate binary based on target platform variant
@@ -17,28 +20,32 @@ fetch_tf_resource() {
 		archive_file "scp_rom.bin"
 	fi
 
-
 	# RSS is applicable to TC2
 	if [ $plat_variant -eq 2 ]; then
 
 	    # Hold RSS terminal_uart_ap
-	    uart="2" file="hold_uart.exp" track_expect
+	    uart="1" port="5003" file="hold_uart.exp" track_expect
+
+	    get_rss_prov_bins
 
             # sign AP bl1
 	    sign_image bl1.bin $ap_bl1_flash_load_addr $ap_bl1_flash_size
 
 	    # Update FIP with pre-built RSS binaries and signed AP BL1 to create host flash fip image
 	    update_fip
+
+            # Create GPT image
+	    gen_gpt_bin $archive/host_flash_fip.bin 12582912 16
 	fi
 }
 
 generate_lava_job_template() {
 	# Hold scp terminal_s0
 	uart="0" port="5002" file="hold_uart.exp" track_expect
-	uart="1" port="5003" file="linux-rd-busybox.exp" set_primary="1" \
-		track_expect
+	uart="2" port="5000" file="tc-fitimage-busybox.exp" set_primary="1" \
+                 track_expect
 
-	set_uart_port "${archive:?}" 2 5000
+	set_uart_port "${archive:?}" 1 5003
 	set_uart_port "${archive:?}" 3 5001
 
 	payload_type="linux" gen_yaml_template
