@@ -8,8 +8,8 @@
 set -u
 
 # Pre-built SCP/MCP binaries
-scp_bl1_url="$scp_mcp_downloads/juno/release/juno-bl1-bypass.bin"
-scp_bl2_url="$scp_mcp_downloads/juno/release/juno-bl2.bin"
+scp_bl1_url="$scp_mcp_downloads/juno/platform_variant_BOARD/release/juno-bl1-bypass.bin"
+scp_bl2_url="$scp_mcp_downloads/juno/platform_variant_BOARD/release/juno-bl2.bin"
 
 psci_reset2_scp_bl2_url="$tfa_downloads/psci_reset2/scp_bl2.bin"
 uboot_bl33_url="$linaro_release/juno-latest-oe-uboot/SOFTWARE/bl33-uboot.bin"
