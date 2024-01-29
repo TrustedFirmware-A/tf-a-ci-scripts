@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2023, Arm Limited. All rights reserved.
+# Copyright (c) 2023-2024, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -21,7 +21,7 @@ sign_image() {
 
 	RSS_SIGN_PRIVATE_KEY=$archive/root-RSA-3072.pem
 	RSS_SEC_CNTR_INIT_VAL=1
-	RSS_LAYOUT_WRAPPER_VERSION="1.7.0"
+	RSS_LAYOUT_WRAPPER_VERSION="1.5.0"
 
 	cat << EOF > $tmpdir/$host_binary_layout
 enum image_attributes {
@@ -72,29 +72,36 @@ update_fip() {
 	archive_file "rss_rom.bin"
 
 	# Get pre-built rss bl2 signed bin
-	url="$prebuild_prefix/bl2_signed.bin" fetch_file
-	archive_file "bl2_signed.bin"
-
-	# Get pre-built rss TF-M NS signed bin
-	url="$prebuild_prefix/tfm_ns_signed.bin" fetch_file
-	archive_file "tfm_ns_signed.bin"
+	url="$prebuild_prefix/rss_bl2_signed.bin" fetch_file
+	archive_file "rss_bl2_signed.bin"
 
 	# Get pre-built rss TF-M S signed bin
-	url="$prebuild_prefix/tfm_s_signed.bin" fetch_file
-	archive_file "tfm_s_signed.bin"
+	url="$prebuild_prefix/rss_s_signed.bin" fetch_file
+	archive_file "rss_s_signed.bin"
 
 	# Get pre-built SCP signed bin
-	url="$prebuild_prefix/scp_signed.bin" fetch_file
-	archive_file "scp_signed.bin"
+	url="$prebuild_prefix/signed_scp_romfw.bin" fetch_file
+	archive_file "signed_scp_romfw.bin"
 
 	# Create FIP layout
 	"$fiptool" update \
-		--align 8192 --rss-bl2 "$archive/bl2_signed.bin" \
-		--align 8192 --rss-ns "$archive/tfm_ns_signed.bin" \
-		--align 8192 --rss-s "$archive/tfm_s_signed.bin" \
-		--align 8192 --rss-scp-bl1 "$archive/scp_signed.bin" \
+		--align 8192 --rss-bl2 "$archive/rss_bl2_signed.bin" \
+		--align 8192 --rss-s "$archive/rss_s_signed.bin" \
+		--align 8192 --rss-scp-bl1 "$archive/signed_scp_romfw.bin" \
 		--align 8192 --rss-ap-bl1 "$archive/$signed_bin" \
 		--out "host_flash_fip.bin" \
 		"$archive/fip.bin"
 	archive_file "host_flash_fip.bin"
+}
+
+get_rss_prov_bins() {
+	local prebuild_prefix=$tc_prebuilts/tc$plat_variant/$rss_revision
+
+	# Get pre-built rss rss_encrypted_cm_provisioning_bundle_0 bin
+	url="$prebuild_prefix/rss_encrypted_cm_provisioning_bundle_0.bin" fetch_file
+	archive_file "rss_encrypted_cm_provisioning_bundle_0.bin"
+
+	# Get pre-built rss rss_encrypted_dm_provisioning_bundle bin
+	url="$prebuild_prefix/rss_encrypted_dm_provisioning_bundle.bin" fetch_file
+	archive_file "rss_encrypted_dm_provisioning_bundle.bin"
 }
