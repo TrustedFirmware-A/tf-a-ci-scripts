@@ -1,13 +1,10 @@
 #
-# Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2024, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
 source [file join [file dirname [info script]] handle-arguments.inc]
-
-# Trusted Firmware boot section
-source [file join [file dirname [info script]] trusted-firmware.inc]
 
 expect {
 	"Booting Secure Partition"  {
