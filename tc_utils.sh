@@ -9,16 +9,6 @@ source "$ci_root/fvp_utils.sh"
 
 tc_prebuilts="${tc_prebuilts:-$tfa_downloads/total_compute}"
 
-case "${plat_variant}" in
-    0)
-        scp_prebuilts="${scp_prebuilts:-$scp_mcp_2_11_0_downloads}"
-        ;;
-
-    *)
-        scp_prebuilts="${scp_prebuilts:-$scp_mcp_downloads}"
-        ;;
-esac
-
 kernel_list[tc-kernel]="$tc_prebuilts/Image"
 initrd_list[tc-ramdisk]="$tc_prebuilts/uInitrd-busybox.0x88000000"
 
