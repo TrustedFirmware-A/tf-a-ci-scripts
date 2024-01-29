@@ -13,7 +13,7 @@ fetch_tf_resource() {
 	# Use SCP binary from SCP build if it exists, or fetch pre-built ones.
 	if [ ! -f "$archive/scp_rom.bin" ]; then
 		# Pick the appropriate binary based on target platform variant
-		url="$scp_mcp_downloads/tc$plat_variant/release/tc$plat_variant-bl1.bin" saveas="scp_rom.bin" fetch_file
+		url="$scp_mcp_downloads/tc$plat_variant/platform_variant_0/release/tc$plat_variant-bl1.bin" saveas="scp_rom.bin" fetch_file
 		archive_file "scp_rom.bin"
 	fi
 
