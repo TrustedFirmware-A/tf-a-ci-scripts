@@ -57,7 +57,7 @@ fvp_rd_e1_edge="fvp:fvp_rd_e1_edge_${model_version}_${model_build};/opt/model/FV
 fvp_rd_n1_edge="fvp:fvp_rd_n1_edge_${model_version}_${model_build};/opt/model/FVP_RD_N1_edge/models/${model_flavour}"
 fvp_rd_v1="fvp:fvp_rd_v1_${model_version}_${model_build};/opt/model/FVP_RD_V1/models/${model_flavour}"
 fvp_tc1="fvp:fvp_tc1_${model_version}_${model_build};/opt/model/FVP_TC1/models/${model_flavour}"
-fvp_tc2="fvp:fvp_tc2_11.20_24;/opt/model/FVP_TC2/models/${model_flavour}"
+fvp_tc2="fvp:fvp_tc2_11.23_17;/opt/model/FVP_TC2/models/${model_flavour}"
 
 # FVP associate array, run_config are keys and fvp container parameters are the values
 #   Container parameters syntax: <model name>;<model dir>;<model bin>
