@@ -11,16 +11,22 @@
 # they want to continue. Call must wait for $pid_dir/$name.pid to be created
 # should it want to read it.
 launch() {
-        local pid
+	local pid
 
-        "$@" &
-        pid="$!"
-        echo "$pid" > "$pid_dir/${name:?}.pid"
-        if wait "$pid"; then
-                touch "$pid_dir/$name.success"
-        else
-                touch "$pid_dir/$name.fail"
-        fi
+	"$@" &
+	pid="$!"
+	echo "$pid" > "$pid_dir/${name:?}.pid"
+
+	# If the execution is halted, handle the process termination properly,
+	# so the caller does not keep looping waiting for the result file to be
+	# generated.
+	trap "{ touch \"$pid_dir/$name.fail\"; exit 1 }" SIGINT SIGHUP SIGTERM
+
+	if wait "$pid"; then
+		touch "$pid_dir/$name.success"
+	else
+		touch "$pid_dir/$name.fail"
+	fi
 }
 
 # Provide signal as an argument to the trap function.
