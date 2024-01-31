@@ -30,7 +30,6 @@ generate_lava_job() {
 	local model="base-aemv8a"
 
 	uart="0" file="spm-linux-uart0.exp" track_expect
-	uart="2" file="spm-uart2.exp" track_expect
 
 	model="$model" \
 		arch_version="8.5" \

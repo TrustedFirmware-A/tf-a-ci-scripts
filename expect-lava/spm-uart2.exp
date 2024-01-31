@@ -1,7 +1,0 @@
-#
-# Copyright (c) 2021, Arm Limited. All rights reserved.
-#
-# SPDX-License-Identifier: BSD-3-Clause
-#
-
-# Handled by ../expect-post/spm-uart2.exp

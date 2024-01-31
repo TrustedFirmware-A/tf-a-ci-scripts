@@ -18,7 +18,6 @@ generate_lava_job() {
 
 	uart="0" file="tftf.exp" track_expect
 	uart="1" file="hold_uart.exp" track_expect
-	uart="2" file="spm-uart2.exp" track_expect
 
 	# SPM(reference implementation of S-EL2 firmware) has SMMUv3 driver
 	# enabled to help with stage-2 translation and virtualization of
