@@ -34,7 +34,7 @@ fetch_tf_resource() {
 
 generate_lava_job_template() {
     uart="0" port="5002" set_primary="1" file="tftf-non-primary.exp" track_expect
-    uart="1" port="5000" file="spm-cactus-sp-uart1.exp" track_expect
+    uart="1" port="5003" file="spm-cactus-sp-uart1.exp" track_expect
 
     set_uart_port "${archive:?}" 2 5000
     set_uart_port "${archive:?}" 3 5001
