@@ -17,5 +17,5 @@ expect_string+=('i;Linux version')
 # Check for following information to see that we actually got the right DTB.
 # 1. Machine model
 # 2. Command line passed via the "/chosen" node
-expect_string+=('i;Machine model: FVP (Base|Foundation)')
+expect_string+=('i;Machine model: FVP Base')
 expect_string+=('i;Kernel command line: console=ttyAMA0')
