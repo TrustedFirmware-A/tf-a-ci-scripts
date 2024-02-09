@@ -572,11 +572,37 @@ gen_gpt_bin() {
 #corrupt GPT image header and archive it
 corrupt_gpt_bin() {
     bin="${1:?}"
+    corrupt_data=$2
 
-    # Primary GPT header is present in LBA-1 second block after MBR
-    # empty the primary GPT header forcing to use backup GPT header
-    # and backup GPT entries.
-    dd if=/dev/zero of=$bin bs=512 seek=1 count=1 conv=notrunc
+    # Check if parameters are provided
+    if [ -z "$bin" ] || [ -z "$corrupt_data" ]; then
+        echo "Usage: corrupt_gpt_bin <bin> <corrupt_data>"
+        return 1
+    fi
+
+    case "$corrupt_data" in
+        "header")
+            # Primary GPT header is present in LBA-1 second block after MBR
+            # empty the primary GPT header forcing to use backup GPT header
+            # and backup GPT entries.
+            seek=1
+            count=1
+            ;;
+        "partition-entries")
+            # GPT partition entry array is present in LBA-2 through LBA-34
+            # blocks empty the GPT partition entry array forcing to use backup
+            # GPT header and backup GPT entries.
+            seek=2
+            count=32
+            ;;
+        *)
+            echo "Invalid $corrupt_data. Use 'header', 'partition-entries'"
+            return 1
+            ;;
+    esac
+
+    # Use parameters in the dd command
+    dd if=/dev/zero of=$bin bs=512 seek=$seek count=$count conv=notrunc
 }
 
 set +u
