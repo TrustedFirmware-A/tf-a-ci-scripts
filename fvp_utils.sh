@@ -53,7 +53,6 @@ fvp_base_aemva="fvp:fvp_base_aemva_${model_version}_${model_build};/opt/model/FV
 fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build};/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
 fvp_base_aemv8a_gic600ae="fvp:fvp_base_aemv8a-gic600ae_${model_version_11_17}_${model_build_11_17};/opt/model/FVP_Base_AEMv8A-GIC600AE_pkg/models/${model_flavour_11_17}"
 fvp_base_aemv8a_aemv8a_aemv8a_aemv8a_ccn502="fvp:fvp_base_aemv8a-aemv8a-aemv8a-aemv8a-ccn502_${model_version_11_17}_${model_build_11_17};/opt/model/FVP_Base_AEMv8A-AEMv8A-AEMv8A-AEMv8A-CCN502_pkg/models/${model_flavour_11_17}"
-foundation_platform="fvp:foundation_platform_${model_version}_${model_build};/opt/model/Foundation_Platformpkg/models/${model_flavour}"
 fvp_base_aemv8r="fvp:fvp_base_aemv8r_${model_version}_${model_build};/opt/model/AEMv8R_base_pkg/models/${model_flavour}"
 
 # CSS model list
@@ -73,7 +72,6 @@ fvp_models=(
 [base-aemv8a-latest-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
 [base-aemva]="${fvp_base_aemva};FVP_Base_AEMvA"
 [base-aemv8a-gic600ae]="${fvp_base_aemv8a_gic600ae};FVP_Base_AEMv8A-GIC600AE"
-[foundationv8]="${foundation_platform};Foundation_Platform"
 [base-aemv8a]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
 [cortex-a32x4]="${fvp_arm_std_library_11_12};FVP_Base_Cortex-A32x4"
 [cortex-a35x4]="${fvp_arm_std_library};FVP_Base_Cortex-A35x4"
