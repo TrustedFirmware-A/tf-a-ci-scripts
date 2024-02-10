@@ -31,9 +31,9 @@ timeouts:
     lava-test-shell:
       seconds: 300
     http-download:
-      minutes: 2
+      seconds: 180
     download-retry:
-      minutes: 2
+      minutes: 6
     fvp-deploy:
       minutes: 5
 
