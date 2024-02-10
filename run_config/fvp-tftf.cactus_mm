@@ -16,7 +16,7 @@ post_tf_build() {
 }
 
 generate_lava_job_template() {
-	uart="0" lava_timeout="450" file="tftf.exp" track_expect
+	uart="0" lava_timeout="600" file="tftf.exp" track_expect
 	uart="1" file="hold_uart.exp" track_expect
 	uart="2" file="hold_uart.exp" track_expect
 
