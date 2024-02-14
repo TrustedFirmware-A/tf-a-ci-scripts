@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2022-2024 Arm Limited and Contributors. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Trusted Firmware for sgi platform
+#
+# Refer to handle-arguments.inc for the list of parameters.
+#
+
+source [file join [file dirname [info script]] handle-arguments.inc]
+
+# Trusted Firmware boot section
+source [file join [file dirname [info script]] trusted-firmware.inc]
+
