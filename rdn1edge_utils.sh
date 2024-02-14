@@ -12,8 +12,8 @@ nrd_prebuilts="${nrd_prebuilts:-$tfa_downloads/neoverse_rd/rdn1edge}"
 # Pre-built SCP/MCP binaries
 scp_mcp_prebuilts="${scp_mcp_prebuilts:-$scp_mcp_downloads/rdn1e1/release}"
 
-kernel_list[sgi-busybox]="$nrd_prebuilts/Image"
-initrd_list[sgi-ramdisk]="$nrd_prebuilts/ramdisk-busybox.img"
+kernel_list[nrd-busybox]="$nrd_prebuilts/Image"
+initrd_list[nrd-ramdisk]="$nrd_prebuilts/ramdisk-busybox.img"
 
 scp_ram_addr=0x0bd80000
 mcp_ram_addr=0x0be00000

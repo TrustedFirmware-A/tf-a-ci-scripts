@@ -6,8 +6,8 @@
 #
 
 fetch_tf_resource() {
-	image="kernel" type="sgi-busybox" get_boot_image
-	image="initrd" type="sgi-ramdisk" get_boot_image
+	image="kernel" type="nrd-busybox" get_boot_image
+	image="initrd" type="nrd-ramdisk" get_boot_image
 
 	url="$nrd_prebuilts/grub-busybox.img" saveas="busybox.bin" fetch_file
 	url="$nrd_prebuilts/ramdisk-busybox.img" saveas="ramdisk.bin" fetch_file
