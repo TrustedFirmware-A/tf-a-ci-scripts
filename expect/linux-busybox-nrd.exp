@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Expect script for Linux boot process with RAM Disk for sgi platform
+# Expect script for Linux boot process with RAM Disk for Neovese RD platform.
 #
 # Refer to handle-arguments.inc for the list of parameters.
 #
