@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024, Arm Limited and Contributors. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -9,8 +9,8 @@ fetch_tf_resource() {
 	image="kernel" type="sgi-busybox" get_boot_image
 	image="initrd" type="sgi-ramdisk" get_boot_image
 
-	url="$sgi_prebuilts/grub-busybox.img" saveas="busybox.bin" fetch_file
-	url="$sgi_prebuilts/ramdisk-busybox.img" saveas="ramdisk.bin" fetch_file
+	url="$nrd_prebuilts/grub-busybox.img" saveas="busybox.bin" fetch_file
+	url="$nrd_prebuilts/ramdisk-busybox.img" saveas="ramdisk.bin" fetch_file
 
 	archive_file "busybox.bin"
 	archive_file "ramdisk.bin"

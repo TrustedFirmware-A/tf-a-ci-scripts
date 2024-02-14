@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024 Arm Limited and Contributors. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
 post_tf_build() {
-	url="$sgi_prebuilts/uefi.bin" fetch_file
+	url="$nrd_prebuilts/uefi.bin" fetch_file
 	archive_file "uefi.bin"
 
 	build_fip BL33="$archive/uefi.bin"
