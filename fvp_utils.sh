@@ -595,6 +595,12 @@ corrupt_gpt_bin() {
             seek=2
             count=32
             ;;
+        "fwu-metadata")
+            # Get the LBA number for the FWU metadata. Size of which is always
+            # 1 sector (512 bytes).
+            seek=$(gdisk -l $bin | grep " FWU-Metadata$" | awk '{print $2}')
+            count=1
+            ;;
         *)
             echo "Invalid $corrupt_data. Use 'header', 'partition-entries'"
             return 1

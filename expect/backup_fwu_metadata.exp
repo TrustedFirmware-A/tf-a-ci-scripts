@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2024 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Trusted Firmware Test Framework
+#
+
+source [file join [file dirname [info script]] handle-arguments.inc]
+
+expect_string "loading of FWU-Metadata failed, using Bkup-FWU-Metadata"
+
+source [file join [file dirname [info script]] tftf.inc]
+
+exit_uart -1
