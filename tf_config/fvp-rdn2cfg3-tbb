@@ -1,7 +1,7 @@
 ARM_ROTPK_LOCATION=devel_rsa
 CREATE_KEYS=1
 CROSS_COMPILE=aarch64-none-elf-
-CSS_SGI_PLATFORM_VARIANT=3
+NRD_PLATFORM_VARIANT=3
 GENERATE_COT=1
 PLAT=rdn2
 ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem

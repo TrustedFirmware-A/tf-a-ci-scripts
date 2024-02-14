@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024, Arm Limited and Contributors. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -252,7 +252,7 @@ clean_build $juno_common_flags TRNG_SUPPORT=1
 #
 # System Guidance for Infrastructure platform RD-E1Edge
 #
-make $(common_flags) PLAT=rde1edge ${ARM_TBB_OPTIONS} CSS_SGI_CHIP_COUNT=1 all
+make $(common_flags) PLAT=rde1edge ${ARM_TBB_OPTIONS} NRD_CHIP_COUNT=1 all
 
 #
 # Reference Design platform RD-V1
@@ -262,7 +262,7 @@ make $(common_flags) PLAT=rdv1 ${ARM_TBB_OPTIONS} all
 #
 # Reference Design platform RD-V1-MC
 #
-make $(common_flags) PLAT=rdv1mc ${ARM_TBB_OPTIONS} CSS_SGI_CHIP_COUNT=4 all
+make $(common_flags) PLAT=rdv1mc ${ARM_TBB_OPTIONS} NRD_CHIP_COUNT=4 all
 
 #
 # Reference Design Platform RD-N2
