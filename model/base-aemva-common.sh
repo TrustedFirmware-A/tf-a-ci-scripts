@@ -54,6 +54,8 @@ reset_var has_sve
 
 reset_var has_sme
 
+reset_var has_sme_fa64
+
 reset_var has_sme2
 
 reset_var bmcov_plugin
@@ -125,11 +127,13 @@ ${has_sve+-C cluster0.has_sve=1}
 ${has_sve+-C cluster0.sve.veclen=$((128 / 8))}
 ${has_sme+-C cluster0.sve.has_sme=1}
 ${has_sme2+-C cluster0.sve.has_sme2=1}
+${has_sme_fa64+-C cluster0.sve.has_sme_fa64=1}
 
 ${has_sve+-C cluster1.has_sve=1}
 ${has_sve+-C cluster1.sve.veclen=$((128 / 8))}
 ${has_sme+-C cluster1.sve.has_sme=1}
 ${has_sme2+-C cluster1.sve.has_sme2=1}
+${has_sme_fa64+-C cluster1.sve.has_sme_fa64=1}
 
 ${bmcov_plugin+--plugin=$bmcov_plugin_path}
 
