@@ -38,7 +38,7 @@ fi
 if [ ! -d "$TF_M_TESTS_DIR" ]; then
     git clone "$TF_M_TESTS_URL_REPO" "$TF_M_TESTS_DIR"
     cd "$TF_M_TESTS_DIR"
-    git checkout master
+    git checkout main
 fi
 
 cd "$TF_SOURCES"
@@ -46,7 +46,7 @@ cd "$TF_SOURCES"
 if [ ! -d "$TF_M_EXTRAS_DIR" ]; then
     git clone "$TF_M_EXTRAS_URL_REPO" "$TF_M_EXTRAS_DIR"
     cd "$TF_M_EXTRAS_DIR"
-    git checkout master
+    git checkout main
 fi
 
 cd "$TF_SOURCES"
