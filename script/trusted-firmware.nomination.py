@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024, Arm Limited and Contributors. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -40,10 +40,6 @@ nomination_rules = {
         # Run Coverity MISRA checks for arm_fpga platform changes
         "path:plat/arm/board/arm_fpga":
             ["tf-l2-coverity-misra-nominated/arm_fpga-default:coverity-tf-misra.diff"],
-
-        # Run Coverity MISRA checks for rde1edge platform changes
-        "path:plat/arm/board/rde1edge":
-            ["tf-l2-coverity-misra-nominated/fvp-rde1edge-tbb:coverity-tf-misra.diff"],
 
         # Run Coverity MISRA checks for fvp_ve platform changes
         "path:plat/arm/board/fvp_ve":
