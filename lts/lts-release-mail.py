@@ -6,6 +6,7 @@ import re
 import subprocess
 
 
+DEFAULT_URL = "https://review.trustedfirmware.org/TF-A/trusted-firmware-a"
 WORKDIR = "trusted-firmware-a"
 
 SKIP_PATTERNS = [
@@ -28,7 +29,9 @@ def maybe_int(s):
 
 def main():
     argp = argparse.ArgumentParser(description="Prepare TF-A LTS release email content")
-    argp.add_argument("--latest", action="store_true", help="use latest release tag")
+    argp.add_argument("-u", "--url", default=DEFAULT_URL, help="repository URL (default: %(default)s)")
+    argp.add_argument("-b", "--branch", default="", help="repository branch for --latest option")
+    argp.add_argument("--latest", action="store_true", help="use latest release tag on --branch")
     argp.add_argument("release_tag", nargs="?", help="release tag")
     args = argp.parse_args()
     if not args.release_tag and not args.latest:
@@ -38,7 +41,7 @@ def main():
         mail_template = f.read()
 
     if not os.path.exists(WORKDIR):
-        run("git clone https://review.trustedfirmware.org/TF-A/trusted-firmware-a %s" % WORKDIR)
+        run("git clone %s %s" % (args.url, WORKDIR))
         os.chdir(WORKDIR)
     else:
         os.chdir(WORKDIR)
@@ -48,6 +51,8 @@ def main():
         latest = []
         for l in os.popen("git tag"):
             if not re.match(r"lts-v\d+\.\d+\.\d+", l):
+                continue
+            if not l.startswith(args.branch):
                 continue
             l = l.rstrip()
             comps = [maybe_int(x) for x in l.split(".")]
