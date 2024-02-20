@@ -58,7 +58,6 @@ fvp_base_aemv8r="fvp:fvp_base_aemv8r_${model_version}_${model_build};/opt/model/
 # CSS model list
 fvp_morello="fvp:fvp_morello_0.11_33;/opt/model/FVP_Morello/models/Linux64_GCC-6.4"
 fvp_rd_v1="fvp:fvp_rd_v1_${model_version}_${model_build};/opt/model/FVP_RD_V1/models/${model_flavour}"
-fvp_tc1="fvp:fvp_tc1_${model_version}_${model_build};/opt/model/FVP_TC1/models/${model_flavour}"
 fvp_tc2="fvp:fvp_tc2_11.23_17;/opt/model/FVP_TC2/models/${model_flavour}"
 
 # FVP associate array, run_config are keys and fvp container parameters are the values
@@ -107,7 +106,6 @@ fvp_models=(
 [neoverse-v1x4]="${fvp_arm_std_library};FVP_Base_Neoverse-V1"
 [morello]="${fvp_morello};FVP_Morello"
 [css-rdv1]="${fvp_rd_v1};FVP_RD_V1"
-[tc1]="${fvp_tc1};FVP_TC1"
 [tc2]="${fvp_tc2};FVP_TC2"
 [baser-aemv8r]="${fvp_base_aemv8r};FVP_BaseR_AEMv8R"
 )
