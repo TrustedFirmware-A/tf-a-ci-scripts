@@ -63,11 +63,18 @@ def main():
             argp.error("Could not find latest LTS tag")
         args.release_tag = latest[-1]
 
-    comps = args.release_tag.split(".")
+    base_release = args.release_tag
+    # If it's "sandbox" tag, convert it to the corresponding release tag for
+    # rendering the template.
+    if base_release.startswith("sandbox/"):
+        m = re.match(r"sandbox/(.+)-\d+", base_release)
+        base_release = m.group(1)
+    comps = base_release.split(".")
     prev_comps = comps[:-1] + [str(int(comps[-1]) - 1)]
     prev_release = ".".join(prev_comps)
 
     subjects = []
+    print("git log --oneline --reverse %s..%s" % (prev_release, args.release_tag))
     for l in os.popen("git log --oneline --reverse %s..%s" % (prev_release, args.release_tag)):
         skip = False
         for pat in SKIP_PATTERNS:
@@ -98,7 +105,7 @@ def main():
     commits = commits.rstrip()
     references = references.rstrip()
 
-    version = args.release_tag[len("lts-v"):]
+    version = base_release[len("lts-v"):]
     sys.stdout.write(
         mail_template.format(
             version=version,
