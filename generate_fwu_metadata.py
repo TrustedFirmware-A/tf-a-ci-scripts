@@ -11,10 +11,10 @@ import os
 import ast
 
 def gen_fwu_metadata(metadata_file, image_data):
-    def add_field_to_metadata(value):
+    def add_field_to_metadata(value, size):
         # Write the integer values to file in little endian representation
         with open(metadata_file, "ab") as fp:
-            fp.write(value.to_bytes(4, byteorder='little'))
+            fp.write(value.to_bytes(size, byteorder='little'))
 
     def add_uuid_to_metadata(uuid_str):
         # Validate UUID string and write to file in little endian representation
@@ -27,20 +27,39 @@ def gen_fwu_metadata(metadata_file, image_data):
         os.remove(metadata_file)
 
     # Fill metadata preamble
-    add_field_to_metadata(1) #fwu metadata version=1
-    add_field_to_metadata(0) #active_index=0
-    add_field_to_metadata(0) #previous_active_index=0
+    add_field_to_metadata(2, 4)     #fwu metadata version=2
+    add_field_to_metadata(0, 4)     #active_index=0
+    add_field_to_metadata(0, 4)     #previous_active_index=0
+    add_field_to_metadata(116, 4)   #metadata_size
+    add_field_to_metadata(32, 2)    #desc_offset = 0x20
+    add_field_to_metadata(0, 2)     #reserved1
+    add_field_to_metadata(252, 1)   #Bank 0 - Accepted=0xFC
+    add_field_to_metadata(252, 1)   #Bank 1 - Accepted=0xFC
+    add_field_to_metadata(255, 1)   #Bank 2 - Invalid=0xFF
+    add_field_to_metadata(255, 1)   #Bank 3 - Invalid=0xFF
+    add_field_to_metadata(0, 4)     #reserved2
+
+    # fwu_fw_store_descriptor
+    add_field_to_metadata(2, 1)     #num_banks
+    add_field_to_metadata(0, 1)     #reserved
+    add_field_to_metadata(1, 2)     #num_images
+    add_field_to_metadata(80, 2)    #img_entry_size
+    add_field_to_metadata(24, 2)    #bank_info_entry_size
 
     for img_type_uuid, location_uuid, img_uuids in image_data:
         # Fill metadata image entry
         add_uuid_to_metadata(img_type_uuid) # img_type_uuid
         add_uuid_to_metadata(location_uuid) # location_uuid
 
-        for img_uuid in img_uuids:
-            # Fill metadata bank image info
-            add_uuid_to_metadata(img_uuid) # image unique bank_uuid
-            add_field_to_metadata(1)       # accepted=1
-            add_field_to_metadata(0)       # reserved (MBZ)
+        if len(img_uuids) <= 2:
+            for img_uuid in img_uuids:
+                # Fill metadata bank image info
+                add_uuid_to_metadata(img_uuid) # image unique bank_uuid
+                add_field_to_metadata(1, 4)    # accepted=1
+                add_field_to_metadata(0, 4)    # reserved (MBZ)
+        else:
+            raise ValueError(f"img_uuids should have at most 2 elements, \
+                               but it has {len(img_uuids)} elements.")
 
      # Prepend CRC32
     with open(metadata_file, 'rb+') as fp:
