@@ -91,7 +91,7 @@ def inc_order_is_correct(inc_list, path, commit_hash=""):
     plat_common_incs = dir_include_paths("include/plat/common")
     plat_incs.difference_update(plat_common_incs)
     libc_incs = dir_include_paths("include/lib/libc")
-    proj_incs = dir_include_paths("include/")
+    proj_incs = dir_include_paths("include/") | dir_include_paths("drivers/")
     third_party_incs = []
     third_party_incs.append(dir_include_paths("mbedtls"))
     third_party_incs.append(dir_include_paths("include/lib/libfdt"))
