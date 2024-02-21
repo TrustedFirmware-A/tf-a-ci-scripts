@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2023 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -87,6 +87,9 @@ TF_M_TESTS_URL_REPO=https://git.trustedfirmware.org/TF-M/tf-m-tests.git
 
 TF_M_EXTRAS_DIR=tf-m-extras
 TF_M_EXTRAS_URL_REPO=https://git.trustedfirmware.org/TF-M/tf-m-extras.git
+
+QCBOR_LIB_DIR=qcbor
+QCBOR_URL_REPO=https://github.com/laurencelundblade/QCBOR.git
 
 ARMCLANG_PATH="$(set_armclang_toolchain)"
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2023 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -533,6 +533,10 @@ build_tf() {
 	if [ "$(get_tf_opt PLATFORM_TEST)" = "tfm-testsuite" ] &&
 	   not_upon "${TF_M_EXTRAS_PATH}"; then
 		emit_env "TF_M_EXTRAS_PATH" "$WORKSPACE/tf-m-extras"
+	fi
+	if [ "$(get_tf_opt DICE_PROTECTION_ENVIRONMENT)" = 1 ] &&
+	   not_upon "${QCBOR_DIR}"; then
+		emit_env "QCBOR_DIR" "$WORKSPACE/qcbor"
 	fi
 	if [ -f "$env_file" ]; then
 		set -a
