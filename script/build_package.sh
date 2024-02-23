@@ -112,8 +112,8 @@ call_hook() {
 
 	: >"$hook_env_file"
 
-	if [ "$run_config_candiates" ]; then
-		for config_fragment in $run_config_candiates; do
+	if [ "$run_config_candidates" ]; then
+		for config_fragment in $run_config_candidates; do
 			(
 			source "$ci_root/run_config/$config_fragment"
 			call_func "$func" "$config_fragment"
@@ -1284,15 +1284,15 @@ fi
 
 if [ "$run_config" ]; then
 	# Get candidates for run config
-	run_config_candiates="$("$ci_root/script/gen_run_config_candidates.py" \
+	run_config_candidates="$("$ci_root/script/gen_run_config_candidates.py" \
 		"$run_config")"
-	if [ -z "$run_config_candiates" ]; then
+	if [ -z "$run_config_candidates" ]; then
 		die "No run config candidates!"
 	else
 		echo
 		echo "Chosen fragments:"
 		echo
-		echo "$run_config_candiates" | sed 's/^\|\n/\t/g'
+		echo "$run_config_candidates" | sed 's/^\|\n/\t/g'
 		echo
 	fi
 fi
