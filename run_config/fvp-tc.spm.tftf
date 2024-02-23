@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-source "$ci_root/run_config/tc_rss_utils.sh"
+source "$ci_root/run_config/tc_rse_utils.sh"
 
 post_tf_build() {
     if [ ! -f "$archive/scp_ram.bin" ]; then
@@ -17,10 +17,10 @@ post_tf_build() {
 }
 
 fetch_tf_resource() {
-    # RSS output is printed to UART 2 so track it.
+    # RSE output is printed to UART 2 so track it.
     uart="1" port="5003" file="hold_uart.exp" track_expect
 
-    get_rss_prov_bins
+    get_rse_prov_bins
 
     sign_image bl1.bin $ap_bl1_flash_load_addr $ap_bl1_flash_size
 

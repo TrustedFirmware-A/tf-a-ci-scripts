@@ -15,10 +15,10 @@ cat <<EOF >"$model_param_file"
 ${fip_gpt_bin+-C board.flashloader0.fname=$fip_gpt_bin}
 ${tc_fitimage_bin+--data board.dram=$tc_fitimage_bin@0x20000000}
 ${vmmaddrwidth+-C css.rss.VMADDRWIDTH=$vmmaddrwidth}
-${rss_rom_bin+-C css.rss.rom.raw_image=$rss_rom_bin}
+${rse_rom_bin+-C css.rss.rom.raw_image=$rse_rom_bin}
 -C displayController=2
 -C css.rss.CMU0_NUM_DB_CH=16
 -C css.rss.CMU1_NUM_DB_CH=16
-${rss_encrypted_cm_provisioning_bundle_0_bin+--data css.rss.sram0=${rss_encrypted_cm_provisioning_bundle_0_bin}@0x400}
-${rss_encrypted_dm_provisioning_bundle_bin+--data css.rss.sram1=${rss_encrypted_dm_provisioning_bundle_bin}@0x80000}
+${rse_encrypted_cm_provisioning_bundle_0_bin+--data css.rss.sram0=${rse_encrypted_cm_provisioning_bundle_0_bin}@0x400}
+${rse_encrypted_dm_provisioning_bundle_bin+--data css.rss.sram1=${rse_encrypted_dm_provisioning_bundle_bin}@0x80000}
 EOF

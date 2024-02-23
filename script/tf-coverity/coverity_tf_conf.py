@@ -108,9 +108,9 @@ exclude_paths = [
     ("plat/st/stm32mp1/stm32mp1_tbb_cert.c", "Used to build STM32MP cert_create"),
 
     # Exclude The following files used to wrap external test code
-    ("plat/arm/board/tc/rss_ap_test_stubs.c", "Only used for testing on arm/tc platform"),
-    ("plat/arm/board/tc/rss_ap_tests.c", "Only used for testing on arm/tc platform"),
-    ("plat/arm/board/tc/rss_ap_testsuites.c", "Only used for testing on arm/tc platform"),
+    ("plat/arm/board/tc/rse_ap_test_stubs.c", "Only used for testing on arm/tc platform"),
+    ("plat/arm/board/tc/rse_ap_tests.c", "Only used for testing on arm/tc platform"),
+    ("plat/arm/board/tc/rse_ap_testsuites.c", "Only used for testing on arm/tc platform"),
 
     # Exclude the following files used for Juno host tools (fiptool and cert_create)
     ("plat/arm/board/juno/certificate/src/juno_tbb_cert.c", "Used to build Juno cert_create"),

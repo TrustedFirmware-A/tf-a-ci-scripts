@@ -19,9 +19,9 @@ sign_image() {
 	url="$tc_prebuilts/tc$plat_variant/root-RSA-3072.pem" saveas="root-RSA-3072.pem" fetch_file
 	archive_file "root-RSA-3072.pem"
 
-	RSS_SIGN_PRIVATE_KEY=$archive/root-RSA-3072.pem
-	RSS_SEC_CNTR_INIT_VAL=1
-	RSS_LAYOUT_WRAPPER_VERSION="1.5.0"
+	RSE_SIGN_PRIVATE_KEY=$archive/root-RSA-3072.pem
+	RSE_SEC_CNTR_INIT_VAL=1
+	RSE_LAYOUT_WRAPPER_VERSION="1.5.0"
 
 	cat << EOF > $tmpdir/$host_binary_layout
 enum image_attributes {
@@ -46,15 +46,15 @@ EOF
 
 	pushd $tmpdir/mcuboot/scripts
 	python3 $tmpdir/wrapper_scripts/wrapper/wrapper.py \
-		-v $RSS_LAYOUT_WRAPPER_VERSION \
+		-v $RSE_LAYOUT_WRAPPER_VERSION \
 		--layout $tmpdir/$host_binary_layout \
-		-k $RSS_SIGN_PRIVATE_KEY \
+		-k $RSE_SIGN_PRIVATE_KEY \
 		--public-key-format full \
 		--align 1 \
 		--pad \
 		--pad-header \
 		-H 0x2000 \
-		-s $RSS_SEC_CNTR_INIT_VAL \
+		-s $RSE_SEC_CNTR_INIT_VAL \
 		$archive/$host_bin  \
 		$tmpdir/$signed_bin
 
@@ -65,19 +65,19 @@ EOF
 }
 
 update_fip() {
-	local prebuild_prefix=$tc_prebuilts/tc$plat_variant/$rss_revision
+	local prebuild_prefix=$tc_prebuilts/tc$plat_variant/$rse_revision
 
-	# Get pre-built rss rom
-	url="$prebuild_prefix/rss_rom.bin" fetch_file
-	archive_file "rss_rom.bin"
+	# Get pre-built rse rom
+	url="$prebuild_prefix/rse_rom.bin" fetch_file
+	archive_file "rse_rom.bin"
 
-	# Get pre-built rss bl2 signed bin
-	url="$prebuild_prefix/rss_bl2_signed.bin" fetch_file
-	archive_file "rss_bl2_signed.bin"
+	# Get pre-built rse bl2 signed bin
+	url="$prebuild_prefix/rse_bl2_signed.bin" fetch_file
+	archive_file "rse_bl2_signed.bin"
 
-	# Get pre-built rss TF-M S signed bin
-	url="$prebuild_prefix/rss_s_signed.bin" fetch_file
-	archive_file "rss_s_signed.bin"
+	# Get pre-built rse TF-M S signed bin
+	url="$prebuild_prefix/rse_s_signed.bin" fetch_file
+	archive_file "rse_s_signed.bin"
 
 	# Get pre-built SCP signed bin
 	url="$prebuild_prefix/signed_scp_romfw.bin" fetch_file
@@ -85,23 +85,23 @@ update_fip() {
 
 	# Create FIP layout
 	"$fiptool" update \
-		--align 8192 --rss-bl2 "$archive/rss_bl2_signed.bin" \
-		--align 8192 --rss-s "$archive/rss_s_signed.bin" \
-		--align 8192 --rss-scp-bl1 "$archive/signed_scp_romfw.bin" \
-		--align 8192 --rss-ap-bl1 "$archive/$signed_bin" \
+		--align 8192 --rse-bl2 "$archive/rse_bl2_signed.bin" \
+		--align 8192 --rse-s "$archive/rse_s_signed.bin" \
+		--align 8192 --rse-scp-bl1 "$archive/signed_scp_romfw.bin" \
+		--align 8192 --rse-ap-bl1 "$archive/$signed_bin" \
 		--out "host_flash_fip.bin" \
 		"$archive/fip.bin"
 	archive_file "host_flash_fip.bin"
 }
 
-get_rss_prov_bins() {
-	local prebuild_prefix=$tc_prebuilts/tc$plat_variant/$rss_revision
+get_rse_prov_bins() {
+	local prebuild_prefix=$tc_prebuilts/tc$plat_variant/$rse_revision
 
-	# Get pre-built rss rss_encrypted_cm_provisioning_bundle_0 bin
-	url="$prebuild_prefix/rss_encrypted_cm_provisioning_bundle_0.bin" fetch_file
-	archive_file "rss_encrypted_cm_provisioning_bundle_0.bin"
+	# Get pre-built rse rse_encrypted_cm_provisioning_bundle_0 bin
+	url="$prebuild_prefix/rse_encrypted_cm_provisioning_bundle_0.bin" fetch_file
+	archive_file "rse_encrypted_cm_provisioning_bundle_0.bin"
 
-	# Get pre-built rss rss_encrypted_dm_provisioning_bundle bin
-	url="$prebuild_prefix/rss_encrypted_dm_provisioning_bundle.bin" fetch_file
-	archive_file "rss_encrypted_dm_provisioning_bundle.bin"
+	# Get pre-built rse rse_encrypted_dm_provisioning_bundle bin
+	url="$prebuild_prefix/rse_encrypted_dm_provisioning_bundle.bin" fetch_file
+	archive_file "rse_encrypted_dm_provisioning_bundle.bin"
 }

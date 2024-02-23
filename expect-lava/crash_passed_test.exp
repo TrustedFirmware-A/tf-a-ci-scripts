@@ -1,9 +1,9 @@
 #
-# Copyright (c) 2023, Arm Limited. All rights reserved.
+# Copyright (c) 2023-2024, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Expect script for AP/RSS non-volatile counter platform test
+# Expect script for AP/RSE non-volatile counter platform test
 #
 
 expect_string+=('i;Platform tests succeeded.;;Platform tests failed.')

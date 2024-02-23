@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-source "$ci_root/run_config/tc_rss_utils.sh"
+source "$ci_root/run_config/tc_rse_utils.sh"
 
 fetch_tf_resource() {
 	image="kernel" type="tc-kernel" get_boot_image
@@ -20,18 +20,18 @@ fetch_tf_resource() {
 		archive_file "scp_rom.bin"
 	fi
 
-	# RSS is applicable to TC2
+	# RSE is applicable to TC2
 	if [ $plat_variant -eq 2 ]; then
 
-	    # Hold RSS terminal_uart_ap
+	    # Hold RSE terminal_uart_ap
 	    uart="1" port="5003" file="hold_uart.exp" track_expect
 
-	    get_rss_prov_bins
+	    get_rse_prov_bins
 
             # sign AP bl1
 	    sign_image bl1.bin $ap_bl1_flash_load_addr $ap_bl1_flash_size
 
-	    # Update FIP with pre-built RSS binaries and signed AP BL1 to create host flash fip image
+	    # Update FIP with pre-built RSE binaries and signed AP BL1 to create host flash fip image
 	    update_fip
 
             # Create GPT image
