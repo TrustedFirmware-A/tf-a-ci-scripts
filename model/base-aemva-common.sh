@@ -103,6 +103,10 @@ reset_var supports_trace_buffer_control_regs
 # CRC32 support
 reset_var supports_crc32
 
+# Accelerator instruction support level (none, FEAT_LS64,
+# FEAT_LS64_V, FEAT_LS64_ACCDATA)
+reset_var accelerator_support_level
+
 source "$ci_root/model/fvp_common.sh"
 
 #------------ Common configuration --------------
@@ -160,6 +164,14 @@ fi
 if [[ -n $memory_tagging_support_level ]]; then
 	cat <<EOF >>"$model_param_file"
 -C bp.dram_metadata.is_enabled=1
+EOF
+fi
+
+# If accelerator support level enabled, disable bitwise negation
+# for values stored/read using FEAT_LS64* instructions.
+if [ "$accelerator_support_level" != "0" ]; then
+	cat <<EOF >>"$model_param_file"
+-C bp.ls64_testing_fifo.op_type=0
 EOF
 fi
 
@@ -414,6 +426,13 @@ if [ "$has_ecv" = "1" ]; then
 EOF
 fi
 
+# Accelerator support level enabled
+if [ "$accelerator_support_level" != "0" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.arm_v8_7_accelerator_support_level=1
+EOF
+fi
+
 #------------ Cluster1 configuration (if exists) --------------
 if [ "$is_dual_cluster" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
@@ -576,6 +595,13 @@ fi
 if [ "$has_rng_trap" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster1.has_rndr_trap=1
+EOF
+fi
+
+# Accelerator support level enabled
+if [ "$accelerator_support_level" != "0" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster1.arm_v8_7_accelerator_support_level=1
 EOF
 fi
 
