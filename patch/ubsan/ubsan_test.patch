@@ -1,5 +1,5 @@
 diff --git a/bl31/bl31_main.c b/bl31/bl31_main.c
-index c8cc2c7199..18ae4bdfa0 100644
+index 8c5ba6f2e..21ed3b686 100644
 --- a/bl31/bl31_main.c
 +++ b/bl31/bl31_main.c
 @@ -112,6 +112,19 @@ void bl31_setup(u_register_t arg0, u_register_t arg1, u_register_t arg2,
@@ -22,10 +22,10 @@ index c8cc2c7199..18ae4bdfa0 100644
  /*******************************************************************************
   * BL31 is responsible for setting up the runtime services for the primary cpu
   * before passing control to the bootloader or an Operating System. This
-@@ -223,6 +236,10 @@ void bl31_main(void)
- 	PMF_CAPTURE_TIMESTAMP(bl_svc, BL31_EXIT, PMF_CACHE_MAINT);
+@@ -224,6 +237,10 @@ void bl31_main(void)
+ 
  	console_flush();
- #endif
+ 	console_switch_state(CONSOLE_FLAG_RUNTIME);
 +
 +	/* Run UBSAN Test */
 +	INFO("BL31: Running UBSAN test\n");
