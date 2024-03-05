@@ -16,7 +16,7 @@ pre_tf_build() {
 generate_lava_job() {
 	local model="base-aemv8a"
 
-	uart="0" timeout="60" file="timeout.exp" track_expect
+	uart="0" timeout="60" file="roxlattables.exp" track_expect
 	uart="1" timeout="60" file="crash_roxlattables_unhandled_exception_at_el3.exp" \
 		 set_primary="1" track_expect
 

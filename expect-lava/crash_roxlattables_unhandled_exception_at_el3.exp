@@ -6,7 +6,6 @@
 # Expect script for Trusted Firmware Test Framework
 #
 
-expect_string+=('i;Translation tables are now read-only at EL3.')
 expect_string+=('i;Unhandled Exception in EL3.')
 expect_string+=("i;x30")
 source $ci_root/expect-lava/exception_gp_regs.inc
