@@ -20,3 +20,6 @@ expect_string+=("i;${prompt}")
 
 prompt='PMF:cpu 0	tid 4'
 expect_string+=("i;${prompt}")
+
+prompt='PMF:cpu 0	tid 5'
+expect_string+=("i;${prompt}")

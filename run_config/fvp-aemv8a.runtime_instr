@@ -9,7 +9,6 @@ generate_lava_job() {
 	local model="base-aemv8a"
 
 	uart="0" timeout="60" file="pmf-tfa-boot.exp" track_expect
-	uart="1" timeout="60" file="pmf-tfa-bl31-boot-exit.exp" track_expect
 	model="$model" gen_model_params
 	model="$model" gen_fvp_yaml
 
