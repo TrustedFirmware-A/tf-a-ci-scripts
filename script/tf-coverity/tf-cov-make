@@ -256,11 +256,6 @@ clean_build $juno_common_flags CSS_USE_SCMI_SDS_DRIVER=0
 clean_build $juno_common_flags TRNG_SUPPORT=1
 
 #
-# System Guidance for Infrastructure platform RD-E1Edge
-#
-make $(common_flags) PLAT=rde1edge ${ARM_TBB_OPTIONS} NRD_CHIP_COUNT=1 all
-
-#
 # Reference Design platform RD-V1
 #
 make $(common_flags) PLAT=rdv1 ${ARM_TBB_OPTIONS} all
