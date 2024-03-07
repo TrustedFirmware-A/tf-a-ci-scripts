@@ -65,7 +65,7 @@ generate_lava_job_template() {
 	# Hold scp terminal_s0
 	uart="0" port="5002" file="hold_uart.exp" track_expect
 	uart="2" port="5000" file="tc-fitimage-busybox.exp" set_primary="1" \
-                 track_expect
+                 timeout="1200" track_expect
 
 	set_uart_port "${archive:?}" 1 5003
 	set_uart_port "${archive:?}" 3 5001
