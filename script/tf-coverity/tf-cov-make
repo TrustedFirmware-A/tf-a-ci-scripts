@@ -761,6 +761,7 @@ make PLAT=poplar $(common_flags) all
 make PLAT=rpi3 $(common_flags) ${TBB_OPTIONS} \
     ENABLE_STACK_PROTECTOR=strong PRELOADED_BL33_BASE=0xDEADBEEF all
 clean_build PLAT=rpi4 $(common_flags) SMC_PCI_SUPPORT=1 all
+clean_build PLAT=rpi5 $(common_flags) SMC_PCI_SUPPORT=1 all
 
 # A113D (AXG) platform.
 clean_build PLAT=axg $(common_flags) SPD=opteed
