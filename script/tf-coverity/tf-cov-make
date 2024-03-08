@@ -49,6 +49,8 @@ if [ ! -d "$TF_M_EXTRAS_DIR" ]; then
     git checkout main
 fi
 
+cd "$TF_SOURCES"
+
 if [ ! -d "$QCBOR_LIB_DIR" ]; then
     git clone "$QCBOR_URL_REPO" "$QCBOR_LIB_DIR"
     cd "$QCBOR_LIB_DIR"
