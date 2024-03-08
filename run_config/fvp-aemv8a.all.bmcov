@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2024, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	local model="base-aemv8a"
+
+	uart="0" file="tftf.exp" track_expect
+	uart="1" file="hold_uart.exp" track_expect
+
+	model="$model" \
+		bmcov_plugin="1" \
+		bmcov_plugin_path="${coverage_trace_plugin}" \
+		ete_plugin="1" \
+		etm_plugin="1" \
+		sve_plugin="1" \
+		etm_present="1" \
+		amu_present="1" \
+		has_sme="1" has_sme2="1" \
+		supports_branch_record_buffer_control_regs="1" \
+		supports_trace_buffer_control_regs="1" \
+		supports_trace_filter_regs="2" \
+		supports_system_trace_filter_regs="1" \
+		arch_version="9.2" \
+		gen_model_params
+
+	model="$model" gen_fvp_yaml
+}
