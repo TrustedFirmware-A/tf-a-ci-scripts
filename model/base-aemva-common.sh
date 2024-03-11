@@ -75,6 +75,9 @@ reset_var has_rng
 # Enable FEAT_RNG_TRAP
 reset_var has_rng_trap
 
+# Enable FEAT_ECV
+reset_var has_ecv
+
 # Layout of MPIDR. 0=AFF0 is CPUID, 1=AFF1 is CPUID
 reset_var mpidr_layout
 
@@ -376,6 +379,13 @@ fi
 if [ "$has_rng_trap" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_rndr_trap=1
+EOF
+fi
+
+if [ "$has_ecv" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.ecv_support_level=2
+-C cluster1.ecv_support_level=2
 EOF
 fi
 

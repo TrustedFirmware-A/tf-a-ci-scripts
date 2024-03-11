@@ -20,6 +20,9 @@ generate_lava_job() {
 		etm_present="1" \
 		amu_present="1" \
 		has_sme="1" has_sme2="1" \
+		has_mpam="1" \
+		has_ecv="1" \
+		memory_tagging_support_level="3" \
 		supports_branch_record_buffer_control_regs="1" \
 		supports_trace_buffer_control_regs="1" \
 		supports_trace_filter_regs="2" \
