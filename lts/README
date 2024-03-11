@@ -61,3 +61,80 @@ chore(fvp): add the aarch32 cortex A57 to the build:    0
 chore(cpus): remove redundant asserts:    0
 refactor(cpus): shorten errata flag defines:    0
 ## stopping because found sha1 common between the two branches:  1678bbb57249b6edd4cdebc3cbc33b04df8fa098
+
+=============
+lts-triage-v2.py
+=============
+
+Purpose of this script is to check a patch and determine if that patch qualifies
+as a candidate for one of the LTS branches.
+
+Currently it focuses on cpu errata while it contains basic support for security
+patches. It computes a crude score:
+
+1 point if subject line matches tokens for cpu errata or security
+1 point for "report_errata ERRATA" in a lib/cpus/aarch{32,64}/*.S file
+1 point for "- ``ERRATA_" in docs/design/cpu-specific-build-macros.rst file
+
+Those match tokens were moved to config.py
+Note that the script only looks at commits which are not merge commits.
+
+The script expects two branches: 'integration' and the lts branch, for example 'lts-v2.8'.
+it will check every commit in the integration branch, until it finds a common commit
+, same Change-Id, between the integration branch and the lts branch.
+
+At the end, if any commit has non-zero score, the script will create a file named at
+the path provided by --csv_path argument.
+The csv report includs the following information
+1. index
+2. commit id in the integration branch
+3. commit summary
+4. score
+5. Gerrit Change-Id
+6. patch link for the LTS branch: if the patch has been cherry-picked to the lts branch
+                                  , the Gerrit URL will be listed
+7. patch link for the integration branch
+
+Running it:
+-----------
+
+In order to perform "gerrit query", we need a Gerrit account and the corresponding SSH keyfile.
+Here's help output for convenience:
+
+$ python lts-triage.py -h
+usage: lts-triage.py [-h] --repo REPO --csv_path CSV_PATH --lts LTS --gerrit_user GERRIT_USER
+       --ssh_keyfile SSH_KEYFILE [--debug]
+
+check patches for LTS candidacy
+
+options:
+  -h, --help            show this help message and exit
+  --repo REPO           path to tf-a git repo
+  --csv_path CSV_PATH   path including the filename for CSV file
+  --lts LTS             LTS branch, ex. lts-v2.8
+  --gerrit_user GERRIT_USER
+                        The Gerrit account to perform the query
+  --ssh_keyfile SSH_KEYFILE
+                        The SSH keyfile
+  --debug               print debug logs
+
+Below is an example output. On left is commit hash of each of the commits
+observed by this script and on right is score assigned to it.
+
+$./lts-triage-v2.py --repo ../../trusted-firmware-a/ --lts lts-v2.10 --csv_path ./lts-v2.10-report.csv
+  --gerrit_user arthur-she --ssh_keyfile ~/.ssh/id_rsa.pub
+fix(cpus): fix a defect in Cortex-A715 erratum 2561034:    1
+fix(cpus): workaround for Cortex-A715 erratum 2413290:    2
+docs: add documentation for `entry_point_info`:    0
+build(npm): fix Commitizen ES Module errors:    0
+build(npm): adhere to Husky deprecation notice:    0
+fix(misra): fix MISRA defects:    0
+refactor(cm): couple el2 registers with dependent feature flags:    0
+fix(tc): do not use r0 for HW_CONFIG:    0
+fix(cpus): workaround for Cortex-A715 erratum 2344187:    2
+fix(cpus): workaround for Cortex-X4 erratum 2701112:    2
+fix(gic600): workaround for Part 1 of GIC600 erratum 2384374:    0
+fix(cpus): workaround for Cortex-A715 erratum 2331818:    2
+fix(arm): move console flush/switch in common function:    0
+fix(cpus): workaround for Cortex-A715 erratum 2420947:    2
+## stopping because found common Gerrit Change-Id between the two branches:  I612338fd2896f3fe614f23d14f56d58d43318a11
