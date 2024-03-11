@@ -1,5 +1,4 @@
 CROSS_COMPILE=aarch64-none-elf-
-ENABLE_FEAT_MTE=1
 ENABLE_FEAT_MTE2=1
 PLAT=fvp
 SPD=tspd
