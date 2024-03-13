@@ -34,23 +34,6 @@ if [ ! -d "$MBED_TLS_DIR" ]; then
     git clone -q --depth 1 -b "$MBED_TLS_SOURCES_TAG" "$MBED_TLS_URL_REPO" "$MBED_TLS_DIR"
 fi
 
-# Get TF-M tests and extras repo for TC build with tf-m test suite.
-if [ ! -d "$TF_M_TESTS_DIR" ]; then
-    git clone "$TF_M_TESTS_URL_REPO" "$TF_M_TESTS_DIR"
-    cd "$TF_M_TESTS_DIR"
-    git checkout main
-fi
-
-cd "$TF_SOURCES"
-
-if [ ! -d "$TF_M_EXTRAS_DIR" ]; then
-    git clone "$TF_M_EXTRAS_URL_REPO" "$TF_M_EXTRAS_DIR"
-    cd "$TF_M_EXTRAS_DIR"
-    git checkout main
-fi
-
-cd "$TF_SOURCES"
-
 if [ ! -d "$QCBOR_LIB_DIR" ]; then
     git clone "$QCBOR_URL_REPO" "$QCBOR_LIB_DIR"
     cd "$QCBOR_LIB_DIR"
@@ -340,7 +323,7 @@ clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} MEASURE
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} PLATFORM_TEST=rss-rotpk
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} PLATFORM_TEST=rss-nv-counters
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} PLATFORM_TEST=tfm-testsuite \
-    MEASURED_BOOT=1 TF_M_TESTS_PATH=$(pwd)/tf-m-tests TF_M_EXTRAS_PATH=$(pwd)/tf-m-extras
+    MEASURED_BOOT=1 TF_M_TESTS_PATH=$(pwd)/../tf-m-tests TF_M_EXTRAS_PATH=$(pwd)/../tf-m-extras
 
 #
 # Morello platform
