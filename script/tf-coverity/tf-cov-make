@@ -66,7 +66,8 @@ clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=pncd SPD_PNCD_NS_IRQ=126 \
     SPD_PNCD_S_IRQ=15 FVP_TRUSTED_SRAM_SIZE=384
 
 # Dualroot chain of trust.
-clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=tspd COT=dualroot
+clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=tspd COT=dualroot \
+    FVP_TRUSTED_SRAM_SIZE=384
 
 # FEAT_RME with CCA chain of trust.
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} USE_ROMLIB=1 \
