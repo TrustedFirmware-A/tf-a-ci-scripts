@@ -695,7 +695,7 @@ make ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
 # STM32MP25 USB boot
 make ${stm32mp2_common_flags} STM32MP_USB_PROGRAMMER=1 \
     SPD=opteed STM32MP_DDR4_TYPE=1 \
-    BUILD_PLAT=build/stm32mp2-mp25-sdmmc/debug
+    BUILD_PLAT=build/stm32mp2-mp25-usb/debug
 
 # Platforms from TI
 make PLAT=k3 $(common_flags) all
