@@ -45,6 +45,12 @@ def translate_build_config(group, config_list):
         # Reshuffle them into the canonical format
         config_list = [config_list[1], config_list[2], config_list[3], config_list[4], config_list[0]]
 
+    if group.startswith("tf-l3-code-coverage"):
+        # coverage configs would be specified in the following format:
+        #  tf_config, tftf_config, spm_config, scp_config, scp_tools
+        # Reshuffle them into the canonical format
+        config_list = [config_list[0], config_list[1], config_list[3], config_list[4], config_list[2]]
+
     return config_list
 
 
