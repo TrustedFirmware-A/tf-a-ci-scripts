@@ -11,3 +11,4 @@ ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
 SCP_BL2=/dev/null
 TARGET_PLATFORM=2
 TRUSTED_BOARD_BOOT=1
+ENABLE_FEAT_MTE2=1
