@@ -43,7 +43,7 @@ cat <<EOF >"$model_param_file"
 -C bp.ve_sysregs.exit_on_shutdown=1
 -C pctl.startup=$pctl_startup
 
-${wait_debugger+-S}
+${wait_debugger+-I -p}
 
 ${secure_memory+-C bp.secure_memory=$secure_memory}
 ${cache_state_modelled+-C cache_state_modelled=$cache_state_modelled}
