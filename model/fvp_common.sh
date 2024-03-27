@@ -93,6 +93,8 @@ ${uart1_out+-C bp.pl011_uart1.out_file=$uart1_out}
 
 ${no_quantum--Q ${quantum}}
 
+${disable_visualisation+-C bp.vis.disable_visualisation=1}
+
 EOF
 
 # OpenCI uses LAVA to launch models, the latter requiring (uart) unbuffered output,
