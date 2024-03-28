@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -28,6 +28,8 @@ else
   elif echo "$JENKINS_URL" | grep -q "ci.trustedfirmware.org"; then
     if echo "$TF_GERRIT_BRANCH" | grep -q "lts-v2.8"; then
       source "$ci_root/openci-lts-v2.8-env.sh"
+    elif echo "$TF_GERRIT_BRANCH" | grep -q "lts-v2.10"; then
+      source "$ci_root/openci-lts-v2.10-env.sh"
     else
       source "$ci_root/openci-env.sh"
     fi
