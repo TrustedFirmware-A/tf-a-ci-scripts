@@ -10,7 +10,7 @@ source "$ci_root/fvp_utils.sh"
 nrd_prebuilts="${nrd_prebuilts:-$tfa_downloads/neoverse_rd/rdv1}"
 
 # Pre-built SCP/MCP binaries
-scp_mcp_prebuilts="${scp_mcp_prebuilts:-$scp_mcp_downloads/rdv1/release}"
+scp_mcp_prebuilts="${scp_mcp_prebuilts:-$scp_mcp_downloads/neoverse-rd/rdv1/release}"
 
 
 kernel_list[nrd-busybox]="$nrd_prebuilts/Image"
