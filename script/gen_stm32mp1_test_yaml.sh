@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Copyright (c) 2023 Arm Limited. All rights reserved.
+# Copyright (c) 2024, STMicroelectronics - All Rights Reserved
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -22,7 +23,7 @@ layout_file="FlashLayout_sdcard-stm32mp15x-eval.tsv"
 case "$payload_type" in
     sp_min_bl2)
         job_name="SP_min BL2"
-        rep_bin_file="tf-a-stm32mp157c-ev1.stm32"
+        rep_bin_file="rep_bin.tar.bz2"
         ;;
 esac
 

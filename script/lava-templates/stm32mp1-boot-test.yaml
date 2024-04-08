@@ -16,7 +16,7 @@ actions:
     to: flasher
     images:
       tarball:
-        url: https://images.validation.linaro.org/people.linaro.org/~theodore.grey/NEWSTM/stm32mp1_ev1_tarball.tar.gz
+        url: https://images.validation.linaro.org/people.linaro.org/~arthur.she/images/stm32mp15/rootfs_test/stm32mp157c-ev1-filesystem.tar.bz2
       layout:
         url: $flash_layout_url
       rep_bin:
@@ -31,6 +31,6 @@ actions:
       minutes: 10
     interactive:
     - name: int_1
-      prompts: ["Hit any key to stop autoboot"]
+      prompts: ["buildroot login"]
       script:
       - command:
