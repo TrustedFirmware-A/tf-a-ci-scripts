@@ -60,7 +60,7 @@ done)
 
 - boot:
     method: fvp
-#    license_variable: ARMLMD_LICENSE_FILE=${armlmd_license_file}
+    license_variable: ARMLMD_LICENSE_FILE=${armlmd_license_file}
     docker:
       name: ${docker_name}
       local: true
