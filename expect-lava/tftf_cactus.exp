@@ -1,0 +1,15 @@
+#
+# Copyright (c) 2021-2024 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for the test Secure Partition Cactus
+#
+
+source $ci_root/expect-lava/trusted-firmware.inc
+
+expect_string+=('i;Booting Secure Partition ')
+
+source $ci_root/expect-lava/tftf.inc
+
+source $ci_root/expect-lava/uart-hold.inc

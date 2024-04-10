@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -8,6 +8,10 @@
 
 source [file join [file dirname [info script]] handle-arguments.inc]
 
-expect_string "Booting test Secure Partition Cactus"
+source [file join [file dirname [info script]] trusted-firmware.inc]
+
+expect_string "Booting Secure Partition "
+
+source [file join [file dirname [info script]] tftf.inc]
 
 source [file join [file dirname [info script]] uart-hold.inc]
