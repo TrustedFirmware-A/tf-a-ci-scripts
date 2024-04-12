@@ -1,4 +1,8 @@
+ARM_ROTPK_LOCATION=devel_rsa
+CREATE_KEYS=1
 CROSS_COMPILE=aarch64-none-elf-
 ENABLE_RUNTIME_INSTRUMENTATION=1
+GENERATE_COT=1
 PLAT=n1sdp
-SCP_BL2=/dev/null
+ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
+TRUSTED_BOARD_BOOT=1
