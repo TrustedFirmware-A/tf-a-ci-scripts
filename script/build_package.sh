@@ -581,7 +581,7 @@ EOF
 		$build_targets 3>&1 &>>"$build_log" || fail_build
 
         if [ "$build_targets" != "doc" ]; then
-                poetry run memory -sr "$tf_build_path" 2>&1 | tee -a "$build_log"
+                (poetry run memory -sr "$tf_build_root" 2>&1 || true) | tee -a "$build_log"
         fi
 	)
 }
