@@ -79,7 +79,7 @@ MBED_TLS_URL_REPO=https://github.com/ARMmbed/mbedtls.git
 
 # mbed TLS source tag to checkout when building Trusted Firmware with
 # cryptography support (e.g. for Trusted Board Boot feature).
-MBED_TLS_SOURCES_TAG="mbedtls-2.28.8"
+MBED_TLS_SOURCES_TAG="mbedtls-3.6.0"
 
 ARMCLANG_PATH="$(set_armclang_toolchain)"
 
