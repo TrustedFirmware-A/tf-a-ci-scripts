@@ -396,6 +396,19 @@ make $(common_flags) \
 #
 clean_build $(common_flags) PLAT=fvp_r ${ARM_TBB_OPTIONS} ENABLE_STACK_PROTECTOR=all
 
+#
+# RD-1 AE platform
+#
+make $(common_flags) \
+     PLAT=rd1ae \
+     ARCH=aarch64 \
+     ${ARM_TBB_OPTIONS} \
+     GENERATE_COT=1 \
+     COT=tbbr \
+     ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem \
+     bl2 \
+     bl31
+
 # Partners' platforms.
 # Enable as many features as possible.
 # We don't need to clean between each build here because we only do one build
