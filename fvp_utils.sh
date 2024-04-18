@@ -45,7 +45,6 @@ rootfs_url="$linaro_release/lt-vexpress64-openembedded_minimal-armv8-gcc-5.2_201
 default_model_dtb="dtb.bin"
 
 # FVP containers and model paths
-fvp_arm_std_library_11_12="fvp:fvp_arm_std_library_${model_version_11_12}_${model_build_11_12};/opt/model/FVP_ARM_Std_Library/models/${model_flavour_11_12}"
 fvp_arm_std_library_11_16="fvp:fvp_arm_std_library_${model_version_11_16}_${model_build_11_16};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_arm_std_library_11_17="fvp:fvp_arm_std_library_${model_version_11_17}_${model_build_11_17};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library/FVP_Base"
@@ -72,7 +71,7 @@ fvp_models=(
 [base-aemva]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
 [base-aemv8a-gic600ae]="${fvp_base_aemv8a_gic600ae};FVP_Base_AEMv8A-GIC600AE"
 [base-aemv8a]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
-[cortex-a32x4]="${fvp_arm_std_library_11_12};FVP_Base_Cortex-A32x4"
+[cortex-a32x4]="${fvp_arm_std_library};FVP_Base_Cortex-A32x4"
 [cortex-a35x4]="${fvp_arm_std_library};FVP_Base_Cortex-A35x4"
 [cortex-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A53x4"
 [cortex-a55x4]="${fvp_arm_std_library};FVP_Base_Cortex-A55"

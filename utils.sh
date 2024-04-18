@@ -545,11 +545,6 @@ warehouse="${nfs_volume}/warehouse"
 jenkins_url="${JENKINS_URL%/*}"
 jenkins_url="${jenkins_url:-https://ci.trustedfirmware.org/}"
 
-# 11.12 Model revisions
-model_version_11_12="11.12"
-model_build_11_12="38"
-model_flavour_11_12="Linux64_GCC-6.4"
-
 # 11.16 Model revisions
 model_version_11_16="11.16"
 model_build_11_16="16"
