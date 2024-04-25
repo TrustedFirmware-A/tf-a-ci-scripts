@@ -1,0 +1,15 @@
+ARM_ROTPK_LOCATION=devel_rsa
+COT=cca
+CREATE_KEYS=1
+CROSS_COMPILE=aarch64-none-elf-
+DEBUG=1
+ENABLE_RME=1
+GENERATE_COT=1
+MEASURED_BOOT=1
+PLAT_MHU_VERSION=3
+PLAT=rdfremont
+ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
+RME_GPT_BITLOCK_BLOCK=0
+RMM=/dev/null
+TRUSTED_BOARD_BOOT=1
+
