@@ -331,6 +331,10 @@ build_fip() {
 		set +a
 	fi
 
+	if [ "$(get_tf_opt DEBUG)" = 0 ]; then
+		DEBUG=0
+	fi
+
 	make -C "$tf_root" $(cat "$tf_config_file") DEBUG="$DEBUG" V=1 "$@" \
 		${fip_targets:-fip} &>>"$build_log" || fail_build
 	)
