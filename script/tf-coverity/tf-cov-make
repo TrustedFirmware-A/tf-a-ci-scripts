@@ -239,7 +239,10 @@ juno_common_flags="$(common_flags) PLAT=juno"
 clean_build $juno_common_flags SPD=tspd ${ARM_TBB_OPTIONS}
 clean_build $juno_common_flags EL3_PAYLOAD_BASE=0x80000000
 clean_build $juno_common_flags ENABLE_STACK_PROTECTOR=strong ETHOSN_NPU_DRIVER=1
-clean_build $juno_common_flags ${ARM_TBB_OPTIONS} ENABLE_STACK_PROTECTOR=strong ETHOSN_NPU_DRIVER=1 ETHOSN_NPU_TZMP1=1
+# FIXME: temporarily disable debug builds for this configuration until BL2 size
+# issues are resolved.
+clean_build "$(common release) PLAT=juno" ${ARM_TBB_OPTIONS} \
+    ENABLE_STACK_PROTECTOR=strong ETHOSN_NPU_DRIVER=1 ETHOSN_NPU_TZMP1=1
 clean_build $juno_common_flags CSS_USE_SCMI_SDS_DRIVER=0
 
 # TRNG Service
