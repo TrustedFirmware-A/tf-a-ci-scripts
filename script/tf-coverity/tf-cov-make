@@ -15,7 +15,12 @@
 #
 
 set -E
-trap 'rc=$?; error_count=$((error_count+1));' ERR INT
+error() {
+    rc=$?;
+    error_count=$((error_count+1));
+    echo "ERROR: signal $rc at ${1} ${2} (error_count = $error_count)"
+}
+trap 'error "${BASH_SOURCE}" "${LINENO}"' ERR INT
 
 TF_SOURCES=$1
 if [ ! -d "$TF_SOURCES" ]; then
@@ -798,7 +803,7 @@ clean_build PLAT=ast2700 $(common_flags) SPD=opteed
 make PLAT=npcm845x $(common_flags) all SPD=opteed
 
 if [[ "$rc" -gt 0 ]]; then
-    echo "ERROR: tc-cov-make failed with $error_count failures"
+    echo "ERROR: tf-cov-make failed with $error_count failures"
     exit $rc
 fi
 
