@@ -329,7 +329,6 @@ make PLAT=arm_fpga $(common_flags release) \
 #
 # Total Compute platforms
 #
-clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=1 ${ARM_TBB_OPTIONS}
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} MEASURED_BOOT=1 \
     PLAT_MHU_VERSION=3
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} MEASURED_BOOT=1 \
