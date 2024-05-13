@@ -5,6 +5,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
+post_tf_build() {
+        build_fip BL33="$archive/tftf.bin" BL32="$archive/secure_hafnium.bin"
+}
+
 pre_tftf_build() {
 	source $tftf_config_file
 	python3 $ci_root/script/gen_smc_fuzz_setup.py -dts $tftf_root/$SMC_FUZZ_DTS -hdf $tftf_root/smc_fuzz/include/fuzz_names.h
