@@ -329,6 +329,7 @@ gen_fvp_yaml() {
         [spm]="spm.bin"
         [tc_fitimage]="tc_fitimage.bin"
         [tftf]="tftf.bin"
+        [tl]="tl.bin"
         [tmp]="tmp.bin"
         [uboot]="uboot.bin"
     )
@@ -379,6 +380,7 @@ gen_fvp_yaml() {
         [spm]="$(gen_bin_url spm.bin)"
         [tc_fitimage]="$(gen_bin_url tc_fitimage.bin)"
         [tftf]="$(gen_bin_url tftf.bin)"
+        [tl]="$(gen_bin_url tl.bin)"
         [tmp]="$(gen_bin_url tmp.bin)"
         [uboot]="$(gen_bin_url uboot.bin)"
     )
@@ -434,6 +436,7 @@ gen_fvp_yaml() {
         ["[= ]spm.bin"]="={SPM}"
         ["[= ]tc_fitimage.bin"]="={TC_FITIMAGE}"
         ["[= ]tftf.bin"]="={TFTF}"
+        ["[= ]tl.bin"]="={TL}"
         ["[= ].*/tmp.bin"]="={TMP}"
         ["[= ]uboot.bin"]="={UBOOT}"
     )

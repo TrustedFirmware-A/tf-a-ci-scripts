@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2024, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job_template() {
+	uart="0" set_expect_variable "skip_early_boot_msgs" "1"
+
+	uart="0" file="tftf.exp" track_expect
+	uart="1" file="hold_uart.exp" track_expect
+
+	payload_type="tftf" gen_yaml_template
+}
