@@ -46,7 +46,7 @@ generate_lava_job() {
 		secure_memory="0" \
 		has_rme="1" \
 		amu_present="1" \
-		arch_version="8.6" \
+		arch_version="9.2" \
 		has_branch_target_exception="1" \
 		has_smmuv3_params="1" \
 		memory_tagging_support_level="2" \
