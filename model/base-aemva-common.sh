@@ -143,7 +143,7 @@ if [ "$retain_flash" = "1" ]; then
 EOF
 fi
 
-# FEAT_RME is enabled
+# Enable RME at the system level
 if [ "$has_rme" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C bp.refcounter.non_arch_start_at_default=1
@@ -343,10 +343,10 @@ if [ "$has_mpam" = "1" ]; then
 EOF
 fi
 
-# FEAT_RME is enabled
+# FEAT_RME is enabled for the PE, plus additional arch options
 if [ "$has_rme" = "1" ]; then
         cat <<EOF >>"$model_param_file"
--C cluster0.has_rme=1
+-C cluster0.rme_support_level=2
 -C cluster0.has_rndr=1
 -C cluster0.has_v8_7_pmu_extension=2
 -C cluster0.ecv_support_level=2
@@ -526,10 +526,10 @@ if [ "$has_trbe" = "1" ]; then
 EOF
 fi
 
-# FEAT_RME is enabled
+# FEAT_RME is enabled for the PE, plus additional arch options
 if [ "$has_rme" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
--C cluster1.has_rme=1
+-C cluster1.rme_support_level=2
 -C cluster1.has_rndr=1
 -C cluster1.has_v8_7_pmu_extension=2
 -C cluster1.ecv_support_level=2
