@@ -355,6 +355,7 @@ if [ "$has_rme" = "1" ]; then
 -C cluster0.gicv3.without-DS-support=1
 -C cluster0.max_32bit_el=-1
 -C cluster0.PA_SIZE=48
+-C cluster0.output_attributes=ExtendedID[62:55]=MPAM_PMG,ExtendedID[54:39]=MPAM_PARTID,ExtendedID[38:37]=MPAM_SP
 EOF
 fi
 
@@ -538,6 +539,7 @@ if [ "$has_rme" = "1" ]; then
 -C cluster1.gicv3.without-DS-support=1
 -C cluster1.max_32bit_el=-1
 -C cluster1.PA_SIZE=48
+-C cluster1.output_attributes=ExtendedID[62:55]=MPAM_PMG,ExtendedID[54:39]=MPAM_PARTID,ExtendedID[38:37]=MPAM_SP
 EOF
 fi
 
