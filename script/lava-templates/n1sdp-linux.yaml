@@ -43,7 +43,7 @@ actions:
 - boot:
     namespace: recovery
     timeout:
-      minutes: 3
+      minutes: 5
     method: minimal
     parameters:
       kernel-start-message: ''
