@@ -25,24 +25,26 @@ if [ $COVERAGE_ON -eq 1 ]; then
 	LIST_OF_BINARIES=""
 	OBJDUMP="$(which 'aarch64-none-elf-objdump')"
 	READELF="$(which 'aarch64-none-elf-readelf')"
-	FALLBACK_PLUGIN_URL="http://files.oss.arm.com/downloads/personal/saurom01/qa-tools-cc/11.17/21"
-	FALLBACK_FILES="coverage_trace.so,coverage_trace.o,plugin_utils.o"
+	FALLBACK_PLUGIN_URL="${FALLBACK_PLUGIN_URL:-https://downloads.trustedfirmware.org/coverage-plugin/qa-tools/coverage-tool}"
+	FALLBACK_PLUGIN_URL_ALT="${FALLBACK_PLUGIN_URL_ALT:-https://artifactory.eu02.arm.com/artifactory/trustedfirmware.downloads/coverage-plugin}"
+	FALLBACK_FILES="${FALLBACK_FILES:-coverage_trace.so,coverage_trace.o,plugin_utils.o}"
+	FALLBACK_FILES_ALT="${FALLBACK_FILES_ALT:-CoverageTrace.so,CoverageTrace.o,PluginUtils.o}"
 
 	if [[ "$TEST_GROUP" == scp* ]]; then
 		PROJECT="SCP"
 		LIST_OF_BINARIES="scp_ram.elf scp_rom.elf mcp_rom.elf mcp_ram.elf"
 		OBJDUMP="$(which 'arm-none-eabi-objdump')"
 		READELF="$(which 'arm-none-eabi-readelf')"
-		FALLBACK_PLUGIN_URL="http://files.oss.arm.com/downloads/tf-a/coverage-plugin"
-		FALLBACK_FILES="CoverageTrace.so,CoverageTrace.o,PluginUtils.o"
+		FALLBACK_PLUGIN_URL="${FALLBACK_PLUGIN_URL_ALT}"
+		FALLBACK_FILES="${FALLBACK_FILES_ALT}"
 	elif [[ "$TEST_GROUP" == spm* ]];then
 			PROJECT="HAFNIUM"
 			LIST_OF_BINARIES="secure_hafnium.elf hafnium.elf"
 	elif [[ "$TEST_GROUP" == tf* ]];then
 		PROJECT="TF-A"
 		LIST_OF_BINARIES="bl1.elf bl2.elf bl31.elf"
-		FALLBACK_PLUGIN_URL="http://files.oss.arm.com/downloads/tf-a/coverage-plugin"
-		FALLBACK_FILES="CoverageTrace.so,CoverageTrace.o,PluginUtils.o"
+		FALLBACK_PLUGIN_URL="${FALLBACK_PLUGIN_URL_ALT}"
+		FALLBACK_FILES="${FALLBACK_FILES_ALT}"
 	else
 		echo "No project assigned for $TEST_GROUP ..."
 		exit -1
