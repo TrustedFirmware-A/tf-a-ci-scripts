@@ -8,7 +8,7 @@
 generate_lava_job() {
 	local model="base-aemva"
 
-	uart="0" set_expect_variable "num_cpus" "4"
+	uart="0" set_expect_variable "num_cpus" "8"
 
 	model="$model" gen_model_params
 	model="$model" gen_fvp_yaml
