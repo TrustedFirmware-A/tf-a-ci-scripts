@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-set_model_path "$warehouse/SysGen/Models/$model_version_11_16/$model_build_11_16/external/models/$model_flavour_11_16/FVP_Base_Neoverse-N1x4"
+set_model_path "$warehouse/SysGen/Models/$model_version/$model_build/external/models/$model_flavour/FVP_Base_Neoverse-N2"
 
 source "$ci_root/model/fvp_common.sh"
 
