@@ -592,19 +592,14 @@ warehouse="${nfs_volume}/warehouse"
 jenkins_url="${JENKINS_URL%/*}"
 jenkins_url="${jenkins_url:-https://ci.trustedfirmware.org/}"
 
-# 11.16 Model revisions
-model_version_11_16="11.16"
-model_build_11_16="16"
-model_flavour_11_16="Linux64_GCC-6.4"
-
 # 11.17 Model revisions
 model_version_11_17="11.17"
 model_build_11_17="21"
 model_flavour_11_17="Linux64_GCC-9.3"
 
 # Model revisions
-model_version="${model_version:-11.19}"
-model_build="${model_build:-14}"
+model_version="${model_version:-11.26}"
+model_build="${model_build:-11}"
 model_flavour="${model_flavour:-Linux64_GCC-9.3}"
 
 # Model snapshots from filer are not normally not accessible from developer
