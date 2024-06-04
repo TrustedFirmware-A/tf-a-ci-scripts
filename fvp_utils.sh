@@ -45,12 +45,12 @@ rootfs_url="$linaro_release/lt-vexpress64-openembedded_minimal-armv8-gcc-5.2_201
 default_model_dtb="dtb.bin"
 
 # FVP containers and model paths
-fvp_arm_std_library_11_16="fvp:fvp_arm_std_library_${model_version_11_16}_${model_build_11_16};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_arm_std_library_11_17="fvp:fvp_arm_std_library_${model_version_11_17}_${model_build_11_17};/opt/model/FVP_ARM_Std_Library/FVP_Base"
+
 fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build};/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
 fvp_base_aemv8a_gic600ae="fvp:fvp_base_aemv8a-gic600ae_${model_version_11_17}_${model_build_11_17};/opt/model/FVP_Base_AEMv8A-GIC600AE_pkg/models/${model_flavour_11_17}"
-fvp_base_aemv8a_aemv8a_aemv8a_aemv8a_ccn502="fvp:fvp_base_aemv8a-aemv8a-aemv8a-aemv8a-ccn502_${model_version_11_17}_${model_build_11_17};/opt/model/FVP_Base_AEMv8A-AEMv8A-AEMv8A-AEMv8A-CCN502_pkg/models/${model_flavour_11_17}"
+fvp_base_aemv8a_aemv8a_aemv8a_aemv8a_ccn502="fvp:fvp_base_aemv8a-aemv8a-aemv8a-aemv8a-ccn502_${model_version}_${model_build};/opt/model/FVP_Base_AEMv8A-AEMv8A-AEMv8A-AEMv8A-CCN502_pkg/models/${model_flavour}"
 fvp_base_aemv8r="fvp:fvp_base_aemv8r_${model_version}_${model_build};/opt/model/AEMv8R_base_pkg/models/${model_flavour}"
 
 # CSS model list
@@ -93,13 +93,13 @@ fvp_models=(
 [cortex-a78x4]="${fvp_arm_std_library};FVP_Base_Cortex-A78"
 [cortex-a78aex4]="${fvp_arm_std_library};FVP_Base_Cortex-A78AE"
 [cortex-a78cx4]="${fvp_arm_std_library};FVP_Base_Cortex-A78C"
-[cortex-x2]="${fvp_arm_std_library_11_17};FVP_Base_Cortex-X2x4"
-[cortex-a710]="${fvp_arm_std_library_11_17};FVP_Base_Cortex-A710x4"
+[cortex-x2]="${fvp_arm_std_library};FVP_Base_Cortex-X2"
+[cortex-a710]="${fvp_arm_std_library};FVP_Base_Cortex-A710"
 [neoverse_e1x1]="${fvp_arm_std_library};FVP_Base_Neoverse-E1"
 [neoverse_e1x2]="${fvp_arm_std_library};FVP_Base_Neoverse-E1"
 [neoverse_e1x4]="${fvp_arm_std_library};FVP_Base_Neoverse-E1"
 [neoverse_n1]="${fvp_arm_std_library};FVP_Base_Neoverse-N1"
-[neoverse_n2]="${fvp_arm_std_library_11_16};FVP_Base_Neoverse-N1x4"
+[neoverse_n2]="${fvp_arm_std_library};FVP_Base_Neoverse-N2"
 [neoverse-v1x4]="${fvp_arm_std_library};FVP_Base_Neoverse-V1"
 [morello]="${fvp_morello};FVP_Morello"
 [css-rdv1]="${fvp_rd_v1};FVP_RD_V1"
