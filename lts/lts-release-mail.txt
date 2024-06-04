@@ -4,7 +4,7 @@ Subject: Trusted Firmware-A LTS v{version} Release Announcement
 
 Hello,
 
-Trusted Firmware-A LTS version {version} is now available. This release contains the following patches.
+Trusted Firmware-A LTS version {version} is now available. This release contains the following patches:
 
 {commits}
 
