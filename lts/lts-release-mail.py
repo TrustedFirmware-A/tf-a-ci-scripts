@@ -74,7 +74,6 @@ def main():
     prev_release = ".".join(prev_comps)
 
     subjects = []
-    print("git log --oneline --reverse %s..%s" % (prev_release, args.release_tag))
     for l in os.popen("git log --oneline --reverse %s..%s" % (prev_release, args.release_tag)):
         skip = False
         for pat in SKIP_PATTERNS:
