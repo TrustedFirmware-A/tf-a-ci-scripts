@@ -23,7 +23,11 @@ post_tf_archive() {
 post_fetch_tf_resource() {
 	echo "archive.. $archive"
 
-	cp "$archive/scp_rom_bypass.bin" "$archive/scp_bl1.bin"
+	path_bypass_rom="$scp_root/build/juno/GNU/$mode/firmware-scp_romfw_bypass/bin"
+	cp "$path_bypass_rom/juno-bl1-bypass.bin" "$path_bypass_rom/scp_bl1.bin"
+	archive_file "$path_bypass_rom/scp_bl1.bin"
+
+	ls $archive
 
 	gen_recovery_image \
 		"$archive/bl1.bin" \
