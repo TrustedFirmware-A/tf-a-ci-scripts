@@ -27,6 +27,10 @@ def maybe_int(s):
     return s
 
 
+def is_sandbox_run():
+    return os.environ.get("SANDBOX_RUN") != "false"
+
+
 def main():
     argp = argparse.ArgumentParser(description="Prepare TF-A LTS release email content")
     argp.add_argument("-u", "--url", default=DEFAULT_URL, help="repository URL (default: %(default)s)")
@@ -104,12 +108,20 @@ def main():
     commits = commits.rstrip()
     references = references.rstrip()
 
+    if is_sandbox_run():
+        rtd_url = "https://pfalcon-trustedfirmware-a-sandbox.readthedocs.io/en/"
+    else:
+        rtd_url = "https://trustedfirmware-a.readthedocs.io/en/"
+    rtd_slug = args.release_tag.lower().replace("/", "-")
+    rtd_url += rtd_slug
+
     version = base_release[len("lts-v"):]
     sys.stdout.write(
         mail_template.format(
             version=version,
             commits=commits,
             references=references,
+            rtd_url=rtd_url,
         )
     )
 

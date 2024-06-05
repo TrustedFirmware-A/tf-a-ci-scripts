@@ -10,5 +10,8 @@ Trusted Firmware-A LTS version {version} is now available. This release contains
 
 {references}
 
+Alternatively, Change Log is available in the documentation section:
+{rtd_url}/change-log.html
+
 Thanks,
 TF-A LTS team
