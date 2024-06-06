@@ -109,7 +109,7 @@ def main():
     references = references.rstrip()
 
     if is_sandbox_run():
-        rtd_url = "https://pfalcon-trustedfirmware-a-sandbox.readthedocs.io/en/"
+        rtd_url = "https://trustedfirmware-a-sandbox.readthedocs.io/en/"
     else:
         rtd_url = "https://trustedfirmware-a.readthedocs.io/en/"
     rtd_slug = args.release_tag.lower().replace("/", "-")
