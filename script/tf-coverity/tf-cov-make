@@ -206,7 +206,12 @@ clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} MBOOT_EL_HASH_ALG=sha256 MEASUR
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} TPM_HASH_ALG=sha256 DRTM_SUPPORT=1 USE_ROMLIB=1
 
 # CoT descriptors in device tree
+# TBBR chain of trust
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} COT_DESC_IN_DTB=1 USE_ROMLIB=1
+# Dualroot chain of trust
+clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} COT_DESC_IN_DTB=1 COT=dualroot FVP_TRUSTED_SRAM_SIZE=384 SPD=tspd
+# CCA chain of trust
+clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} COT_DESC_IN_DTB=1 COT=cca FVP_TRUSTED_SRAM_SIZE=384
 
 # PSA FWU support
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} ARM_GPT_SUPPORT=1 PSA_FWU_SUPPORT=1 USE_ROMLIB=1 FVP_TRUSTED_SRAM_SIZE=384
