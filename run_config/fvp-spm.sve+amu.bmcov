@@ -34,7 +34,7 @@ generate_lava_job() {
 		has_branch_target_exception="1" \
 		has_smmuv3_params="1" \
 		memory_tagging_support_level="2" \
-		sve_plugin="1" \
+		has_sve="1" \
 		gicd_are_fixed_one="1" \
 		gicv3_ext_interrupt_range="1" \
 		gicd_ext_ppi_count="64" \

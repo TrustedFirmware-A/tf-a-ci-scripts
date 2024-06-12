@@ -50,7 +50,7 @@ reset_var gicv3_spi_count
 # Enable GICv4.1 functionality
 reset_var has_gicv4_1
 
-reset_var sve_plugin
+reset_var has_sve
 
 reset_var has_sme
 
@@ -117,11 +117,15 @@ ${gicd_its_count+-C gic_distributor.ITS-count=$gicd_its_count}
 ${gicd_virtual_lpi+-C gic_distributor.virtual-lpi-support=$gicd_virtual_lpi}
 ${has_gicv4_1+-C has-gicv4.1=$has_gicv4_1}
 
-${sve_plugin+--plugin=$sve_plugin_path}
-${sve_plugin+-C SVE.ScalableVectorExtension.enable_at_reset=0}
-${sve_plugin+-C SVE.ScalableVectorExtension.veclen=$((128 / 8))}
-${has_sme+-C SVE.ScalableVectorExtension.has_sme=1}
-${has_sme2+-C SVE.ScalableVectorExtension.has_sme2=1}
+${has_sve+-C cluster0.has_sve=1}
+${has_sve+-C cluster0.sve.veclen=$((128 / 8))}
+${has_sme+-C cluster0.sve.has_sme=1}
+${has_sme2+-C cluster0.sve.has_sme2=1}
+
+${has_sve+-C cluster1.has_sve=1}
+${has_sve+-C cluster1.sve.veclen=$((128 / 8))}
+${has_sme+-C cluster1.sve.has_sme=1}
+${has_sme2+-C cluster1.sve.has_sme2=1}
 
 ${bmcov_plugin+--plugin=$bmcov_plugin_path}
 

@@ -9,7 +9,6 @@
 if  is_arm_jenkins_env || upon "$local_ci"; then
 	set_model_path "$warehouse/SysGen/Models/$model_version/$model_build/external/models/$model_flavour/FVP_Base_RevC-2xAEMvA"
 
-	default_var sve_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/sve2-HEAD/ScalableVectorExtension.so"
 	default_var etm_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/ETMv4ExamplePlugin.so"
 	default_var ete_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/libete-plugin.so"
 else
@@ -22,7 +21,6 @@ else
         set_model_path "$models_dir"
 
         # ScalableVectorExtension is located at /opt/model/*/plugins/${model_flavour}
-        default_var sve_plugin_path "${models_dir/models/plugins}/ScalableVectorExtension.so"
 	default_var etm_plugin_path "${models_dir/models/plugins}/ETMv4ExamplePlugin.so"
 	default_var ete_plugin_path "${models_dir/models/plugins}/libete-plugin.so"
 fi
