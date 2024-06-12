@@ -16,7 +16,7 @@ generate_lava_job() {
 		bmcov_plugin_path="${coverage_trace_plugin}" \
 		ete_plugin="1" \
 		etm_plugin="1" \
-		sve_plugin="1" \
+		has_sve="1" \
 		etm_present="1" \
 		amu_present="1" \
 		has_sme="1" has_sme2="1" \
