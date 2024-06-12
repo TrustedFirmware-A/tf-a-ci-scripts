@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-set_model_path "$warehouse/SysGen/Models/$model_version_11_17/$model_build_11_17/external/models/$model_flavour_11_17/FVP_Base_AEMv8A-AEMv8A-AEMv8A-AEMv8A-CCN502"
+set_model_path "$warehouse/SysGen/Models/$model_version/$model_build/external/models/$model_flavour/FVP_Base_AEMv8A-AEMv8A-AEMv8A-AEMv8A-CCN502"
 
 default_var cluster_0_num_cores 4
 default_var cluster_1_num_cores 4
