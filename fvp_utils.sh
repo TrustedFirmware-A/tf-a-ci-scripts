@@ -41,12 +41,8 @@ rootfs_url="$linaro_release/lt-vexpress64-openembedded_minimal-armv8-gcc-5.2_201
 default_model_dtb="dtb.bin"
 
 # FVP containers and model paths
-fvp_arm_std_library_11_17="fvp:fvp_arm_std_library_${model_version_11_17}_${model_build_11_17};/opt/model/FVP_ARM_Std_Library/FVP_Base"
-
 fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build};/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
-fvp_base_aemv8a_gic600ae="fvp:fvp_base_aemv8a-gic600ae_${model_version_11_17}_${model_build_11_17};/opt/model/FVP_Base_AEMv8A-GIC600AE_pkg/models/${model_flavour_11_17}"
-fvp_base_aemv8a_aemv8a_aemv8a_aemv8a_ccn502="fvp:fvp_base_aemv8a-aemv8a-aemv8a-aemv8a-ccn502_${model_version}_${model_build};/opt/model/FVP_Base_AEMv8A-AEMv8A-AEMv8A-AEMv8A-CCN502_pkg/models/${model_flavour}"
 fvp_base_aemv8r="fvp:fvp_base_aemv8r_${model_version}_${model_build};/opt/model/AEMv8R_base_pkg/models/${model_flavour}"
 
 # CSS model list
@@ -64,11 +60,9 @@ fvp_tc2="fvp:fvp_tc2_11.18_28;/opt/model/FVP_TC2/models/${model_flavour}"
 
 declare -A fvp_models
 fvp_models=(
-[base-aemv8a-quad]="${fvp_base_aemv8a_aemv8a_aemv8a_aemv8a_ccn502};FVP_Base_AEMv8A-AEMv8A-AEMv8A-AEMv8A-CCN502"
 [base-aemv8a-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
 [base-aemv8a-latest-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
 [base-aemva]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
-[base-aemv8a-gic600ae]="${fvp_base_aemv8a_gic600ae};FVP_Base_AEMv8A-GIC600AE"
 [base-aemv8a]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
 [cortex-a32x4]="${fvp_arm_std_library};FVP_Base_Cortex-A32x4"
 [cortex-a35x4]="${fvp_arm_std_library};FVP_Base_Cortex-A35x4"
