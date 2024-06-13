@@ -39,6 +39,11 @@ INCLUDE_RE = re.compile(r"^\s*#\s*include\s\s*(?P<path>[\"<].+[\">])")
 INCLUDE_RE_DIFF = re.compile(r"^\+?\s*#\s*include\s\s*(?P<path>[\"<].+[\">])")
 
 
+def subprocess_run(cmd, **kwargs):
+    logging.debug("Running command: %r %r", cmd, kwargs)
+    return subprocess.run(cmd, **kwargs)
+
+
 def include_paths(lines, diff_mode=False):
     """List all include paths in a file. Ignore starting `+` in diff mode."""
     pattern = INCLUDE_RE_DIFF if diff_mode else INCLUDE_RE
@@ -189,7 +194,7 @@ def patch_is_correct(base_commit, end_commit):
     """Get the output of a git diff and analyse each modified file."""
 
     # Get patches of the affected commits with one line of context.
-    gitlog = subprocess.run(
+    gitlog = subprocess_run(
         [
             "git",
             "log",
@@ -251,12 +256,20 @@ only files that are modified by the latest patch(es).""",
         help="Final commit in patch mode (default: %(default)s)",
         default="HEAD",
     )
+    parser.add_argument(
+        "--debug",
+        help="Enable debug logging",
+        action="store_true",
+    )
     args = parser.parse_args(argv)
     return args
 
 
 if __name__ == "__main__":
     args = parse_cmd_line(sys.argv[1:], sys.argv[0])
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
 
     os.chdir(args.tree)
 
