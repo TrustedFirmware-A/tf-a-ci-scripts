@@ -13,7 +13,7 @@ if [[ "$2" == "patch" ]]; then
   echo "# Check order of includes on the last patch"
   TEST_CASE="Order of includes on the last patch(es)"
   "$CI_ROOT/script/static-checks/check-include-order.py" --tree "$1" \
-      --patch --from-ref "$TF_GERRIT_BRANCH" \
+      --patch --from-ref "refs/heads/$TF_GERRIT_BRANCH" \
       &> "$LOG_FILE"
 else
   echo "# Check order of includes of the entire source tree"
