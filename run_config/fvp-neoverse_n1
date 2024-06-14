@@ -8,10 +8,10 @@
 generate_lava_job() {
 	local model="neoverse_n1"
 
-	uart="0" set_expect_variable "num_cpus" "4"
+	uart="0" set_expect_variable "num_cpus" "1"
 
 	model="$model" \
-	cluster_0_num_cores="4" \
+	cluster_0_num_cores="1" \
 	use_pchannel_for_threads="1" \
 	gen_model_params
 
