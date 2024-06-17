@@ -17,15 +17,10 @@ git show --summary
 
 LOG_FILE=$(mktemp -t coding-style-check.XXXX)
 
-# Make the patch against the specified remote branch
-if [ -n "$CODING_STYLE_BASE_BRANCH" ]; then
-	BASE_COMMIT="BASE_COMMIT=$CODING_STYLE_BASE_BRANCH"
-fi
-
 chmod +x $CI_ROOT/script/static-checks/checkpatch.pl
 
 CHECKPATCH=$CI_ROOT/script/static-checks/checkpatch.pl \
-  make checkpatch &> "$LOG_FILE"
+  make checkpatch BASE_COMMIT=HEAD^ &> "$LOG_FILE"
 RES=$?
 
 if [[ "$RES" == 0 ]]; then
