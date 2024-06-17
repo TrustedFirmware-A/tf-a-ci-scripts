@@ -9,18 +9,21 @@
 # against the Linux coding style using the checkpatch.pl script from
 # the Linux kernel source tree.
 
-TEST_CASE="Coding style on current patch"
+TEST_CASE="Codestyle on the entire patch chain"
 
-echo "# Check coding style on the last patch"
+echo "# $TEST_CASE"
 
-git show --summary
+BASE_COMMIT=origin/$TF_GERRIT_BRANCH
+COMMON_COMMIT=$(git merge-base HEAD $BASE_COMMIT)
+
+git log --oneline $COMMON_COMMIT..HEAD
 
 LOG_FILE=$(mktemp -t coding-style-check.XXXX)
 
 chmod +x $CI_ROOT/script/static-checks/checkpatch.pl
 
 CHECKPATCH=$CI_ROOT/script/static-checks/checkpatch.pl \
-  make checkpatch BASE_COMMIT=HEAD^ &> "$LOG_FILE"
+  make checkpatch BASE_COMMIT=origin/$TF_GERRIT_BRANCH &> "$LOG_FILE"
 RES=$?
 
 if [[ "$RES" == 0 ]]; then
