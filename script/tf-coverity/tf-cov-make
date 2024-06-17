@@ -193,6 +193,9 @@ clean_build $fvp_common_flags DEBUG=1 USE_DEBUGFS=1
 # MPAM feature
 clean_build $fvp_common_flags ENABLE_FEAT_MPAM=1
 
+# Debugv8p9 feature
+clean_build $fvp_common_flags ENABLE_FEAT_DEBUGV8P9=1
+
 # Using GICv3.1 driver with extended PPI and SPI range
 clean_build $fvp_common_flags GIC_EXT_INTID=1
 
