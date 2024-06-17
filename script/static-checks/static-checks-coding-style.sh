@@ -16,8 +16,6 @@ echo "# $TEST_CASE"
 BASE_COMMIT=origin/$TF_GERRIT_BRANCH
 COMMON_COMMIT=$(git merge-base HEAD $BASE_COMMIT)
 
-git log --oneline $COMMON_COMMIT..HEAD
-
 LOG_FILE=$(mktemp -t coding-style-check.XXXX)
 
 chmod +x $CI_ROOT/script/static-checks/checkpatch.pl
@@ -43,6 +41,10 @@ fi
 echo >> "$LOG_TEST_FILENAME"
 echo "****** $TEST_CASE ******" >> "$LOG_TEST_FILENAME"
 echo >> "$LOG_TEST_FILENAME"
+
+git log --oneline $COMMON_COMMIT..HEAD >> "$LOG_TEST_FILENAME"
+echo >> "$LOG_TEST_FILENAME"
+
 if [[ "$EXIT_VALUE" == 0 ]]; then
   echo "Result : SUCCESS" >> "$LOG_TEST_FILENAME"
 else
