@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -15,6 +15,8 @@ cd "$(dirname "$0")/../.."
 export CI_ROOT=$(pwd)
 cd -
 
+. $CI_ROOT/script/static-checks/common.sh
+
 # Initialize log file
 
 export LOG_TEST_FILENAME=$(pwd)/static-checks.log
@@ -24,6 +26,14 @@ echo "###### Static checks ######"
 echo
 
 echo "###### Static checks ######" > "$LOG_TEST_FILENAME"
+echo >> "$LOG_TEST_FILENAME"
+
+echo "Patch series being checked:" >> "$LOG_TEST_FILENAME"
+git log --oneline $(get_merge_base)..HEAD >> "$LOG_TEST_FILENAME"
+echo >> "$LOG_TEST_FILENAME"
+echo "Base branch reference commit:" >> "$LOG_TEST_FILENAME"
+git log --oneline -1 $(get_merge_base) >> "$LOG_TEST_FILENAME"
+
 echo >> "$LOG_TEST_FILENAME"
 
 # Reset error counters
