@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2022 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-TEST_CASE="Line endings not valid"
+TEST_CASE="Line endings are valid"
 
 EXIT_VALUE=0
 
