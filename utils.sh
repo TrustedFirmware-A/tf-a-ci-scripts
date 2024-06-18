@@ -543,6 +543,9 @@ jenkins_url="${JENKINS_URL%/*}"
 jenkins_url="${jenkins_url:-https://ci.trustedfirmware.org/}"
 
 # Model revisions
+model_version_11_24="${model_version:-11.24}"
+model_build_11_24="${model_build:-24}"
+
 model_version="${model_version:-11.26}"
 model_build="${model_build:-11}"
 model_flavour="${model_flavour:-Linux64_GCC-9.3}"

@@ -45,6 +45,8 @@ rootfs_url="$linaro_release/lt-vexpress64-openembedded_minimal-armv8-gcc-5.2_201
 default_model_dtb="dtb.bin"
 
 # FVP containers and model paths
+fvp_arm_std_library_11_24="fvp:fvp_arm_std_library_${model_version_11_24}_${model_build_11_24};/opt/model/FVP_ARM_Std_Library/FVP_Base"
+
 fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build};/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
 fvp_base_aemv8r="fvp:fvp_base_aemv8r_${model_version}_${model_build};/opt/model/AEMv8R_base_pkg/models/${model_flavour}"
@@ -75,8 +77,8 @@ fvp_models=(
 [cortex-a57x2-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A57x2-A53x4"
 [cortex-a57x4]="${fvp_arm_std_library};FVP_Base_Cortex-A57x4"
 [cortex-a57x4-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A57x4-A53x4"
-[cortex-a65aex8]="${fvp_arm_std_library};FVP_Base_Cortex-A65AE"
-[cortex-a65x4]="${fvp_arm_std_library};FVP_Base_Cortex-A65"
+[cortex-a65aex8]="${fvp_arm_std_library_11_24};FVP_Base_Cortex-A65AE"
+[cortex-a65x4]="${fvp_arm_std_library_11_24};FVP_Base_Cortex-A65"
 [cortex-a72x4]="${fvp_arm_std_library};FVP_Base_Cortex-A72x4"
 [cortex-a72x4-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A72x4-A53x4"
 [cortex-a73x4]="${fvp_arm_std_library};FVP_Base_Cortex-A73x4"
@@ -91,9 +93,9 @@ fvp_models=(
 [cortex-a78cx4]="${fvp_arm_std_library};FVP_Base_Cortex-A78C"
 [cortex-x2]="${fvp_arm_std_library};FVP_Base_Cortex-X2"
 [cortex-a710]="${fvp_arm_std_library};FVP_Base_Cortex-A710"
-[neoverse_e1x1]="${fvp_arm_std_library};FVP_Base_Neoverse-E1"
-[neoverse_e1x2]="${fvp_arm_std_library};FVP_Base_Neoverse-E1"
-[neoverse_e1x4]="${fvp_arm_std_library};FVP_Base_Neoverse-E1"
+[neoverse_e1x1]="${fvp_arm_std_library_11_24};FVP_Base_Neoverse-E1"
+[neoverse_e1x2]="${fvp_arm_std_library_11_24};FVP_Base_Neoverse-E1"
+[neoverse_e1x4]="${fvp_arm_std_library_11_24};FVP_Base_Neoverse-E1"
 [neoverse_n1]="${fvp_arm_std_library};FVP_Base_Neoverse-N1"
 [neoverse_n2]="${fvp_arm_std_library};FVP_Base_Neoverse-N2"
 [neoverse-v1x4]="${fvp_arm_std_library};FVP_Base_Neoverse-V1"
