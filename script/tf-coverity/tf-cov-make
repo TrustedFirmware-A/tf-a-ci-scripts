@@ -646,54 +646,54 @@ stm32mp1_common_flags="ARCH=aarch32 \
 		       PLAT=stm32mp1"
 
 # STM32MP1 SDMMC boot
-make $(common_flags) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
+clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
     BUILD_PLAT=build/stm32mp1-sdmmc/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 SDMMC boot BL2 without AARCH32_SP
-make $(common_flags) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
+clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
     BUILD_PLAT=build/stm32mp1-sdmmc/debug \
     bl2
 
 # STM32MP1 SDMMC boot BL2 with OP-TEE & FWU
-make $(common_flags) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
+clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
     BUILD_PLAT=build/stm32mp1-sdmmc/debug \
     PSA_FWU_SUPPORT=1 AARCH32_SP=optee \
     bl2
 
 # STM32MP1 eMMC boot
-make $(common_flags) ${stm32mp1_common_flags} STM32MP_EMMC=1 \
+clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_EMMC=1 \
     BUILD_PLAT=build/stm32mp1-emmc/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 Raw NAND boot
-make $(common_flags) ${stm32mp1_common_flags} STM32MP_RAW_NAND=1 \
+clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_RAW_NAND=1 \
     BUILD_PLAT=build/stm32mp1-nand/debug \
     PSA_FWU_SUPPORT=1 AARCH32_SP=optee \
     bl2
 
 # STM32MP1 SPI NAND boot
-make $(common_flags) ${stm32mp1_common_flags} STM32MP_SPI_NAND=1 \
+clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_SPI_NAND=1 \
     BUILD_PLAT=build/stm32mp1-snand/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 SPI NOR boot
-make $(common_flags) ${stm32mp1_common_flags} STM32MP_SPI_NOR=1 \
+clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_SPI_NOR=1 \
     BUILD_PLAT=build/stm32mp1-snor/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 UART boot
-make $(common_flags) ${stm32mp1_common_flags} STM32MP_UART_PROGRAMMER=1 \
+clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_UART_PROGRAMMER=1 \
     BUILD_PLAT=build/stm32mp1-uart/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 USB boot
-make $(common_flags) ${stm32mp1_common_flags} STM32MP_USB_PROGRAMMER=1 \
+clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_USB_PROGRAMMER=1 \
     BUILD_PLAT=build/stm32mp1-usb/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 TBBR
-make $(common_flags release) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
+clean_build $(common_flags release) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
     BUILD_PLAT=build/stm32mp1-sdmmc-tbbr/debug \
     MBEDTLS_DIR=$(pwd)/mbedtls TRUSTED_BOARD_BOOT=1 \
     AARCH32_SP=sp_min bl2 bl32
@@ -704,21 +704,21 @@ stm32mp13_common_flags="${stm32mp1_common_flags} \
 			STM32MP13=1"
 
 # STM32MP13 SDMMC boot
-make $(common_flags) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
+clean_build $(common_flags) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
     BUILD_PLAT=build/stm32mp1-mp13-sdmmc/debug bl2
 
 # STM32MP13 SDMMC boot with FWU
-make $(common_flags) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
+clean_build $(common_flags) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
     PSA_FWU_SUPPORT=1 \
     BUILD_PLAT=build/stm32mp1-mp13-sdmmc/debug bl2
 
 # STM32MP13 TBBR
-make $(common_flags release) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
+clean_build $(common_flags release) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
     MBEDTLS_DIR=$(pwd)/mbedtls TRUSTED_BOARD_BOOT=1 \
     BUILD_PLAT=build/stm32mp1-mp13-sdmmc-tbbr/debug bl2
 
 # STM32MP13 TBBR DECRYPTION AES GCM
-make $(common_flags release) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
+clean_build $(common_flags release) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
     MBEDTLS_DIR=$(pwd)/mbedtls TRUSTED_BOARD_BOOT=1 \
     DECRYPTION_SUPPORT=aes_gcm ENCRYPT_BL32=1 \
     BUILD_PLAT=build/stm32mp1-mp13-sdmmc-tbbr-dec/debug bl2
@@ -728,12 +728,12 @@ stm32mp2_common_flags="ARCH=aarch64 \
 		       PLAT=stm32mp2"
 
 # STM32MP25 SDMMC boot
-make $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
+clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
     SPD=opteed STM32MP_DDR4_TYPE=1 \
     BUILD_PLAT=build/stm32mp2-mp25-sdmmc/debug
 
 # STM32MP25 USB boot
-make $(common_flags) ${stm32mp2_common_flags} STM32MP_USB_PROGRAMMER=1 \
+clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_USB_PROGRAMMER=1 \
     SPD=opteed STM32MP_DDR4_TYPE=1 \
     BUILD_PLAT=build/stm32mp2-mp25-usb/debug
 
