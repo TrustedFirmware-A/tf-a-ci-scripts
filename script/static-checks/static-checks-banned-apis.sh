@@ -7,13 +7,17 @@
 
 # static-checks-banned-apis.sh <path-to-root-folder> [patch]
 
+this_dir="$(readlink -f "$(dirname "$0")")"
+. $this_dir/common.sh
+
+
 LOG_FILE=$(mktemp -t banned-api-check.XXXX)
 
 if [[ "$2" == "patch" ]]; then
   echo "# Check for banned APIs in the patch"
   TEST_CASE="Banned API check on patch(es)"
   "$CI_ROOT/script/static-checks/check-banned-api.py" --tree "$1" \
-      --patch --from-ref origin/master \
+      --patch --from-ref $(get_merge_base) \
       &> "$LOG_FILE"
 else
   echo "# Check for banned APIs in entire source tree"

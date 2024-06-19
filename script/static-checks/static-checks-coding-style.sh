@@ -9,7 +9,11 @@
 # against the Linux coding style using the checkpatch.pl script from
 # the Linux kernel source tree.
 
-TEST_CASE="Codestyle on the entire patch chain"
+this_dir="$(readlink -f "$(dirname "$0")")"
+. $this_dir/common.sh
+
+
+TEST_CASE="Coding style on current patch"
 
 echo "# $TEST_CASE"
 
@@ -21,7 +25,7 @@ LOG_FILE=$(mktemp -t coding-style-check.XXXX)
 chmod +x $CI_ROOT/script/static-checks/checkpatch.pl
 
 CHECKPATCH=$CI_ROOT/script/static-checks/checkpatch.pl \
-  make checkpatch BASE_COMMIT=origin/$TF_GERRIT_BRANCH &> "$LOG_FILE"
+  make checkpatch BASE_COMMIT=$(get_merge_base) &> "$LOG_FILE"
 RES=$?
 
 if [[ "$RES" == 0 ]]; then
