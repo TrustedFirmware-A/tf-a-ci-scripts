@@ -5,7 +5,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-TEST_CASE="Line endings not valid"
+this_dir="$(readlink -f "$(dirname "$0")")"
+. $this_dir/common.sh
+
+
+TEST_CASE="Line endings are valid"
 
 EXIT_VALUE=0
 
@@ -15,8 +19,11 @@ LOG_FILE=$(mktemp -t common.XXXX)
 
 if [[ "$2" == "patch" ]]; then
     cd "$1"
-    parent=$(git merge-base HEAD refs/remotes/origin/lts-v2.8 | head -1)
-    git diff ${parent}..HEAD --no-ext-diff --unified=0 --exit-code -a --no-prefix | awk '/^\+/ && /\r$/' &> "$LOG_FILE"
+    shopt -s globstar
+    parent=$(get_merge_base)
+    git diff $parent..HEAD --no-ext-diff --unified=0 --exit-code -a \
+      --no-prefix **/*.{S,c,h,i,dts,dtsi,rst,mk} Makefile | \
+      awk '/^\+/ && /\r$/' &> "$LOG_FILE"
 else
   # For all the source and doc files
   # We only return the files that contain CRLF

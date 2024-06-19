@@ -6,6 +6,11 @@
 #
 
 # test-package-check-copyright.sh DIRECTORY
+
+this_dir="$(readlink -f "$(dirname "$0")")"
+. $this_dir/common.sh
+
+
 DIRECTORY="$1"
 
 TEST_CASE="Copyright headers of files modified by this patch"
@@ -14,7 +19,7 @@ echo "# Check Copyright Test"
 
 LOG_FILE=`mktemp -t common.XXXX`
 
-"$CI_ROOT"/script/static-checks/check-copyright.py --tree "$DIRECTORY" --patch &> "$LOG_FILE"
+"$CI_ROOT"/script/static-checks/check-copyright.py --tree "$DIRECTORY" --patch --from-ref $(get_merge_base) &> "$LOG_FILE"
 RES=$?
 
 if [ -s "$LOG_FILE" ]; then
