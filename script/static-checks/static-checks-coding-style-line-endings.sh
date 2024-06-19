@@ -5,6 +5,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
+this_dir="$(readlink -f "$(dirname "$0")")"
+. $this_dir/common.sh
+
+
 TEST_CASE="Line endings are valid"
 
 EXIT_VALUE=0
@@ -16,7 +20,7 @@ LOG_FILE=$(mktemp -t common.XXXX)
 if [[ "$2" == "patch" ]]; then
     cd "$1"
     shopt -s globstar
-    parent=$(git merge-base HEAD refs/remotes/origin/master | head -1)
+    parent=$(get_merge_base)
     git diff $parent..HEAD --no-ext-diff --unified=0 --exit-code -a \
       --no-prefix **/*.{S,c,h,i,dts,dtsi,rst,mk} Makefile | \
       awk '/^\+/ && /\r$/' &> "$LOG_FILE"

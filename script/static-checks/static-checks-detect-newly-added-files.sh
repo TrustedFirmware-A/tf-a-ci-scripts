@@ -11,6 +11,10 @@
 # It runs on every TF-A patch and detects the new files and updates
 # the patch contibutor to include them for Coverity Scan analysis.
 
+this_dir="$(readlink -f "$(dirname "$0")")"
+. $this_dir/common.sh
+
+
 LOG_FILE=$(mktemp -t files-detection-check.XXXX)
 TFA_PATCH_NEWFILES_LIST=$(mktemp -t tfa-patch-newfiles-list.XXXX)
 EXIT_VALUE=0
@@ -56,7 +60,7 @@ test group." | tee -a "$LOG_FILE"
   echo "# Check to detect whether newly added files are analysed by Coverity in the patch"
   TEST_CASE="Newly added files detection check for Coverity Scan analysis on patch(es)"
 # Extracting newly added source files added between commits.
-  git diff origin/integration...HEAD --name-only --diff-filter=A "*.c" &> "$TFA_PATCH_NEWFILES_LIST"
+  git diff $(get_merge_base)..HEAD --name-only --diff-filter=A "*.c" &> "$TFA_PATCH_NEWFILES_LIST"
   if [ -s "$TFA_PATCH_NEWFILES_LIST" ]
   then
     file_updation_report

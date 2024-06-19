@@ -7,13 +7,17 @@
 
 # unittest-include-order.sh <path-to-root-folder> [patch]
 
+this_dir="$(readlink -f "$(dirname "$0")")"
+. $this_dir/common.sh
+
+
 LOG_FILE=$(mktemp -t include-order-check.XXXX)
 
 if [[ "$2" == "patch" ]]; then
-  echo "# Check order of includes on the last patch"
-  TEST_CASE="Order of includes on the last patch(es)"
+  TEST_CASE="Order of includes on the patch series"
+  echo "# $TEST_CASE"
   "$CI_ROOT/script/static-checks/check-include-order.py" --tree "$1" \
-      --patch --from-ref origin/master \
+      --patch --from-ref $(get_merge_base) \
       &> "$LOG_FILE"
 else
   echo "# Check order of includes of the entire source tree"
