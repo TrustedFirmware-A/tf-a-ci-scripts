@@ -349,6 +349,12 @@ clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} PLATFOR
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} PLATFORM_TEST=rse-nv-counters
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} PLATFORM_TEST=tfm-testsuite \
     MEASURED_BOOT=1 TF_M_TESTS_PATH=$(pwd)/../tf-m-tests TF_M_EXTRAS_PATH=$(pwd)/../tf-m-extras
+clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=3 ${ARM_TBB_OPTIONS} \
+    PLAT_MHU_VERSION=3
+clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=3 ${ARM_TBB_OPTIONS} PLATFORM_TEST=rse-rotpk
+clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=3 ${ARM_TBB_OPTIONS} PLATFORM_TEST=rse-nv-counters
+clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=3 ${ARM_TBB_OPTIONS} PLATFORM_TEST=tfm-testsuite \
+    TF_M_TESTS_PATH=$(pwd)/../tf-m-tests TF_M_EXTRAS_PATH=$(pwd)/../tf-m-extras
 
 #
 # Morello platform

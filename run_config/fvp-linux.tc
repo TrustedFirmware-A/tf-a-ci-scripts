@@ -20,8 +20,8 @@ fetch_tf_resource() {
 		archive_file "scp_rom.bin"
 	fi
 
-	# RSE is applicable to TC2
-	if [ $plat_variant -eq 2 ]; then
+	# RSE is applicable to TC2 and TC3
+	if [ $plat_variant -eq 2 ] || [ $plat_variant -eq 3 ]; then
 
 	    # Hold RSE terminal_uart_ap
 	    uart="1" port="5003" file="hold_uart.exp" track_expect
