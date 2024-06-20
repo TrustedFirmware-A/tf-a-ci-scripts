@@ -700,6 +700,7 @@ clean_build $(common_flags release) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
 
 stm32mp13_common_flags="${stm32mp1_common_flags} \
 			AARCH32_SP=optee \
+			DTB_FILE_NAME=stm32mp135f-dk.dtb \
 			PSA_FWU_SUPPORT=1 \
 			STM32MP13=1"
 
