@@ -55,7 +55,7 @@ fvp_base_aemv8r="fvp:fvp_base_aemv8r_${model_version}_${model_build};/opt/model/
 fvp_morello="fvp:fvp_morello_0.11_33;/opt/model/FVP_Morello/models/Linux64_GCC-6.4"
 fvp_rd_v1="fvp:fvp_rd_v1_${model_version}_${model_build};/opt/model/FVP_RD_V1/models/${model_flavour}"
 fvp_tc2="fvp:fvp_tc2_11.23_17;/opt/model/FVP_TC2/models/${model_flavour}"
-fvp_tc3="fvp:fvp_tc3_0.0_8192;/opt/model/FVP_TC3/models/${model_flavour}"
+fvp_tc3="fvp:fvp_tc3_0.0_8304;/opt/model/FVP_TC3/models/${model_flavour}"
 
 # FVP associate array, run_config are keys and fvp container parameters are the values
 #   Container parameters syntax: <model name>;<model dir>;<model bin>
