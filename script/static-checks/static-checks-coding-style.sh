@@ -15,10 +15,9 @@ this_dir="$(readlink -f "$(dirname "$0")")"
 
 TEST_CASE="Coding style on current patch"
 
-echo "# $TEST_CASE"
+echo "# Check coding style on the last patch"
 
-BASE_COMMIT=origin/$TF_GERRIT_BRANCH
-COMMON_COMMIT=$(git merge-base HEAD $BASE_COMMIT)
+git show --summary
 
 LOG_FILE=$(mktemp -t coding-style-check.XXXX)
 
@@ -45,10 +44,6 @@ fi
 echo >> "$LOG_TEST_FILENAME"
 echo "****** $TEST_CASE ******" >> "$LOG_TEST_FILENAME"
 echo >> "$LOG_TEST_FILENAME"
-
-git log --oneline $COMMON_COMMIT..HEAD >> "$LOG_TEST_FILENAME"
-echo >> "$LOG_TEST_FILENAME"
-
 if [[ "$EXIT_VALUE" == 0 ]]; then
   echo "Result : SUCCESS" >> "$LOG_TEST_FILENAME"
 else
