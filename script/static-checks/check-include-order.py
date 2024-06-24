@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -26,8 +26,6 @@ VALID_FILE_EXTENSIONS = (".c", ".S", ".h")
 IGNORED_FOLDERS = (
     "include/lib/stdlib",
     "include/lib/libc",
-    "include/lib/libfdt",
-    "lib/libfdt",
     "lib/libc",
     "lib/stdlib",
 )
@@ -67,7 +65,7 @@ def dir_include_paths(directory):
     dir_includes = set()
     for (root, _dirs, files) in os.walk(directory):
         for fname in files:
-            if fname.endswith(".h"):
+            if fname.endswith(".h") or fname.endswith(".S"):
                 names = os.path.join(root, fname).split(os.sep)
                 for i in range(len(names)):
                     suffix_path = "/".join(names[i:])
@@ -83,6 +81,11 @@ def inc_order_is_correct(inc_list, path, commit_hash=""):
     if len(inc_list) < 2:
         return True
 
+    if utils.file_is_ignored(
+            path, VALID_FILE_EXTENSIONS, IGNORED_FILES, IGNORED_FOLDERS
+        ):
+        return True
+
     if commit_hash != "":
         commit_hash = commit_hash + ":"
 
@@ -93,7 +96,14 @@ def inc_order_is_correct(inc_list, path, commit_hash=""):
     plat_common_incs = dir_include_paths("include/plat/common")
     plat_incs.difference_update(plat_common_incs)
     libc_incs = dir_include_paths("include/lib/libc")
-    proj_incs = dir_include_paths("include/")
+    proj_incs = dir_include_paths("include/") | dir_include_paths("drivers/")
+    third_party_incs = []
+    third_party_incs.append(dir_include_paths("mbedtls"))
+    third_party_incs.append(dir_include_paths("include/lib/libfdt"))
+    third_party_incs.append(dir_include_paths("lib/compiler-rt"))
+    third_party_incs.append(dir_include_paths("lib/libfdt"))
+    third_party_incs.append(dir_include_paths("lib/zlib"))
+
     indices = []
 
     for inc in inc_list:
@@ -101,10 +111,12 @@ def inc_order_is_correct(inc_list, path, commit_hash=""):
         inc_group_index = int(inc_path not in libc_incs)
 
         if inc_group_index:
-            if inc_path in proj_incs:
+            if inc_path in third_party_incs:
                 inc_group_index = 1
-            elif inc_path in plat_incs:
+            elif inc_path in proj_incs:
                 inc_group_index = 2
+            elif inc_path in plat_incs:
+                inc_group_index = 3
 
         incs[inc_group_index].append(inc_path)
         indices.append((inc_group_index, inc))
@@ -249,7 +261,7 @@ only files that are modified by the latest patch(es).""",
     parser.add_argument(
         "--from-ref",
         help="Base commit in patch mode (default: %(default)s)",
-        default="lts-v2.8",
+        default="master",
     )
     parser.add_argument(
         "--to-ref",
