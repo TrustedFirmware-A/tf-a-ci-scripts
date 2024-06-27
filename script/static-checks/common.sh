@@ -6,7 +6,7 @@
 
 function get_base_branch() {
     # Remove prefix
-    echo origin/${TF_GERRIT_BRANCH#refs/heads/}
+    echo origin/${GERRIT_BRANCH#refs/heads/}
 }
 
 function get_merge_base() {
