@@ -73,9 +73,7 @@ done)
 
 - boot:
     method: fvp
-# license_variable is required only for FlexNet licensing. As we're switching
-# to UBL-only config, comment it, to be removed as the next stage.
-#    license_variable: ARMLMD_LICENSE_FILE=${armlmd_license_file}
+    license_variable: ARMLMD_LICENSE_FILE=${armlmd_license_file}
     docker:
       name: ${docker_name}
       local: true
