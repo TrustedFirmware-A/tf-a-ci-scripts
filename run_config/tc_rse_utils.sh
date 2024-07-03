@@ -76,21 +76,39 @@ update_fip() {
 	archive_file "rse_bl2_signed.bin"
 
 	# Get pre-built rse TF-M S signed bin
-	url="$prebuild_prefix/rse_s_signed.bin" fetch_file
-	archive_file "rse_s_signed.bin"
+	if [ $plat_variant -eq 2 ]; then
+		url="$prebuild_prefix/rse_s_signed.bin" fetch_file
+		archive_file "rse_s_signed.bin"
+	elif [ $plat_variant -eq 3 ]; then
+		url="$prebuild_prefix/rse_s_encrypted.bin" fetch_file
+		archive_file "rse_s_encrypted.bin"
+		url="$prebuild_prefix/rse_s_sic_tables_signed.bin" fetch_file
+		archive_file "rse_s_sic_tables_signed.bin"
+	fi
 
 	# Get pre-built SCP signed bin
 	url="$prebuild_prefix/signed_scp_romfw.bin" fetch_file
 	archive_file "signed_scp_romfw.bin"
 
 	# Create FIP layout
-	"$fiptool" update \
-		--align 8192 --rse-bl2 "$archive/rse_bl2_signed.bin" \
-		--align 8192 --rse-s "$archive/rse_s_signed.bin" \
-		--align 8192 --rse-scp-bl1 "$archive/signed_scp_romfw.bin" \
-		--align 8192 --rse-ap-bl1 "$archive/$signed_bin" \
-		--out "host_flash_fip.bin" \
-		"$archive/fip.bin"
+	if [ $plat_variant -eq 2 ]; then
+		"$fiptool" update \
+			--align 8192 --rse-bl2 "$archive/rse_bl2_signed.bin" \
+			--align 8192 --rse-s "$archive/rse_s_signed.bin" \
+			--align 8192 --rse-scp-bl1 "$archive/signed_scp_romfw.bin" \
+			--align 8192 --rse-ap-bl1 "$archive/$signed_bin" \
+			--out "host_flash_fip.bin" \
+			"$archive/fip.bin"
+	elif [ $plat_variant -eq 3 ]; then
+		"$fiptool" update \
+			--align 8192 --rse-bl2 "$archive/rse_bl2_signed.bin" \
+			--align 8192 --rse-scp-bl1 "$archive/signed_scp_romfw.bin" \
+			--align 8192 --rse-ap-bl1 "$archive/$signed_bin" \
+			--align 8192 --rse-s "$archive/rse_s_encrypted.bin" \
+			--align 8192 --rse-sic-tables-s "$archive/rse_s_sic_tables_signed.bin" \
+			--out "host_flash_fip.bin" \
+			"$archive/fip.bin"
+	fi
 	archive_file "host_flash_fip.bin"
 }
 
