@@ -345,7 +345,6 @@ clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} MEASURE
     PLAT_MHU_VERSION=3
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} MEASURED_BOOT=1 \
     DICE_PROTECTION_ENVIRONMENT=1 QCBOR_DIR=$(pwd)/qcbor
-clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} PLATFORM_TEST=rse-rotpk
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} PLATFORM_TEST=rse-nv-counters
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} PLATFORM_TEST=tfm-testsuite \
     MEASURED_BOOT=1 TF_M_TESTS_PATH=$(pwd)/../tf-m-tests TF_M_EXTRAS_PATH=$(pwd)/../tf-m-extras
