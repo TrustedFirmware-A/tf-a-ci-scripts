@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2023, Arm Limited. All rights reserved.
+# Copyright (c) 2024, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -25,7 +25,7 @@ generate_lava_job() {
 		supports_trace_buffer_control_regs="1" \
 		supports_trace_filter_regs="2" \
 		supports_system_trace_filter_regs="1" \
-		arch_version="9.2" \
+		arch_version="8.9" \
 		gen_model_params
 
 	model="$model" gen_fvp_yaml
