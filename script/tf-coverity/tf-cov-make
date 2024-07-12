@@ -282,9 +282,9 @@ make $(common_flags) PLAT=rdn2 ${ARM_TBB_OPTIONS} SPMC_AT_EL3=1 SPD=spmd \
     PLAT_RO_XLAT_TABLES=1 all
 
 #
-# Reference Design Platform RD-Fremont
+# Reference Design Platform RD-V3
 #
-make $(common_flags) PLAT=rdfremont ${ARM_TBB_OPTIONS} COT=cca DEBUG=1 \
+make $(common_flags) PLAT=rdv3 ${ARM_TBB_OPTIONS} COT=cca DEBUG=1 \
     ENABLE_RME=1 MEASURED_BOOT=1 PLAT_MHU_VERSION=3 RMM=/dev/null \
     RME_GPT_BITLOCK_BLOCK=0 all
 
