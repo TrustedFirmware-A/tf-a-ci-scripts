@@ -1135,7 +1135,7 @@ apply_tf_patch() {
 }
 
 # Clear workspace for a local run
-if not_upon "$jenkins_run"; then
+if not_upon "$jenkins_run" && not_upon "$dont_clean"; then
 	rm -rf "$workspace"
 
 	# Clear residue from previous runs
