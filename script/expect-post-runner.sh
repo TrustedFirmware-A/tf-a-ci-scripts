@@ -12,6 +12,10 @@
 ci_root="$(readlink -f "$(dirname "$0")/..")" && \
     . "${ci_root}/utils.sh"
 
+# utils.sh automatically enablea fail-fast backtracing, but we don't to fail
+# on first non-zero exit code, we handle them ourselves here.
+trap - ERR
+
 archive="${WORKSPACE}/artefacts-lava"
 
 # Extract UART numbering from the FVP common log using the ports script
