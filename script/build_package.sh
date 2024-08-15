@@ -98,6 +98,18 @@ call_func() {
 	fi
 }
 
+# Retry a command a number of times if it fails. Intended for I/O commands
+# in a CI environment which may be flaky.
+function retry() {
+    for i in $(seq 1 3); do
+        if "$@"; then
+            return 0
+        fi
+        sleep $(( i * 5 ))
+    done
+    return 1
+}
+
 # Call hook $1 in all chosen fragments if it's defined. Hooks are invoked from
 # within a subshell, so any variables set within a hook are lost. Should a
 # variable needs to be set from within a hook, the function 'set_hook_var'
@@ -1277,7 +1289,7 @@ if [ "$spm_config" ] ; then
 	pushd "$spm_root"
 	# Check if submodules need initialising
 	if git submodule status | grep '^-'; then
-		git submodule update --init
+		retry git submodule update --init
 	fi
 	popd
 
