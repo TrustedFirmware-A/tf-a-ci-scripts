@@ -85,6 +85,27 @@ reset_var has_rng_trap
 # Enable FEAT_ECV
 reset_var has_ecv
 
+# Enable FEAT_S1PIE
+reset_var has_s1pie
+
+# Enable FEAT_S2PIE
+reset_var has_s2pie
+
+# Enable FEAT_S1POE
+reset_var has_s1poe
+
+# Enable FEAT_S2POE
+reset_var has_s2poe
+
+# Enable FEAT_TCR2
+reset_var has_tcr2
+
+# Enable FEAT_CSV2_2
+reset_var has_csv2_2
+
+# Enable FEAT_GCS
+reset_var has_gcs
+
 # Layout of MPIDR. 0=AFF0 is CPUID, 1=AFF1 is CPUID
 reset_var mpidr_layout
 
@@ -438,6 +459,55 @@ if [ "$has_ecv" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.ecv_support_level=2
 -C cluster1.ecv_support_level=2
+EOF
+fi
+
+if [ "$has_s1pie" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_permission_indirection_s1=2
+-C cluster1.has_permission_indirection_s1=2
+EOF
+fi
+
+if [ "$has_s2pie" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_permission_indirection_s2=2
+-C cluster1.has_permission_indirection_s2=2
+EOF
+fi
+
+if [ "$has_s1poe" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_permission_overlay_s1=2
+-C cluster1.has_permission_overlay_s1=2
+EOF
+fi
+
+if [ "$has_s2poe" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_permission_overlay_s2=2
+-C cluster1.has_permission_overlay_s2=2
+EOF
+fi
+
+if [ "$has_tcr2" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_tcr2=2
+-C cluster1.has_tcr2=2
+EOF
+fi
+
+if [ "$has_csv2_2" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.restriction_on_speculative_execution=2
+-C cluster1.restriction_on_speculative_execution=2
+EOF
+fi
+
+if [ "$has_gcs" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_gcs=2
+-C cluster1.has_gcs=2
 EOF
 fi
 
