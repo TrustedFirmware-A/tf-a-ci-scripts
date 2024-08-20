@@ -235,8 +235,8 @@ s = """
         merged = false
         if (q = row.querySelector('td.success a.buildlink')) {
           href = q.href
-          buildId = href.split("/").at(-2)
-          if (mergedIds.include(buildId)) {
+          buildId = Number(href.split("/").at(-2))
+          if (mergedIds.includes(buildId)) {
               cell.classList.add("success")
               const url = href.replace('console', 'artifact/${individual_report_folder}')
               button.addEventListener('click', () => {
@@ -304,13 +304,13 @@ pushd $OUTDIR
     fi
 
      source ${WORKSPACE}/qa-tools/coverage-tool/coverage-reporting/merge.sh \
-        -j $MERGE_CONFIGURATION -l ${OUTDIR}/${COVERAGE_FOLDER} -w $WORKSPACE -c
+        -j $MERGE_CONFIGURATION -l ${OUTDIR}/${COVERAGE_FOLDER} \
+        -w $WORKSPACE -c -i -d
     # backward compatibility with old qa-tools
     [ $? -eq 0 ] && status=true || status=false
 
     # merged_status is set at 'merge.sh' indicating if merging reports was ok
     ${merged_status:-$status} && generate_code_coverage_summary "${REPORT_HTML}"
-    generate_code_coverage_column "${REPORT_HTML}"
+    generate_code_coverage_column "${REPORT_HTML}" || true
     cp "${REPORT_HTML}" "$OUTDIR"
-
 popd
