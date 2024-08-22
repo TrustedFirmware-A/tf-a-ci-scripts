@@ -11,6 +11,8 @@ from subprocess import check_call, check_output
 
 
 REMOTE = "ssh://%s@review.trustedfirmware.org:29418/TF-A/trusted-firmware-a"
+# Remove references having timestamps older than so many days.
+CUTOFF_DAYS = 30
 
 
 def check_call_maybe_dry(args, cmd):
@@ -32,7 +34,7 @@ def main():
     global REMOTE
     REMOTE = REMOTE % args.user
 
-    cutoff = (datetime.datetime.now() - datetime.timedelta(days=90)).strftime("%Y%m%d")
+    cutoff = (datetime.datetime.now() - datetime.timedelta(days=CUTOFF_DAYS)).strftime("%Y%m%d")
 
     print("Cutoff date:", cutoff)
 
