@@ -29,6 +29,8 @@ if [ $plat_variant -eq 2 ]; then
 	rse_revision="4ab7a20d"
 elif [ $plat_variant -eq 3 ]; then
 	rse_revision="cd8ece72a"
+elif [ $plat_variant -eq 4 ]; then
+	rse_revision="213c553bf"
 fi
 
 # Hafnium build repo containing Secure hafnium binaries
