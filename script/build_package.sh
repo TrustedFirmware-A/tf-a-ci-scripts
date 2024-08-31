@@ -1291,7 +1291,8 @@ if [ "$spm_config" ] ; then
 	pushd "$spm_root"
 	# Check if submodules need initialising
 	if git submodule status | grep '^-'; then
-		retry git submodule update --init
+		git submodule init
+		retry git submodule update
 	fi
 	popd
 
