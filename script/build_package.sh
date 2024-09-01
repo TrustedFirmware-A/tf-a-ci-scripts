@@ -1290,10 +1290,22 @@ if [ "$spm_config" ] ; then
 	# Query git submodules
 	pushd "$spm_root"
 	# Check if submodules need initialising
-	if git submodule status | grep '^-'; then
-		git submodule init
-		retry git submodule update
-	fi
+
+	# This handling is needed to reliably fetch submodules
+	# in CI environment.
+	for subm in $(git submodule status | awk '/^-/ {print $2}'); do
+		for i in $(seq 1 7); do
+			git submodule init $subm
+			if git submodule update $subm; then
+				break
+			fi
+			git submodule deinit --force $subm
+			echo "Retrying $subm"
+			sleep $((RANDOM % 10 + 5))
+		done
+	done
+
+	git submodule status
 	popd
 
 	show_head "$spm_root"
