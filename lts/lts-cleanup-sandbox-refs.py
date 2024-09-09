@@ -46,6 +46,8 @@ def main():
         out = check_output(["git", "ls-remote", REMOTE, ref_pat], text=True)
 
         for line in out.rstrip().split("\n"):
+            if not line:
+                break
             rev, tag = line.split(None, 1)
             m = re.match(r".+-(\d{8}T\d{4})", tag)
             delete = False
