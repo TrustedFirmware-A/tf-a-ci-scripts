@@ -1,5 +1,5 @@
 diff --git a/bl31/aarch64/runtime_exceptions.S b/bl31/aarch64/runtime_exceptions.S
-index 165058da9..cce9a9029 100644
+index 742380568..5ff6d3dd8 100644
 --- a/bl31/aarch64/runtime_exceptions.S
 +++ b/bl31/aarch64/runtime_exceptions.S
 @@ -228,6 +228,9 @@ vector_entry sync_exception_aarch64
@@ -10,10 +10,10 @@ index 165058da9..cce9a9029 100644
 +	orr	x30, x30, SCR_EA_BIT
 +	msr	scr_el3, x30
  	sync_and_handle_pending_serror
- 	unmask_async_ea
  	handle_sync_exception
+ end_vector_entry sync_exception_aarch64
 diff --git a/services/arm_arch_svc/arm_arch_svc_setup.c b/services/arm_arch_svc/arm_arch_svc_setup.c
-index 57d211ed7..36da3cc1e 100644
+index 545616469..6fb9b942c 100644
 --- a/services/arm_arch_svc/arm_arch_svc_setup.c
 +++ b/services/arm_arch_svc/arm_arch_svc_setup.c
 @@ -14,9 +14,37 @@
