@@ -202,6 +202,9 @@ clean_build $fvp_common_flags ENABLE_FEAT_FGT2=1
 # FEAT_TCR2
 clean_build $fvp_common_flags ENABLE_FEAT_TCR2=1
 
+# FEAT_THE, FEAT_SCTLR2
+clean_build $fvp_common_flags ENABLE_FEAT_THE=1 ENABLE_FEAT_SCTLR2=1
+
 # Using GICv3.1 driver with extended PPI and SPI range
 clean_build $fvp_common_flags GIC_EXT_INTID=1
 
