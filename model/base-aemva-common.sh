@@ -106,6 +106,9 @@ reset_var has_csv2_2
 # Enable FEAT_GCS
 reset_var has_gcs
 
+# Enable FEAT_FGT2
+reset_var has_fgt2
+
 # Layout of MPIDR. 0=AFF0 is CPUID, 1=AFF1 is CPUID
 reset_var mpidr_layout
 
@@ -380,6 +383,13 @@ if [ "$arch_version" = "9.2" ]; then
 EOF
 fi
 
+if [ "$arch_version" = "9.3" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_arm_v9-3=1
+-C cluster1.has_arm_v9-3=1
+EOF
+fi
+
 if [ "$arch_version" = "9.4" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_arm_v9-4=1
@@ -452,6 +462,13 @@ fi
 if [ "$has_rng_trap" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_rndr_trap=1
+EOF
+fi
+
+if [ "$has_fgt2" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_fgt2=2
+-C cluster1.has_fgt2=2
 EOF
 fi
 
