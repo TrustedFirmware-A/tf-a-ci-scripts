@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2024 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for booting Yocto linux on RD-1 AE
+#
+
+# Uboot
+expect_string+=('i;U-Boot')
+
+# Linux kernel boot section
+source $ci_root/expect-lava/linux.inc
+
+# Yocto
+expect_string+=('i;fvp-rd-kronos login:')

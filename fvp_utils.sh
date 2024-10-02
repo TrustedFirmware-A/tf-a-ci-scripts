@@ -50,6 +50,7 @@ fvp_arm_std_library_11_24="fvp:fvp_arm_std_library_${model_version_11_24}_${mode
 fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build};/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
 fvp_base_aemv8r="fvp:fvp_base_aemv8r_${model_version}_${model_build};/opt/model/AEMv8R_base_pkg/models/${model_flavour}"
+fvp_rd_1_ae="fvp:fvp_rd_1_ae_11.27_20;/opt/model/FVP_RD_1_AE/models/${model_flavour}"
 
 # CSS model list
 fvp_morello="fvp:fvp_morello_0.11_33;/opt/model/FVP_Morello/models/Linux64_GCC-6.4"
@@ -100,6 +101,7 @@ fvp_models=(
 [tc2]="${fvp_tc2};FVP_TC2"
 [tc3]="${fvp_tc3};FVP_TC3"
 [baser-aemv8r]="${fvp_base_aemv8r};FVP_BaseR_AEMv8R"
+[rd1ae]="${fvp_rd_1_ae};FVP_RD_1_AE"
 )
 
 
@@ -317,6 +319,7 @@ gen_fvp_yaml() {
         [romlib]="romlib.bin"
         [rootfs]="rootfs.bin"
         [host_flash_fip]="host_flash_fip.bin"
+        [rse_flash]="rse_flash.bin"
         [rse_rom]="rse_rom.bin"
         [rse_encrypted_cm_provisioning_bundle_0]="rse_encrypted_cm_provisioning_bundle_0.bin"
         [rse_encrypted_dm_provisioning_bundle]="rse_encrypted_dm_provisioning_bundle.bin"
@@ -368,6 +371,7 @@ gen_fvp_yaml() {
         [romlib]="$(gen_bin_url romlib.bin)"
         [rootfs]="$(gen_bin_url rootfs.bin.gz)"
         [host_flash_fip]="$(gen_bin_url host_flash_fip.bin)"
+        [rse_flash]="$(gen_bin_url rse_flash.bin)"
         [rse_rom]="$(gen_bin_url rse_rom.bin)"
         [rse_encrypted_cm_provisioning_bundle_0]="$(gen_bin_url rse_encrypted_cm_provisioning_bundle_0.bin)"
         [rse_encrypted_dm_provisioning_bundle]="$(gen_bin_url rse_encrypted_dm_provisioning_bundle.bin)"
@@ -424,6 +428,7 @@ gen_fvp_yaml() {
         ["[= ]romlib.bin"]="={ROMLIB}"
         ["[= ]rootfs.bin"]="={ROOTFS}"
         ["[= ]host_flash_fip.bin"]="={HOST_FLASH_FIP}"
+        ["[= ]rse_flash.bin"]="={RSE_FLASH}"
         ["[= ]rse_rom.bin"]="={RSE_ROM}"
         ["[= ]rse_encrypted_cm_provisioning_bundle_0.bin"]="={RSE_ENCRYPTED_CM_PROVISIONING_BUNDLE_0}"
         ["[= ]rse_encrypted_dm_provisioning_bundle.bin"]="={RSE_ENCRYPTED_DM_PROVISIONING_BUNDLE}"

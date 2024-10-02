@@ -1,0 +1,11 @@
+#
+# Copyright (c) 2024 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for booting TF-A on RD-1 AE
+#
+
+# RD1AE BL2
+expect_string+=('i;BL2: Built :')
+expect_string+=('i;BL2: Booting BL31')

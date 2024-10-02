@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2024 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for booting Yocto linux on RD-1 AE
+#
+
+source [file join [file dirname [info script]] utils.inc]
+source [file join [file dirname [info script]] handle-arguments.inc]
+
+# RD-1-AE BL2
+expect {
+	"BL2: Built :" {
+		message "Booting BL2"
+	}
+}
+
+expect {
+	"BL2: Booting BL31" {
+		message "Booting BL31"
+	}
+}
