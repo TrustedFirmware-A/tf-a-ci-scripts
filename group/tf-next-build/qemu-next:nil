@@ -6,26 +6,34 @@
 #
 pre_tf_build() {
     # pre_tf_build() and other call hooks are invoked from within subshells, so
-    # environment variables are lost when calling (except $PATH somehow is
+    # environment variables are lost when calling them (except $PATH somehow is
     # retained)
+    #     - use `set_hook_var` to propagate to other levels, e.g. the actual
+    #       tf_build() stage
+    #     - use `export $VAR=` for use inside this pre_tf_build() stage
     #
-    # rustup is installed by the root user in a non-default location
-    # /usr/local/rustup, so $RUSTUP_HOME is required to access rust config
-    # e.g. default toolchains and run cargo
+    # In the CI Dockerfile, rustup is installed by the root user in the
+    # non-default location /usr/local/rustup, so $RUSTUP_HOME is required to
+    # access rust config e.g. default toolchains and run cargo
     #
-    # leave $CARGO_HOME blank so when this is run by the buildslave user it uses
-    # the default /home/buildslave/.cargo directory which it has write
-    # permissions for - that allows it to download new crates during compilation
+    # Leave $CARGO_HOME blank so when this script is run in CI by the buildslave
+    # user, it uses the default /home/buildslave/.cargo directory which it has
+    # write permissions for - that allows it to download new crates during
+    # compilation
     #
-    # since rust was installed by root, buildslave user does not have write
-    # access to /usr/local/cargo and will error when trying to download new
-    # crates otherwise
+    # The buildslave user does not have write permissions to the default
+    # $CARGO_HOME=/usr/local/cargo dir and so will error when trying to download
+    # new crates otherwise
     #
     # note: $PATH still contains /usr/local/cargo/bin at this point so cargo is
     # still run via the root installation
     #
     # see https://github.com/rust-lang/rustup/issues/1085
+    #
+    # set_hook_var propagates RUSTUP_HOME var to lower levels...
+    set_hook_var RUSTUP_HOME /usr/local/rustup
+    # ...but not to pre_tf_build() - explicit exporting is required to run
+    # clippy here
     export RUSTUP_HOME=/usr/local/rustup
-    make -C "$tf_root/rust"
-    make -C "$tf_root/rust" clippy
+    make PLAT=qemu -C "$tf_root/rust" clippy
 }
