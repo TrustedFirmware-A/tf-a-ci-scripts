@@ -1,0 +1,2 @@
+PLAT=qemu
+RUST=1
