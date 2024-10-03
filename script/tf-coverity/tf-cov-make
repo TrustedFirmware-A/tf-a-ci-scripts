@@ -380,20 +380,20 @@ clean_build $(common_flags) PLAT=morello TARGET_PLATFORM=soc ${ARM_TBB_OPTIONS}
 # corstone1000 Platform
 #
 
-make $(common_flags) \
-     PLAT=corstone1000 \
-     SPD=spmd \
-     TARGET_PLATFORM=fpga \
-     ENABLE_STACK_PROTECTOR=strong \
-     ENABLE_PIE=1 \
-     RESET_TO_BL2=1 \
-     SPMD_SPM_AT_SEL2=0 \
-     ${ARM_TBB_OPTIONS} \
-     CREATE_KEYS=1 \
-     COT=tbbr \
-     ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem \
-     bl2 \
-     bl31
+clean_build $(common_flags) \
+            PLAT=corstone1000 \
+            SPD=spmd \
+            TARGET_PLATFORM=fpga \
+            ENABLE_STACK_PROTECTOR=strong \
+            ENABLE_PIE=1 \
+            RESET_TO_BL2=1 \
+            SPMD_SPM_AT_SEL2=0 \
+            ${ARM_TBB_OPTIONS} \
+            CREATE_KEYS=1 \
+            COT=tbbr \
+            ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem \
+            bl2 \
+            bl31
 
 #
 # FVP-R platform
@@ -403,17 +403,17 @@ clean_build $(common_flags) PLAT=fvp_r ${ARM_TBB_OPTIONS} ENABLE_STACK_PROTECTOR
 #
 # RD-1 AE platform
 #
-make $(common_flags) \
-     PLAT=rd1ae \
-     ARCH=aarch64 \
-     ${ARM_TBB_OPTIONS} \
-     GENERATE_COT=1 \
-     COT=tbbr \
-     ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem \
-     bl2 \
-     bl31 \
-     SPD=spmd \
-     SPMD_SPM_AT_SEL2=0
+clean_build $(common_flags) \
+            PLAT=rd1ae \
+            ARCH=aarch64 \
+            ${ARM_TBB_OPTIONS} \
+            GENERATE_COT=1 \
+            COT=tbbr \
+            ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem \
+            bl2 \
+            bl31 \
+            SPD=spmd \
+            SPMD_SPM_AT_SEL2=0
 
 # Partners' platforms.
 # Enable as many features as possible.
