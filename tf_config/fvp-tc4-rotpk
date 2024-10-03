@@ -3,6 +3,7 @@ ARM_ROTPK_LOCATION=devel_ecdsa
 CROSS_COMPILE=aarch64-none-elf-
 GENERATE_COT=1
 PLAT=tc
+PLATFORM_TEST=rse-rotpk
 ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_ecdsa.pem
 KEY_ALG=ecdsa
 SCP_BL2=/dev/null
