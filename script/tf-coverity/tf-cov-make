@@ -411,7 +411,9 @@ make $(common_flags) \
      COT=tbbr \
      ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem \
      bl2 \
-     bl31
+     bl31 \
+     SPD=spmd \
+     SPMD_SPM_AT_SEL2=0
 
 # Partners' platforms.
 # Enable as many features as possible.

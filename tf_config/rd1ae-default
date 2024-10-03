@@ -5,3 +5,5 @@ GENERATE_COT=1
 COT=tbbr
 ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
 TRUSTED_BOARD_BOOT=1
+SPD=spmd
+SPMD_SPM_AT_SEL2=0
