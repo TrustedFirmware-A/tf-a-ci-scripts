@@ -583,7 +583,7 @@ tfa_downloads="${tfa_downloads:-file:///downloads/tf-a}"
 css_downloads="${css_downloads:-$tfa_downloads/css}"
 
 # SCP/MCP release binaries.
-scp_mcp_downloads="${scp_mcp_downloads:-$tfa_downloads/css_scp_2.14.0}"
+scp_mcp_downloads="${scp_mcp_downloads:-$tfa_downloads/css_scp_2.15.0}"
 
 linaro_2001_release="${linaro_2001_release:-$tfa_downloads/linaro/20.01}"
 linaro_release="${linaro_release:-$linaro_2001_release}"
