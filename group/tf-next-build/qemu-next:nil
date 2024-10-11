@@ -5,6 +5,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 pre_tf_build() {
-	make -C "$tf_root/rust"
-	make -C "$tf_root/rust" clippy
+    echo $PATH
+    echo $USER
+    echo $RUSTUP_HOME
+    rustup default stable
+    rustup target add --toolchain stable aarch64-unknown-none
+    make -C "$tf_root/rust"
+    make -C "$tf_root/rust" clippy
 }
