@@ -7,6 +7,8 @@
 pre_tf_build() {
     set_hook_var RUSTUP_HOME /usr/local/rustup
     set_hook_var CARGO_HOME /usr/local/cargo
+    echo $RUSTUP_HOME
+    RUSTUP_HOME=/usr/local/rustup
     make -C "$tf_root/rust"
     make -C "$tf_root/rust" clippy
 }
