@@ -5,10 +5,27 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 pre_tf_build() {
-    set_hook_var RUSTUP_HOME /usr/local/rustup
-    set_hook_var CARGO_HOME /usr/local/cargo
-    echo $RUSTUP_HOME
-    RUSTUP_HOME=/usr/local/rustup
+    # pre_tf_build() and other call hooks are invoked from within subshells, so
+    # environment variables are lost when calling (except $PATH somehow is
+    # retained)
+    #
+    # rustup is installed by the root user in a non-default location
+    # /usr/local/rustup, so $RUSTUP_HOME is required to access rust config
+    # e.g. default toolchains and run cargo
+    #
+    # leave $CARGO_HOME blank so when this is run by the buildslave user it uses
+    # the default /home/buildslave/.cargo directory which it has write
+    # permissions for - that allows it to download new crates during compilation
+    #
+    # since rust was installed by root, buildslave user does not have write
+    # access to /usr/local/cargo and will error when trying to download new
+    # crates otherwise
+    #
+    # note: $PATH still contains /usr/local/cargo/bin at this point so cargo is
+    # still run via the root installation
+    #
+    # see https://github.com/rust-lang/rustup/issues/1085
+    export RUSTUP_HOME=/usr/local/rustup
     make -C "$tf_root/rust"
     make -C "$tf_root/rust" clippy
 }
