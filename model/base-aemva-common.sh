@@ -359,6 +359,13 @@ if [ "$arch_version" = "9.2" ]; then
 EOF
 fi
 
+if [ "$arch_version" = "9.4" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_arm_v9-4=1
+-C cluster1.has_arm_v9-4=1
+EOF
+fi
+
 # Parameters for fault injection
 if [ "$fault_inject" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
@@ -438,6 +445,22 @@ fi
 if [ "$accelerator_support_level" != "0" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.arm_v8_7_accelerator_support_level=1
+EOF
+fi
+
+# FEAT_THE is enabled
+if [ "$has_translation_hardening" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_translation_hardening=1
+-C cluster1.has_translation_hardening=1
+EOF
+fi
+
+# FEAT_D128 is enabled
+if [ "$has_d128" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_128_bit_tt_descriptors="1"
+-C cluster1.has_128_bit_tt_descriptors="1"
 EOF
 fi
 

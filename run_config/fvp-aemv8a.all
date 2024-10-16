@@ -20,13 +20,15 @@ generate_lava_job() {
 		has_sme="1" has_sme2="1" \
 		has_mpam="1" \
 		has_ecv="1" \
+		has_translation_hardening="1" \
+		has_d128="1" \
 		has_v8_9_debug_extension="1" \
 		memory_tagging_support_level="3" \
 		supports_branch_record_buffer_control_regs="1" \
 		supports_trace_buffer_control_regs="1" \
 		supports_trace_filter_regs="2" \
 		supports_system_trace_filter_regs="1" \
-		arch_version="8.9" \
+		arch_version="9.4" \
 		accelerator_support_level="1" \
 		gen_model_params
 
