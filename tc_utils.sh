@@ -29,6 +29,7 @@ if [ $plat_variant -eq 2 ]; then
 	rse_revision="4ab7a20d"
 elif [ $plat_variant -eq 3 ]; then
 	rse_revision="2fe1f7e"
+	scp_revision="ac2b4f1"
 elif [ $plat_variant -eq 4 ]; then
 	rse_revision="213c553bf"
 fi
