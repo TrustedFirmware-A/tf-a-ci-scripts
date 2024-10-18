@@ -427,6 +427,7 @@ make PLAT=mt8186 $(common_flags) COREBOOT=1 all
 make PLAT=mt8188 $(common_flags) COREBOOT=1 all
 make PLAT=mt8192 $(common_flags) COREBOOT=1 all
 make PLAT=mt8195 $(common_flags) COREBOOT=1 all
+make PLAT=mt8196 $(common_flags) COREBOOT=1 all
 
 # Platforms from Qualcomm
 make PLAT=sc7180 $(common_flags) COREBOOT=1 all
