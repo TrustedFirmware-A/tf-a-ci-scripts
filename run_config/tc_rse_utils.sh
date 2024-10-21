@@ -16,12 +16,18 @@ sign_image() {
 	host_binary_layout="`basename -s .bin ${1}`_ns"
 
 	# development PEM containing a key - use same key which is used for SCP BL1 in pre-built image
-	url="$tc_prebuilts/tc$plat_variant/root-RSA-3072.pem" saveas="root-RSA-3072.pem" fetch_file
-	archive_file "root-RSA-3072.pem"
+	if [ $plat_variant -eq 2 ]; then
+		url="$tc_prebuilts/tc$plat_variant/root-RSA-3072.pem" saveas="root-RSA-3072.pem" fetch_file
+		archive_file "root-RSA-3072.pem"
+		RSE_SIGN_PRIVATE_KEY=$archive/root-RSA-3072.pem
+	elif [ $plat_variant -eq 3 ]; then
+		url="$tc_prebuilts/tc$plat_variant/root-EC-P256.pem" saveas="root-EC-P256.pem" fetch_file
+		archive_file "root-EC-P256.pem"
+		RSE_SIGN_PRIVATE_KEY=$archive/root-EC-P256.pem
+	fi
 
-	RSE_SIGN_PRIVATE_KEY=$archive/root-RSA-3072.pem
 	RSE_SEC_CNTR_INIT_VAL=1
-	RSE_LAYOUT_WRAPPER_VERSION="1.5.0"
+	RSE_LAYOUT_WRAPPER_VERSION="2.1.0"
 
 	cat << EOF > $tmpdir/$host_binary_layout
 enum image_attributes {

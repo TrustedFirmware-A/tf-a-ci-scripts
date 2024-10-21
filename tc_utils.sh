@@ -28,7 +28,7 @@ ap_bl1_flash_size=0x20000
 if [ $plat_variant -eq 2 ]; then
 	rse_revision="4ab7a20d"
 elif [ $plat_variant -eq 3 ]; then
-	rse_revision="cd8ece72a"
+	rse_revision="2fe1f7e"
 elif [ $plat_variant -eq 4 ]; then
 	rse_revision="213c553bf"
 fi

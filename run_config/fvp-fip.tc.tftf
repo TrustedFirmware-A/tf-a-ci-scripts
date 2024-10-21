@@ -25,7 +25,7 @@ fetch_tf_resource() {
 	# sign AP bl1
 	sign_image bl1.bin $ap_bl1_flash_load_addr $ap_bl1_flash_size
 
-	# Update FIP with pre-built RSS binaries and signed AP BL1 to create host flash fip image
+	# Update FIP with pre-built RSE binaries and signed AP BL1 to create host flash fip image
 	update_fip
 
 	# Create GPT image
