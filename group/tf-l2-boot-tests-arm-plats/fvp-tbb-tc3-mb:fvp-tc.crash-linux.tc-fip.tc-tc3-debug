@@ -6,4 +6,4 @@
 
 # Note that this uses the fvp-linux.tc run fragment, which does not actually boot to linux,
 # as it is the only way to get an image signed and assembled correctly for RSE to boot it.
-# If this is resolved at some point, that frament should be removed.
+# If this is resolved at some point, that fragment should be removed.
