@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-set_model_path "$warehouse/SysGen/SubSystemModels/0.0/8304/models/$model_flavour/FVP_TC3"
+set_model_path "$warehouse/SysGen/SubSystemModels/11.26/16/models/$model_flavour/FVP_TC3"
 cat <<EOF >"$model_param_file"
 ${fip_gpt_bin+-C board.flashloader0.fname=$fip_gpt_bin}
 -C board.pl011_uart2.unbuffered_output=1
@@ -17,8 +17,10 @@ ${fip_gpt_bin+-C board.flashloader0.fname=$fip_gpt_bin}
 -C css.sms.rse_pl011_uart.unbuffered_output=1
 -C css.terminal_uart_ap.start_port=5000
 -C css.terminal_uart1_ap.start_port=5001
--C css.sms.scp.terminal_uart.start_port=5002
--C css.sms.rse_terminal_uart.start_port=5003
+-C soc.terminal_s0.start_port=5002
+-C soc.terminal_s1.start_port=5003
+-C css.sms.scp.terminal_uart.start_port=5004
+-C css.sms.rse_terminal_uart.start_port=5005
 -C displayController=2
 ${rse_rom_bin+-C css.sms.rse.rom.raw_image=$rse_rom_bin}
 -C css.sms.rse.VMADDRWIDTH=16
