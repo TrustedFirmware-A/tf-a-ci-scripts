@@ -1543,6 +1543,11 @@ for mode in $modes; do
 		# Pre-archive hook
 		call_hook pre_tf_archive
 
+		if upon "$(get_tf_opt RUST)"; then
+			# for archiving into the Jenkins artifacts directory
+			ln -fsr $tf_root/rust/target/bl31.{bin,elf} $tf_build_root
+		fi
+
 		from="$tf_build_root" to="$archive" collect_build_artefacts
 
 		# Post-archive hook
