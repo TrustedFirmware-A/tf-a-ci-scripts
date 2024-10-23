@@ -1,4 +1,4 @@
-MESSAGE_TOKENS = r'fix\(cpus\)|revert\(cpus\)|fix\(errata\)|\(security\)|erratum|sden|workaround'
+MESSAGE_TOKENS = r'fix\(cpus\)|revert\(cpus\)|fix\(errata\)|security|erratum|sden|workaround|errata|cve'
 CPU_PATH_TOKEN = r'lib/cpus/aarch(32|64)/.*\.S'
 CPU_ERRATA_TOKEN = r'^check_erratum_|^workaround_start|^workaround.*_start'
 DOC_PATH_TOKEN = r'docs/design/cpu-specific-build-macros.rst|lib/cpus/cpu-ops\.mk"'
