@@ -10,15 +10,7 @@ post_tf_build() {
 	if [ $plat_variant -eq 3 ]; then
 		# Use pre-built SCP BL2 binary
 		url="$tfa_downloads/total_compute/tc$plat_variant/scp/$scp_revision/tc$plat_variant-bl2.bin" saveas="scp_ram.bin" fetch_file
-	else
-		# Use SCP binary from SCP build if it exists, or fetch pre-built ones.
-		if [ ! -f "$archive/scp_ram.bin" ]; then
-			url="$scp_mcp_downloads/totalcompute/tc$plat_variant/platform_variant_0/release/tc$plat_variant-bl2.bin" saveas="scp_ram.bin" fetch_file
-		fi
-	fi
-	archive_file "scp_ram.bin"
-
-	if [ $plat_variant -eq 3 ]; then
+		archive_file "scp_ram.bin"
 		build_fip BL33="$archive/tftf.bin" SCP_BL2="$archive/scp_ram.bin"
 	else
 		build_fip BL33="$archive/tftf.bin"
