@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2019-2020, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -28,7 +28,7 @@ from itertools import islice
 # File extensions to check
 VALID_FILE_EXTENSIONS = ('.c', '.conf', '.dts', '.dtsi', '.editorconfig',
                          '.h', '.i', '.ld', 'Makefile', '.mk', '.msvc',
-                         '.py', '.S', '.scat', '.sh')
+                         '.py', '.S', '.scat', '.sh', '.rs')
 
 # Paths inside the tree to ignore. Hidden folders and files are always ignored.
 # They mustn't end in '/'.
