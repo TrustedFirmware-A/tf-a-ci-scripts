@@ -622,11 +622,11 @@ build_tftf() {
 	cat <<EOF | log_separator >/dev/null
 
 Build command line:
-	make $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 $build_targets
+	make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 $build_targets
 
 EOF
 
-	make $(cat "$config_file") DEBUG="$DEBUG" V=1 \
+	make $make_j_opts $(cat "$config_file") DEBUG="$DEBUG" V=1 \
 		$build_targets &>>"$build_log" || fail_build
 	)
 }
