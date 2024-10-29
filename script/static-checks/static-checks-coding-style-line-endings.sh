@@ -18,7 +18,7 @@ if [[ "$2" == "patch" ]]; then
     shopt -s globstar
     parent=${merge_base}
     git diff $parent..HEAD --no-ext-diff --unified=0 --exit-code -a \
-      --no-prefix **/*.{S,c,h,i,dts,dtsi,rst,mk} Makefile | \
+      --no-prefix **/{Makefile,*.{S,c,h,i,dts,dtsi,rst,mk,rs}} | \
       awk '/^\+/ && /\r$/' &> "$LOG_FILE"
 else
   # For all the source and doc files
@@ -33,6 +33,7 @@ else
       -name '*.rst' -or \
       -name 'Makefile' -or \
       -name '*.mk' \
+      -name '*.rs' \
   -\) -exec grep --files-with-matches $'\r$' {} \; &> "$LOG_FILE"
 fi
 
