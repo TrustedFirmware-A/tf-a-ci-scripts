@@ -23,6 +23,8 @@ generate_lava_job() {
 		has_fpmr="1" \
 		has_translation_hardening="1" \
 		has_d128="1" \
+		has_brbe="1" \
+		has_trbe="1" \
 		has_v8_9_debug_extension="1" \
 		memory_tagging_support_level="3" \
 		supports_branch_record_buffer_control_regs="1" \
