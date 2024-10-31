@@ -1,0 +1,11 @@
+AARCH32_SP=sp_min
+ARCH=aarch32
+ARM_ROTPK_LOCATION=devel_ecdsa
+CROSS_COMPILE=arm-none-eabi-
+GENERATE_COT=1
+KEY_ALG=ecdsa
+PLAT=fvp
+ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_ecdsa.pem
+TRUSTED_BOARD_BOOT=1
+ENABLE_ASSERTIONS=0
+PSA_CRYPTO=1

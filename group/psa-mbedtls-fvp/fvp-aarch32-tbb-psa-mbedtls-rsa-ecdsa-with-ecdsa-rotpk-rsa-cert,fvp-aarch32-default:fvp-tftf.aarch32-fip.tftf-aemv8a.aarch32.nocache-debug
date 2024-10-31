@@ -1,0 +1,10 @@
+#
+# Copyright (c) 2024, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+# Cache state modelling is disabled for this test as this particular TBBR config
+# thrashes the I-cache hard, leading to ~60% of CPU time spent in the host kernel
+# switching the pages responsible for the I-cache from writable to executable and
+# back again.

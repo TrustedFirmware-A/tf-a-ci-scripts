@@ -1,0 +1,10 @@
+ARM_ROTPK_LOCATION=devel_full_dev_rsa_key
+CROSS_COMPILE=aarch64-none-elf-
+GENERATE_COT=1
+KEY_ALG=rsa
+PLAT=fvp
+ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
+TRUSTED_BOARD_BOOT=1
+ENABLE_ASSERTIONS=0
+PSA_CRYPTO=1
+FVP_TRUSTED_SRAM_SIZE=384
