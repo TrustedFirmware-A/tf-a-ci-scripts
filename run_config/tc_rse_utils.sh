@@ -16,11 +16,7 @@ sign_image() {
 	host_binary_layout="`basename -s .bin ${1}`_ns"
 
 	# development PEM containing a key - use same key which is used for SCP BL1 in pre-built image
-	if [ $plat_variant -eq 2 ]; then
-		url="$tc_prebuilts/tc$plat_variant/root-RSA-3072.pem" saveas="root-RSA-3072.pem" fetch_file
-		archive_file "root-RSA-3072.pem"
-		RSE_SIGN_PRIVATE_KEY=$archive/root-RSA-3072.pem
-	elif [ $plat_variant -eq 3 ]; then
+	if [ $plat_variant -eq 3 ]; then
 		url="$tc_prebuilts/tc$plat_variant/root-EC-P256.pem" saveas="root-EC-P256.pem" fetch_file
 		archive_file "root-EC-P256.pem"
 		RSE_SIGN_PRIVATE_KEY=$archive/root-EC-P256.pem
@@ -82,10 +78,7 @@ update_fip() {
 	archive_file "rse_bl2_signed.bin"
 
 	# Get pre-built rse TF-M S signed bin
-	if [ $plat_variant -eq 2 ]; then
-		url="$prebuild_prefix/rse_s_signed.bin" fetch_file
-		archive_file "rse_s_signed.bin"
-	elif [ $plat_variant -eq 3 ]; then
+	if [ $plat_variant -eq 3 ]; then
 		url="$prebuild_prefix/rse_s_encrypted.bin" fetch_file
 		archive_file "rse_s_encrypted.bin"
 		url="$prebuild_prefix/rse_s_sic_tables_signed.bin" fetch_file
@@ -97,15 +90,7 @@ update_fip() {
 	archive_file "signed_scp_romfw.bin"
 
 	# Create FIP layout
-	if [ $plat_variant -eq 2 ]; then
-		"$fiptool" update \
-			--align 8192 --rse-bl2 "$archive/rse_bl2_signed.bin" \
-			--align 8192 --rse-s "$archive/rse_s_signed.bin" \
-			--align 8192 --rse-scp-bl1 "$archive/signed_scp_romfw.bin" \
-			--align 8192 --rse-ap-bl1 "$archive/$signed_bin" \
-			--out "host_flash_fip.bin" \
-			"$archive/fip.bin"
-	elif [ $plat_variant -eq 3 ]; then
+	if [ $plat_variant -eq 3 ]; then
 		"$fiptool" update \
 			--align 8192 --rse-bl2 "$archive/rse_bl2_signed.bin" \
 			--align 8192 --rse-scp-bl1 "$archive/signed_scp_romfw.bin" \
