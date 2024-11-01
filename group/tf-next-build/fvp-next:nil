@@ -37,3 +37,7 @@ pre_tf_build() {
     export RUSTUP_HOME=/usr/local/rustup
     make PLAT=fvp -C "$tf_root/rust" clippy
 }
+
+post_tf_build() {
+	build_fip RUST=1 PLAT=fvp
+}
