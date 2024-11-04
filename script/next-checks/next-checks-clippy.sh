@@ -19,7 +19,9 @@ echo "****** $TEST_CASE ******" >> "$LOG_TEST_FILENAME"
 echo >> "$LOG_TEST_FILENAME"
 echo "Platforms:" >> "$LOG_TEST_FILENAME"
 
-for plat in "fvp" "qemu"
+available_platforms=$(make -C ${TF_ROOT}/rust list_platforms)
+
+for plat in $available_platforms
 do
     echo >> $LOG_FILE
     echo "############### ${TEST_CASE} - platform: ${plat}" >> "$LOG_FILE"
