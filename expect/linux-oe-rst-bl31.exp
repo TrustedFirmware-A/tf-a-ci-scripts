@@ -19,7 +19,7 @@ source [file join [file dirname [info script]] trusted-firmware-rst-to-bl31.inc]
 source [file join [file dirname [info script]] linux.inc]
 
 # OpenEmbedded filesystem section
-source [file join [file dirname [info script]] openembedded.inc]
+source [file join [file dirname [info script]] buildrootfs.inc]
 
 exit_uart -1
 

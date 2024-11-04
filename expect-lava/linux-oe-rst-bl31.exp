@@ -15,4 +15,4 @@ source $ci_root/expect-lava/trusted-firmware-rst-to-bl31.inc
 source $ci_root/expect-lava/linux.inc
 
 # OpenEmbedded filesystem section
-source $ci_root/expect-lava/openembedded.inc
+source $ci_root/expect-lava/buildrootfs.inc

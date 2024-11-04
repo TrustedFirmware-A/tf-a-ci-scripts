@@ -3,14 +3,16 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Script to interact with an OpenEmbedded file system
+# Script to interact with an Buildroot file system
 #
 # This script is not standalone and should be sourced by a top expect script.
 #
 
-expect_string "INIT:" "Linux is booting"
-expect_string "root@genericarmv8:~#" "Linux reached the root prompt"
-send "shutdown -h now\r"
+expect_string "Run /sbin/init as init process" "Linux is booting"
+expect_string "buildroot login:" "Linux reached the login prompt"
+send "root\r"
+expect_re "# " "Linux reached the root prompt"
+send "poweroff\r"
 
 expect_re "(Power down|System halted)" "Linux shut down successfully"
 exit_uart 0

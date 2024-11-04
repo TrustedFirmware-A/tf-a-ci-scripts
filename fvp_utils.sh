@@ -45,11 +45,11 @@ else
 	optee_version="4.5.0"
 
 	optee_path=$tfa_downloads/optee/${optee_version}
-	uboot_url="$linaro_release/fvp-latest-busybox-uboot/bl33-uboot.bin"
+	uboot_url="${tfa_downloads}/linux_boot/fvp/u-boot.bin"
 fi
 uboot_script_url="${tfa_downloads}/linux_boot/fvp/boot.scr"
 
-rootfs_url="$linaro_release/lt-vexpress64-openembedded_minimal-armv8-gcc-5.2_20170127-761.img.gz"
+rootfs_url="${tfa_downloads}/linux_boot/fvp/rootfs.ext4"
 
 # Default FVP model variables
 default_model_dtb="dtb.bin"

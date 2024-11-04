@@ -14,4 +14,4 @@ source $ci_root/expect-lava/trusted-firmware.inc
 source $ci_root/expect-lava/linux.inc
 
 # OpenEmbedded filesystem section
-source $ci_root/expect-lava/openembedded.inc
+source $ci_root/expect-lava/buildrootfs.inc
