@@ -444,7 +444,7 @@ fi
 # Accelerator support level enabled
 if [ "$accelerator_support_level" != "0" ]; then
 	cat <<EOF >>"$model_param_file"
--C cluster0.arm_v8_7_accelerator_support_level=1
+-C cluster0.arm_v8_7_accelerator_support_level="$accelerator_support_level"
 EOF
 fi
 
@@ -632,7 +632,7 @@ fi
 # Accelerator support level enabled
 if [ "$accelerator_support_level" != "0" ]; then
 	cat <<EOF >>"$model_param_file"
--C cluster1.arm_v8_7_accelerator_support_level=1
+-C cluster1.arm_v8_7_accelerator_support_level="$accelerator_support_level"
 EOF
 fi
 
