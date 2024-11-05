@@ -1,0 +1,10 @@
+ARM_ROTPK_LOCATION=devel_full_dev_ecdsa_key
+CROSS_COMPILE=aarch64-none-elf-
+FVP_TRUSTED_SRAM_SIZE=384
+GENERATE_COT=1
+KEY_ALG=ecdsa
+KEY_SIZE=384
+PLAT=fvp
+ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_ecdsa_secp384r1.pem
+TRUSTED_BOARD_BOOT=1
+PSA_CRYPTO=1
