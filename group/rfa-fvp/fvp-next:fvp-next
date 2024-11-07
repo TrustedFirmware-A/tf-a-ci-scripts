@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2024 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+post_tf_build() {
+	build_fip RUST=1 PLAT=fvp
+}
