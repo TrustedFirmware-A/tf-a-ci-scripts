@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2024, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	local model="base-aemv8a"
+
+	uart="0" file="tfa-next.exp" track_expect
+	# Track the rest of the UARTs to aid in debugging.
+	uart="1" file="hold_uart.exp" track_expect
+	uart="2" file="hold_uart.exp" track_expect
+	uart="3" file="hold_uart.exp" track_expect
+
+	model="$model" gen_model_params
+
+	model="$model" gen_fvp_yaml
+}
