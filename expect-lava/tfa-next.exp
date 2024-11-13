@@ -1,0 +1,13 @@
+#
+# Copyright (c) 2024 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Rusted Firmware
+#
+
+source $ci_root/expect-lava/trusted-firmware.inc
+
+expect_string+=('i;Rust BL31 starting')
+
+expect_string+=('i;Page table activated.')

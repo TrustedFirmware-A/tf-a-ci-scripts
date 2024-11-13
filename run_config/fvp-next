@@ -5,6 +5,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
+generate_lava_job_template() {
+	payload_type="linux" gen_yaml_template
+}
 generate_lava_job() {
 	local model="base-aemv8a"
 
