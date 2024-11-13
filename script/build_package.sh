@@ -1464,6 +1464,27 @@ for mode in $modes; do
 
 		echo "Building Trusted Firmware ($mode) ..." |& log_separator
 
+		if upon "$(get_tf_opt RUST)" && not_upon "$local_ci"; then
+			# In the CI Dockerfile, rustup is installed by the root user in the
+			# non-default location /usr/local/rustup, so $RUSTUP_HOME is required to
+			# access rust config e.g. default toolchains and run cargo
+			#
+			# Leave $CARGO_HOME blank so when this script is run in CI by the buildslave
+			# user, it uses the default /home/buildslave/.cargo directory which it has
+			# write permissions for - that allows it to download new crates during
+			# compilation
+			#
+			# The buildslave user does not have write permissions to the default
+			# $CARGO_HOME=/usr/local/cargo dir and so will error when trying to download
+			# new crates otherwise
+			#
+			# note: $PATH still contains /usr/local/cargo/bin at this point so cargo is
+			# still run via the root installation
+			#
+			# see https://github.com/rust-lang/rustup/issues/1085
+			set_hook_var "RUSTUP_HOME" "/usr/local/rustup"
+		fi
+
 		# Call pre-build hook
 		call_hook pre_tf_build
 
