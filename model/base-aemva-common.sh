@@ -551,6 +551,14 @@ if [ "$has_d128" = "1" ]; then
 EOF
 fi
 
+# FEAT_FPMR support
+if [ "$has_fpmr" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_fpmr="1"
+-C cluster1.has_fpmr="1"
+EOF
+fi
+
 #------------ Cluster1 configuration (if exists) --------------
 if [ "$is_dual_cluster" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
