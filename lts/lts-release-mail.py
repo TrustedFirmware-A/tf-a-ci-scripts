@@ -89,10 +89,14 @@ def main():
     urls = []
     for s in subjects:
         commit_id, _ = s.split(" ", 1)
+        change_id = None
         for l in os.popen("git show %s" % commit_id):
+            # There can be multiple Change-Id lines in some commits, and
+            # we're interested in the last in that case.
             if "Change-Id:" in l:
                 _, change_id = l.strip().split(None, 1)
-                urls.append("https://review.trustedfirmware.org/q/" + change_id)
+        if change_id:
+            urls.append("https://review.trustedfirmware.org/q/" + change_id)
 
     assert len(subjects) == len(urls)
 
