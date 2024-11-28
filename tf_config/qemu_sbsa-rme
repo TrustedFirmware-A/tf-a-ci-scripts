@@ -1,0 +1,5 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=qemu_sbsa
+ENABLE_RME=1
+RME_GPT_BITLOCK_BLOCK=1
+RMM=/dev/null
