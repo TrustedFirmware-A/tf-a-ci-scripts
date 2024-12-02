@@ -8,11 +8,15 @@ source "$ci_root/run_config/rd1ae_rse_utils.sh"
 source "$ci_root/arm_auto_solutions_utils.sh"
 
 post_tf_build() {
-	# Download and archive rd1ae u-boot.bin files
+	# Download and archive rd1ae u-boot.bin file
 	url="$arm_automotive_solutions/rd1ae/u-boot.bin" saveas="uboot.bin" fetch_file
 	archive_file "uboot.bin"
 
-	build_fip BL33="$archive/uboot.bin"
+	# Download and archive rd1ae tee-pager_v2.bin file
+	url="$arm_automotive_solutions/rd1ae/tee-pager_v2.bin" saveas="tee-pager_v2.bin" fetch_file
+	archive_file "tee-pager_v2.bin"
+
+	build_fip BL33="$archive/uboot.bin" BL32="$archive/tee-pager_v2.bin"
 }
 
 fetch_tf_resource() {
