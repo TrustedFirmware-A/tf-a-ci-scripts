@@ -33,8 +33,10 @@ VALID_FILE_EXTENSIONS = ('.c', '.conf', '.dts', '.dtsi', '.editorconfig',
 # Paths inside the tree to ignore. Hidden folders and files are always ignored.
 # They mustn't end in '/'.
 IGNORED_FOLDERS = (
+    'include/lib/hob',
     'include/lib/libfdt',
     'lib/compiler-rt',
+    'lib/hob',
     'lib/libfdt',
     'lib/zlib'
 )
