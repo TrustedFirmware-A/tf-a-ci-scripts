@@ -159,6 +159,9 @@ clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1
 # Firmware Handoff framework support
 clean_build $fvp_common_flags TRANSFER_LIST=1
 
+# HOB List support
+clean_build $fvp_common_flags HOB_LIST=1
+
 #BL2 at EL3 support
 clean_build $fvp_common_flags RESET_TO_BL2=1 FVP_TRUSTED_SRAM_SIZE=384
 clean_build $fvp_common_flags CROSS_COMPILE=arm-none-eabi- \
