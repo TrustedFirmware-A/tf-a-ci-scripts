@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2024, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -538,16 +538,16 @@ fi
 # FEAT_THE is enabled
 if [ "$has_translation_hardening" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
--C cluster0.has_translation_hardening=1
--C cluster1.has_translation_hardening=1
+-C cluster0.has_translation_hardening=2
+-C cluster1.has_translation_hardening=2
 EOF
 fi
 
 # FEAT_D128 is enabled
 if [ "$has_d128" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
--C cluster0.has_128_bit_tt_descriptors="1"
--C cluster1.has_128_bit_tt_descriptors="1"
+-C cluster0.has_128_bit_tt_descriptors=2
+-C cluster1.has_128_bit_tt_descriptors=2
 EOF
 fi
 
