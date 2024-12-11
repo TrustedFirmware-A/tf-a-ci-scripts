@@ -202,6 +202,9 @@ clean_build $fvp_common_flags ENABLE_FEAT_DEBUGV8P9=1
 # Feat_FGT2 (Fine-grained Traps 2) feature
 clean_build $fvp_common_flags ENABLE_FEAT_FGT2=1
 
+# Feat_FPMR (Floating Point Mode Register) feature
+clean_build $fvp_common_flags ENABLE_FEAT_FPMR=1
+
 # FEAT_TCR2
 clean_build $fvp_common_flags ENABLE_FEAT_TCR2=1
 
