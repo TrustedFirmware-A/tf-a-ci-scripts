@@ -6,3 +6,4 @@ SPD=spmd
 SP_LAYOUT_FILE=${tftf_root}/build/tc/${bin_mode}/sp_layout.json
 TARGET_PLATFORM=4
 CSS_LOAD_SCP_IMAGES=0
+ENABLE_STACK_PROTECTOR=strong
