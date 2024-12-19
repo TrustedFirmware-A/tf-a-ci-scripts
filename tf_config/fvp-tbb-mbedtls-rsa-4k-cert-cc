@@ -6,6 +6,6 @@ KEY_ALG=rsa
 KEY_SIZE=4096
 LOG_LEVEL=20
 PLAT=fvp
-ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
+ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa_4k.pem
 TRUSTED_BOARD_BOOT=1
 ENABLE_ASSERTIONS=0
