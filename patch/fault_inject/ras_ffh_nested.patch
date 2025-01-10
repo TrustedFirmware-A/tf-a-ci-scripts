@@ -13,16 +13,16 @@ index 742380568..5ff6d3dd8 100644
  	handle_sync_exception
  end_vector_entry sync_exception_aarch64
 diff --git a/services/arm_arch_svc/arm_arch_svc_setup.c b/services/arm_arch_svc/arm_arch_svc_setup.c
-index 545616469..6fb9b942c 100644
+index 6acd1b60f..76a5b6ded 100644
 --- a/services/arm_arch_svc/arm_arch_svc_setup.c
 +++ b/services/arm_arch_svc/arm_arch_svc_setup.c
-@@ -14,9 +14,37 @@
- #include <services/arm_arch_svc.h>
- #include <smccc_helpers.h>
+@@ -16,10 +16,37 @@
  #include <plat/common/platform.h>
+ #include <arch_features.h>
+ #include <arch_helpers.h>
 +#include <context.h>
-+#include <lib/el3_runtime/context_mgmt.h>
-+
+ #include <lib/el3_runtime/context_mgmt.h>
+ 
 +static void target_ea_to_lower_el(void)
 +{
 +	u_register_t scr_el3;
@@ -32,7 +32,7 @@ index 545616469..6fb9b942c 100644
 +	scr_el3 &= ~SCR_EA_BIT;
 +	write_ctx_reg(el3_ctx, CTX_SCR_EL3, scr_el3);
 +}
- 
++
  static int32_t smccc_version(void)
  {
 +	/*
