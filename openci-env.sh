@@ -13,3 +13,14 @@ nfs_volume="${WORKSPACE:?}/nfs"
 jenkins_url="http://ci.trustedfirmware.org"
 tfa_downloads="https://downloads.trustedfirmware.org/tf-a"
 ci_env="openci"
+
+tfa_branch=${TF_GERRIT_BRANCH##*/}
+if echo $tfa_branch | grep -q "^lts-v"; then
+    # LTS branch, change the download space to the respective one
+    tfa_downloads="https://downloads.trustedfirmware.org/tf-a-$tfa_branch"
+fi
+
+echo "*************************************"
+echo "ci_env: $ci_env"
+echo "tfa_downloads: $tfa_downloads"
+echo "*************************************"
