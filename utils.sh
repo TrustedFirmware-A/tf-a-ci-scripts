@@ -618,7 +618,6 @@ path_list=(
 		"${aarch64_none_elf_dir}/bin"
 		"${arm_none_eabi_dir}/bin"
 		"${llvm_dir}/bin"
-		"${nfs_volume}/pdsw/tools/gcc-arm-none-eabi-5_4-2016q3/bin"
 		"$coverity_path/bin"
 )
 
