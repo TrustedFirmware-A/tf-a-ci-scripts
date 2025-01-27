@@ -65,10 +65,10 @@ set_cross_compile_gcc_linaro_toolchain() {
 
 # Provide correct armclang toolchain based on environment
 set_armclang_toolchain() {
-    local armclang_path="/home/buildslave/tools/armclang-6.18/bin"
+    local armclang_path="/home/buildslave/tools/armclang-6.23/bin"
 
     # if under arm enviroment, overide cross-compilation path
-    is_arm_jenkins_env || upon "$local_ci" && armclang_path="/arm/warehouse/Distributions/FA/ARMCompiler/6.18/19/standalone-linux-x86_64-rel/bin"
+    is_arm_jenkins_env || upon "$local_ci" && armclang_path="/arm/warehouse/Distributions/FA/ARMCompiler/6.23/37/standalone-linux-x86_64-rel/bin"
 
     echo "${armclang_path}/armclang"
 }
