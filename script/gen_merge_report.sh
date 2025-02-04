@@ -9,7 +9,7 @@ set -x
 REPORT_JSON=$1
 REPORT_HTML=$2
 
-if echo "$JENKINS_URL" | grep -q "oss.arm.com"; then
+if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
   ARTIFACT_PATH='artifact/html/qa-code-coverage'
   INFO_PATH='coverage.info'
   JSON_PATH='intermediate_layer.json'
@@ -34,7 +34,7 @@ python3 - << EOF
 import json
 import os
 
-server = os.getenv("JENKINS_URL", "https://jenkins.oss.arm.com/")
+server = os.getenv("JENKINS_PUBLIC_URL", "https://jenkins.oss.arm.com/")
 merge_json = {} # json object
 _files = []
 with open("$REPORT_JSON") as json_file:

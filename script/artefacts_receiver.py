@@ -28,7 +28,7 @@ import urllib
 import urllib.request
 
 
-JENKINS_URL = "http://jenkins.oss.arm.com"
+JENKINS_PUBLIC_URL = "http://jenkins.oss.arm.com"
 counter = itertools.count()
 exiting = False
 more_consoles = threading.Event()
@@ -44,7 +44,7 @@ class PendingJob:
         self.job = job
         self.build = build
         self.path = path
-        self.url = "/".join([JENKINS_URL, "job", self.job, self.build])
+        self.url = "/".join([JENKINS_PUBLIC_URL, "job", self.job, self.build])
 
     def download_console(self, more):
         console_url = "/".join([self.url, "consoleText"])
