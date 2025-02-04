@@ -38,7 +38,7 @@ common_flags() {
 # infrastructure)
 is_arm_jenkins_env() {
     if [ "$JENKINS_HOME" ]; then
-	if echo "$JENKINS_URL" | grep -q "oss.arm.com"; then
+	if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
 	    return 0;
 	fi
     fi
