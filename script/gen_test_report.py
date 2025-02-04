@@ -393,7 +393,7 @@ def main(fd):
             Build_job = opts.build_job
             json_obj["build_job"] = Build_job
 
-        Jenkins = os.environ["JENKINS_URL"].strip().rstrip("/")
+        Jenkins = os.environ["JENKINS_PUBLIC_URL"].strip().rstrip("/")
 
         # Replace non-alphabetical characters in the job name with underscores. This is
         # how Jenkins does it too.

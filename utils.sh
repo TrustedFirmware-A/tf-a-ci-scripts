@@ -26,11 +26,11 @@ if [ -n "$host_env" ]; then
   source "$host_env"
 else
   # Are we running on Arm infrastructure?
-  if echo "$JENKINS_URL" | grep -q "oss.arm.com"; then
+  if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
     source "$ci_root/arm-env.sh"
-  elif echo "$JENKINS_URL" | grep -q "ci.trustedfirmware.org"; then
+  elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.trustedfirmware.org"; then
     source "$ci_root/openci-env.sh"
-  elif echo "$JENKINS_URL" | grep -q "ci.staging.trustedfirmware.org"; then
+  elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.staging.trustedfirmware.org"; then
     source "$ci_root/openci-staging-env.sh"
   fi
 fi
@@ -489,7 +489,7 @@ extract_tarball() {
 
 # See if execution is done by Jenkins. If called with a parameter,
 # representing a 'domain', e.g. arm.com, it will also check if
-# JENKINS_URL contains the latter.
+# JENKINS_PUBLIC_URL contains the latter.
 is_jenkins_env () {
     local domain="${1-}"
 
@@ -500,7 +500,7 @@ is_jenkins_env () {
     # if no parameter passed, no more checks, quit
     [ -z "$domain" ] && return 0
 
-    if echo "$JENKINS_URL" | grep -q "$domain"; then
+    if echo "$JENKINS_PUBLIC_URL" | grep -q "$domain"; then
 	return 0
     fi
 
@@ -536,7 +536,7 @@ fi
 project_filer="${nfs_volume}/projectscratch/ssg/trusted-fw"
 project_scratch="${PROJECT_SCRATCH:-$project_filer/ci-workspace}"
 warehouse="${nfs_volume}/warehouse"
-jenkins_url="${JENKINS_URL%/*}"
+jenkins_url="${JENKINS_PUBLIC_URL%/*}"
 jenkins_url="${jenkins_url:-https://ci.trustedfirmware.org/}"
 
 # Model revisions

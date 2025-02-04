@@ -30,7 +30,7 @@ if [ "$CI_ROOT" ]; then
 	fi
 
 	# set proper jobs names for test generation report script
-	if echo "$JENKINS_URL" | grep -q "oss.arm.com"; then
+	if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
 		worker_job="${worker_job:-tf-worker}"
 		lava_job="${lava_job:-tf-build-for-lava}"
 	else
