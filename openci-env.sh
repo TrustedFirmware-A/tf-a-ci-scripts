@@ -10,6 +10,6 @@
 #
 
 nfs_volume="${WORKSPACE:?}/nfs"
-jenkins_url="http://ci.trustedfirmware.org"
+jenkins_url="${JENKINS_PUBLIC_URL}"
 tfa_downloads="https://downloads.trustedfirmware.org/tf-a"
 ci_env="openci"

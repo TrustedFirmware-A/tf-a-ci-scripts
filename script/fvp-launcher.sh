@@ -35,7 +35,7 @@ declare -A saveas
 declare -A urls
 
 ## Must params
-JENKINS_URL="${1:?}"
+JENKINS_PUBLIC_URL="${1:?}"
 
 
 ## Optional params passed through env variables
@@ -46,11 +46,11 @@ LAVA_LOG="${LAVA_LOG:-./lava.log}"
 DOCKER_CMDS_FILE="${DOCKER_CMDS_FILE:-./docker.txt}"
 BM_CMDS_FILE="${BM_CMDS_FILE:-./bm.txt}"
 
-JENKINS_URL="${JENKINS_URL}/artifact/lava.log"
+JENKINS_PUBLIC_URL="${JENKINS_PUBLIC_URL}/artifact/lava.log"
 
 
 # Fetch the LAVA log
-r_curl "${LAVA_LOG}" "${JENKINS_URL}"
+r_curl "${LAVA_LOG}" "${JENKINS_PUBLIC_URL}"
 
 # Get download directories from the lava log
 i=1
