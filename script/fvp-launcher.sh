@@ -103,7 +103,7 @@ grep -o -E 'docker run .*' $LAVA_LOG | tail -1 | while read line; do
     fi
 
     if [[ "${USE_LOCAL_IMAGE}" == "true" ]]; then
-        cmd="$(echo $cmd | sed 's/987685672616.dkr.ecr.us-east-1.amazonaws.com\///g')"
+        cmd="$(echo $cmd | sed 's/${PRIVATE_CONTAINER_REGISTRY}\///g')"
     fi
 
     docker_cmd="$(echo $cmd | sed "s;--volume /;--volume $PWD/;g")"
