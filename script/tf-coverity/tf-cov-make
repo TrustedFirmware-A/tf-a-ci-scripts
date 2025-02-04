@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2024, Arm Limited and Contributors. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited and Contributors. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -252,6 +252,10 @@ clean_build $fvp_common_flags PLATFORM_REPORT_CTX_MEM_USE=1
 # Build newer CPU's with no model available yet.
 clean_build $fvp_common_flags CTX_INCLUDE_AARCH32_REGS=0 HW_ASSISTED_COHERENCY=1 \
     USE_COHERENT_MEM=0 BUILD_CPUS_WITH_NO_FVP_MODEL=1 FVP_TRUSTED_SRAM_SIZE=384
+
+# Build all CPU's with all errata's with FVP platform.
+clean_build $fvp_common_flags CTX_INCLUDE_AARCH32_REGS=0 HW_ASSISTED_COHERENCY=1 \
+    USE_COHERENT_MEM=0 ENABLE_ERRATA_ALL=1 FVP_TRUSTED_SRAM_SIZE=384
 
 # Sign Realm tokens with EL3 signing service
 clean_build $fvp_common_flags ENABLE_RME=1 RMMD_ENABLE_EL3_TOKEN_SIGN=1
