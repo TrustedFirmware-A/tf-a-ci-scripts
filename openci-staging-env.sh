@@ -11,4 +11,4 @@
 
 nfs_volume="${WORKSPACE:?}/nfs"
 jenkins_url="http://ci.staging.trustedfirmware.org"
-tfa_downloads="https://downloads.trustedfirmware.org/tf-a"
+tfa_downloads="${DOWNLOAD_SERVER_URL}/tf-a"
