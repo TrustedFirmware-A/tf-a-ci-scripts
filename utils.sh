@@ -25,6 +25,9 @@ else
   # Are we running on Arm infrastructure?
   if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
     source "$ci_root/arm-env.sh"
+  elif echo "$JENKINS_PUBLIC_URL" | grep -q "jenkins.openci"; then
+    # This is Arm infrastructure while migration from ci.trustedfirmware.org
+    source "$ci_root/openci-env.sh"
   elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.trustedfirmware.org"; then
     source "$ci_root/openci-env.sh"
   elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.staging.trustedfirmware.org"; then
