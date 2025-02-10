@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-if echo "$JENKINS_URL" | grep -q "oss.arm.com"; then
+if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
 
 export GERRIT_URL=${GERRIT_URL:-https://gerrit.oss.arm.com}
 export TEST_DEFINITIONS_REPO=${TEST_DEFINITIONS_REPO:-${GERRIT_URL}/tests/lava/test-definitions.git}

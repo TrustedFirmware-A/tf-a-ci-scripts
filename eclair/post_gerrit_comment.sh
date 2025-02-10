@@ -13,7 +13,7 @@ should_post_comment=1
 SCRIPT_DIR="$(cd "$(dirname "$0")" ; echo "${PWD}")"
 
 # Don't post comments if run on the staging server.
-if echo "$JENKINS_URL" | grep -q "ci\.staging"; then
+if echo "$JENKINS_PUBLIC_URL" | grep -q "ci\.staging"; then
     should_post_comment=0
 fi
 

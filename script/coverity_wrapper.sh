@@ -35,7 +35,7 @@ coverity_wrapper() {
 	local need_compare
 
 	# If auth file is not provided and if on Arm infrastructure copy it
-	if [ -z "$auth_file" ] && echo "$JENKINS_URL" | grep -q "oss.arm.com"; then
+	if [ -z "$auth_file" ] && echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
 		local auth_url="$project_filer/ci-files/coverity/tfcibot@$coverity_host"
 		url="$auth_url" saveas="$workspace/tfcibot@$coverity_host" fetch_file
 		auth_file="$workspace/tfcibot@$coverity_host"

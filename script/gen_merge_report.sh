@@ -9,7 +9,7 @@ REPORT_JSON=$1
 REPORT_HTML=$2
 TEST_DEF_FOLDER="${WORKSPACE}/test-definitions"
 
-if echo "$JENKINS_URL" | grep -q "oss.arm.com"; then
+if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
 ARTIFACT_PATH='artifact/html'
 INFO_PATH='lcov_report/coverage.info'
 JSON_PATH='output_file.json'
@@ -37,7 +37,7 @@ python3 - << EOF
 import json
 import os
 
-server = os.getenv("JENKINS_URL", "https://jenkins.oss.arm.com/")
+server = os.getenv("JENKINS_PUBLIC_URL", "https://jenkins.oss.arm.com/")
 merge_json = {} # json object
 _files = []
 with open("$REPORT_JSON") as json_file:
@@ -155,7 +155,7 @@ pushd $OUTDIR
         git checkout $TEST_DEFINITIONS_REFSPEC
     popd
 
-    if echo "$JENKINS_URL" | grep -q "oss.arm.com"; then
+    if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
     bash $TEST_DEF_FOLDER/scripts/tools/code_coverage/fastmodel_baremetal/bmcov/report/branch_coverage/merge.sh \
         -j $MERGE_JSON -l ${OUTDIR} -p $project
     else
