@@ -25,7 +25,7 @@ if [ $COVERAGE_ON -eq 1 ]; then
 	LIST_OF_BINARIES=""
 	OBJDUMP="$(which 'aarch64-none-elf-objdump')"
 	READELF="$(which 'aarch64-none-elf-readelf')"
-	FALLBACK_PLUGIN_URL="${FALLBACK_PLUGIN_URL:-https://downloads.trustedfirmware.org/coverage-plugin/qa-tools/coverage-tool}"
+	FALLBACK_PLUGIN_URL="${FALLBACK_PLUGIN_URL:-${DOWNLOAD_SERVER_URL}/coverage-plugin/qa-tools/coverage-tool}"
 	FALLBACK_PLUGIN_URL_ALT="${FALLBACK_PLUGIN_URL_ALT:-https://artifactory.eu02.arm.com/artifactory/trustedfirmware.downloads/coverage-plugin}"
 	FALLBACK_FILES="${FALLBACK_FILES:-coverage_trace.so,coverage_trace.o,plugin_utils.o}"
 	FALLBACK_FILES_ALT="${FALLBACK_FILES_ALT:-CoverageTrace.so,CoverageTrace.o,PluginUtils.o}"

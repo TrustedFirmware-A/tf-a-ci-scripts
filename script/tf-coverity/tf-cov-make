@@ -613,7 +613,7 @@ make PLAT=a3700 $(common_flags) SCP_BL2=/dev/null CM3_SYSTEM_RESET=1 \
 
 # Source files from mv-ddr-marvell repository are necessary
 # to build below four platforms
-wget https://downloads.trustedfirmware.org/tf-a/mv-ddr-marvell/mv-ddr-marvell-5d41a995637de1dbc93f193db6ef0c8954cab316.tar.gz 2> /dev/null
+wget ${DOWNLOAD_SERVER_URL}/tf-a/mv-ddr-marvell/mv-ddr-marvell-5d41a995637de1dbc93f193db6ef0c8954cab316.tar.gz 2> /dev/null
 tar -xzf mv-ddr-marvell-5d41a995637de1dbc93f193db6ef0c8954cab316.tar.gz 2> /dev/null
 mv mv-ddr-marvell drivers/marvell/mv_ddr
 

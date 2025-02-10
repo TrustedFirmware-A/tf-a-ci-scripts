@@ -37,7 +37,7 @@ assert tarball_name("baz.tar.bz2") == "baz"
 
 def get_coverity_tool():
     coverity_tarball = "coverity_tool.tgz"
-    url = "https://downloads.trustedfirmware.org/tf-a/tf-a-coverity/" + coverity_tarball
+    url = "${DOWNLOAD_SERVER_URL}/tf-a/tf-a-coverity/" + coverity_tarball
     print("Downloading Coverity Build tool from %s..." % url)
     file_handle = urllib.request.urlopen(url)
     output = open(coverity_tarball, "wb")
