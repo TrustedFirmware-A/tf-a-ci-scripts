@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2020-2024, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -94,6 +94,8 @@ fvp_models=(
 [cortex-a78aex4]="${fvp_arm_std_library};FVP_Base_Cortex-A78AE"
 [cortex-a78cx4]="${fvp_arm_std_library};FVP_Base_Cortex-A78C"
 [cortex-x2]="${fvp_arm_std_library};FVP_Base_Cortex-X2"
+[cortex-x4]="${fvp_arm_std_library};FVP_Base_Cortex-X4"
+[cortex-x925]="${fvp_arm_std_library};FVP_Base_Cortex-X925"
 [cortex-a710x8]="${fvp_arm_std_library};FVP_Base_Cortex-A710"
 [neoverse_e1]="${fvp_arm_std_library_11_24};FVP_Base_Neoverse-E1"
 [neoverse_n1]="${fvp_arm_std_library};FVP_Base_Neoverse-N1"

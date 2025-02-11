@@ -6,9 +6,9 @@
 #
 
 generate_lava_job() {
-	local model="cortex-x2"
+	local model="cortex-x4"
 
-	uart="0" set_expect_variable "num_cpus" "4"
+	uart="0"
 
 	model="$model" cache_state_modelled="0" gen_model_params
 	model="$model" gen_fvp_yaml
