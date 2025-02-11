@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+CACTUS_PWR_MGMT_SUPPORT=0
+TESTS=spm
