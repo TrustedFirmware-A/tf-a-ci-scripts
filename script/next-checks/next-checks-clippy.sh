@@ -21,6 +21,7 @@ echo "Platforms:" >> "$LOG_TEST_FILENAME"
 
 available_platforms=$(make --silent -C ${TF_ROOT}/rust list_platforms)
 
+# Run clippy for all platforms
 for plat in $available_platforms
 do
     echo >> $LOG_FILE
@@ -35,6 +36,19 @@ do
         echo -e "  ${plat}\t: PASS" >> "$LOG_TEST_FILENAME"
     fi
 done
+
+# Now run clippy for tests
+echo >> $LOG_FILE
+echo "############### ${TEST_CASE} - platform: tests" >> "$LOG_FILE"
+echo >> $LOG_FILE
+make -C ${TF_ROOT}/rust clippy-test >> "$LOG_FILE" 2>&1
+
+if [ "$?" -ne 0 ]; then
+    echo -e "  clippy-test\t: FAIL" >> "$LOG_TEST_FILENAME"
+    EXIT_VALUE=1
+else
+    echo -e "  clippy-test\t: PASS" >> "$LOG_TEST_FILENAME"
+fi
 
 echo >> "$LOG_TEST_FILENAME"
 if [[ "$EXIT_VALUE" == 0 ]]; then

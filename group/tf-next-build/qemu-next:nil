@@ -4,8 +4,3 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-pre_tf_build() {
-    if not_upon "$local_ci"; then
-        make PLAT=qemu -C "$tf_root/rust" clippy
-    fi
-}

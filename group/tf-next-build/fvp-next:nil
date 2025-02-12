@@ -4,11 +4,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-pre_tf_build() {
-    if not_upon "$local_ci"; then
-        make PLAT=fvp -C "$tf_root/rust" clippy
-    fi
-}
 
 post_tf_build() {
 	build_fip RUST=1 PLAT=fvp
