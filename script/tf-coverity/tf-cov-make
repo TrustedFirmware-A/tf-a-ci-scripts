@@ -796,6 +796,7 @@ make PLAT=k3 $(common_flags) all
 make PLAT=k3 TARGET_BOARD=j784s4 $(common_flags) all
 make PLAT=k3 TARGET_BOARD=lite $(common_flags) all
 make PLAT=k3 TARGET_BOARD=generic $(common_flags) all
+make PLAT=k3low TARGET_BOARD=am62lx $(common_flags) all
 
 clean_build PLAT=qemu $(common_flags) ${TBB_OPTIONS}
 # Use GICV3 driver
