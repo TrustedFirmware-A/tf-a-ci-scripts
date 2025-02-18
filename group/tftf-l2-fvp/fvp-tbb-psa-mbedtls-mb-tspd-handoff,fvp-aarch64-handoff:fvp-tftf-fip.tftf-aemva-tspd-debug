@@ -1,0 +1,10 @@
+#
+# Copyright (c) 2025 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+fetch_tf_resource() {
+    uart="0" set_expect_variable "measured_boot" "1"
+    uart="2" set_expect_variable "measured_boot" "1"
+}

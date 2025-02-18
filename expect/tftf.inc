@@ -10,6 +10,10 @@ expect_string "Booting trusted firmware test framework" "TFTF is booting"
 
 expect_re "Running at NS-EL(1|2)"
 
+if {[info exists ::env(measured_boot)]} {
+    capture_and_compare_log tftf_event_log "TEST COMPLETE" tfa_event_log
+}
+
 expect {
 	"Tests Failed  : 0" {
 		expect_string "Exiting tests." "all TFTF tests passed"

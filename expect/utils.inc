@@ -104,3 +104,37 @@ proc expect_re {the_re {the_message ""}} {
 		}
 	}
 }
+
+proc capture_log {out end_re} {
+    set event_log [open $out w]
+    expect "TCG_EfiSpecIDEvent"
+
+    expect {
+            # Parse the event log from the debug logs and store the digests
+            # so they can be matched later with what TF-A stored on the event log.
+            -re "Digest(\\s|\\w)*:\\s(\\w{2}\\s){16}|\
+            : (\\w{2}\\s){16}|\
+            (Event|EventType|EventSize)\\s*:\\s\\w+\\s" {
+                    puts $event_log $expect_out(0,string)
+                    exp_continue
+            }
+
+            -re "$end_re" {
+                    close $event_log
+            }
+    }
+}
+
+proc capture_and_compare_log {out end_re compare} {
+    set event_log [open $out w]
+    capture_log $out $end_re
+
+    # Match the previously the given digests. The pass criteria is that both
+    # digests must match.
+    if {[catch {exec diff -s $out $compare} result options] == 0} {
+            message "tests succeeded, digests matched"
+    } else {
+            message "tests failed, digests did not match"
+            exit_uart -1
+    }
+}
