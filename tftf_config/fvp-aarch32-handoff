@@ -1,0 +1,5 @@
+ARCH=aarch32
+CROSS_COMPILE=arm-none-eabi-
+PLAT=fvp
+TESTS=firmware-handoff
+TRANSFER_LIST=1

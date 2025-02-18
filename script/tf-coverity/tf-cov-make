@@ -158,6 +158,8 @@ clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1
 
 # Firmware Handoff framework support
 clean_build $fvp_common_flags TRANSFER_LIST=1
+clean_build $fvp_common_flags CROSS_COMPILE=arm-none-eabi- TRANSFER_LIST=1 \
+    AARCH32_SP=sp_min ARCH=aarch32
 
 # HOB List support
 clean_build $fvp_common_flags HOB_LIST=1
