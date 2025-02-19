@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2022-2024, Arm Limited. All rights reserved.
+# Copyright (c) 2022-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-set_model_path "$warehouse/SysGen/SubSystemModels/0.0/8404/models/$model_flavour/FVP_TC4"
+set_model_path "$warehouse/SysGen/SubSystemModels/$model_version/$model_build/models/$model_flavour/FVP_TC4"
 cat <<EOF >"$model_param_file"
 ${fip_gpt_bin+-C board.flashloader0.fname=$fip_gpt_bin}
 -C board.pl011_uart2.unbuffered_output=1

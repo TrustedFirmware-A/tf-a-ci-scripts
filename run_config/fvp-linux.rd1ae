@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2024, Arm Limited. All rights reserved.
+# Copyright (c) 2024-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -49,12 +49,7 @@ generate_lava_job() {
 	set_run_env "ports_script" "$ci_root/model/rd1ae-ports.awk"
 	set_run_env "num_uarts" "3"
 
-	model="$model" \
-			model_build="20" \
-			model_flavour="Linux64_GCC-9.3" \
-			model_version="11.27" \
-			gen_model_params
-
+	model="$model" gen_model_params
 	model="$model" gen_fvp_yaml
 }
 

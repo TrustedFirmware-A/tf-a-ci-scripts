@@ -48,18 +48,16 @@ optee_path=$tfa_downloads/optee/${optee_version}
 default_model_dtb="dtb.bin"
 
 # FVP containers and model paths
-fvp_arm_std_library_11_24="fvp:fvp_arm_std_library_${model_version_11_24}_${model_build_11_24};/opt/model/FVP_ARM_Std_Library/FVP_Base"
-
 fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build};/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
 fvp_base_aemv8r="fvp:fvp_base_aemv8r_${model_version}_${model_build};/opt/model/AEMv8R_base_pkg/models/${model_flavour}"
-fvp_rd_1_ae="fvp:fvp_rd_1_ae_11.27_20;/opt/model/FVP_RD_1_AE/models/${model_flavour}"
+fvp_rd_1_ae="fvp:fvp_rd_1_ae_${model_version}_${model_build};/opt/model/FVP_RD_1_AE/models/${model_flavour}"
 
 # CSS model list
 fvp_morello="fvp:fvp_morello_0.11_33;/opt/model/FVP_Morello/models/Linux64_GCC-6.4"
-fvp_rd_v1="fvp:fvp_rd_v1_${model_version}_${model_build};/opt/model/FVP_RD_V1/models/${model_flavour}"
+fvp_rd_v1="fvp:fvp_rd_v1_11.26_11;/opt/model/FVP_RD_V1/models/${model_flavour}"
 fvp_tc3="fvp:fvp_tc3_11.26_16_linux64;/opt/model/FVP_TC3/models/${model_flavour}"
-fvp_tc4="fvp:fvp_tc4_0.0_8404;/opt/model/FVP_TC4/models/${model_flavour}"
+fvp_tc4="fvp:fvp_tc4_${model_version}_${model_build};/opt/model/FVP_TC4/models/${model_flavour}"
 
 # FVP associate array, run_config are keys and fvp container parameters are the values
 #   Container parameters syntax: <model name>;<model dir>;<model bin>
@@ -71,19 +69,18 @@ fvp_models=(
 [base-aemv8a-latest-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
 [base-aemva]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
 [base-aemv8a]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
-[cortex-a32x4]="${fvp_arm_std_library};FVP_Base_Cortex-A32x4"
-[cortex-a35x4]="${fvp_arm_std_library};FVP_Base_Cortex-A35x4"
-[cortex-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A53x4"
+[cortex-a32x4]="${fvp_arm_std_library};FVP_Base_Cortex-A32"
+[cortex-a35x4]="${fvp_arm_std_library};FVP_Base_Cortex-A35"
+[cortex-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A53"
 [cortex-a55x4]="${fvp_arm_std_library};FVP_Base_Cortex-A55"
 [cortex-a57x1-a53x1]="${fvp_arm_std_library};FVP_Base_Cortex-A57x1-A53x1"
 [cortex-a57x2-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A57x2-A53x4"
-[cortex-a57x4]="${fvp_arm_std_library};FVP_Base_Cortex-A57x4"
+[cortex-a57x4]="${fvp_arm_std_library};FVP_Base_Cortex-A57"
 [cortex-a57x4-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A57x4-A53x4"
-[cortex-a65aex8]="${fvp_arm_std_library_11_24};FVP_Base_Cortex-A65AE"
-[cortex-a65x4]="${fvp_arm_std_library_11_24};FVP_Base_Cortex-A65"
-[cortex-a72x4]="${fvp_arm_std_library};FVP_Base_Cortex-A72x4"
-[cortex-a72x4-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A72x4-A53x4"
-[cortex-a73x4]="${fvp_arm_std_library};FVP_Base_Cortex-A73x4"
+[cortex-a65aex8]="${fvp_arm_std_library};FVP_Base_Cortex-A65AE"
+[cortex-a65x4]="${fvp_arm_std_library};FVP_Base_Cortex-A65"
+[cortex-a72x4]="${fvp_arm_std_library};FVP_Base_Cortex-A72"
+[cortex-a73x4]="${fvp_arm_std_library};FVP_Base_Cortex-A73"
 [cortex-a73x4-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A73x4-A53x4"
 [cortex-a75x4]="${fvp_arm_std_library};FVP_Base_Cortex-A75"
 [cortex-a76aex4]="${fvp_arm_std_library};FVP_Base_Cortex-A76AE"
@@ -97,7 +94,7 @@ fvp_models=(
 [cortex-x4]="${fvp_arm_std_library};FVP_Base_Cortex-X4"
 [cortex-x925]="${fvp_arm_std_library};FVP_Base_Cortex-X925"
 [cortex-a710x8]="${fvp_arm_std_library};FVP_Base_Cortex-A710"
-[neoverse_e1]="${fvp_arm_std_library_11_24};FVP_Base_Neoverse-E1"
+[neoverse_e1]="${fvp_arm_std_library};FVP_Base_Neoverse-E1"
 [neoverse_n1]="${fvp_arm_std_library};FVP_Base_Neoverse-N1"
 [neoverse_n2]="${fvp_arm_std_library};FVP_Base_Neoverse-N2"
 [neoverse-v1x4]="${fvp_arm_std_library};FVP_Base_Neoverse-V1"

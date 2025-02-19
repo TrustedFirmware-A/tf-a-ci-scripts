@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2024, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -542,12 +542,8 @@ warehouse="${nfs_volume}/warehouse"
 jenkins_url="${JENKINS_PUBLIC_URL%/*}"
 jenkins_url="${jenkins_url:-https://ci.trustedfirmware.org/}"
 
-# Model revisions
-model_version_11_24="${model_version:-11.24}"
-model_build_11_24="${model_build:-24}"
-
-model_version="${model_version:-11.26}"
-model_build="${model_build:-11}"
+model_version="${model_version:-11.28}"
+model_build="${model_build:-23}"
 model_flavour="${model_flavour:-Linux64_GCC-9.3}"
 
 # Model snapshots from filer are not normally not accessible from developer
