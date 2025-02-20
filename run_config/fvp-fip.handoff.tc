@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+post_tf_build() {
+	url="$tfa_downloads/handoff/total_compute/u-boot.bin" fetch_file
+	archive_file "u-boot.bin"
+
+	if [ $plat_variant -eq 4 ]; then
+		build_fip BL33="$archive/u-boot.bin"
+	fi
+}
