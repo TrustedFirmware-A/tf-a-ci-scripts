@@ -16,15 +16,15 @@ fetch_tf_resource() {
 	# Use SCP binary from SCP build if it exists, or fetch pre-built ones.
 	if [ ! -f "$archive/scp_rom.bin" ]; then
 		# Pick the appropriate binary based on target platform variant
-		if [ $plat_variant -eq 3 ] || [ $plat_variant -eq 4 ]; then
+		if [ $plat_variant -eq 4 ]; then
 			url="$tfa_downloads/total_compute/tc$plat_variant/scp/tc$plat_variant-bl1.bin" saveas="scp_rom.bin" fetch_file
 		fi
 
 		archive_file "scp_rom.bin"
 	fi
 
-	# RSE is applicable to TC3 and TC4
-	if [ $plat_variant -eq 3 ] || [ $plat_variant -eq 4 ]; then
+	# RSE is applicable to TC4
+	if [ $plat_variant -eq 4 ]; then
 
 	    # Hold RSE terminal_uart_ap
 	    uart="1" port="5003" file="hold_uart.exp" track_expect

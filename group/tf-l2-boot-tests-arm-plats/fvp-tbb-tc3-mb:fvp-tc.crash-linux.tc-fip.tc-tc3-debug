@@ -1,9 +1,0 @@
-#
-# Copyright (c) 2023-2024 Arm Limited. All rights reserved.
-#
-# SPDX-License-Identifier: BSD-3-Clause
-#
-
-# Note that this uses the fvp-linux.tc run fragment, which does not actually boot to linux,
-# as it is the only way to get an image signed and assembled correctly for RSE to boot it.
-# If this is resolved at some point, that fragment should be removed.

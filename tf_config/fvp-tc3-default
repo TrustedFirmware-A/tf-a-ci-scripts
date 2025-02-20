@@ -1,5 +1,0 @@
-CROSS_COMPILE=aarch64-none-elf-
-PLAT=tc
-TARGET_PLATFORM=3
-ARM_GPT_SUPPORT=1
-SCP_BL2=/dev/null
