@@ -47,6 +47,8 @@ reset_var gicv3_gicv2_only
 # Number of SPIs that are implemented: Default 224, Maximum 988
 reset_var gicv3_spi_count
 
+reset_var has_ete
+
 # Enable GICv4.1 functionality
 reset_var has_gicv4_1
 
@@ -119,9 +121,6 @@ reset_var supports_multi_threading
 # ETM plugin to access ETM trace system registers
 reset_var etm_plugin
 
-# ETE plugin to access ETE trace system registers
-reset_var ete_plugin
-
 # Trace filter register support
 reset_var supports_trace_filter_regs
 
@@ -149,6 +148,7 @@ ${gicd_its_count+-C gic_distributor.ITS-count=$gicd_its_count}
 ${gicd_virtual_lpi+-C gic_distributor.virtual-lpi-support=$gicd_virtual_lpi}
 ${has_gicv4_1+-C has-gicv4.1=$has_gicv4_1}
 
+${has_ete+-C cluster0.has_ete=1}
 ${has_sve+-C cluster0.has_sve=1}
 ${has_sve+-C cluster0.sve.veclen=$((128 / 8))}
 ${has_sme+-C cluster0.sve.has_sme=1}
@@ -156,6 +156,7 @@ ${has_sme2+-C cluster0.sve.has_sme2=1}
 ${has_sme_fa64+-C cluster0.sve.has_sme_fa64=1}
 ${sme_only+-C cluster0.sve.sme_only=1}
 
+${has_ete+-C cluster1.has_ete=1}
 ${has_sve+-C cluster1.has_sve=1}
 ${has_sve+-C cluster1.sve.veclen=$((128 / 8))}
 ${has_sme+-C cluster1.sve.has_sme=1}
@@ -169,7 +170,6 @@ ${nvcounter_version+-C bp.trusted_nv_counter.version=$nvcounter_version}
 ${nvcounter_diag+-C bp.trusted_nv_counter.diagnostics=$nvcounter_diag}
 
 ${etm_plugin+--plugin=$etm_plugin_path}
-${ete_plugin+--plugin=$ete_plugin_path}
 EOF
 
 # TFTF Reboot/Shutdown tests

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2024, Arm Limited. All rights reserved.
+# Copyright (c) 2024-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -14,7 +14,7 @@ generate_lava_job() {
 	model="$model" \
 		arch_version="8.9" \
 		accelerator_support_level="1" \
-		ete_plugin="1" \
+		has_ete="1" \
 		etm_plugin="1" \
 		etm_present="1" \
 		has_csv2_2="1" \
