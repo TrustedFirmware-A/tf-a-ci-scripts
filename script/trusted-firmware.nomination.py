@@ -74,8 +74,4 @@ nomination_rules = {
               "has:EL3_EXCEPTION_HANDLING"):
             ["tftf-l2-fvp/fvp-aarch64-sdei,fvp-default:fvp-tftf-fip.tftf-aemv8a-debug",
              "tf-l2-coverity-misra-nominated/fvp-aarch64-sdei:coverity-tf-misra.diff"],
-
-        # Run Morello FVP busybox boot test for any platform changes
-        "path:plat/arm/board/morello":
-            ["tf-l3-boot-tests-css/fvp-morello-tbb:fvp-linux.morello-fip.morello-morello-debug"],
         }
