@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2024, Arm Limited and Contributors. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited and Contributors. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -16,11 +16,6 @@ nomination_rules = {
              "tf-l2-coverity-misra-nominated/fvp-rdn1edge-tbb:coverity-tf-misra.diff",
              "tf-l3-boot-tests-css/fvp-rdn1edgex2-tbb:fvp-linux.nrd-fip.nrd-rdn1edgex2-debug",
              "tf-l2-coverity-misra-nominated/fvp-rdn1edgex2-tbb:coverity-tf-misra.diff"],
-
-        # Run RD-V1 TF-A Tests and MISRA checks for any platform changes
-        "path:plat/arm/board/neoverse_rd/platform/rdv1":
-            ["tf-l3-boot-tests-css/fvp-rdv1-tbb:fvp-linux.nrd-fip.nrd-rdv1-debug",
-             "tf-l2-coverity-misra-nominated/fvp-rdv1-tbb:coverity-tf-misra.diff"],
 
         # Run SGI575 boot test, TF-A Tests and MISRA checks for any changes with "neoverse_rd" in the path
         "pathre:neoverse_rd":
