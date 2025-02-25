@@ -63,7 +63,6 @@ fvp_tc4="fvp:fvp_tc4_${model_version}_${model_build};/opt/model/FVP_TC4/models/$
 declare -A fvp_models
 fvp_models=(
 [base-aemv8a-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
-[base-aemv8a-latest-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
 [base-aemva]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
 [base-aemv8a]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
 [cortex-a32x4]="${fvp_arm_std_library};FVP_Base_Cortex-A32"
@@ -81,7 +80,6 @@ fvp_models=(
 [cortex-a73x4-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A73x4-A53x4"
 [cortex-a75x4]="${fvp_arm_std_library};FVP_Base_Cortex-A75"
 [cortex-a76aex4]="${fvp_arm_std_library};FVP_Base_Cortex-A76AE"
-[cortex-a76aex2]="${fvp_arm_std_library};FVP_Base_Cortex-A76AE"
 [cortex-a76x4]="${fvp_arm_std_library};FVP_Base_Cortex-A76"
 [cortex-a77x4]="${fvp_arm_std_library};FVP_Base_Cortex-A77"
 [cortex-a78x4]="${fvp_arm_std_library};FVP_Base_Cortex-A78"
