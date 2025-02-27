@@ -18,6 +18,7 @@ generate_lava_job() {
 		etm_present="1" \
 		amu_present="1" \
 		has_sme="1" has_sme2="1" \
+		has_sme_fa64="1" \
 		has_mpam="1" \
 		has_ecv="1" \
 		has_fpmr="1" \
@@ -25,14 +26,23 @@ generate_lava_job() {
 		has_d128="1" \
 		has_brbe="1" \
 		has_trbe="1" \
+		has_fgt2="1" \
+		has_csv2_2="1" \
+		has_s1pie="1" \
+		has_s1poe="1" \
+		has_s2poe="1" \
+		has_gcs="1" \
+		has_pmuv3p7="1" \
 		has_v8_9_debug_extension="1" \
 		memory_tagging_support_level="3" \
 		supports_branch_record_buffer_control_regs="1" \
+		has_branch_target_exception="1" \
 		supports_trace_buffer_control_regs="1" \
 		supports_trace_filter_regs="2" \
 		supports_system_trace_filter_regs="1" \
-		arch_version="9.4" \
 		accelerator_support_level="3" \
+		has_mops="1" \
+		arch_version="9.4" \
 		gen_model_params
 
 	model="$model" gen_fvp_yaml

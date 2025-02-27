@@ -418,9 +418,6 @@ fi
 if [ "$has_rme" = "1" ]; then
         cat <<EOF >>"$model_param_file"
 -C cluster0.rme_support_level=2
--C cluster0.has_rndr=1
--C cluster0.has_v8_7_pmu_extension=2
--C cluster0.ecv_support_level=2
 -C cluster0.gicv3.cpuintf-mmap-access-level=2
 -C cluster0.gicv4.mask-virtual-interrupt=1
 -C cluster0.gicv3.without-DS-support=1
@@ -559,6 +556,20 @@ if [ "$has_fpmr" = "1" ]; then
 EOF
 fi
 
+if [ "$has_pmuv3p7" != "0" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_v8_7_pmu_extension=2
+-C cluster1.has_v8_7_pmu_extension=2
+EOF
+fi
+
+if [ "$has_mops" != "0" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_mops_option=1
+-C cluster1.has_mops_option=1
+EOF
+fi
+
 #------------ Cluster1 configuration (if exists) --------------
 if [ "$is_dual_cluster" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
@@ -691,9 +702,6 @@ fi
 if [ "$has_rme" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster1.rme_support_level=2
--C cluster1.has_rndr=1
--C cluster1.has_v8_7_pmu_extension=2
--C cluster1.ecv_support_level=2
 -C cluster1.gicv3.cpuintf-mmap-access-level=2
 -C cluster1.gicv4.mask-virtual-interrupt=1
 -C cluster1.gicv3.without-DS-support=1
