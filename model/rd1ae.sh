@@ -5,9 +5,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-if  is_arm_jenkins_env || upon "$local_ci"; then
-	# Internal ARM Jenkins environment path
-	set_model_path "$warehouse/SysGen/Models/$model_version/$model_build/external/models/$model_flavour/FVP_RD_1_AE"
+if upon "$local_ci"; then
+	set_model_path "$warehouse/SysGen/SubSystemModels/$model_version/$model_build/models/$model_flavour/FVP_RD_1_AE"
 else
 	source "$ci_root/fvp_utils.sh"
 	# fvp_models variable contains the information for FVP paths, where 2nd field

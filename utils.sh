@@ -159,7 +159,7 @@ fetch_file() {
 
 fetch_and_archive() {
 	url=${url:?}
-	filename=${filename:-basename $url}
+	filename=${filename:-$(basename $url)}
 
 	url="$url" saveas="$filename" fetch_file
 	archive_file "$filename"
