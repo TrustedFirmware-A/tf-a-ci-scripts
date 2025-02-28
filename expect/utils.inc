@@ -125,10 +125,7 @@ proc capture_log {out end_re} {
     }
 }
 
-proc capture_and_compare_log {out end_re compare} {
-    set event_log [open $out w]
-    capture_log $out $end_re
-
+proc compare_log {out compare} {
     # Match the previously the given digests. The pass criteria is that both
     # digests must match.
     if {[catch {exec diff -s $out $compare} result options] == 0} {
@@ -137,4 +134,11 @@ proc capture_and_compare_log {out end_re compare} {
             message "tests failed, digests did not match"
             exit_uart -1
     }
+}
+
+proc capture_and_compare_log {out end_re compare} {
+    set event_log [open $out w]
+    capture_log $out $end_re
+
+    compare_log $out $compare
 }

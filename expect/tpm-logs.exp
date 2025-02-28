@@ -11,23 +11,7 @@ source [file join [file dirname [info script]] handle-arguments.inc]
 
 # File to store the event log from the ftpm service.
 set FTPM_DIGEST [get_param ftpm_digest "ftpm_event_log"]
-set event_log [open $FTPM_DIGEST w]
 
-expect -exact "Event log size"
-
-expect {
-        # Parse the event log from the debug logs and store the digests
-        # so they can be matched later with what TF-A stored on the event log.
-        -re "Digest(\\s|\\w)*:\\s(\\w{2}\\s){16}|\
-        : (\\w{2}\\s){16}|\
-        Event(\\s|\\w)*:\\s\\w+\\s" {
-                puts $event_log $expect_out(0,string)
-                exp_continue
-        }
-
-        -exact "returned value" {
-                close $event_log
-        }
-}
+capture_log $FTPM_DIGEST "returned value"
 
 source [file join [file dirname [info script]] uart-hold.inc]
