@@ -48,8 +48,7 @@ all:
 
 EOF
 
-	# If we're using local checkouts for either TF or TFTF, we must
-	# serialise builds
+	# If serialized builds were requested
 	while [ "$i" -lt "$num" ]; do
 		{
 		printf "all: %04d_run %04d_build\n" "$i" "$i"
@@ -435,13 +434,6 @@ no_ci="$ci_root" no_cc="$import_cc" no_tfm_tests="$tfm_tests_root" no_tfm_extras
 set -a
 source "$workspace/env"
 set +a
-
-if [ "$local_count" -gt 0 ]; then
-	# At least one repository is local
-	serialize_builds=1
-else
-	dont_clean=0
-fi
 
 export -f upon not_upon
 
