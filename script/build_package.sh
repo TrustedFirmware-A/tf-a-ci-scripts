@@ -1214,14 +1214,6 @@ apply_tf_patch() {
 	popd
 }
 
-# Clear workspace for a local run
-if not_upon "$jenkins_run" && not_upon "$dont_clean"; then
-	rm -rf "$workspace"
-
-	# Clear residue from previous runs
-	rm -rf "$archive"
-fi
-
 mkdir -p "$workspace"
 mkdir -p "$archive"
 set_package_var "TEST_CONFIG" "$test_config"
