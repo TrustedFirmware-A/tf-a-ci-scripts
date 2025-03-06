@@ -126,6 +126,9 @@ reset_var has_ebep
 # Enable FEAT_UINJ
 reset_var has_uinj
 
+# Enable FEAT_MEC
+reset_var has_mec
+
 # Layout of MPIDR. 0=AFF0 is CPUID, 1=AFF1 is CPUID
 reset_var mpidr_layout
 
@@ -635,6 +638,15 @@ if [ "$has_cpa2" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.checked_pointer_arithmetic_support_level=2
 -C cluster1.checked_pointer_arithmetic_support_level=2
+EOF
+fi
+
+if [ "$has_mec" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.mec_support_level=2
+-C cluster0.rme_mecid_width=16
+-C cluster1.mec_support_level=2
+-C cluster1.rme_mecid_width=16
 EOF
 fi
 

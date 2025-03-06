@@ -53,6 +53,7 @@ generate_lava_job() {
 		has_pmuv3p7="1" \
 		has_ecv="1" \
 		has_rng="1" \
+		has_mec="1" \
 		gen_model_params
 
 	model="$model" gen_fvp_yaml
