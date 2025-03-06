@@ -42,7 +42,7 @@ build_configs="${BUILD_CONFIG:?}"
 run_config="${RUN_CONFIG:?}"
 cc_config="${CC_ENABLE:-}"
 
-archive="$artefacts"
+export archive="$artefacts"
 build_log="$artefacts/build.log"
 fiptool="$tf_root/tools/fiptool/fiptool"
 cert_create="$tf_root/tools/cert_create/cert_create"
@@ -345,7 +345,7 @@ build_fip() {
 		set +a
 	fi
 
-	make -C "$tf_root" $(cat "$tf_config_file") DEBUG="$DEBUG" V=1 "$@" \
+	make -C "$tf_root" $(cat "$tf_config_file") DEBUG="$DEBUG" BUILD_BASE=$tf_build_root V=1 "$@" \
 		${fip_targets:-fip} &>>"$build_log" || fail_build
 	)
 }
@@ -368,7 +368,7 @@ build_tf_extra() {
 		set +a
 	fi
 
-	make -C "$tf_root" $(cat "$tf_config_file") DEBUG="$DEBUG" V=1 "$@" \
+	make -C "$tf_root" $(cat "$tf_config_file") DEBUG="$DEBUG" V=1 BUILD_BASE=$tf_build_root "$@" \
 		${tf_extra_rules} &>>"$build_log" || fail_build
 	)
 }
@@ -582,12 +582,12 @@ build_tf() {
 		extend_path "PATH" "path_list"
 	fi
 
-	cd "$tf_root"
+	pushd "$tf_root"
 
 	# Always distclean when running on Jenkins. Skip distclean when running
 	# locally and explicitly requested.
 	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		make distclean &>>"$build_log" || fail_build
+		make distclean BUILD_BASE=$tf_build_root &>>"$build_log" || fail_build
 	fi
 
 	# Log build command line. It is left unfolded on purpose to assist
@@ -595,7 +595,7 @@ build_tf() {
 	cat <<EOF | log_separator >/dev/null
 
 Build command line:
-	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 $build_targets
+	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 BUILD_BASE=$tf_build_root $build_targets
 
 CC version:
 $(${CC-${CROSS_COMPILE}gcc} -v 2>&1)
@@ -608,7 +608,7 @@ EOF
 	# Build TF. Since build output is being directed to the build log, have
 	# descriptor 3 point to the current terminal for build wrappers to vent.
 	$tf_build_wrapper poetry run make $make_j_opts $(cat "$config_file") \
-		DEBUG="$DEBUG" V=1 SPIN_ON_BL1_EXIT="$connect_debugger" \
+		DEBUG="$DEBUG" V=1 BUILD_BASE="$tf_build_root" SPIN_ON_BL1_EXIT="$connect_debugger" \
 		$build_targets 3>&1 &>>"$build_log" || fail_build
 
         if [ "$build_targets" != "doc" ]; then
@@ -618,6 +618,7 @@ EOF
                     (poetry run memory --root "${tf_build_root}" summary "${map}" 2>&1 || true) | tee -a "${build_log}"
                 done
         fi
+	popd
 	)
 }
 
@@ -635,7 +636,7 @@ build_tftf() {
 	# Always distclean when running on Jenkins. Skip distclean when running
 	# locally and explicitly requested.
 	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		make distclean &>>"$build_log" || fail_build
+		make distclean BUILD_BASE="$tftf_build_root" &>>"$build_log" || fail_build
 	fi
 
 	# TFTF build system cannot reliably deal with -j option, so we avoid
@@ -645,11 +646,11 @@ build_tftf() {
 	cat <<EOF | log_separator >/dev/null
 
 Build command line:
-	make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 $build_targets
+	make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 BUILD_BASE="$tftf_build_root" $build_targets
 
 EOF
 
-	make $make_j_opts $(cat "$config_file") DEBUG="$DEBUG" V=1 \
+	make $make_j_opts $(cat "$config_file") DEBUG="$DEBUG" V=1 BUILD_BASE="$tftf_build_root" \
 		$build_targets &>>"$build_log" || fail_build
 	)
 }
@@ -1562,7 +1563,8 @@ for mode in $modes; do
 		fi
 
 		archive="$build_archive"
-		tftf_build_root="$tftf_root/build"
+		tftf_build_root="$archive/build/tftf"
+		mkdir -p ${tftf_build_root}
 
 		echo "Building Trusted Firmware TF ($mode) ..." |& log_separator
 
@@ -1698,7 +1700,8 @@ for mode in $modes; do
 		poetry -C "$tf_root" install --without docs
 
 		archive="$build_archive"
-		tf_build_root="$tf_root/build"
+		tf_build_root="$archive/build/tfa"
+		mkdir -p ${tf_build_root}
 
 		echo "Building Trusted Firmware ($mode) ..." |& log_separator
 
