@@ -24,14 +24,9 @@ else
   if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
     source "$ci_root/arm-env.sh"
   elif echo "$JENKINS_PUBLIC_URL" | grep -q "jenkins.openci"; then
-    # This is Arm infrastructure while migration from ci.trustedfirmware.org
-    source "$ci_root/openci-env.sh"
+    source "$ci_root/openci-lts-v2.8-env.sh"
   elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.trustedfirmware.org"; then
-    if echo "$TF_GERRIT_BRANCH" | grep -q "lts-v2.8"; then
-      source "$ci_root/openci-lts-v2.8-env.sh"
-    else
-      source "$ci_root/openci-env.sh"
-    fi
+    source "$ci_root/openci-lts-v2.8-env.sh"
   elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.staging.trustedfirmware.org"; then
     source "$ci_root/openci-staging-env.sh"
   fi
