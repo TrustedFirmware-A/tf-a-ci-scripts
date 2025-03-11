@@ -217,6 +217,7 @@ ${cluster_0_reg_reset+-C cluster0.register_reset_data=$cluster_0_reg_reset}
 ${cluster_0_has_el2+-C cluster0.has_el2=$cluster_0_has_el2}
 
 ${amu_present+-C cluster0.has_amu=$amu_present}
+${amu_version+-C cluster0.amu_version=${amu_version}}
 
 ${reset_to_bl31+-C cluster0.cpu0.RVBAR=${bl31_addr:?}}
 ${reset_to_bl31+-C cluster0.cpu1.RVBAR=${bl31_addr:?}}
@@ -580,6 +581,7 @@ ${cluster_1_reg_reset+-C cluster1.register_reset_data=$cluster_1_reg_reset}
 ${cluster_1_has_el2+-C cluster1.has_el2=$cluster_1_has_el2}
 
 ${amu_present+-C cluster1.has_amu=$amu_present}
+${amu_version+-C cluster1.amu_version=${amu_version}}
 
 ${reset_to_bl31+-C cluster1.cpu0.RVBAR=${bl31_addr:?}}
 ${reset_to_bl31+-C cluster1.cpu1.RVBAR=${bl31_addr:?}}
