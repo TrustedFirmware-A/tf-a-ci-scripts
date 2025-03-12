@@ -556,14 +556,14 @@ if [ "$has_fpmr" = "1" ]; then
 EOF
 fi
 
-if [ "$has_pmuv3p7" != "0" ]; then
+if [ "$has_pmuv3p7" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_v8_7_pmu_extension=2
 -C cluster1.has_v8_7_pmu_extension=2
 EOF
 fi
 
-if [ "$has_mops" != "0" ]; then
+if [ "$has_mops" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_mops_option=1
 -C cluster1.has_mops_option=1
