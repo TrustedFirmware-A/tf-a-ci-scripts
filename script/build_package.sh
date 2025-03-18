@@ -24,6 +24,7 @@ export scp_root="${scp_root:-$workspace/scp}"
 scp_tools_root="${scp_tools_root:-$workspace/scp_tools}"
 cc_root="${cc_root:-$ccpathspec}"
 spm_root="${spm_root:-$workspace/spm}"
+rmm_root="${rmm_root:-$workspace/tf-rmm}"
 
 scp_tf_tools_root="$scp_tools_root/scp_tf_tools"
 
@@ -33,6 +34,7 @@ tftf_refspec="$TFTF_REFSPEC"
 scp_refspec="$SCP_REFSPEC"
 scp_tools_commit="${SCP_TOOLS_COMMIT:-master}"
 spm_refspec="$SPM_REFSPEC"
+rmm_refspec="$RMM_REFSPEC"
 
 test_config="${TEST_CONFIG:?}"
 test_group="${TEST_GROUP:?}"
@@ -513,6 +515,16 @@ get_tf_opt() {
 	)
 }
 
+get_rmm_opt() {
+        (
+        name="${1:?}"
+        if config_valid "$rmm_config_file"; then
+                source "$rmm_config_file"
+                echo "${!name}"
+        fi
+        )
+}
+
 build_tf() {
 	(
 	env_file="$workspace/tf.env"
@@ -893,6 +905,56 @@ EOF
 	)
 }
 
+build_rmm() {
+	(
+	env_file="$workspace/rmm.env"
+	config_file="${rmm_build_config:-$rmm_config_file}"
+
+	# Build fiptool and all targets by default
+	build_targets="${rmm_build_targets}"
+	export CROSS_COMPILE="${aarch64_none_elf_prefix}"
+
+	source "$config_file"
+
+	if [ -f "$env_file" ]; then
+		set -a
+		source "$env_file"
+		set +a
+	fi
+
+	cd "$rmm_root"
+
+	if [ -f "$rmm_root/requirements.txt" ]; then
+		export PATH="$HOME/.local/bin:$PATH"
+		python3 -m pip install --upgrade pip
+		python3 -m pip install -r "$rmm_root/requirements.txt"
+	fi
+
+	# Always distclean when running on Jenkins. Skip distclean when running
+	# locally and explicitly requested.
+	if upon "$jenkins_run" || not_upon "$dont_clean"; then
+		# Remove 'rmm\build' folder
+		echo "Removing $rmm_build_root..."
+		rm -rf $rmm_build_root
+	fi
+
+	# Log build command line. It is left unfolded on purpose to assist
+	# copying to clipboard.
+	cat <<EOF | log_separator >/dev/null
+
+Build command line:
+	cmake -DRMM_CONFIG=${plat}_defcfg $cmake_gen -S $rmm_root -B $rmm_build_root -DCMAKE_BUILD_TYPE=$cmake_build_type
+	cmake --build $rmm_build_root $make_j_opts -v
+EOF
+	if not_upon "$local_ci"; then
+		connect_debugger=0
+	fi
+
+	cmake -DRMM_CONFIG=${plat}_defcfg $cmake_gen -S $rmm_root -B $rmm_build_root -DCMAKE_BUILD_TYPE=$cmake_build_type
+	cmake --build $rmm_build_root $make_j_opts -v 3>&1 &>>"$build_log" || fail_build
+	)
+}
+
 # Set metadata for the whole package so that it can be used by both Jenkins and
 # shell
 set_package_var() {
@@ -1157,6 +1219,7 @@ tftf_config="$(echo "$build_configs" | awk -F, '{print $2}')"
 scp_config="$(echo "$build_configs" | awk -F, '{print $3}')"
 scp_tools_config="$(echo "$build_configs" | awk -F, '{print $4}')"
 spm_config="$(echo "$build_configs" | awk -F, '{print $5}')"
+rmm_config="$(echo "$build_configs" | awk -F, '{print $6}')"
 
 test_config_file="$ci_root/group/$test_group/$test_config"
 
@@ -1165,6 +1228,7 @@ tftf_config_file="$ci_root/tftf_config/$tftf_config"
 scp_config_file="$ci_root/scp_config/$scp_config"
 scp_tools_config_file="$ci_root/scp_tools_config/$scp_tools_config"
 spm_config_file="$ci_root/spm_config/$spm_config"
+rmm_config_file="$ci_root/rmm_config/$rmm_config"
 
 # File that keeps track of applied patches
 tf_patch_record="$workspace/tf_patches"
@@ -1214,6 +1278,18 @@ else
 	echo
 	sort "$spm_config_file" | sed '/^\s*$/d;s/^/\t/'
 	echo
+fi
+
+# File that keeps track of applied patches
+rmm_patch_record="$workspace/rmm_patches"
+
+if ! config_valid "$rmm_config"; then
+        rmm_config=
+else
+        echo "Trusted Firmware RMM config:"
+        echo
+        sort "$rmm_config_file" | sed '/^\s*$/d;s/^/\t/'
+        echo
 fi
 
 if ! config_valid "$run_config"; then
@@ -1311,6 +1387,15 @@ if [ "$spm_config" ] ; then
 	show_head "$spm_root"
 fi
 
+if [ "$rmm_config" ] && assert_can_git_clone "rmm_root"; then
+	# If the Trusted Firmware TF repository has already been checked out,
+	# use that location. Otherwise, clone one ourselves.
+	echo "Cloning TF-RMM..."
+	clone_url="${RMM_CHECKOUT_LOC:-$rmm_src_repo_url}" where="$rmm_root" \
+		refspec="$RMM_REFSPEC" clone_repo &>>"$build_log"
+	show_head "$rmm_root"
+fi
+
 if [ "$run_config" ]; then
 	# Get candidates for run config
 	run_config_candidates="$("$ci_root/script/gen_run_config_candidates.py" \
@@ -1355,6 +1440,27 @@ if is_arm_jenkins_env; then
 	source "$ci_root/script/install_python_deps.sh"
 fi
 
+# Print CMake version
+cmake_ver=$(echo `cmake --version | sed -n '1p'`)
+echo "Using $cmake_ver"
+
+# Check for Ninja
+if [ -x "$(command -v ninja)" ]; then
+        # Print Ninja version
+        ninja_ver=$(echo `ninja --version | sed -n '1p'`)
+        echo "Using ninja $ninja_ver"
+        export cmake_gen="-G Ninja"
+else
+        echo 'Ninja is not installed'
+        export cmake_gen=""
+fi
+
+undo_rmm_patches() {
+        pushd "$rmm_root"
+        patch_record="$rmm_patch_record" undo_patch_record
+        popd
+}
+
 modes="${bin_mode:-debug release}"
 for mode in $modes; do
 	echo "===== Building package in mode: $mode ====="
@@ -1364,9 +1470,11 @@ for mode in $modes; do
 
 	if [ "$mode" = "debug" ]; then
 		export bin_mode="debug"
+		cmake_build_type="Debug"
 		DEBUG=1
 	else
 		export bin_mode="release"
+		cmake_build_type="Release"
 		DEBUG=0
 	fi
 
@@ -1507,6 +1615,44 @@ for mode in $modes; do
 		echo
 		)
 	fi
+
+        # TF RMM build
+        if  config_valid "$rmm_config"; then
+                (
+                echo "##########"
+
+                plat_utils="$(get_rmm_opt PLAT_UTILS)"
+                if [ -z ${plat_utils} ]; then
+                        # Source platform-specific utilities.
+                        plat="$(get_rmm_opt PLAT)"
+                        plat_utils="$ci_root/${plat}_utils.sh"
+                else
+                        # Source platform-specific utilities by
+                        # using plat_utils name.
+                        plat_utils="$ci_root/${plat_utils}.sh"
+                fi
+
+                if [ -f "$plat_utils" ]; then
+                        source "$plat_utils"
+                fi
+
+                archive="$build_archive"
+                rmm_build_root="$rmm_root/build"
+
+                echo "Building Trusted Firmware RMM ($mode) ..." |& log_separator
+
+                #call_hook pre_rmm_build
+                build_rmm
+
+                # Collect all rmm.* files: rmm.img, rmm.elf, rmm.dump, rmm.map
+                from="$rmm_build_root" to="$archive" collect_build_artefacts
+
+                # Clear any local changes made by applied patches
+                undo_rmm_patches
+
+                echo "##########"
+                )
+        fi
 
 	# TF build
 	if config_valid "$tf_config"; then

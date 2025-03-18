@@ -352,6 +352,33 @@ else
 	let "++local_count"
 fi
 
+if [ -z "$rmm_root" ]; then
+	in_red "NOTE: NOT using local work tree for RMM"
+else
+	rmm_root="$(readlink -f $rmm_root)"
+	rmm_refspec=
+	in_green "Using local work tree for RMM"
+	let "++local_count"
+fi
+
+if [ -z "$tfm_tests_root" ]; then
+	in_red "NOTE: NOT using local work tree for TF-M-TESTS"
+else
+	tfm_tests_root="$(readlink -f $tfm_tests_root)"
+	tfm_tests_refspec=
+	in_green "Using local work tree for TF-M-TESTS"
+	let "++local_count"
+fi
+
+if [ -z "$tfm_extras_root" ]; then
+	in_red "NOTE: NOT using local work tree for TF-M-EXTRAS"
+else
+	tfm_extras_root="$(readlink -f $tfm_extras_root)"
+	tfm_extras_refspec=
+	in_green "Using local work tree for TF-M-EXTRAS"
+	let "++local_count"
+fi
+
 # User preferences
 [ "$connect_debugger" ] && [ "$connect_debugger" -eq 1 ] && user_connect_debugger=1
 user_test_run="${user_connect_debugger:-$test_run}"
@@ -392,7 +419,8 @@ else
 fi
 
 # Use clone_repos.sh to clone and share repositories that aren't local.
-no_tf="$tf_root" no_tftf="$tftf_root" no_spm="$spm_root" no_ci="$ci_root" no_cc="$import_cc" \
+no_tf="$tf_root" no_tftf="$tftf_root" no_spm="$spm_root" no_rmm="$rmm_root" \
+no_ci="$ci_root" no_cc="$import_cc" no_tfm_tests="$tfm_tests_root" no_tfm_extras="$tfm_extras_root" \
 	bash $minus_x "$ci_root/script/clone_repos.sh"
 
 set -a
