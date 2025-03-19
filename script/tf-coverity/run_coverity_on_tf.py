@@ -51,7 +51,7 @@ def get_coverity_tool():
 
     print("\nNow please load the Coverity tool in your PATH...")
     print("E.g.:")
-    cov_version = "2023.6.2"
+    cov_version = "2024.6.1"
     cov_dir_name = "cov-analysis-linux64-" + cov_version
     cov_dir_path = os.path.abspath(os.path.join(cov_dir_name, "bin"))
     print("  export PATH=%s$PATH" % (cov_dir_path + os.pathsep))
