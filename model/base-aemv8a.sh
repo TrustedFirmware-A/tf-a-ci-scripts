@@ -10,6 +10,8 @@ if  is_arm_jenkins_env || upon "$local_ci"; then
 	set_model_path "$warehouse/SysGen/Models/$model_version/$model_build/external/models/$model_flavour/FVP_Base_RevC-2xAEMvA"
 
 	default_var etm_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/ETMv4ExamplePlugin.so"
+
+	default_var bmcov_plugin_path "$workspace/artefacts/${bin_mode:?}/coverage_trace.so"
 else
         # OpenCI enviroment
         source "$ci_root/fvp_utils.sh"

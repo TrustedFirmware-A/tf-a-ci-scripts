@@ -187,6 +187,26 @@ gen_bin_url() {
 	fi
 }
 
+# Generate link for code coverage plugin
+gen_cc_url(){
+	local filename="coverage_trace.so"
+
+	if upon "$jenkins_run"; then
+		echo "${coverage_trace_plugin}"
+	else
+
+		local url="https://downloads.trustedfirmware.org/coverage-plugin/qa-tools/coverage-tool/coverage-plugin/${filename}"
+		local local_path="$workspace/artefacts/${bin_mode:?}/${filename}"
+
+		mkdir -p "$(dirname "$local_path")"
+		url="$url" saveas="$local_path" fetch_file
+		coverage_trace_plugin=$local_path
+
+		echo $coverage_trace_plugin
+	fi
+
+}
+
 get_boot_image() {
 	local image=${image:?}
 	local type=${type:?}

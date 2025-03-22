@@ -348,7 +348,7 @@ gen_fvp_yaml() {
         [cactus_primary]="$(gen_bin_url cactus-primary.pkg)"
         [cactus_secondary]="$(gen_bin_url cactus-secondary.pkg)"
         [cactus_tertiary]="$(gen_bin_url cactus-tertiary.pkg)"
-        [coverage_trace_plugin]="${coverage_trace_plugin}"
+        [coverage_trace_plugin]="$(gen_cc_url)"
         [dtb]="$(gen_bin_url ${model_dtb})"
         [el3_payload]="$(gen_bin_url el3_payload.bin)"
         [etm_trace]="${tfa_downloads}/FastModelsPortfolio_${model_version}/plugins/${model_flavour}/ETMv4ExamplePlugin.so"
