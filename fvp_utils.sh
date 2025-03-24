@@ -15,6 +15,7 @@ dtb_addr="${dtb_addr:-0x82000000}"
 fip_addr="${fip_addr:-0x08000000}"
 initrd_addr="${initrd_addr:-0x84000000}"
 kernel_addr="${kernel_addr:-0x80080000}"
+boot_script_addr="${boot_script_addr:-0x8fb00000}"
 el3_payload_addr="${el3_payload_addr:-0x80000000}"
 
 # SPM requires following addresses for RESET_TO_BL31 case
@@ -37,7 +38,12 @@ uefi_downloads="${uefi_downloads:-http://files.oss.arm.com/downloads/uefi}"
 uefi_ci_bin_url="${uefi_ci_bin_url:-$uefi_downloads/Artifacts/Linux/github/fvp/static/DEBUG_GCC5/FVP_AARCH64_EFI.fd}"
 
 uboot32_fip_url="$linaro_release/fvp32-latest-busybox-uboot/fip.bin"
-uboot_url="$linaro_release/fvp-latest-busybox-uboot/bl33-uboot.bin"
+if [[ "$test_config" == *handoff* ]]; then
+	uboot_url="${tfa_downloads}/handoff/fvp/u-boot.bin"
+else
+	uboot_url="$linaro_release/fvp-latest-busybox-uboot/bl33-uboot.bin"
+fi
+uboot_script_url="${tfa_downloads}/linux_boot/fvp/boot.scr"
 
 rootfs_url="$linaro_release/lt-vexpress64-openembedded_minimal-armv8-gcc-5.2_20170127-761.img.gz"
 
@@ -286,6 +292,7 @@ gen_fvp_yaml() {
         [bl31]="bl31.bin"
         [bl32]="bl32.bin"
         [busybox]="busybox.bin"
+        [boot_script]="boot_script.bin"
         [cactus_primary]="cactus-primary.pkg"
         [cactus_secondary]="cactus-secondary.pkg"
         [cactus_tertiary]="cactus-tertiary.pkg"
@@ -337,6 +344,7 @@ gen_fvp_yaml() {
         [bl31]="$(gen_bin_url bl31.bin)"
         [bl32]="$(gen_bin_url bl32.bin)"
         [busybox]="$(gen_bin_url busybox.bin.gz)"
+        [boot_script]="$(gen_bin_url boot_script.bin)"
         [cactus_primary]="$(gen_bin_url cactus-primary.pkg)"
         [cactus_secondary]="$(gen_bin_url cactus-secondary.pkg)"
         [cactus_tertiary]="$(gen_bin_url cactus-tertiary.pkg)"
@@ -391,6 +399,7 @@ gen_fvp_yaml() {
         ["[= ]bl2.bin"]="={BL2}"
         ["[= ]bl31.bin"]="={BL31}"
         ["[= ]bl32.bin"]="={BL32}"
+        ["[= ]boot_script.bin"]="={BOOT_SCRIPT}"
         ["[= ]cactus-primary.pkg"]="={CACTUS_PRIMARY}"
         ["[= ]cactus-secondary.pkg"]="={CACTUS_SECONDARY}"
         ["[= ]cactus-tertiary.pkg"]="={CACTUS_TERTIARY}"

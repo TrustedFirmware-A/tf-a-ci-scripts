@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -8,4 +8,8 @@
 post_tf_build() {
 	url="$uboot_url" filename="uboot.bin" fetch_and_archive
 	build_fip BL33="$archive/uboot.bin"
+
+	# Fetch a simple boot script for testing in CI where semi-hosting might not
+	# be possible.
+	url="$uboot_script_url" filename="boot_script.bin" fetch_and_archive
 }

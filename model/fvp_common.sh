@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -72,6 +72,7 @@ ${fip_as_gpt+-C bp.flashloader0.fname=$fip_gpt_bin}
 ${dtb_bin+--data ${data_instance}=$dtb_bin@${dtb_addr:?}}
 ${kernel_bin+--data ${data_instance}=$kernel_bin@${kernel_addr:?}}
 ${initrd_bin+--data ${data_instance}=$initrd_bin@${initrd_addr:?}}
+${boot_script_bin+--data ${data_instance}=$boot_script_bin@${boot_script_addr:?}}
 
 ${spm_bin+--data ${data_instance}=$spm_bin@${spm_addr:?}}
 ${spmc_manifest+--data ${data_instance}=$spmc_manifest@${spmc_manifest_addr:?}}
