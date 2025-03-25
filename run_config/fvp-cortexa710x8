@@ -6,7 +6,7 @@
 #
 
 generate_lava_job() {
-	local model="cortex-a710"
+	local model="cortex-a710x8"
 
 	uart="0" set_expect_variable "num_cpus" "8"
 
