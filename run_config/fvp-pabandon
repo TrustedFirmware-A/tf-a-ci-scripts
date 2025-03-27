@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	# skips the `wfi` in the powerdown sequence half the time. This has the
+	# same effect as an aborted powerdown (by an eg. GIC wake request) half
+	# the time.
+	apply_tf_patch "pabandon/pabandon_on_half_powerdowns.patch"
+}
