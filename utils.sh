@@ -623,7 +623,7 @@ scp_mcp_downloads="${scp_mcp_downloads:-$tfa_downloads/css_scp_2.11.0}"
 
 linaro_2001_release="${linaro_2001_release:-$tfa_downloads/linaro/20.01}"
 linaro_release="${linaro_release:-$linaro_2001_release}"
-mbedtls_version="${mbedtls_version:-3.6.2}"
+mbedtls_version="${mbedtls_version:-3.6.3}"
 
 # mbedTLS archive public hosting available at github.com
 mbedtls_archive="${mbedtls_archive:-https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/v${mbedtls_version}.tar.gz}"
