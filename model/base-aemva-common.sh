@@ -134,6 +134,9 @@ reset_var supports_crc32
 # FEAT_LS64_V, FEAT_LS64_ACCDATA)
 reset_var accelerator_support_level
 
+# ROTPK in trusted register space
+reset_var has_rotpk_in_regs
+
 source "$ci_root/model/fvp_common.sh"
 
 #------------ Common configuration --------------
@@ -171,6 +174,14 @@ ${nvcounter_diag+-C bp.trusted_nv_counter.diagnostics=$nvcounter_diag}
 
 ${etm_plugin+--plugin=$etm_plugin_path}
 EOF
+
+# Store the fixed ROTPK hash in registers
+# Note: This is the SHA256 hash of the RSA 2K development public key used in TF-A
+if [ "$has_rotpk_in_regs" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C bp.trusted_key_storage.public_key="0982f3b0 3ad89712 47727a37 7332ec1b e23292e9 5ef65949 464a4a8b da9a22d8"
+EOF
+fi
 
 # TFTF Reboot/Shutdown tests
 if [ "$retain_flash" = "1" ]; then
