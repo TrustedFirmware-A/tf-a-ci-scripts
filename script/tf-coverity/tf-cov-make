@@ -794,6 +794,8 @@ clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_USB_PROGRAMMER=1 \
 # Platforms from TI
 make PLAT=k3 $(common_flags) all
 make PLAT=k3 TARGET_BOARD=j784s4 $(common_flags) all
+make PLAT=k3 TARGET_BOARD=lite $(common_flags) all
+make PLAT=k3 TARGET_BOARD=generic $(common_flags) all
 
 clean_build PLAT=qemu $(common_flags) ${TBB_OPTIONS}
 # Use GICV3 driver
