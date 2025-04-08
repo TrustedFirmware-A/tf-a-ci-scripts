@@ -17,6 +17,9 @@
 exclude_paths = [
     ("drivers/arm/tzc/tzc_common_private.c", "File included, actually indirectly analyzed"),
     ("drivers/arm/tzc/tzc_dmc500.c", "Only used by deprecated SGM platforms"),
+    ("drivers/arm/tzc/tzc_dmc620.c", "Only used by deprecated SGI platforms"),
+    ("drivers/arm/mhu/mhu_v2_x.c", "Not used in recent platforms, migrated to MHUv3"),
+    ("drivers/arm/mhu/mhu_wrapper_v2_x.c", "Not used in recent platforms, migrated to MHUv3"),
     ("drivers/marvell/comphy/phy-comphy-3700.c", "File is actually analyzed. False positive"),
     ("drivers/marvell/comphy/phy-comphy-cp110.c", "File is actually analyzed. False positive"),
     ("drivers/marvell/gwin.c", "Not used by any upstream marvell platform"),
