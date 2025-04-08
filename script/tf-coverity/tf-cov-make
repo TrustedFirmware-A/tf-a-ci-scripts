@@ -493,6 +493,7 @@ clean_build PLAT=versal_net $(common_flags) TFA_NO_PM=1
 
 # Build Xilinx Versal Gen 2 platform
 clean_build PLAT=versal2 $(common_flags)
+clean_build PLAT=versal2 $(common_flags) TRANSFER_LIST=1
 
 # Platforms from Allwinner
 clean_build PLAT=sun50i_a64 $(common_flags release) all
