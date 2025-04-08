@@ -410,11 +410,6 @@ clean_build $(common_flags) \
             bl31
 
 #
-# FVP-R platform
-#
-clean_build $(common_flags) PLAT=fvp_r ${ARM_TBB_OPTIONS} ENABLE_STACK_PROTECTOR=all
-
-#
 # RD-1 AE platform
 #
 clean_build $(common_flags) \
