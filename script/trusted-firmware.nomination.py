@@ -10,12 +10,6 @@
 # This file is EXECED from gen_nomination.py
 
 nomination_rules = {
-        # Run SGI575 boot test, TF-A Tests and MISRA checks for any changes with "neoverse_rd" in the path
-        "pathre:neoverse_rd":
-            ["tf-l3-boot-tests-css/fvp-sgi575-tbb:fvp-linux.nrd-fip.nrd-sgi575-debug",
-             "tf-l3-boot-tests-css/fvp-sgi575-tbb,fvp-sgi575-default:fvp-tftf.nrd-fip.tftf-sgi575",
-             "tf-l2-coverity-misra-nominated/fvp-sgi575-tbb:coverity-tf-misra.diff"],
-
         # Run Coverity MISRA checks for tc platform changes
         "path:plat/arm/board/tc":
             ["tf-l2-coverity-misra-nominated/fvp-tc-tbb:coverity-tf-misra.diff"],

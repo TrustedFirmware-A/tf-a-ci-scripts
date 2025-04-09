@@ -93,15 +93,6 @@ exclude_paths = [
     ("plat/imx/imx8m/imx8mq/imx8mq_bl31_setup.c", "Not currently used"),
     ("plat/imx/imx8m/imx8mq/imx8mq_psci.c", "Not currently used"),
 
-    # Exclude the following files of SGI575 as these platforms
-    # are deprecated and removed from the CI.
-    ("plat/arm/board/neoverse_rd/platform/sgi575/sgi575_err.c", "Only used by deprecated SGI575 platform"),
-    ("plat/arm/board/neoverse_rd/platform/sgi575/sgi575_plat.c", "Only used by deprecated SGI575 platform"),
-    ("plat/arm/board/neoverse_rd/platform/sgi575/sgi575_security.c", "Only used by deprecated SGI575 platform"),
-    ("plat/arm/board/neoverse_rd/platform/sgi575/sgi575_topology.c", "Only used by deprecated SGI575 platform"),
-    ("plat/arm/board/neoverse_rd/platform/sgi575/sgi575_trusted_boot.c", "Only used by deprecated SGI575 platform"),
-    ("plat/arm/board/neoverse_rd/common/nrd_ras.c", "Only used by deprecated SGI575 platform"),
-
     # Exclude the following files used for STM32MP host tools (cert_create)
     ("plat/st/stm32mp1/stm32mp1_tbb_cert.c", "Used to build STM32MP cert_create"),
 
