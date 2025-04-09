@@ -1,9 +1,0 @@
-ARM_ROTPK_LOCATION=devel_rsa
-CREATE_KEYS=1
-CROSS_COMPILE=aarch64-none-elf-
-GENERATE_COT=1
-PLAT=rdv1
-ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
-TRUSTED_BOARD_BOOT=1
-ENABLE_SVE_FOR_NS=1
-CTX_INCLUDE_FPREGS=0

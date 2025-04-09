@@ -284,16 +284,6 @@ clean_build $juno_common_flags CSS_USE_SCMI_SDS_DRIVER=0
 clean_build $juno_common_flags TRNG_SUPPORT=1
 
 #
-# Reference Design platform RD-V1
-#
-make $(common_flags) PLAT=rdv1 ${ARM_TBB_OPTIONS} all
-
-#
-# Reference Design platform RD-V1-MC
-#
-make $(common_flags) PLAT=rdv1mc ${ARM_TBB_OPTIONS} NRD_CHIP_COUNT=4 all
-
-#
 # Reference Design Platform RD-N2
 #
 make $(common_flags) PLAT=rdn2 ${ARM_TBB_OPTIONS} all
