@@ -468,6 +468,20 @@ setup_llvm_toolchain() {
 	fi
 }
 
+# Fetch and extract the latest supported version of the GCC toolchain from
+# a compressed archive file to a target directory, if it is required.
+setup_gcc_toolchain() {
+	link="${1:-$gcc_archive}"
+	archive="${2:-"$workspace/gcc.tar.xz"}"
+	target_dir="${3:-$gcc_dir}"
+
+	if upon "$local_ci"; then
+		url="$link" saveas="$archive" fetch_file
+		mkdir -p $target_dir
+		extract_tarball $archive $target_dir --strip-components=1 -k
+	fi
+}
+
 # Extract files from compressed archive to target directory. Supports .zip,
 # .tar.gz, and tar.xf format
 extract_tarball() {
@@ -606,18 +620,16 @@ coverity_default_checkers=(
 
 docker_registry="${docker_registry:-}"
 
-# Define toolchain version and toolchain binary paths
-toolchain_version="13.3.rel1"
+#GCC archive public hosting available at arm_website.
+gcc_version="14.2.rel1"
+gcc_archive="${gcc_archive:-https://developer.arm.com/-/media/Files/downloads/gnu/$gcc_version/binrel/arm-gnu-toolchain-$gcc_version-x86_64-aarch64-none-elf.tar.xz}"
 
-aarch64_none_elf_dir="${nfs_volume}/pdsw/tools/arm-gnu-toolchain-${toolchain_version}-x86_64-aarch64-none-elf"
-aarch64_none_elf_prefix="aarch64-none-elf-"
-
-arm_none_eabi_dir="${nfs_volume}/pdsw/tools/arm-gnu-toolchain-${toolchain_version}-x86_64-arm-none-eabi"
-arm_none_eabi_prefix="arm-none-eabi-"
+if [ -n "$gcc_space" ]; then
+    gcc_dir="$gcc_space/gcc-$gcc_version"
+fi
 
 path_list=(
-		"${aarch64_none_elf_dir}/bin"
-		"${arm_none_eabi_dir}/bin"
+		"${gcc_dir:+${gcc_dir}/bin}"
 		"${llvm_dir}/bin"
 		"$coverity_path/bin"
 )
@@ -637,6 +649,12 @@ if upon "$retain_paths"; then
 	op="append" extend_path "LM_LICENSE_FILE" "license_path_list"
 else
 	# Otherwise, prepend CI paths so that they take effect before local ones
+	# Check if the gcc_dir directory does NOT exist.
+	# If it doesn't, execute setup_gcc_toolchain to download and set up the
+	# GCC toolchain.
+	if [ ! -d "$gcc_dir" ]; then
+		setup_gcc_toolchain
+	fi
 	extend_path "PATH" "path_list"
 	extend_path "LD_LIBRARY_PATH" "ld_library_path_list"
 	extend_path "LM_LICENSE_FILE" "license_path_list"
