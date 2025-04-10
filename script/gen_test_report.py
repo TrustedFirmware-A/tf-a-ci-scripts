@@ -69,7 +69,7 @@ REPORT = "report.html"
 REPORT_JSON = "report.json"
 
 # Maximum depth for the tree of results, excluding status
-MAX_RESULTS_DEPTH = 7
+MAX_RESULTS_DEPTH = 8
 
 # We'd have a minimum of 3: group, a build config, a run config.
 MIN_RESULTS_DEPTH = 3
@@ -84,6 +84,7 @@ LEVEL_HEADERS = [
         "SCP Build Config",
         "SCP tools Config",
         "SPM Build Config",
+        "RMM Build Config",
         "Run Config",
         "Status"
 ]
@@ -440,7 +441,7 @@ def main(fd):
         test_config = desc[:-len(TEST_SUFFIX)]
         build_config, run_config = test_config.split(":")
         spare_commas = "," * (MAX_RESULTS_DEPTH - MIN_RESULTS_DEPTH)
-        tf_config, tftf_config, scp_config, scp_tools, spm_config, *_ = (build_config +
+        tf_config, tftf_config, scp_config, scp_tools, spm_config, rmm_config, *_ = (build_config +
                 spare_commas).split(",")
 
         build_number = child_build_numbers[i]
@@ -458,7 +459,8 @@ def main(fd):
         scp_node = tftf_node.set_child(scp_config)
         scp_tools_node = scp_node.set_child(scp_tools)
         spm_node = scp_tools_node.set_child(spm_config)
-        run_node = spm_node.set_child(run_config)
+        rmm_node = spm_node.set_child(rmm_config)
+        run_node = rmm_node.set_child(run_config)
         run_node.set_result(test_result, build_number)
         run_node.set_desc(os.path.join(workspace, f))
 
