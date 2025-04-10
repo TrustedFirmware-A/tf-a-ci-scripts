@@ -1,4 +1,5 @@
 CROSS_COMPILE=aarch64-none-elf-
+ENABLE_FEAT_D128=0
 PLAT=tegra
 SPD=tlkd
 TARGET_SOC=t210
