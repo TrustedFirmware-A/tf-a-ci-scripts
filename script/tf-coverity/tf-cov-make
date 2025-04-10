@@ -66,7 +66,7 @@ clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} ARM_TSP_RAM_LOCATION=dram \
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} ARM_TSP_RAM_LOCATION=dram SPD=tspd TSP_INIT_ASYNC=1 \
     TSP_NS_INTR_ASYNC_PREEMPT=1 FVP_TRUSTED_SRAM_SIZE=384
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=opteed FVP_TRUSTED_SRAM_SIZE=384
-clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=tlkd FVP_TRUSTED_SRAM_SIZE=384
+clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=tlkd ENABLE_FEAT_D128=0 FVP_TRUSTED_SRAM_SIZE=384
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=pncd SPD_PNCD_NS_IRQ=126 \
     SPD_PNCD_S_IRQ=15 FVP_TRUSTED_SRAM_SIZE=384
 
