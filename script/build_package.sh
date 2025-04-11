@@ -1388,7 +1388,7 @@ if [ "$spm_config" ] ; then
 fi
 
 if [ "$rmm_config" ] && assert_can_git_clone "rmm_root"; then
-	# If the Trusted Firmware TF repository has already been checked out,
+	# If the RMM repository has already been checked out,
 	# use that location. Otherwise, clone one ourselves.
 	echo "Cloning TF-RMM..."
 	clone_url="${RMM_CHECKOUT_LOC:-$rmm_src_repo_url}" where="$rmm_root" \

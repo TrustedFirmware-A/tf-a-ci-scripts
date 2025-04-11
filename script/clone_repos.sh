@@ -479,7 +479,7 @@ if not_upon "$no_tfm_extras"; then
 		loc="TF_M_EXTRAS_PATH" clone_and_sync
 fi
 
-RMM_EXTRAS_REFSPEC="${rmm_refspec:-$RMM_REFSPEC}"
+RMM_REFSPEC="${rmm_refspec:-$RMM_REFSPEC}"
 if not_upon "$no_rmm"; then
 	url="$rmm_src_repo_url" name="tf-rmm" ref="RMM_REFSPEC" \
 		loc="RMM_PATH" clone_and_sync
