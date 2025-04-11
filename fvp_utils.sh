@@ -47,7 +47,7 @@ uboot_script_url="${tfa_downloads}/linux_boot/fvp/boot.scr"
 
 rootfs_url="$linaro_release/lt-vexpress64-openembedded_minimal-armv8-gcc-5.2_20170127-761.img.gz"
 
-optee_version="4.4.0"
+optee_version="4.5.0"
 optee_path=$tfa_downloads/optee/${optee_version}
 
 # Default FVP model variables
