@@ -258,6 +258,8 @@ if [ -z "${test_groups}" ]; then
 	tg=$(printf "%s/%s,%s,%s,%s:%s" "${test_group}" "${scp_config}" "${tf_config}" "${tftf_config}" "${scp_tools}" "${run_config}")
     elif echo ${test_group} | grep -q '^spm-'; then
 	tg=$(printf "%s/%s,%s,%s,%s,%s:%s" "${test_group}" "${spm_config}" "${tf_config}" "${tftf_config}" "${scp_config}" "${scp_tools}" "${run_config}")
+    elif echo ${test_group} | grep -q '^rmm-'; then
+	tg=$(printf "%s/%s,%s,%s,%s,%s,%s:%s" "${test_group}" "${rmm_config}" "${tf_config}" "${tftf_config}" "${spm_config}" "${scp_config}" "${scp_tools}" "${run_config}")
     else
 	tg=$(printf "%s/%s,%s,%s,%s,%s:%s" "${test_group}" "${tf_config}" "${tftf_config}" "${scp_config}" "${scp_tools}" "${spm_config}" "${run_config}")
     fi
