@@ -273,6 +273,12 @@ clean_build $fvp_common_flags CTX_INCLUDE_AARCH32_REGS=0 HW_ASSISTED_COHERENCY=1
 # Sign Realm tokens with EL3 signing service
 clean_build $fvp_common_flags ENABLE_RME=1 RMMD_ENABLE_EL3_TOKEN_SIGN=1
 
+# Build with Live Firmware Activation support
+clean_build $fvp_common_flags LFA_SUPPORT=1
+
+# Build with RMM Live Firmware Activation support
+clean_build $fvp_common_flags ENABLE_RME=1 LFA_SUPPORT=1
+
 #
 # Juno platform
 # We'll use the following flags for all Juno builds.
