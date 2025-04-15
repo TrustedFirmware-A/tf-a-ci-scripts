@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+# Build TF-A with tf-a-tests and RMM
+post_tf_build() {
+	build_fip BL33="$archive/tftf.bin" RMM="$archive/rmm.img"
+}
