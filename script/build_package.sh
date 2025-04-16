@@ -228,6 +228,18 @@ collect_spm_artefacts() {
 	fi
 }
 
+collect_rfa_artefacts() {
+	if [ ! -d "${from:?}" ]; then
+		return
+	fi
+
+	if ! find "$from" -maxdepth 1 \( -name "*.bin" -o -name '*.elf' \) -exec cp -t "${to:?}" '{}' +; then
+		echo "You probably are running local CI on local repositories."
+		echo "Did you set 'dont_clean' but forgot to run 'distclean'?"
+		die
+	fi
+}
+
 # Map the UART ID used for expect with the UART descriptor and port
 # used by the FPGA automation tools.
 map_uart() {
@@ -607,6 +619,47 @@ EOF
         if [ "$build_targets" != "doc" ]; then
                 (poetry run memory -sr "$tf_build_root" 2>&1 || true) | tee -a "$build_log"
         fi
+	)
+}
+
+build_rfa() {
+	(
+	config_file="${tf_build_config:-$tf_config_file}"
+
+	# Build the 'all' target by default.
+	build_targets="${tf_build_targets:-all}"
+
+	source "$config_file"
+
+	cd "$tf_root/rust"
+
+	# Always distclean when running on Jenkins. Skip distclean when running
+	# locally and explicitly requested.
+	if upon "$jenkins_run" || not_upon "$dont_clean"; then
+		echo "Cleaning TF-A..."
+		make -C "$TFA" distclean &>>"$build_log" || fail_build
+
+		echo 'Cleaning RF-A...'
+		cargo clean &>>"$build_log" || fail_build
+	fi
+
+	# Log build command line. It is left unfolded on purpose to assist
+	# copying to clipboard.
+	cat <<EOF | log_separator >/dev/null
+
+Build command line:
+	make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG $build_targets
+
+cargo version:
+$(cargo --version 2>&1)
+EOF
+
+	# Build RF-A and TF-A. Since build output is being directed to the build
+	# log, have descriptor 3 point to the current terminal for build
+	# wrappers to vent.
+	make $make_j_opts $(cat "$config_file") \
+		DEBUG="$DEBUG" \
+		$build_targets 3>&1 &>>"$build_log" || fail_build
 	)
 }
 
@@ -1679,38 +1732,60 @@ for mode in $modes; do
 		fvp_tsram_size="$(get_tf_opt FVP_TRUSTED_SRAM_SIZE)"
 		fvp_tsram_size="${fvp_tsram_size:-256}"
 
-		poetry -C "$tf_root" install --without docs
+		if not_upon "$(get_tf_opt RUST)"; then
+			poetry -C "$tf_root" install --without docs
+		fi
 
 		archive="$build_archive"
-		tf_build_root="$tf_root/build"
 
-		echo "Building Trusted Firmware ($mode) ..." |& log_separator
+		if not_upon "$(get_tf_opt RUST)"; then
+			tf_build_root="$tf_root/build"
+			echo "Building Trusted Firmware ($mode) ..." |& log_separator
+		else
+			# Clone TF-A repo if required. Save its path into the
+			# special variable "TFA", which is used by RF-A build
+			# system.
+			export TFA="${TFA-$workspace/tfa}"
+			if assert_can_git_clone "TFA"; then
+				echo "Cloning TF-A..."
+				clone_url="$tf_src_repo_url" where="$TFA" clone_repo
+			fi
+			show_head "$TFA"
+			poetry -C "$TFA" install --without docs
 
-		if upon "$(get_tf_opt RUST)" && not_upon "$local_ci"; then
-			# In the CI Dockerfile, rustup is installed by the root user in the
-			# non-default location /usr/local/rustup, so $RUSTUP_HOME is required to
-			# access rust config e.g. default toolchains and run cargo
-			#
-			# Leave $CARGO_HOME blank so when this script is run in CI by the buildslave
-			# user, it uses the default /home/buildslave/.cargo directory which it has
-			# write permissions for - that allows it to download new crates during
-			# compilation
-			#
-			# The buildslave user does not have write permissions to the default
-			# $CARGO_HOME=/usr/local/cargo dir and so will error when trying to download
-			# new crates otherwise
-			#
-			# note: $PATH still contains /usr/local/cargo/bin at this point so cargo is
-			# still run via the root installation
-			#
-			# see https://github.com/rust-lang/rustup/issues/1085
-			set_hook_var "RUSTUP_HOME" "/usr/local/rustup"
+			rfa_build_root="$tf_root/rust/target"
+			echo "Building Rusted Firmware ($mode) ..." |& log_separator
+
+			if not_upon "$local_ci"; then
+				# In the CI Dockerfile, rustup is installed by the root user in the
+				# non-default location /usr/local/rustup, so $RUSTUP_HOME is required to
+				# access rust config e.g. default toolchains and run cargo
+				#
+				# Leave $CARGO_HOME blank so when this script is run in CI by the buildslave
+				# user, it uses the default /home/buildslave/.cargo directory which it has
+				# write permissions for - that allows it to download new crates during
+				# compilation
+				#
+				# The buildslave user does not have write permissions to the default
+				# $CARGO_HOME=/usr/local/cargo dir and so will error when trying to download
+				# new crates otherwise
+				#
+				# note: $PATH still contains /usr/local/cargo/bin at this point so cargo is
+				# still run via the root installation
+				#
+				# see https://github.com/rust-lang/rustup/issues/1085
+				set_hook_var "RUSTUP_HOME" "/usr/local/rustup"
+			fi
 		fi
 
 		# Call pre-build hook
 		call_hook pre_tf_build
 
-		build_tf
+		if upon "$(get_tf_opt RUST)"; then
+			build_rfa
+		else
+			build_tf
+		fi
 
 		# Call post-build hook
 		call_hook post_tf_build
@@ -1718,12 +1793,11 @@ for mode in $modes; do
 		# Pre-archive hook
 		call_hook pre_tf_archive
 
-		if upon "$(get_tf_opt RUST)"; then
-			# for archiving into the Jenkins artifacts directory
-			ln -fsr $tf_root/rust/target/bl31.{bin,elf} $tf_build_root
+		if not_upon "$(get_tf_opt RUST)"; then
+			from="$tf_build_root" to="$archive" collect_build_artefacts
+		else
+			from="$rfa_build_root" to="$archive" collect_rfa_artefacts
 		fi
-
-		from="$tf_build_root" to="$archive" collect_build_artefacts
 
 		# Post-archive hook
 		call_hook post_tf_archive
