@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2024-2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+source "$ci_root/run_config/rd1ae_rse_utils.sh"
+source "$ci_root/arm_auto_solutions_utils.sh"
+
+post_tf_build() {
+	# Download and archive rd1ae u-boot.bin file
+	url="$arm_automotive_solutions/rd1ae/u-boot.bin" saveas="uboot.bin" fetch_file
+	archive_file "uboot.bin"
+
+	# Download and archive rd1ae tee-pager_v2.bin file
+	url="$arm_automotive_solutions/rd1ae/tee-pager_v2.bin" saveas="tee-pager_v2.bin" fetch_file
+	archive_file "tee-pager_v2.bin"
+
+	build_fip BL33="$archive/uboot.bin" BL32="$archive/tee-pager_v2.bin"
+}
+
+fetch_tf_resource() {
+	# Sign ap_bl2 image with RSE public key
+	sign_host_ap_bl2_image bl2.bin $rd1ae_ap_bl2_flash_load_addr $rd1ae_ap_bl2_flash_size
+
+	# Update fip image with signed ap_bl2
+	bin_name="tb-fw" src="$archive/$signed_bin" fip_update
+
+	# Download all required images to boot rd1ae
+	downlaod_rd1ae_prebuilt
+
+	# Update ap-flash-image with newly created fip image
+	update_ap_flash_image
+}
+
+generate_lava_job_template() {
+	payload_type="linux" gen_yaml_template
+}
+
+generate_lava_job() {
+	local model="rd1ae"
+	uart="1" set_expect_variable "num_cpus" "8"
+
+	# Hold scp terminal_uart_scp
+	uart="2" port="5007" file="hold_uart.exp" track_expect
+	uart="0" port="5009" file="rd1ae-tf.exp" track_expect
+	uart="1" port="5008" file="rd1ae-yocto.exp" set_primary="1" timeout="1200" track_expect
+
+	set_run_env "ports_script" "$ci_root/model/rd1ae-ports.awk"
+	set_run_env "num_uarts" "3"
+
+	model="$model" gen_model_params
+	model="$model" gen_fvp_yaml
+}
+

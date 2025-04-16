@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2024, Arm Limited and Contributors. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited and Contributors. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -66,7 +66,7 @@ clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} ARM_TSP_RAM_LOCATION=dram \
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} ARM_TSP_RAM_LOCATION=dram SPD=tspd TSP_INIT_ASYNC=1 \
     TSP_NS_INTR_ASYNC_PREEMPT=1 FVP_TRUSTED_SRAM_SIZE=384
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=opteed FVP_TRUSTED_SRAM_SIZE=384
-clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=tlkd FVP_TRUSTED_SRAM_SIZE=384
+clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=tlkd ENABLE_FEAT_D128=0 FVP_TRUSTED_SRAM_SIZE=384
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=pncd SPD_PNCD_NS_IRQ=126 \
     SPD_PNCD_S_IRQ=15 FVP_TRUSTED_SRAM_SIZE=384
 
@@ -158,6 +158,11 @@ clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1
 
 # Firmware Handoff framework support
 clean_build $fvp_common_flags TRANSFER_LIST=1
+clean_build $fvp_common_flags CROSS_COMPILE=arm-none-eabi- TRANSFER_LIST=1 \
+    AARCH32_SP=sp_min ARCH=aarch32
+
+# HOB List support
+clean_build $fvp_common_flags HOB_LIST=1
 
 #BL2 at EL3 support
 clean_build $fvp_common_flags RESET_TO_BL2=1 FVP_TRUSTED_SRAM_SIZE=384
@@ -198,6 +203,15 @@ clean_build $fvp_common_flags ENABLE_FEAT_DEBUGV8P9=1
 
 # Feat_FGT2 (Fine-grained Traps 2) feature
 clean_build $fvp_common_flags ENABLE_FEAT_FGT2=1
+
+# Feat_FPMR (Floating Point Mode Register) feature
+clean_build $fvp_common_flags ENABLE_FEAT_FPMR=1
+
+# FEAT_TCR2
+clean_build $fvp_common_flags ENABLE_FEAT_TCR2=1
+
+# FEAT_THE, FEAT_SCTLR2
+clean_build $fvp_common_flags ENABLE_FEAT_THE=1 ENABLE_FEAT_SCTLR2=1
 
 # Using GICv3.1 driver with extended PPI and SPI range
 clean_build $fvp_common_flags GIC_EXT_INTID=1
@@ -247,6 +261,13 @@ clean_build $fvp_common_flags PLATFORM_REPORT_CTX_MEM_USE=1
 clean_build $fvp_common_flags CTX_INCLUDE_AARCH32_REGS=0 HW_ASSISTED_COHERENCY=1 \
     USE_COHERENT_MEM=0 BUILD_CPUS_WITH_NO_FVP_MODEL=1 FVP_TRUSTED_SRAM_SIZE=384
 
+# Build all CPU's with all errata's with FVP platform.
+clean_build $fvp_common_flags CTX_INCLUDE_AARCH32_REGS=0 HW_ASSISTED_COHERENCY=1 \
+    USE_COHERENT_MEM=0 ENABLE_ERRATA_ALL=1 FVP_TRUSTED_SRAM_SIZE=384
+
+# Sign Realm tokens with EL3 signing service
+clean_build $fvp_common_flags ENABLE_RME=1 RMMD_ENABLE_EL3_TOKEN_SIGN=1
+
 #
 # Juno platform
 # We'll use the following flags for all Juno builds.
@@ -265,22 +286,9 @@ clean_build $juno_common_flags CSS_USE_SCMI_SDS_DRIVER=0
 clean_build $juno_common_flags TRNG_SUPPORT=1
 
 #
-# Reference Design platform RD-V1
-#
-make $(common_flags) PLAT=rdv1 ${ARM_TBB_OPTIONS} all
-
-#
-# Reference Design platform RD-V1-MC
-#
-make $(common_flags) PLAT=rdv1mc ${ARM_TBB_OPTIONS} NRD_CHIP_COUNT=4 all
-
-#
 # Reference Design Platform RD-N2
 #
 make $(common_flags) PLAT=rdn2 ${ARM_TBB_OPTIONS} all
-# RAS Extension Support
-make $(common_flags) PLAT=rdn2 ${ARM_TBB_OPTIONS} ENABLE_FEAT_RAS=1 \
-    HANDLE_EA_EL3_FIRST_NS=1 SDEI_SUPPORT=1 SPM_MM=1 all
 
 # SPMC At EL3 Support
 make $(common_flags) PLAT=rdn2 ${ARM_TBB_OPTIONS} SPMC_AT_EL3=1 SPD=spmd \
@@ -347,21 +355,26 @@ make PLAT=arm_fpga $(common_flags release) \
 #
 # Total Compute platforms
 #
-clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} MEASURED_BOOT=1 \
+clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=3 ${ARM_TBB_OPTIONS} MEASURED_BOOT=1 \
     PLAT_MHU_VERSION=3
-clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} MEASURED_BOOT=1 \
+clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=3 ${ARM_TBB_OPTIONS} MEASURED_BOOT=1 \
     DICE_PROTECTION_ENVIRONMENT=1 QCBOR_DIR=$(pwd)/qcbor
-clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} PLATFORM_TEST=rse-nv-counters
-clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=2 ${ARM_TBB_OPTIONS} PLATFORM_TEST=tfm-testsuite \
-    MEASURED_BOOT=1 TF_M_TESTS_PATH=$(pwd)/../tf-m-tests TF_M_EXTRAS_PATH=$(pwd)/../tf-m-extras
-clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=3 ${ARM_TBB_OPTIONS} \
-    PLAT_MHU_VERSION=3
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=3 ${ARM_TBB_OPTIONS} PLATFORM_TEST=rse-rotpk
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=3 ${ARM_TBB_OPTIONS} PLATFORM_TEST=rse-nv-counters
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=3 ${ARM_TBB_OPTIONS} PLATFORM_TEST=tfm-testsuite \
-    TF_M_TESTS_PATH=$(pwd)/../tf-m-tests TF_M_EXTRAS_PATH=$(pwd)/../tf-m-extras
+    MEASURED_BOOT=1 QCBOR_DIR=$(pwd)/qcbor TF_M_TESTS_PATH=$(pwd)/../tf-m-tests TF_M_EXTRAS_PATH=$(pwd)/../tf-m-extras
 clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=4 ${ARM_TBB_OPTIONS} \
-    PLAT_MHU_VERSION=3
+    ENABLE_STACK_PROTECTOR=strong PLAT_MHU_VERSION=3
+clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=4 ${ARM_TBB_OPTIONS} \
+    ENABLE_STACK_PROTECTOR=strong PLATFORM_TEST=rse-rotpk
+clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=4 ${ARM_TBB_OPTIONS} \
+    ENABLE_STACK_PROTECTOR=strong PLATFORM_TEST=rse-nv-counters
+clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=4 ${ARM_TBB_OPTIONS} \
+    ENABLE_STACK_PROTECTOR=strong PLATFORM_TEST=tfm-testsuite \
+    MEASURED_BOOT=1 QCBOR_DIR=$(pwd)/qcbor TF_M_TESTS_PATH=$(pwd)/../tf-m-tests TF_M_EXTRAS_PATH=$(pwd)/../tf-m-extras
+clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=4 ${ARM_TBB_OPTIONS} \
+    ENABLE_STACK_PROTECTOR=strong MEASURED_BOOT=1 \
+    DICE_PROTECTION_ENVIRONMENT=1 QCBOR_DIR=$(pwd)/qcbor
 
 #
 # Morello platform
@@ -373,25 +386,35 @@ clean_build $(common_flags) PLAT=morello TARGET_PLATFORM=soc ${ARM_TBB_OPTIONS}
 # corstone1000 Platform
 #
 
-make $(common_flags) \
-     PLAT=corstone1000 \
-     SPD=spmd \
-     TARGET_PLATFORM=fpga \
-     ENABLE_STACK_PROTECTOR=strong \
-     ENABLE_PIE=1 \
-     RESET_TO_BL2=1 \
-     SPMD_SPM_AT_SEL2=0 \
-     ${ARM_TBB_OPTIONS} \
-     CREATE_KEYS=1 \
-     COT=tbbr \
-     ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem \
-     bl2 \
-     bl31
+clean_build $(common_flags) \
+            PLAT=corstone1000 \
+            SPD=spmd \
+            TARGET_PLATFORM=fpga \
+            ENABLE_STACK_PROTECTOR=strong \
+            ENABLE_PIE=1 \
+            RESET_TO_BL2=1 \
+            SPMD_SPM_AT_SEL2=0 \
+            ${ARM_TBB_OPTIONS} \
+            CREATE_KEYS=1 \
+            COT=tbbr \
+            ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem \
+            bl2 \
+            bl31
 
 #
-# FVP-R platform
+# RD-1 AE platform
 #
-clean_build $(common_flags) PLAT=fvp_r ${ARM_TBB_OPTIONS} ENABLE_STACK_PROTECTOR=all
+clean_build $(common_flags) \
+            PLAT=rd1ae \
+            ARCH=aarch64 \
+            ${ARM_TBB_OPTIONS} \
+            GENERATE_COT=1 \
+            COT=tbbr \
+            ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem \
+            bl2 \
+            bl31 \
+            SPD=spmd \
+            SPMD_SPM_AT_SEL2=0
 
 # Partners' platforms.
 # Enable as many features as possible.
@@ -403,11 +426,14 @@ make PLAT=mt8173 $(common_flags) all
 make PLAT=mt8183 $(common_flags) all
 make PLAT=mt8186 $(common_flags) COREBOOT=1 all
 make PLAT=mt8188 $(common_flags) COREBOOT=1 all
+make PLAT=mt8189 $(common_flags) COREBOOT=1 all
 make PLAT=mt8192 $(common_flags) COREBOOT=1 all
 make PLAT=mt8195 $(common_flags) COREBOOT=1 all
+make PLAT=mt8196 $(common_flags) COREBOOT=1 all
 
 # Platforms from Qualcomm
 make PLAT=sc7180 $(common_flags) COREBOOT=1 all
+make PLAT=qcs615 $(common_flags) COREBOOT=1 all
 
 make PLAT=rk3288 CROSS_COMPILE=arm-none-eabi- \
     $(common_flags) ARCH=aarch32 AARCH32_SP=sp_min all
@@ -417,9 +443,13 @@ make PLAT=rk3399 $(common_flags) COREBOOT=1 PLAT_RK_DP_HDCP=1 \
     ENABLE_STACK_PROTECTOR=strong all
 make PLAT=rk3328 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
     ENABLE_STACK_PROTECTOR=strong all
+make PLAT=rk3576 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
+    ENABLE_STACK_PROTECTOR=strong all
 make PLAT=rk3588 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
     ENABLE_STACK_PROTECTOR=strong all
 make PLAT=px30 $(common_flags) PLAT_RK_SECURE_DDR_MINILOADER=1 \
+    ENABLE_STACK_PROTECTOR=strong all
+make PLAT=rk3568 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
     ENABLE_STACK_PROTECTOR=strong all
 
 # Although we do several consecutive builds for the Tegra platform below, we
@@ -451,6 +481,7 @@ clean_build PLAT=versal_net $(common_flags) TFA_NO_PM=1
 
 # Build Xilinx Versal Gen 2 platform
 clean_build PLAT=versal2 $(common_flags)
+clean_build PLAT=versal2 $(common_flags) TRANSFER_LIST=1
 
 # Platforms from Allwinner
 clean_build PLAT=sun50i_a64 $(common_flags release) all
@@ -756,6 +787,9 @@ clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_USB_PROGRAMMER=1 \
 # Platforms from TI
 make PLAT=k3 $(common_flags) all
 make PLAT=k3 TARGET_BOARD=j784s4 $(common_flags) all
+make PLAT=k3 TARGET_BOARD=lite $(common_flags) all
+make PLAT=k3 TARGET_BOARD=generic $(common_flags) all
+make PLAT=k3low TARGET_BOARD=am62lx $(common_flags) all
 
 clean_build PLAT=qemu $(common_flags) ${TBB_OPTIONS}
 # Use GICV3 driver
@@ -782,6 +816,10 @@ clean_build PLAT=qemu $(common_flags) ENABLE_RME=1 \
         QEMU_USE_GIC_DRIVER=QEMU_GICV3
 
 clean_build PLAT=qemu_sbsa $(common_flags)
+
+# QEMU SBSA with RME support
+clean_build PLAT=qemu_sbsa $(common_flags) ENABLE_RME=1 \
+    RMM=/dev/null RME_GPT_BITLOCK_BLOCK=1
 
 # QEMU with SPM support
 clean_build PLAT=qemu_sbsa $(common_flags) BL32=Makefile SPM_MM=1 \
@@ -818,6 +856,11 @@ make PLAT=rpi3 $(common_flags) ${TBB_OPTIONS} \
     ENABLE_STACK_PROTECTOR=strong PRELOADED_BL33_BASE=0xDEADBEEF all
 clean_build PLAT=rpi4 $(common_flags) SMC_PCI_SUPPORT=1 all
 clean_build PLAT=rpi5 $(common_flags) SMC_PCI_SUPPORT=1 all
+
+# Raspberry Pi Measured Boot Discrete TPM
+make PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
+    MEASURED_BOOT=1 DISCRETE_TPM=1 TPM_INTERFACE=FIFO_SPI \
+    MBOOT_TPM_HASH_ALG=sha256 MBEDTLS_DIR=$(pwd)/mbedtls all
 
 # A113D (AXG) platform.
 clean_build PLAT=axg $(common_flags) SPD=opteed

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2021, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -10,7 +10,6 @@ if  is_arm_jenkins_env || upon "$local_ci"; then
 	set_model_path "$warehouse/SysGen/Models/$model_version/$model_build/external/models/$model_flavour/FVP_Base_RevC-2xAEMvA"
 
 	default_var etm_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/ETMv4ExamplePlugin.so"
-	default_var ete_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/libete-plugin.so"
 else
         # OpenCI enviroment
         source "$ci_root/fvp_utils.sh"
@@ -22,7 +21,6 @@ else
 
         # ScalableVectorExtension is located at /opt/model/*/plugins/${model_flavour}
 	default_var etm_plugin_path "${models_dir/models/plugins}/ETMv4ExamplePlugin.so"
-	default_var ete_plugin_path "${models_dir/models/plugins}/libete-plugin.so"
 fi
 
 default_var is_dual_cluster 1

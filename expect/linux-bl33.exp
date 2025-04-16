@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021 Arm Limited. All rights reserved.
+# Copyright (c) 2021-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -23,5 +23,13 @@ expect_string "Linux version" "Linux printed its version"
 # 2. Command line passed via the "/chosen" node
 expect_re "Machine model: FVP Base" "Linux successfully identified the machine model"
 expect_string "Kernel command line: console=ttyAMA0" "Linux received the correct command line"
+
+# Check if the injected initrd values are correct and working
+expect_string "Unpacking initramfs..." "Linux found the initrd values in the chosen node"
+expect_string "Freeing initrd memory" "Linux successfully unpacked the initrd"
+
+# Check if Linux booted successfully and we have access to the Linux terminal
+expect_string "Freeing unused kernel memory" "Linux kernel boot success"
+expect_string "/ # " "The user has access to the Linux terminal"
 
 exit_uart 0

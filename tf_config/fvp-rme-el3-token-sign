@@ -1,0 +1,5 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+ENABLE_RME=1
+FVP_HW_CONFIG_DTS=fdts/fvp-base-gicv3-psci-1t.dts
+RMMD_ENABLE_EL3_TOKEN_SIGN=1

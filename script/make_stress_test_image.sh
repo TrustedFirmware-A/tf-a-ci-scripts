@@ -103,7 +103,7 @@ echo "Cloned test assets."
 cd test_assets
 rm -rf "pm-qa"
 echo "Cloning pm-qa..."
-git clone -q --depth 1 git://git.linaro.org/tools/pm-qa.git
+git clone -q --depth 1 https://git.linaro.org/tools/pm-qa.git
 echo "Cloned pm-qa."
 
 cd

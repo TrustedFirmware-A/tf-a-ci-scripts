@@ -1,0 +1,18 @@
+#
+# Copyright (c) 2025 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Trusted Firmware Test Framework
+#
+
+source $ci_root/expect-lava/trusted-firmware.inc
+
+prompt='Booting trusted firmware test framework'
+failures='Panic:'
+expect_string+=("i;${prompt};;${failures}")
+
+prompt='Running at NS-EL(1|2)'
+expect_string+=("i;${prompt}")
+
+expect_string+=('i;Powering off CPU')

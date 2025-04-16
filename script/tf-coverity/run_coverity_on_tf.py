@@ -51,7 +51,7 @@ def get_coverity_tool():
 
     print("\nNow please load the Coverity tool in your PATH...")
     print("E.g.:")
-    cov_version = "2023.6.2"
+    cov_version = "2024.6.1"
     cov_dir_name = "cov-analysis-linux64-" + cov_version
     cov_dir_path = os.path.abspath(os.path.join(cov_dir_name, "bin"))
     print("  export PATH=%s$PATH" % (cov_dir_path + os.pathsep))
@@ -258,9 +258,7 @@ if __name__ == "__main__":
         print("https://scan.coverity.com/projects/arm-software-arm-trusted-firmware/builds/new?tab=upload")
     print("-----------------------------------------------------------------")
 
-    # Temporary workaround to fix an issue with non utf-8 characters in the
-    # directory path name
-    #print_coverage("cov-int", args.tf, coverity_tf_conf.exclude_paths, "tf_coverage.log")
-    #with open("tf_coverage.log") as log_file:
-    #    for line in log_file:
-    #        print(line, end="")
+    print_coverage("cov-int", args.tf, coverity_tf_conf.exclude_paths, "tf_coverage.log")
+    with open("tf_coverage.log") as log_file:
+        for line in log_file:
+            print(line, end="")

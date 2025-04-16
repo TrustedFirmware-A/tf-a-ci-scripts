@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2024, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -32,13 +32,7 @@ else
 	# This is Arm infrastructure while migration from ci.trustedfirmware.org
     source "$ci_root/openci-env.sh"
   elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.trustedfirmware.org"; then
-    if echo "$TF_GERRIT_BRANCH" | grep -q "lts-v2.8"; then
-      source "$ci_root/openci-lts-v2.8-env.sh"
-    elif echo "$TF_GERRIT_BRANCH" | grep -q "lts-v2.10"; then
-      source "$ci_root/openci-lts-v2.10-env.sh"
-    else
-      source "$ci_root/openci-env.sh"
-    fi
+    source "$ci_root/openci-env.sh"
   elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.staging.trustedfirmware.org"; then
     source "$ci_root/openci-staging-env.sh"
   fi
@@ -165,7 +159,7 @@ fetch_file() {
 
 fetch_and_archive() {
 	url=${url:?}
-	filename=${filename:-basename $url}
+	filename=${filename:-$(basename $url)}
 
 	url="$url" saveas="$filename" fetch_file
 	archive_file "$filename"
@@ -552,14 +546,10 @@ project_filer="${nfs_volume}/projectscratch/ssg/trusted-fw"
 project_scratch="${PROJECT_SCRATCH:-$project_filer/ci-workspace}"
 warehouse="${nfs_volume}/warehouse"
 jenkins_url="${JENKINS_PUBLIC_URL%/*}"
-JENKINS_PUBLIC_URL="${JENKINS_PUBLIC_URL:-https://ci.trustedfirmware.org/}"
+jenkins_url="${jenkins_url:-https://ci.trustedfirmware.org/}"
 
-# Model revisions
-model_version_11_24="${model_version:-11.24}"
-model_build_11_24="${model_build:-24}"
-
-model_version="${model_version:-11.26}"
-model_build="${model_build:-11}"
+model_version="${model_version:-11.28}"
+model_build="${model_build:-23}"
 model_flavour="${model_flavour:-Linux64_GCC-9.3}"
 
 # Model snapshots from filer are not normally not accessible from developer
@@ -582,6 +572,8 @@ scp_src_repo_url="${scp_src_repo_url:-$SCP_SRC_REPO_URL}"
 scp_src_repo_url="${scp_src_repo_url:-$scp_src_repo_default}"
 spm_src_repo_url="${spm_src_repo_url:-$SPM_SRC_REPO_URL}"
 spm_src_repo_url="${spm_src_repo_url:-https://$tforg_gerrit_url/hafnium/hafnium}"
+rmm_src_repo_url="${rmm_src_repo_url:-$RMM_SRC_REPO_URL}"
+rmm_src_repo_url="${rmm_src_repo_url:-https://$tforg_gerrit_url/TF-RMM/tf-rmm}"
 tf_m_tests_src_repo_url="${tf_m_tests_src_repo_url:-$TF_M_TESTS_REPO_URL}"
 tf_m_tests_src_repo_url="${tf_m_tests_src_repo_url:-https://$tforg_gerrit_url/TF-M/tf-m-tests}"
 tf_m_extras_src_repo_url="${tf_m_extras_src_repo_url:-$TF_M_EXTRAS_REPO_URL}"
@@ -592,11 +584,11 @@ tfa_downloads="${tfa_downloads:-file:///downloads/tf-a}"
 css_downloads="${css_downloads:-$tfa_downloads/css}"
 
 # SCP/MCP release binaries.
-scp_mcp_downloads="${scp_mcp_downloads:-$tfa_downloads/css_scp_2.14.0}"
+scp_mcp_downloads="${scp_mcp_downloads:-$tfa_downloads/css_scp_2.15.0}"
 
 linaro_2001_release="${linaro_2001_release:-$tfa_downloads/linaro/20.01}"
 linaro_release="${linaro_release:-$linaro_2001_release}"
-mbedtls_version="${mbedtls_version:-3.6.0}"
+mbedtls_version="${mbedtls_version:-3.6.3}"
 
 # mbedTLS archive public hosting available at github.com
 mbedtls_archive="${mbedtls_archive:-https://github.com/Mbed-TLS/mbedtls/archive/mbedtls-${mbedtls_version}.tar.gz}"
@@ -621,7 +613,7 @@ coverity_default_checkers=(
 docker_registry="${docker_registry:-}"
 
 # Define toolchain version and toolchain binary paths
-toolchain_version="13.2.Rel1"
+toolchain_version="13.3.rel1"
 
 aarch64_none_elf_dir="${nfs_volume}/pdsw/tools/arm-gnu-toolchain-${toolchain_version}-x86_64-aarch64-none-elf"
 aarch64_none_elf_prefix="aarch64-none-elf-"
@@ -633,7 +625,6 @@ path_list=(
 		"${aarch64_none_elf_dir}/bin"
 		"${arm_none_eabi_dir}/bin"
 		"${llvm_dir}/bin"
-		"${nfs_volume}/pdsw/tools/gcc-arm-none-eabi-5_4-2016q3/bin"
 		"$coverity_path/bin"
 )
 

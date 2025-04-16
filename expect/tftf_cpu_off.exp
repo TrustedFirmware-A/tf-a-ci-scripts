@@ -1,0 +1,17 @@
+#
+# Copyright (c) 2025 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Trusted Firmware Test Framework
+#
+
+source [file join [file dirname [info script]] handle-arguments.inc]
+
+source [file join [file dirname [info script]] trusted-firmware.inc]
+
+expect_string "Booting trusted firmware test framework" "TFTF is booting"
+
+expect_re "Running at NS-EL(1|2)"
+
+expect_string "Powering off CPU"

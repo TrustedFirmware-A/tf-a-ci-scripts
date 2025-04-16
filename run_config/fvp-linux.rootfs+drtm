@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2022-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2022-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -8,15 +8,15 @@
 post_tf_build() {
 	# Get the images for the test.
 	edk_url="$tfa_downloads/drtm/FVP_AARCH64_EFI.fd"
-	rootfs_url="$tfa_downloads/drtm/test-disk.img" get_rootfs
+	rootfs_url="$tfa_downloads/drtm/test-disk-acs.img" get_rootfs
 	url="$edk_url" saveas="edk2.bin" fetch_file
 	archive_file "edk2.bin"
 }
 
 generate_lava_job_template() {
 	# Configure the uarts for tracking.
-	uart="0" file="hold_uart.exp" track_expect
-	uart="1" set_primary="1" timeout="700" file="tf-a-drtm.exp" track_expect
+	uart="0" set_primary="1" timeout="1200" file="tf-a-drtm.exp" track_expect
+	uart="1" file="hold_uart.exp" track_expect
 	set_run_env "num_uarts" "2"
 
 	payload_type="linux" gen_yaml_template

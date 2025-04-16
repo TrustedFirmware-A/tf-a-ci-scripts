@@ -73,9 +73,15 @@ build_tool() {
   pushd "${CODE_COVERAGE_FOLDER}"
   deploy_qa_tools
   local cc_source=$(find . -type f -name 'coverage_trace.cc')
-  local fallback="wget -q ${FALLBACK_PLUGIN_URL}/{$FALLBACK_FILES}"
   echo "Warehouse=${warehouse}"
-  eval "$fallback"
+
+  IFS=',' read -r -a files <<< "$FALLBACK_FILES"
+  for file in "${files[@]}"; do
+      url="${FALLBACK_PLUGIN_URL}/${file}" \
+        saveas="${CODE_COVERAGE_FOLDER}/${file}" \
+        fetch_file
+  done
+
   ls -al
   export coverage_trace_plugin="${CODE_COVERAGE_FOLDER}/${PLUGIN_BINARY}"
   popd

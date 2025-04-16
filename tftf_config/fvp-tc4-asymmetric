@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=tc
+TARGET_PLATFORM=4
+TESTS=asymmetric-features

@@ -6,5 +6,5 @@
 #
 
 post_tf_build() {
-	url="$tfa_downloads/optee/tee.bin" filename="bl32.bin" fetch_and_archive
+	url="${optee_path}/tee-raw.bin" filename="bl32.bin" fetch_and_archive
 }

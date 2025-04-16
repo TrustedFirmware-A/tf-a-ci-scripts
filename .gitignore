@@ -1,2 +1,3 @@
 # Ignore python cache in all possible folders
 __pycache__/
+group/GENERATED

@@ -1,8 +1,8 @@
 diff --git a/bl31/aarch64/runtime_exceptions.S b/bl31/aarch64/runtime_exceptions.S
-index 04659da62..56416215b 100644
+index 742380568..3638d9967 100644
 --- a/bl31/aarch64/runtime_exceptions.S
 +++ b/bl31/aarch64/runtime_exceptions.S
-@@ -696,6 +696,14 @@ subtract_elr_el3:
+@@ -709,6 +709,14 @@ subtract_elr_el3:
  	sub	x28, x28, #4
  skip_smc_check:
  	msr	elr_el3, x28
@@ -18,16 +18,16 @@ index 04659da62..56416215b 100644
  	ldr	x30, [sp, #CTX_GPREGS_OFFSET + CTX_GPREG_LR]
  	exception_return
 diff --git a/services/arm_arch_svc/arm_arch_svc_setup.c b/services/arm_arch_svc/arm_arch_svc_setup.c
-index 57d211ed7..7df40e2c2 100644
+index 6acd1b60f..11d23e0f1 100644
 --- a/services/arm_arch_svc/arm_arch_svc_setup.c
 +++ b/services/arm_arch_svc/arm_arch_svc_setup.c
-@@ -14,9 +14,30 @@
- #include <services/arm_arch_svc.h>
- #include <smccc_helpers.h>
+@@ -16,10 +16,30 @@
  #include <plat/common/platform.h>
+ #include <arch_features.h>
+ #include <arch_helpers.h>
 +#include <context.h>
-+#include <lib/el3_runtime/context_mgmt.h>
-+
+ #include <lib/el3_runtime/context_mgmt.h>
+ 
 +static void modify_scr_el3_irq(void)
 +{
 +	u_register_t scr_el3;
@@ -37,7 +37,7 @@ index 57d211ed7..7df40e2c2 100644
 +	scr_el3 |= SCR_IRQ_BIT;
 +	write_ctx_reg(el3_ctx, CTX_SCR_EL3, scr_el3);
 +}
- 
++
  static int32_t smccc_version(void)
  {
 +	/*

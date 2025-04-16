@@ -1,11 +1,12 @@
 ARM_GPT_SUPPORT=1
-ARM_ROTPK_LOCATION=devel_rsa
-BRANCH_PROTECTION=1
+ARM_ROTPK_LOCATION=devel_ecdsa
 CROSS_COMPILE=aarch64-none-elf-
-CTX_INCLUDE_PAUTH_REGS=1
 GENERATE_COT=1
 PLAT=tc
-ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
+ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_ecdsa.pem
+KEY_ALG=ecdsa
 SCP_BL2=/dev/null
 TARGET_PLATFORM=4
 TRUSTED_BOARD_BOOT=1
+CSS_LOAD_SCP_IMAGES=0
+ENABLE_STACK_PROTECTOR=strong

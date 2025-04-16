@@ -17,6 +17,9 @@
 exclude_paths = [
     ("drivers/arm/tzc/tzc_common_private.c", "File included, actually indirectly analyzed"),
     ("drivers/arm/tzc/tzc_dmc500.c", "Only used by deprecated SGM platforms"),
+    ("drivers/arm/tzc/tzc_dmc620.c", "Only used by deprecated SGI platforms"),
+    ("drivers/arm/mhu/mhu_v2_x.c", "Not used in recent platforms, migrated to MHUv3"),
+    ("drivers/arm/mhu/mhu_wrapper_v2_x.c", "Not used in recent platforms, migrated to MHUv3"),
     ("drivers/marvell/comphy/phy-comphy-3700.c", "File is actually analyzed. False positive"),
     ("drivers/marvell/comphy/phy-comphy-cp110.c", "File is actually analyzed. False positive"),
     ("drivers/marvell/gwin.c", "Not used by any upstream marvell platform"),
@@ -89,20 +92,6 @@ exclude_paths = [
     ("plat/imx/imx8m/imx8mq/gpc.c", "Not currently used"),
     ("plat/imx/imx8m/imx8mq/imx8mq_bl31_setup.c", "Not currently used"),
     ("plat/imx/imx8m/imx8mq/imx8mq_psci.c", "Not currently used"),
-
-    # Exclude the following files of RDN1EDGE and SGI575 as these platforms
-    # are deprecated and removed from the CI.
-    ("plat/arm/board/neoverse_rd/platform/rdn1edge/rdn1edge_err.c", "Only used by deprecated RDN1EDGE platforms"),
-    ("plat/arm/board/neoverse_rd/platform/rdn1edge/rdn1edge_plat.c", "Only used by deprecated RDN1EDGE platforms"),
-    ("plat/arm/board/neoverse_rd/platform/rdn1edge/rdn1edge_security.c", "Only used by deprecated RDN1EDGE platforms"),
-    ("plat/arm/board/neoverse_rd/platform/rdn1edge/rdn1edge_topology.c", "Only used by deprecated RDN1EDGE platforms"),
-    ("plat/arm/board/neoverse_rd/platform/rdn1edge/rdn1edge_trusted_boot.c", "Only used by deprecated RDN1EDGE platforms"),
-    ("plat/arm/board/neoverse_rd/platform/sgi575/sgi575_err.c", "Only used by deprecated SGI575 platform"),
-    ("plat/arm/board/neoverse_rd/platform/sgi575/sgi575_plat.c", "Only used by deprecated SGI575 platform"),
-    ("plat/arm/board/neoverse_rd/platform/sgi575/sgi575_security.c", "Only used by deprecated SGI575 platform"),
-    ("plat/arm/board/neoverse_rd/platform/sgi575/sgi575_topology.c", "Only used by deprecated SGI575 platform"),
-    ("plat/arm/board/neoverse_rd/platform/sgi575/sgi575_trusted_boot.c", "Only used by deprecated SGI575 platform"),
-    ("plat/arm/board/neoverse_rd/common/nrd_ras.c", "Only used by deprecated SGI575 platform"),
 
     # Exclude the following files used for STM32MP host tools (cert_create)
     ("plat/st/stm32mp1/stm32mp1_tbb_cert.c", "Used to build STM32MP cert_create"),

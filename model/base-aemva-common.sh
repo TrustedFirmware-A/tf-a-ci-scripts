@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2024, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -47,6 +47,8 @@ reset_var gicv3_gicv2_only
 # Number of SPIs that are implemented: Default 224, Maximum 988
 reset_var gicv3_spi_count
 
+reset_var has_ete
+
 # Enable GICv4.1 functionality
 reset_var has_gicv4_1
 
@@ -85,6 +87,30 @@ reset_var has_rng_trap
 # Enable FEAT_ECV
 reset_var has_ecv
 
+# Enable FEAT_S1PIE
+reset_var has_s1pie
+
+# Enable FEAT_S2PIE
+reset_var has_s2pie
+
+# Enable FEAT_S1POE
+reset_var has_s1poe
+
+# Enable FEAT_S2POE
+reset_var has_s2poe
+
+# Enable FEAT_TCR2
+reset_var has_tcr2
+
+# Enable FEAT_CSV2_2
+reset_var has_csv2_2
+
+# Enable FEAT_GCS
+reset_var has_gcs
+
+# Enable FEAT_FGT2
+reset_var has_fgt2
+
 # Layout of MPIDR. 0=AFF0 is CPUID, 1=AFF1 is CPUID
 reset_var mpidr_layout
 
@@ -94,9 +120,6 @@ reset_var supports_multi_threading
 
 # ETM plugin to access ETM trace system registers
 reset_var etm_plugin
-
-# ETE plugin to access ETE trace system registers
-reset_var ete_plugin
 
 # Trace filter register support
 reset_var supports_trace_filter_regs
@@ -110,6 +133,9 @@ reset_var supports_crc32
 # Accelerator instruction support level (none, FEAT_LS64,
 # FEAT_LS64_V, FEAT_LS64_ACCDATA)
 reset_var accelerator_support_level
+
+# ROTPK in trusted register space
+reset_var has_rotpk_in_regs
 
 source "$ci_root/model/fvp_common.sh"
 
@@ -125,6 +151,7 @@ ${gicd_its_count+-C gic_distributor.ITS-count=$gicd_its_count}
 ${gicd_virtual_lpi+-C gic_distributor.virtual-lpi-support=$gicd_virtual_lpi}
 ${has_gicv4_1+-C has-gicv4.1=$has_gicv4_1}
 
+${has_ete+-C cluster0.has_ete=1}
 ${has_sve+-C cluster0.has_sve=1}
 ${has_sve+-C cluster0.sve.veclen=$((128 / 8))}
 ${has_sme+-C cluster0.sve.has_sme=1}
@@ -132,6 +159,7 @@ ${has_sme2+-C cluster0.sve.has_sme2=1}
 ${has_sme_fa64+-C cluster0.sve.has_sme_fa64=1}
 ${sme_only+-C cluster0.sve.sme_only=1}
 
+${has_ete+-C cluster1.has_ete=1}
 ${has_sve+-C cluster1.has_sve=1}
 ${has_sve+-C cluster1.sve.veclen=$((128 / 8))}
 ${has_sme+-C cluster1.sve.has_sme=1}
@@ -145,8 +173,15 @@ ${nvcounter_version+-C bp.trusted_nv_counter.version=$nvcounter_version}
 ${nvcounter_diag+-C bp.trusted_nv_counter.diagnostics=$nvcounter_diag}
 
 ${etm_plugin+--plugin=$etm_plugin_path}
-${ete_plugin+--plugin=$ete_plugin_path}
 EOF
+
+# Store the fixed ROTPK hash in registers
+# Note: This is the SHA256 hash of the RSA 2K development public key used in TF-A
+if [ "$has_rotpk_in_regs" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C bp.trusted_key_storage.public_key="0982f3b0 3ad89712 47727a37 7332ec1b e23292e9 5ef65949 464a4a8b da9a22d8"
+EOF
+fi
 
 # TFTF Reboot/Shutdown tests
 if [ "$retain_flash" = "1" ]; then
@@ -193,6 +228,7 @@ ${cluster_0_reg_reset+-C cluster0.register_reset_data=$cluster_0_reg_reset}
 ${cluster_0_has_el2+-C cluster0.has_el2=$cluster_0_has_el2}
 
 ${amu_present+-C cluster0.has_amu=$amu_present}
+${amu_version+-C cluster0.amu_version=${amu_version}}
 
 ${reset_to_bl31+-C cluster0.cpu0.RVBAR=${bl31_addr:?}}
 ${reset_to_bl31+-C cluster0.cpu1.RVBAR=${bl31_addr:?}}
@@ -359,6 +395,20 @@ if [ "$arch_version" = "9.2" ]; then
 EOF
 fi
 
+if [ "$arch_version" = "9.3" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_arm_v9-3=1
+-C cluster1.has_arm_v9-3=1
+EOF
+fi
+
+if [ "$arch_version" = "9.4" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_arm_v9-4=1
+-C cluster1.has_arm_v9-4=1
+EOF
+fi
+
 # Parameters for fault injection
 if [ "$fault_inject" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
@@ -380,9 +430,6 @@ fi
 if [ "$has_rme" = "1" ]; then
         cat <<EOF >>"$model_param_file"
 -C cluster0.rme_support_level=2
--C cluster0.has_rndr=1
--C cluster0.has_v8_7_pmu_extension=2
--C cluster0.ecv_support_level=2
 -C cluster0.gicv3.cpuintf-mmap-access-level=2
 -C cluster0.gicv4.mask-virtual-interrupt=1
 -C cluster0.gicv3.without-DS-support=1
@@ -427,6 +474,13 @@ if [ "$has_rng_trap" = "1" ]; then
 EOF
 fi
 
+if [ "$has_fgt2" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_fgt2=2
+-C cluster1.has_fgt2=2
+EOF
+fi
+
 if [ "$has_ecv" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.ecv_support_level=2
@@ -434,10 +488,97 @@ if [ "$has_ecv" = "1" ]; then
 EOF
 fi
 
+if [ "$has_s1pie" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_permission_indirection_s1=2
+-C cluster1.has_permission_indirection_s1=2
+EOF
+fi
+
+if [ "$has_s2pie" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_permission_indirection_s2=2
+-C cluster1.has_permission_indirection_s2=2
+EOF
+fi
+
+if [ "$has_s1poe" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_permission_overlay_s1=2
+-C cluster1.has_permission_overlay_s1=2
+EOF
+fi
+
+if [ "$has_s2poe" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_permission_overlay_s2=2
+-C cluster1.has_permission_overlay_s2=2
+EOF
+fi
+
+if [ "$has_tcr2" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_tcr2=2
+-C cluster1.has_tcr2=2
+EOF
+fi
+
+if [ "$has_csv2_2" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.restriction_on_speculative_execution=2
+-C cluster1.restriction_on_speculative_execution=2
+EOF
+fi
+
+if [ "$has_gcs" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_gcs=2
+-C cluster1.has_gcs=2
+EOF
+fi
+
 # Accelerator support level enabled
 if [ "$accelerator_support_level" != "0" ]; then
 	cat <<EOF >>"$model_param_file"
--C cluster0.arm_v8_7_accelerator_support_level=1
+-C cluster0.arm_v8_7_accelerator_support_level="$accelerator_support_level"
+EOF
+fi
+
+# FEAT_THE is enabled
+if [ "$has_translation_hardening" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_translation_hardening=2
+-C cluster1.has_translation_hardening=2
+EOF
+fi
+
+# FEAT_D128 is enabled
+if [ "$has_d128" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_128_bit_tt_descriptors=2
+-C cluster1.has_128_bit_tt_descriptors=2
+EOF
+fi
+
+# FEAT_FPMR support
+if [ "$has_fpmr" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_fpmr="1"
+-C cluster1.has_fpmr="1"
+EOF
+fi
+
+if [ "$has_pmuv3p7" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_v8_7_pmu_extension=2
+-C cluster1.has_v8_7_pmu_extension=2
+EOF
+fi
+
+if [ "$has_mops" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_mops_option=1
+-C cluster1.has_mops_option=1
 EOF
 fi
 
@@ -451,6 +592,7 @@ ${cluster_1_reg_reset+-C cluster1.register_reset_data=$cluster_1_reg_reset}
 ${cluster_1_has_el2+-C cluster1.has_el2=$cluster_1_has_el2}
 
 ${amu_present+-C cluster1.has_amu=$amu_present}
+${amu_version+-C cluster1.amu_version=${amu_version}}
 
 ${reset_to_bl31+-C cluster1.cpu0.RVBAR=${bl31_addr:?}}
 ${reset_to_bl31+-C cluster1.cpu1.RVBAR=${bl31_addr:?}}
@@ -573,9 +715,6 @@ fi
 if [ "$has_rme" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster1.rme_support_level=2
--C cluster1.has_rndr=1
--C cluster1.has_v8_7_pmu_extension=2
--C cluster1.ecv_support_level=2
 -C cluster1.gicv3.cpuintf-mmap-access-level=2
 -C cluster1.gicv4.mask-virtual-interrupt=1
 -C cluster1.gicv3.without-DS-support=1
@@ -609,7 +748,7 @@ fi
 # Accelerator support level enabled
 if [ "$accelerator_support_level" != "0" ]; then
 	cat <<EOF >>"$model_param_file"
--C cluster1.arm_v8_7_accelerator_support_level=1
+-C cluster1.arm_v8_7_accelerator_support_level="$accelerator_support_level"
 EOF
 fi
 

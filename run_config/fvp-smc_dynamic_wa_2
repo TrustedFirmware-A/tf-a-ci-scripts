@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	# This patch removes the FEAT_SSBS feature check so that workaround
+	# is tested on CI.
+	apply_tf_patch "workaround_smc/cve_2018_3639_dynamic_mitigation"
+}

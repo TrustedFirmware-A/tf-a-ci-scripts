@@ -1,12 +1,21 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2021-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
 fetch_tf_resource() {
 	image="kernel" type="fvp-busybox-uboot" get_boot_image
+}
+
+pre_tf_build() {
+	image="initrd" type="default" get_boot_image
+
+	# Remove u-boot header from the initrd and archive
+	dd if=$workspace/initrd.bin of=$workspace/nu.bin bs=64 skip=1 status="none"
+	mv $workspace/nu.bin $workspace/initrd.bin
+	archive_file "$workspace/initrd.bin"
 }
 
 generate_lava_job_template() {

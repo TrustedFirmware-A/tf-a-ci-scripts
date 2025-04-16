@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2024 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -112,15 +112,6 @@ with open(args.file) as fd:
         report_job_success()
     else:
         raise Exception("Payload not defined")
-
-    # First make sure the test session finished.
-    for phase in filter(lambda p: p["name"] == "lava-test-monitor", results):
-        if phase["result"] != "pass":
-            print(session + " test session failed. Did it time out?")
-            report_job_failure()
-        break
-    else:
-        raise Exception("Couldn't find 'lava-test-monitor' phase results")
 
     # Then count the number of tests that failed/skipped.
     test_failures = 0

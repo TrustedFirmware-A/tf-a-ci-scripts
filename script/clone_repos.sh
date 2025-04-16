@@ -479,6 +479,12 @@ if not_upon "$no_tfm_extras"; then
 		loc="TF_M_EXTRAS_PATH" clone_and_sync
 fi
 
+RMM_REFSPEC="${rmm_refspec:-$RMM_REFSPEC}"
+if not_upon "$no_rmm"; then
+	url="$rmm_src_repo_url" name="tf-rmm" ref="RMM_REFSPEC" \
+		loc="RMM_PATH" clone_and_sync
+fi
+
 if [ "$GERRIT_BRANCH" ]; then
 	# If this CI run was in response to a Gerrit commit, post a comment back
 	# to the patch set calling out everything that we've done so far. This

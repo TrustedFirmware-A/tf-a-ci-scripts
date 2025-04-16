@@ -1,5 +1,0 @@
-ARM_ARCH_MINOR=5
-CROSS_COMPILE=aarch64-none-elf-
-PLAT=tc
-TARGET_PLATFORM=2
-TESTS=asymmetric-features

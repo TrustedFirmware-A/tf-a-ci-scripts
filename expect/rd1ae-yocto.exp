@@ -1,0 +1,27 @@
+#
+# Copyright (c) 2024 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for booting Yocto linux on RD-1 AE
+#
+
+source [file join [file dirname [info script]] utils.inc]
+source [file join [file dirname [info script]] handle-arguments.inc]
+
+# Uboot
+expect {
+	"U-Boot" {
+		message "Entered Uboot"
+	}
+}
+
+# Linux kernel boot section
+source [file join [file dirname [info script]] linux.inc]
+
+# Yocto
+expect {
+	"fvp-rd-kronos login:" {
+		message "Kronos Login Prompt Received"
+	}
+}

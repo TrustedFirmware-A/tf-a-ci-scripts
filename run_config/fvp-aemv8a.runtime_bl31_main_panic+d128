@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	# Apply fault injection patches
+	apply_tf_patch "fault_inject/induce_bl31_main_panic.patch"
+}
+
+generate_lava_job() {
+	local model="base-aemv8a"
+
+	uart="0" timeout="60" file="bl31_boot.exp" track_expect
+	uart="1" timeout="60" file="bl31_main_panic.exp" set_primary="1" track_expect
+
+	model="$model" has_d128="1" gen_model_params
+	model="$model" gen_fvp_yaml
+}

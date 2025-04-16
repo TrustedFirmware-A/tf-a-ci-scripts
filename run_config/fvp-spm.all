@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2024, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+post_tf_build() {
+	build_fip BL33="$archive/tftf.bin" BL32="$archive/secure_hafnium.bin"
+}
+
+generate_lava_job_template() {
+	payload_type="tftf" gen_yaml_template
+}
+
+generate_lava_job() {
+	local model="base-aemv8a"
+
+	uart="0" file="tftf.exp" track_expect
+	uart="1" file="hold_uart.exp" track_expect
+
+	# SPM(reference implementation of S-EL2 firmware) has SMMUv3 driver
+	# enabled to help with stage-2 translation and virtualization of
+	# upstream peripheral devices. Hence, enable the SMMUv3 IP in FVP
+	# by configuring the appropriate parameters of the SMMUv3 AEM.
+
+	model="$model" \
+		etm_plugin="1" \
+		has_ete="1" \
+		has_sve="1" \
+		etm_present="1" \
+		amu_present="1" amu_version=2 \
+		has_sme="1" has_sme2="1" \
+		has_sme_fa64="1" \
+		has_mpam="1" \
+		has_ecv="1" \
+		has_fpmr="1" \
+		has_translation_hardening="1" \
+		has_d128="1" \
+		has_brbe="1" \
+		has_trbe="1" \
+		has_fgt2="1" \
+		has_csv2_2="1" \
+		has_s1pie="1" \
+		has_s1poe="1" \
+		has_s2poe="1" \
+		has_gcs="1" \
+		has_pmuv3p7="1" \
+		has_v8_9_debug_extension="1" \
+		memory_tagging_support_level="3" \
+		supports_branch_record_buffer_control_regs="1" \
+		has_branch_target_exception="1" \
+		supports_trace_buffer_control_regs="1" \
+		supports_trace_filter_regs="2" \
+		supports_system_trace_filter_regs="1" \
+		accelerator_support_level="3" \
+		has_mops="1" \
+		arch_version="9.4" \
+		has_smmuv3_params="1" \
+		gicd_are_fixed_one="1" \
+		gicv3_ext_interrupt_range="1" \
+		gicd_ext_ppi_count="64" \
+		gicd_ext_spi_count="1024" \
+		gen_model_params
+
+	model="$model" gen_fvp_yaml
+}

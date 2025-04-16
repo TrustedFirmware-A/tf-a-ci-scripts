@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2020-2024, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -15,6 +15,7 @@ dtb_addr="${dtb_addr:-0x82000000}"
 fip_addr="${fip_addr:-0x08000000}"
 initrd_addr="${initrd_addr:-0x84000000}"
 kernel_addr="${kernel_addr:-0x80080000}"
+boot_script_addr="${boot_script_addr:-0x8fb00000}"
 el3_payload_addr="${el3_payload_addr:-0x80000000}"
 
 # SPM requires following addresses for RESET_TO_BL31 case
@@ -37,25 +38,29 @@ uefi_downloads="${uefi_downloads:-http://files.oss.arm.com/downloads/uefi}"
 uefi_ci_bin_url="${uefi_ci_bin_url:-$uefi_downloads/Artifacts/Linux/github/fvp/static/DEBUG_GCC5/FVP_AARCH64_EFI.fd}"
 
 uboot32_fip_url="$linaro_release/fvp32-latest-busybox-uboot/fip.bin"
-uboot_url="$linaro_release/fvp-latest-busybox-uboot/bl33-uboot.bin"
+if [[ "$test_config" == *handoff* ]]; then
+	uboot_url="${tfa_downloads}/handoff/fvp/u-boot.bin"
+else
+	uboot_url="$linaro_release/fvp-latest-busybox-uboot/bl33-uboot.bin"
+fi
+uboot_script_url="${tfa_downloads}/linux_boot/fvp/boot.scr"
 
 rootfs_url="$linaro_release/lt-vexpress64-openembedded_minimal-armv8-gcc-5.2_20170127-761.img.gz"
+
+optee_version="4.4.0"
+optee_path=$tfa_downloads/optee/${optee_version}
 
 # Default FVP model variables
 default_model_dtb="dtb.bin"
 
 # FVP containers and model paths
-fvp_arm_std_library_11_24="fvp:fvp_arm_std_library_${model_version_11_24}_${model_build_11_24};/opt/model/FVP_ARM_Std_Library/FVP_Base"
-
 fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build};/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
 fvp_base_aemv8r="fvp:fvp_base_aemv8r_${model_version}_${model_build};/opt/model/AEMv8R_base_pkg/models/${model_flavour}"
+fvp_rd_1_ae="fvp:fvp_rd_1_ae_${model_version}_${model_build};/opt/model/FVP_RD_1_AE/models/${model_flavour}"
 
 # CSS model list
-fvp_morello="fvp:fvp_morello_0.11_33;/opt/model/FVP_Morello/models/Linux64_GCC-6.4"
-fvp_rd_v1="fvp:fvp_rd_v1_${model_version}_${model_build};/opt/model/FVP_RD_V1/models/${model_flavour}"
-fvp_tc2="fvp:fvp_tc2_11.23_17;/opt/model/FVP_TC2/models/${model_flavour}"
-fvp_tc3="fvp:fvp_tc3_0.0_8304;/opt/model/FVP_TC3/models/${model_flavour}"
+fvp_tc4="fvp:fvp_tc4_${model_version}_${model_build};/opt/model/FVP_TC4/models/${model_flavour}"
 
 # FVP associate array, run_config are keys and fvp container parameters are the values
 #   Container parameters syntax: <model name>;<model dir>;<model bin>
@@ -64,42 +69,39 @@ fvp_tc3="fvp:fvp_tc3_0.0_8304;/opt/model/FVP_TC3/models/${model_flavour}"
 declare -A fvp_models
 fvp_models=(
 [base-aemv8a-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
-[base-aemv8a-latest-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
 [base-aemva]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
 [base-aemv8a]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
-[cortex-a32x4]="${fvp_arm_std_library};FVP_Base_Cortex-A32x4"
-[cortex-a35x4]="${fvp_arm_std_library};FVP_Base_Cortex-A35x4"
-[cortex-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A53x4"
+[cortex-a32x4]="${fvp_arm_std_library};FVP_Base_Cortex-A32"
+[cortex-a35x4]="${fvp_arm_std_library};FVP_Base_Cortex-A35"
+[cortex-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A53"
 [cortex-a55x4]="${fvp_arm_std_library};FVP_Base_Cortex-A55"
 [cortex-a57x1-a53x1]="${fvp_arm_std_library};FVP_Base_Cortex-A57x1-A53x1"
 [cortex-a57x2-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A57x2-A53x4"
-[cortex-a57x4]="${fvp_arm_std_library};FVP_Base_Cortex-A57x4"
+[cortex-a57x4]="${fvp_arm_std_library};FVP_Base_Cortex-A57"
 [cortex-a57x4-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A57x4-A53x4"
-[cortex-a65aex8]="${fvp_arm_std_library_11_24};FVP_Base_Cortex-A65AE"
-[cortex-a65x4]="${fvp_arm_std_library_11_24};FVP_Base_Cortex-A65"
-[cortex-a72x4]="${fvp_arm_std_library};FVP_Base_Cortex-A72x4"
-[cortex-a72x4-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A72x4-A53x4"
-[cortex-a73x4]="${fvp_arm_std_library};FVP_Base_Cortex-A73x4"
+[cortex-a65aex8]="${fvp_arm_std_library};FVP_Base_Cortex-A65AE"
+[cortex-a65x4]="${fvp_arm_std_library};FVP_Base_Cortex-A65"
+[cortex-a72x4]="${fvp_arm_std_library};FVP_Base_Cortex-A72"
+[cortex-a73x4]="${fvp_arm_std_library};FVP_Base_Cortex-A73"
 [cortex-a73x4-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A73x4-A53x4"
 [cortex-a75x4]="${fvp_arm_std_library};FVP_Base_Cortex-A75"
 [cortex-a76aex4]="${fvp_arm_std_library};FVP_Base_Cortex-A76AE"
-[cortex-a76aex2]="${fvp_arm_std_library};FVP_Base_Cortex-A76AE"
 [cortex-a76x4]="${fvp_arm_std_library};FVP_Base_Cortex-A76"
 [cortex-a77x4]="${fvp_arm_std_library};FVP_Base_Cortex-A77"
 [cortex-a78x4]="${fvp_arm_std_library};FVP_Base_Cortex-A78"
 [cortex-a78aex4]="${fvp_arm_std_library};FVP_Base_Cortex-A78AE"
 [cortex-a78cx4]="${fvp_arm_std_library};FVP_Base_Cortex-A78C"
 [cortex-x2]="${fvp_arm_std_library};FVP_Base_Cortex-X2"
+[cortex-x4]="${fvp_arm_std_library};FVP_Base_Cortex-X4"
+[cortex-x925]="${fvp_arm_std_library};FVP_Base_Cortex-X925"
 [cortex-a710x8]="${fvp_arm_std_library};FVP_Base_Cortex-A710"
-[neoverse_e1]="${fvp_arm_std_library_11_24};FVP_Base_Neoverse-E1"
+[neoverse_e1]="${fvp_arm_std_library};FVP_Base_Neoverse-E1"
 [neoverse_n1]="${fvp_arm_std_library};FVP_Base_Neoverse-N1"
 [neoverse_n2]="${fvp_arm_std_library};FVP_Base_Neoverse-N2"
 [neoverse-v1x4]="${fvp_arm_std_library};FVP_Base_Neoverse-V1"
-[morello]="${fvp_morello};FVP_Morello"
-[css-rdv1]="${fvp_rd_v1};FVP_RD_V1"
-[tc2]="${fvp_tc2};FVP_TC2"
-[tc3]="${fvp_tc3};FVP_TC3"
+[tc4]="${fvp_tc4};FVP_TC4"
 [baser-aemv8r]="${fvp_base_aemv8r};FVP_BaseR_AEMv8R"
+[rd1ae]="${fvp_rd_1_ae};FVP_RD_1_AE"
 )
 
 
@@ -290,13 +292,13 @@ gen_fvp_yaml() {
         [bl31]="bl31.bin"
         [bl32]="bl32.bin"
         [busybox]="busybox.bin"
+        [boot_script]="boot_script.bin"
         [cactus_primary]="cactus-primary.pkg"
         [cactus_secondary]="cactus-secondary.pkg"
         [cactus_tertiary]="cactus-tertiary.pkg"
         [coverage_trace_plugin]="coverage_trace.so"
         [dtb]="dtb.bin"
         [el3_payload]="el3_payload.bin"
-        [ete_trace]="libete-plugin.so"
         [etm_trace]="ETMv4ExamplePlugin.so"
         [fip_gpt]="fip_gpt.bin"
         [fip]="fip.bin"
@@ -317,6 +319,7 @@ gen_fvp_yaml() {
         [romlib]="romlib.bin"
         [rootfs]="rootfs.bin"
         [host_flash_fip]="host_flash_fip.bin"
+        [rse_flash]="rse_flash.bin"
         [rse_rom]="rse_rom.bin"
         [rse_encrypted_cm_provisioning_bundle_0]="rse_encrypted_cm_provisioning_bundle_0.bin"
         [rse_encrypted_dm_provisioning_bundle]="rse_encrypted_dm_provisioning_bundle.bin"
@@ -341,13 +344,13 @@ gen_fvp_yaml() {
         [bl31]="$(gen_bin_url bl31.bin)"
         [bl32]="$(gen_bin_url bl32.bin)"
         [busybox]="$(gen_bin_url busybox.bin.gz)"
+        [boot_script]="$(gen_bin_url boot_script.bin)"
         [cactus_primary]="$(gen_bin_url cactus-primary.pkg)"
         [cactus_secondary]="$(gen_bin_url cactus-secondary.pkg)"
         [cactus_tertiary]="$(gen_bin_url cactus-tertiary.pkg)"
         [coverage_trace_plugin]="${coverage_trace_plugin}"
         [dtb]="$(gen_bin_url ${model_dtb})"
         [el3_payload]="$(gen_bin_url el3_payload.bin)"
-        [ete_trace]="${tfa_downloads}/FastModelsPortfolio_${model_version}/plugins/${model_flavour}/libete-plugin.so"
         [etm_trace]="${tfa_downloads}/FastModelsPortfolio_${model_version}/plugins/${model_flavour}/ETMv4ExamplePlugin.so"
         [fip]="$(gen_bin_url fip.bin)"
         [fip_gpt]="$(gen_bin_url fip_gpt.bin)"
@@ -368,6 +371,7 @@ gen_fvp_yaml() {
         [romlib]="$(gen_bin_url romlib.bin)"
         [rootfs]="$(gen_bin_url rootfs.bin.gz)"
         [host_flash_fip]="$(gen_bin_url host_flash_fip.bin)"
+        [rse_flash]="$(gen_bin_url rse_flash.bin)"
         [rse_rom]="$(gen_bin_url rse_rom.bin)"
         [rse_encrypted_cm_provisioning_bundle_0]="$(gen_bin_url rse_encrypted_cm_provisioning_bundle_0.bin)"
         [rse_encrypted_dm_provisioning_bundle]="$(gen_bin_url rse_encrypted_dm_provisioning_bundle.bin)"
@@ -395,6 +399,7 @@ gen_fvp_yaml() {
         ["[= ]bl2.bin"]="={BL2}"
         ["[= ]bl31.bin"]="={BL31}"
         ["[= ]bl32.bin"]="={BL32}"
+        ["[= ]boot_script.bin"]="={BOOT_SCRIPT}"
         ["[= ]cactus-primary.pkg"]="={CACTUS_PRIMARY}"
         ["[= ]cactus-secondary.pkg"]="={CACTUS_SECONDARY}"
         ["[= ]cactus-tertiary.pkg"]="={CACTUS_TERTIARY}"
@@ -403,7 +408,6 @@ gen_fvp_yaml() {
         ["[= ]busybox.bin"]="={BUSYBOX}"
         ["[= ]dtb.bin"]="={DTB}"
         ["[= ]el3_payload.bin"]="={EL3_PAYLOAD}"
-        ["[= ].*libete-plugin.so"]="={ETE_TRACE}"
         ["[= ].*ETMv4ExamplePlugin.so"]="={ETM_TRACE}"
         ["[= ]fip_gpt.bin"]="={FIP_GPT}"
         ["[= ]fwu_fip.bin"]="={FWU_FIP}"
@@ -424,6 +428,7 @@ gen_fvp_yaml() {
         ["[= ]romlib.bin"]="={ROMLIB}"
         ["[= ]rootfs.bin"]="={ROOTFS}"
         ["[= ]host_flash_fip.bin"]="={HOST_FLASH_FIP}"
+        ["[= ]rse_flash.bin"]="={RSE_FLASH}"
         ["[= ]rse_rom.bin"]="={RSE_ROM}"
         ["[= ]rse_encrypted_cm_provisioning_bundle_0.bin"]="={RSE_ENCRYPTED_CM_PROVISIONING_BUNDLE_0}"
         ["[= ]rse_encrypted_dm_provisioning_bundle.bin"]="={RSE_ENCRYPTED_DM_PROVISIONING_BUNDLE}"
