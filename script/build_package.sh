@@ -518,9 +518,16 @@ get_tf_opt() {
 get_rmm_opt() {
         (
         name="${1:?}"
+        default="$2"
         if config_valid "$rmm_config_file"; then
                 source "$rmm_config_file"
-                echo "${!name}"
+                # If !name is not defined, go with the default
+                # value (if defined)
+                if [ -z "${!name}" ]; then
+                        echo "$default"
+                else
+                        echo "${!name}"
+                fi
         fi
         )
 }
@@ -911,7 +918,6 @@ build_rmm() {
 	config_file="${rmm_build_config:-$rmm_config_file}"
 
 	# Build fiptool and all targets by default
-	build_targets="${rmm_build_targets}"
 	export CROSS_COMPILE="${aarch64_none_elf_prefix}"
 
 	source "$config_file"
@@ -938,21 +944,29 @@ build_rmm() {
 		rm -rf $rmm_build_root
 	fi
 
+	if not_upon "$local_ci"; then
+                connect_debugger=0
+	fi
+
 	# Log build command line. It is left unfolded on purpose to assist
 	# copying to clipboard.
 	cat <<EOF | log_separator >/dev/null
 
 Build command line:
-	cmake -DRMM_CONFIG=${plat}_defcfg $cmake_gen -S $rmm_root -B $rmm_build_root -DCMAKE_BUILD_TYPE=$cmake_build_type
-	cmake --build $rmm_build_root $make_j_opts -v
-EOF
-	if not_upon "$local_ci"; then
-		connect_debugger=0
-	fi
+        cmake -DRMM_CONFIG=${plat}_defcfg "$cmake_gen" -S $rmm_root -B $rmm_build_root -DRMM_TOOLCHAIN=$rmm_toolchain -DRMM_FPU_USE_AT_REL2=$rmm_fpu_use_at_rel2 -DATTEST_EL3_TOKEN_SIGN=$rmm_attest_el3_token_sign -DRMM_V1_1=$rmm_v1_1 ${extra_options}
+        cmake --build $rmm_build_root --config $cmake_build_type $make_j_opts -v ${extra_targets+-- $extra_targets}
 
-	cmake -DRMM_CONFIG=${plat}_defcfg $cmake_gen -S $rmm_root -B $rmm_build_root -DCMAKE_BUILD_TYPE=$cmake_build_type
-	cmake --build $rmm_build_root $make_j_opts -v 3>&1 &>>"$build_log" || fail_build
-	)
+EOF
+        cmake \
+             -DRMM_CONFIG=${plat}_defcfg $cmake_gen \
+             -S $rmm_root -B $rmm_build_root \
+             -DRMM_TOOLCHAIN=$rmm_toolchain \
+             -DRMM_FPU_USE_AT_REL2=$rmm_fpu_use_at_rel2 \
+             -DATTEST_EL3_TOKEN_SIGN=$rmm_attest_el3_token_sign \
+             -DRMM_V1_1=$rmm_v1_1 \
+             ${extra_options}
+        cmake --build $rmm_build_root --config $cmake_build_type $make_j_opts -v ${extra_targets+-- $extra_targets} 3>&1 &>>"$build_log" || fail_build
+        )
 }
 
 # Set metadata for the whole package so that it can be used by both Jenkins and
@@ -1625,6 +1639,12 @@ for mode in $modes; do
                 if [ -z ${plat_utils} ]; then
                         # Source platform-specific utilities.
                         plat="$(get_rmm_opt PLAT)"
+                        extra_options="$(get_rmm_opt EXTRA_OPTIONS)"
+                        extra_targets="$(get_rmm_opt EXTRA_TARGETS "")"
+                        rmm_toolchain="$(get_rmm_opt TOOLCHAIN gnu)"
+                        rmm_fpu_use_at_rel2="$(get_rmm_opt RMM_FPU_USE_AT_REL2 OFF)"
+                        rmm_attest_el3_token_sign="$(get_rmm_opt ATTEST_EL3_TOKEN_SIGN OFF)"
+                        rmm_v1_1="$(get_rmm_opt RMM_V1_1 ON)"
                         plat_utils="$ci_root/${plat}_utils.sh"
                 else
                         # Source platform-specific utilities by
