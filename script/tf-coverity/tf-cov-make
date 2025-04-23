@@ -535,6 +535,8 @@ make PLAT=imx8qx $(common_flags) all
 make PLAT=imx8ulp $(common_flags) all
 
 make PLAT=imx93 $(common_flags) all
+make PLAT=imx94 $(common_flags) all
+make PLAT=imx95 $(common_flags) all
 
 # Platforms for NXP Layerscape
 nxp_sb_flags="TRUSTED_BOARD_BOOT=1 CST_DIR=$(pwd) SPD=opteed"
