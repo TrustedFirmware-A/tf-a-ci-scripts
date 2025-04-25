@@ -221,6 +221,9 @@ clean_build $fvp_common_flags GIC_EXT_INTID=1
 # Using GICv4 features with extended PPI and SPI range
 clean_build $fvp_common_flags GIC_ENABLE_V4_EXTN=1 GIC_EXT_INTID=1
 
+# GICv5
+clean_build $fvp_common_flags FVP_USE_GIC_DRIVER=FVP_GICV5 FVP_DT_PREFIX=fvp-base-gicv3-psci
+
 # Measured Boot
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} MBOOT_EL_HASH_ALG=sha256 MEASURED_BOOT=1 USE_ROMLIB=1
 
