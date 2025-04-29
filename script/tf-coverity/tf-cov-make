@@ -606,6 +606,9 @@ clean_build PLAT=ls1088aqds $(common_flags) all BOOT_MODE=nor $nxp_sb_fuse_flags
 # s32g274ardb2
 clean_build PLAT=s32g274ardb2 $(common_flags) all
 
+# Platforms from Altera
+make PLAT=agilex3 $(common_flags) all
+
 # Platforms from Intel
 make PLAT=stratix10 $(common_flags) all
 make PLAT=agilex $(common_flags) all
