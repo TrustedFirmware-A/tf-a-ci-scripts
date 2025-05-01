@@ -29,6 +29,13 @@ exclude_paths = [
     ("drivers/scmi-msg/power_domain.c", "Not used by any upstream platform"),
 
     ("plat/arm/board/fvp/fconf/fconf_nt_config_getter.c", "Not currently used. Future functionality"),
+
+    # Exclude Neoverse RD ras files.
+    ("plat/arm/board/neoverse_rd/common/ras/nrd_ras_common.c", "Not currently used. Plans to enable for the near future"),
+    ("plat/arm/board/neoverse_rd/common/ras/nrd_ras_cpu.c", "Not currently used. Plans to enable for the near future"),
+    ("plat/arm/board/neoverse_rd/common/ras/nrd_ras_sram.c", "Not currently used. Plans to enable for the near future"),
+    ("plat/arm/board/neoverse_rd/platform/rdn2/rdn2_ras.c", "Not currently used. Plans to enable for the near future"),
+
     ("plat/arm/common/arm_tzc_dmc500.c", "Only used by deprecated SGM platforms"),
     ("plat/marvell/armada/a8k/common/plat_bl1_setup.c", "Not used by any upstream marvell platform"),
     ("plat/mediatek/mt8173/plat_mt_gic.c", "Deprecated code"),
