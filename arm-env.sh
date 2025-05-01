@@ -11,7 +11,8 @@
 
 nfs_volume="/arm"
 jenkins_url="https://jenkins.oss.arm.com"
-tfa_downloads="${DOWNLOAD_SERVER_URL}/tf-a"
+DOWNLOAD_SERVER_URL="${DOWNLOAD_SERVER_URL:+${DOWNLOAD_SERVER_URL}/tf-a}"
+tfa_downloads="${DOWNLOAD_SERVER_URL:-https://downloads.trustedfirmware.org/tf-a}"
 ci_env="armci"
 
 # Source repositories.
