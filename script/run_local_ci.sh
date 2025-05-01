@@ -233,7 +233,7 @@ run_one_test() {
 export -f run_one_test
 
 workspace="${workspace:?}"
-if [ "$retain_paths" -eq 0 ]; then
+if [[ "$retain_paths" -eq 0 ]]; then
 	gcc_space="${gcc_space:?Environment variable 'gcc_space' must be set}"
 fi
 ci_root="$(readlink -f "$(dirname "$0")/..")"
