@@ -29,6 +29,7 @@ exclude_paths = [
     ("drivers/scmi-msg/power_domain.c", "Not used by any upstream platform"),
 
     ("plat/arm/board/fvp/fconf/fconf_nt_config_getter.c", "Not currently used. Future functionality"),
+    ("plat/arm/board/fvp/aarch64/fvp_lsp_ras_sp.c", "Not used by any supported build config"),
 
     # Exclude Neoverse RD ras files.
     ("plat/arm/board/neoverse_rd/common/ras/nrd_ras_common.c", "Not currently used. Plans to enable for the near future"),
