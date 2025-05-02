@@ -99,11 +99,20 @@ run_one_test() {
 	mkdir -p "$workspace"
 
 	log_file="$workspace/artefacts/build.log"
+	# fd 5 is the terminal where run_local_ci.sh is running. *Only* status
+	# of the run is printed as this is shared for all jobs and this may
+	# happen in parallel.
+	# Each job has its own verbose output as well. This will be progress
+	# messages but also any debugging prints. This is the default and it
+	# gets redirected to a file per job for archiving and disambiguation
+	# when running in parallel.
 	if [ "$parallel" -gt 1 ]; then
 		console_file="$workspace/console.log"
-		exec 6>>"$console_file"
+		exec >> $console_file 2>&1
 	else
-		exec 6>&5
+		# when running in serial, no scrambling is possible so print to
+		# stdout
+		exec >&5 2>&1
 	fi
 
 	# Unset make flags for build script
@@ -117,10 +126,8 @@ run_one_test() {
 	case "$action" in
 		"build")
 			echo "building: $config_string" >&5
-			if ! ccpathspec="$cc_path_spec" bash $minus_x "$ci_root/script/build_package.sh" \
-					>&6 2>&1; then
-				{
-				print_failure "$config_string (build)"
+			if ! ccpathspec="$cc_path_spec" bash $minus_x "$ci_root/script/build_package.sh"; then {
+				print_failure "$config_string (build)" >&5
 				if [ "$console_file" ]; then
 					echo "	see $console_file"
 				fi
@@ -138,8 +145,7 @@ run_one_test() {
 					# Enable of code coverage during run
 					if cc_enable="$cc_enable" trace_file_prefix=tr \
 					coverage_trace_plugin=$cc_path_spec/scripts/tools/code_coverage/fastmodel_baremetal/bmcov/model-plugin/CoverageTrace.so \
-					bash $minus_x "$ci_root/script/run_package.sh" \
-						>&6 2>&1; then
+					bash $minus_x "$ci_root/script/run_package.sh"; then
 						if grep -q -e "--BUILD UNSTABLE--" \
 							"$log_file"; then
 							print_unstable "$config_string" >&5
@@ -162,7 +168,7 @@ run_one_test() {
 						exit 0
 					else
 						{
-						print_failure "$config_string (run)"
+						print_failure "$config_string (run)" >&5
 						if [ "$console_file" ]; then
 							echo "	see $console_file"
 						fi
@@ -170,8 +176,7 @@ run_one_test() {
 						exit 1
 					fi
 				else
-					if bash $minus_x "$ci_root/script/run_package.sh" \
-						>&6 2>&1; then
+					if bash $minus_x "$ci_root/script/run_package.sh"; then
 						if grep -q -e "--BUILD UNSTABLE--" \
 							"$log_file"; then
 							print_unstable "$config_string" >&5
@@ -181,7 +186,7 @@ run_one_test() {
 						exit 0
 					else
 						{
-						print_failure "$config_string (run)"
+						print_failure "$config_string (run)" >&5
 						if [ "$console_file" ]; then
 							echo "	see $console_file"
 						fi
@@ -194,8 +199,7 @@ run_one_test() {
 				if echo "$RUN_CONFIG" | grep -q "^arm_fpga" && \
 					not_upon "$skip_runs"; then
 					echo "running: $config_string" >&5
-					if bash $minus_x "$ci_root/script/test_fpga_payload.sh" \
-						>&6 2>&1; then
+					if bash $minus_x "$ci_root/script/test_fpga_payload.sh"; then
 						if grep -q -e "--BUILD UNSTABLE--" \
 							"$log_file"; then
 							print_unstable "$config_string" >&5
@@ -205,7 +209,7 @@ run_one_test() {
 						exit 0
 					else
 						{
-						print_failure "$config_string (run)"
+						print_failure "$config_string (run)" >&5
 						if [ "$console_file" ]; then
 							echo "	see $console_file"
 						fi
@@ -475,4 +479,4 @@ if not_upon "$keep_going"; then
 	keep_going=
 fi
 
-MAKEFLAGS= make -r -j "$parallel" ${keep_going+-k} 5>&1 &>"make.log"
+MAKEFLAGS= make -r -j "$parallel" ${keep_going+-k} 5>&1 |& tee "make.log"
