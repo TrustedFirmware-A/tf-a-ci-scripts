@@ -345,7 +345,7 @@ build_fip() {
 		set +a
 	fi
 
-	make -C "$tf_root" $(cat "$tf_config_file") DEBUG="$DEBUG" BUILD_BASE=$tf_build_root V=1 "$@" \
+	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" BUILD_BASE=$tf_build_root V=1 "$@" \
 		${fip_targets:-fip} &>>"$build_log" || fail_build
 	)
 }
@@ -368,7 +368,7 @@ build_tf_extra() {
 		set +a
 	fi
 
-	make -C "$tf_root" $(cat "$tf_config_file") DEBUG="$DEBUG" V=1 BUILD_BASE=$tf_build_root "$@" \
+	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" V=1 BUILD_BASE=$tf_build_root "$@" \
 		${tf_extra_rules} &>>"$build_log" || fail_build
 	)
 }
