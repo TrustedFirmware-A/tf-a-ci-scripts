@@ -475,8 +475,8 @@ make PLAT=zynqmp $(common_flags) \
 clean_build PLAT=versal $(common_flags)
 clean_build PLAT=versal $(common_flags) VERSAL_PLATFORM=versal_virt
 
-# Build Xilinx Versal NET platform
-clean_build PLAT=versal_net $(common_flags)
+# Build Xilinx Versal NET platform with SDEI support
+clean_build PLAT=versal_net $(common_flags) SDEI_SUPPORT=1
 
 # Build Xilinx Versal NET without Platform Management support
 clean_build PLAT=versal_net $(common_flags) TFA_NO_PM=1
