@@ -114,8 +114,8 @@ clean_build $fvp_common_flags FVP_USE_SP804_TIMER=1
 # Using the CCN driver and multi cluster topology
 clean_build $fvp_common_flags FVP_CLUSTER_COUNT=4
 
-# PMF
-clean_build $fvp_common_flags ENABLE_PMF=1
+# PMF and ACS SMC handler support
+clean_build $fvp_common_flags ENABLE_PMF=1 ENABLE_ACS_SMC=1
 
 # stack protector
 clean_build $fvp_common_flags ENABLE_STACK_PROTECTOR=strong
