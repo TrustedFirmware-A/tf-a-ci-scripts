@@ -475,7 +475,11 @@ setup_llvm_toolchain() {
 	archive="${2:-"$workspace/llvm.tar.xz"}"
 	target_dir="${3:-$llvm_dir}"
 
-	if is_arm_jenkins_env || upon "$local_ci"; then
+	if upon "$retain_paths"; then
+		return
+	fi
+
+	if upon "$local_ci"; then
 		url="$link" saveas="$archive" fetch_file
 		mkdir -p $target_dir
 		extract_tarball $archive $target_dir --strip-components=1 -k
