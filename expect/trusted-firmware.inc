@@ -29,7 +29,7 @@ if {![info exists ::env(skip_early_boot_msgs)]} {
 	# Capture the event log from TF-A if we are running with measured boot
 	# enabled.
 	if {[info exists ::env(measured_boot)]} {
-		capture_log tfa_event_log "BL1: Booting BL31"
+		capture_log tfa_event_log "BL1: Booting BL31|Finished using crypto library"
 	} else {
 		expect_string "BL1: Booting BL31"
 	}
