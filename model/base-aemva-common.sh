@@ -582,6 +582,13 @@ if [ "$has_mops" = "1" ]; then
 EOF
 fi
 
+if [ "$has_twed" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_delayed_wfe_trap=2
+-C cluster1.has_delayed_wfe_trap=2
+EOF
+fi
+
 #------------ Cluster1 configuration (if exists) --------------
 if [ "$is_dual_cluster" = "1" ]; then
 	cat <<EOF >>"$model_param_file"

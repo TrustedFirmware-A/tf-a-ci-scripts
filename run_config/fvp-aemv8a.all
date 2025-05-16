@@ -33,6 +33,7 @@ generate_lava_job() {
 		has_s2poe="1" \
 		has_gcs="1" \
 		has_pmuv3p7="1" \
+		has_twed="1" \
 		has_v8_9_debug_extension="1" \
 		memory_tagging_support_level="3" \
 		supports_branch_record_buffer_control_regs="1" \
