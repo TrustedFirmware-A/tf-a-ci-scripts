@@ -25,16 +25,10 @@ source "${ci_root}/lava_utils.sh"
 if [ -n "$host_env" ]; then
   source "$host_env"
 else
-  # Are we running on Arm infrastructure?
-  if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
-    source "$ci_root/arm-env.sh"
-  elif echo "$JENKINS_PUBLIC_URL" | grep -q "jenkins.openci"; then
-	# This is Arm infrastructure while migration from ci.trustedfirmware.org
+  if echo "$JENKINS_PUBLIC_URL" | grep -q "staging"; then
+	source "$ci_root/openci-staging-env.sh"
+  else
     source "$ci_root/openci-env.sh"
-  elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.trustedfirmware.org"; then
-    source "$ci_root/openci-env.sh"
-  elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.staging.trustedfirmware.org"; then
-    source "$ci_root/openci-staging-env.sh"
   fi
 fi
 
