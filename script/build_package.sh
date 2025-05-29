@@ -612,7 +612,11 @@ EOF
 		$build_targets 3>&1 &>>"$build_log" || fail_build
 
         if [ "$build_targets" != "doc" ]; then
-                (poetry run memory -sr "$tf_build_root" 2>&1 || true) | tee -a "$build_log"
+                (poetry run memory --root "$tf_build_root" symbols 2>&1 || true) | tee -a "${build_log}"
+
+                for map in $(find "${tf_build_root}" -name '*.map'); do
+                    (poetry run memory --root "${tf_build_root}" summary "${map}" 2>&1 || true) | tee -a "${build_log}"
+                done
         fi
 	)
 }
