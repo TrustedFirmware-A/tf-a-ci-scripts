@@ -50,7 +50,7 @@ ERROR_COUNT=0
 
 # Ensure all the files contain a copyright
 
-"$CI_ROOT"/script/static-checks/static-checks-check-copyright.sh .
+"$CI_ROOT"/script/static-checks/static-checks-check-copyright.sh . --rusted
 
 if [ "$?" != 0 ]; then
   echo "Copyright test: FAILURE"
