@@ -66,10 +66,13 @@ LICENSE_ID = '.*(BSD-3-Clause|BSD-2-Clause-FreeBSD|MIT|Apache-2.0)([ ,.\);].*)?'
 
 # File must contain both lines to pass the check
 COPYRIGHT_LINE = LINE_START + 'Copyright' + '.*' + TIME_PERIOD + '.*' + EOL
+RUST_COPYRIGHT_LINE = LINE_START + 'Copyright The Rusted Firmware-A Contributors.' + EOL
+
 LICENSE_ID_LINE = LINE_START + 'SPDX-License-Identifier:' + LICENSE_ID + EOL
 
 # Compiled license patterns
 COPYRIGHT_PATTERN = re.compile(COPYRIGHT_LINE, re.MULTILINE)
+RUST_COPYRIGHT_PATTERN = re.compile(RUST_COPYRIGHT_LINE, re.MULTILINE)
 LICENSE_ID_PATTERN = re.compile(LICENSE_ID_LINE, re.MULTILINE)
 
 CURRENT_YEAR = str(datetime.datetime.now().year)
@@ -77,7 +80,7 @@ CURRENT_YEAR = str(datetime.datetime.now().year)
 COPYRIGHT_OK = 0
 COPYRIGHT_ERROR = 1
 
-def check_copyright(path, args, encoding='utf-8'):
+def check_copyright(path, args, rusted=False, encoding='utf-8'):
     '''Checks a file for a correct copyright header.'''
 
     result = COPYRIGHT_OK
@@ -85,11 +88,15 @@ def check_copyright(path, args, encoding='utf-8'):
     with open(path, encoding=encoding) as file_:
         file_content = file_.read()
 
-    copyright_line = COPYRIGHT_PATTERN.search(file_content)
+    if rusted:
+        copyright_line = RUST_COPYRIGHT_PATTERN.search(file_content)
+    else:
+        copyright_line = COPYRIGHT_PATTERN.search(file_content)
+
     if not copyright_line:
         print("ERROR: Missing copyright in " + file_.name)
         result = COPYRIGHT_ERROR
-    elif CURRENT_YEAR not in copyright_line.group():
+    elif not rusted and CURRENT_YEAR not in copyright_line.group():
         print("WARNING: Copyright is out of date in " + file_.name + ": '" +
               copyright_line.group() + "'")
 
@@ -103,7 +110,10 @@ def main(args):
     print("Checking the copyrights in the code...")
 
     if args.verbose:
-        print ("Copyright regexp: " + COPYRIGHT_LINE)
+        if args.rusted:
+            print ("Copyright regexp: " + RUST_COPYRIGHT_LINE)
+        else:
+            print ("Copyright regexp: " + COPYRIGHT_LINE)
         print ("License regexp: " + LICENSE_ID_LINE)
 
     if args.patch:
@@ -140,7 +150,7 @@ def main(args):
         if args.verbose:
             print("Checking file " + f)
 
-        rc = check_copyright(f, args)
+        rc = check_copyright(f, args, rusted=args.rusted)
 
         if rc == COPYRIGHT_OK:
             count_ok += 1
@@ -170,6 +180,10 @@ has the correct format.
     parser.add_argument("--tree", "-t",
                         help="Path to the source tree to check (default: %(default)s)",
                         default=os.curdir)
+
+    parser.add_argument("--rusted", "-r",
+                        help="Check for Rusted Firmware CopyRight style (default: %(default)s)",
+                        action='store_true', default=False)
 
     parser.add_argument("--verbose", "-v",
                         help="Increase verbosity to the source tree to check (default: %(default)s)",
