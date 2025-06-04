@@ -80,7 +80,7 @@ CURRENT_YEAR = str(datetime.datetime.now().year)
 COPYRIGHT_OK = 0
 COPYRIGHT_ERROR = 1
 
-def check_copyright(path, args, rusted=False, encoding='utf-8'):
+def check_copyright(path, args, copyright_pattern, check_year, encoding='utf-8'):
     '''Checks a file for a correct copyright header.'''
 
     result = COPYRIGHT_OK
@@ -88,15 +88,12 @@ def check_copyright(path, args, rusted=False, encoding='utf-8'):
     with open(path, encoding=encoding) as file_:
         file_content = file_.read()
 
-    if rusted:
-        copyright_line = RUST_COPYRIGHT_PATTERN.search(file_content)
-    else:
-        copyright_line = COPYRIGHT_PATTERN.search(file_content)
+    copyright_line = copyright_pattern.search(file_content)
 
     if not copyright_line:
         print("ERROR: Missing copyright in " + file_.name)
         result = COPYRIGHT_ERROR
-    elif not rusted and CURRENT_YEAR not in copyright_line.group():
+    elif check_year and CURRENT_YEAR not in copyright_line.group():
         print("WARNING: Copyright is out of date in " + file_.name + ": '" +
               copyright_line.group() + "'")
 
@@ -150,7 +147,9 @@ def main(args):
         if args.verbose:
             print("Checking file " + f)
 
-        rc = check_copyright(f, args, rusted=args.rusted)
+        copyright_pattern = RUST_COPYRIGHT_PATTERN if args.rusted else COPYRIGHT_PATTERN
+        check_year = not args.rusted
+        rc = check_copyright(f, args, copyright_pattern, check_year)
 
         if rc == COPYRIGHT_OK:
             count_ok += 1
