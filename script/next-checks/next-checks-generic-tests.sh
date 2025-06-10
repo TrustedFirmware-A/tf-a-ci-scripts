@@ -46,15 +46,16 @@ ERROR_COUNT=0
 
 if [ "$REPO_NAME" == "trusted-firmware-a" ]; then
   cd rust
-  declare -a all_features=($(make PLAT=${platform} --silent list_features))
+  # These tests are platform independent. However, we are specifying a platform:
+  #     The fvp platform is expected to cover all platform independent features that can be tested
+  #     with cargo test.
+  IFS=" " read -a all_features <<< "$(make PLAT=fvp --silent list_features)"
 else
-  declare -a all_features=($TEST_FEATURES)
+  IFS=" " read -a all_features <<< "$($TEST_FEATURES)"
 fi
 
-# append empty features by default
-all_features+=("")
-
 for features in "${all_features[@]}"; do
+    features=$(echo $features | sed "s/'//g")
     echo "cargo test features: '$features'" >> "$LOG_TEST_FILENAME" 2>&1
     cargo test --features=$features >> "$LOG_TEST_FILENAME" 2>&1
 
