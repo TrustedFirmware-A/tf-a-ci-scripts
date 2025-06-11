@@ -657,8 +657,8 @@ EOF
 	# Build RF-A and TF-A. Since build output is being directed to the build
 	# log, have descriptor 3 point to the current terminal for build
 	# wrappers to vent.
-	make $make_j_opts $(cat "$config_file") \
-		DEBUG="$DEBUG" \
+	eval make $make_j_opts $(cat "$config_file") \
+	    DEBUG="$DEBUG" \
 		$build_targets 3>&1 &>>"$build_log" || fail_build
 	)
 }
