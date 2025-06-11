@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2024, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -12,6 +12,8 @@ post_tf_build() {
 pre_tftf_build() {
 	source $tftf_config_file
 	python3 $ci_root/script/gen_smc_fuzz_setup.py -dts $tftf_root/$SMC_FUZZ_DTS -hdf $tftf_root/smc_fuzz/include/fuzz_names.h
+	cd $tftf_root/smc_fuzz
+	python3 script/generate_smc.py -s ./$SMC_FUZZ_DEFFILE
 }
 
 generate_lava_job_template() {
