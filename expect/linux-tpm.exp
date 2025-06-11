@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -9,15 +9,13 @@
 source [file join [file dirname [info script]] utils.inc]
 source [file join [file dirname [info script]] handle-arguments.inc]
 
-# File to store the event log from the ftpm service.
-set TFA_DIGEST [get_param tfa_digest "tfa_event_log"]
-set FTPM_DIGEST [get_param ftpm_digest "ftpm_event_log"]
+set TFA_EVENT_LOG [get_param tfa_log "tfa_event_log"]
 
 # regexp for non-zero PCR0
 set non_zero_pcr "(?!(\\s00){16})((\\s(\[0-9a-f\]){2}){16}\\s)"
 set zero_pcr "(\\s00){16}\\s+(00\\s){16}"
 
-capture_log $TFA_DIGEST "Booting BL31|Finished using crypto library"
+capture_log $TFA_EVENT_LOG "Booting BL31|Finished using crypto library"
 
 expect {
         "login" {
@@ -70,4 +68,6 @@ for {set i 2} {$i < 11} {incr i} {
 
 expect_string "#" "finished reading PCRs"
 
-compare_log $TFA_DIGEST $FTPM_DIGEST
+if {[info exists ::env(verify_hashes)]} {
+	source [file join [file dirname [info script]] compare_hashes.inc]
+}

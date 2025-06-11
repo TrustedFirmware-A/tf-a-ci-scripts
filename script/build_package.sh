@@ -314,6 +314,13 @@ build_fip() {
 		set +a
 	fi
 
+    if [ "$(get_tf_opt MEASURED_BOOT)" = 1 ]; then
+		# These are needed for accurate hash verification
+		local build_args_path="${workspace}/fip_build_args"
+		echo $@ > $build_args_path
+		archive_file $build_args_path
+	fi
+
 	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" BUILD_BASE=$tf_build_root V=1 "$@" \
 		${fip_targets:-fip} &>>"$build_log" || fail_build
 	)
@@ -529,6 +536,16 @@ build_tf() {
 	if [ "$(get_tf_opt DICE_PROTECTION_ENVIRONMENT)" = 1 ] &&
 	   not_upon "${QCBOR_DIR}"; then
 		emit_env "QCBOR_DIR" "$WORKSPACE/qcbor"
+	fi
+
+    # Hash verification only occurs if there is a sufficient amount of
+    # information in the event log, which is as long as EVENT_LOG_LEVEL
+    # is set to at least 20 or if it is a debug build
+    if [[ ("$(get_tf_opt MEASURED_BOOT)" -eq 1) &&
+        (($bin_mode == "debug") || ("$(get_tf_opt EVENT_LOG_LEVEL)" -ge 20)) ]]; then
+		# This variable is later exported to the expect scripts so
+		# the hashes in the TF-A event log can be verified
+		set_run_env "verify_hashes" "1"
 	fi
 	if [ -f "$env_file" ]; then
 		set -a

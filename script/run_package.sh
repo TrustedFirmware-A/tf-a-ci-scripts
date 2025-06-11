@@ -144,6 +144,11 @@ if [ -f "run/env" ]; then
 	source "run/env"
 fi
 
+if [ -v verify_hashes ]; then
+	export verify_hashes=1
+	export artefacts_dir=$run_cwd
+fi
+
 # Source model environment for run
 if [ -f "run/model_env" ]; then
 	source "run/model_env"

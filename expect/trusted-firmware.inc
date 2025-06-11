@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2020, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -7,6 +7,8 @@
 #
 # This script is not standalone and should be sourced by a top expect script.
 #
+
+set TFA_EVENT_LOG [get_param tfa_log "tfa_event_log"]
 
 # Initial boot message won't be present if we're starting at BL31. Skip waiting
 # for them by inspecting the environment variable 'skip_early_boot_msgs'.
@@ -28,11 +30,14 @@ if {![info exists ::env(skip_early_boot_msgs)]} {
 
 	# Capture the event log from TF-A if we are running with measured boot
 	# enabled.
-	if {[info exists ::env(measured_boot)]} {
-		capture_log tfa_event_log "BL1: Booting BL31|Finished using crypto library"
+	if {[info exists ::env(measured_boot)] || [info exists ::env(verify_hashes)]} {
+		capture_log $TFA_EVENT_LOG "BL1: Booting BL31|Finished using crypto library"
 	} else {
 		expect_string "BL1: Booting BL31"
 	}
 } else {
 	message "Skipping early boot messages from BL1 and BL2"
+	if {[info exists ::env(verify_hashes)]} {
+		capture_log $TFA_EVENT_LOG "BL1: Booting BL31|BL2: Booting BL31|Finished using crypto library"
+	}
 }

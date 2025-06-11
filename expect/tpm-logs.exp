@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -8,10 +8,5 @@
 
 source [file join [file dirname [info script]] utils.inc]
 source [file join [file dirname [info script]] handle-arguments.inc]
-
-# File to store the event log from the ftpm service.
-set FTPM_DIGEST [get_param ftpm_digest "ftpm_event_log"]
-
-capture_log $FTPM_DIGEST "returned value"
 
 source [file join [file dirname [info script]] uart-hold.inc]
