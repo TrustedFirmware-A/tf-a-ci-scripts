@@ -52,7 +52,10 @@ if [ "$REPO_NAME" == "trusted-firmware-a" ]; then
   #     with cargo test.
   IFS=" " read -a all_features <<< "$(make PLAT=fvp --silent list_features)"
 else
-  IFS=" " read -a all_features <<< "$($TEST_FEATURES)"
+  IFS=" " read -a all_features <<< ${TEST_FEATURES}
+  if [ ${#all_features[@]} = 0 ]; then
+    all_features+=("")
+  fi
 fi
 
 for features in "${all_features[@]}"; do
@@ -72,9 +75,24 @@ done
 
 echo
 
+# Run cargo doc
+
+echo "cargo doc --no-deps" >> "$LOG_TEST_FILENAME" 2>&1
+
+RUSTDOCFLAGS="-D warnings" cargo doc --no-deps >> "$LOG_TEST_FILENAME" 2>&1
+
+if [ "$?" != 0 ]; then
+  echo "cargo doc: FAILURE"
+  ((ERROR_COUNT++))
+else
+  echo "cargo doc: PASS"
+fi
+
+echo "-------------------------------------" >> "$LOG_TEST_FILENAME" 2>&1
+
 cd -
 if [ "$ERROR_COUNT" != 0 ]; then
-  echo "Some cargo tests checks have failed."
+  echo "Some cargo checks have failed."
   exit 1
 fi
 
