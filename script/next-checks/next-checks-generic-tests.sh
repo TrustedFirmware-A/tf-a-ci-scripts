@@ -77,18 +77,20 @@ echo
 
 # Run cargo doc
 
-echo "cargo doc --no-deps" >> "$LOG_TEST_FILENAME" 2>&1
+if [ "$REPO_NAME" != "trusted-firmware-a" ]; then
+  echo "cargo doc --no-deps" >> "$LOG_TEST_FILENAME" 2>&1
 
-RUSTDOCFLAGS="-D warnings" cargo doc --no-deps >> "$LOG_TEST_FILENAME" 2>&1
+  RUSTDOCFLAGS="-D warnings" cargo doc --no-deps >> "$LOG_TEST_FILENAME" 2>&1
 
-if [ "$?" != 0 ]; then
-  echo "cargo doc: FAILURE"
-  ((ERROR_COUNT++))
-else
-  echo "cargo doc: PASS"
+  if [ "$?" != 0 ]; then
+    echo "cargo doc: FAILURE"
+    ((ERROR_COUNT++))
+  else
+    echo "cargo doc: PASS"
+  fi
+
+  echo "-------------------------------------" >> "$LOG_TEST_FILENAME" 2>&1
 fi
-
-echo "-------------------------------------" >> "$LOG_TEST_FILENAME" 2>&1
 
 cd -
 if [ "$ERROR_COUNT" != 0 ]; then

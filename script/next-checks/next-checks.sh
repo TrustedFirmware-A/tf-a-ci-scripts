@@ -88,6 +88,18 @@ else
 fi
 echo
 
+# Check documentation with cargo doc
+
+"$CI_ROOT"/script/next-checks/next-checks-cargo-doc.sh .
+
+if [ "$?" != 0 ]; then
+  echo "cargo doc test: FAILURE"
+  ((ERROR_COUNT++))
+else
+  echo "cargo doc test: PASS"
+fi
+echo
+
 # Check lints with clippy
 
 "$CI_ROOT"/script/next-checks/next-checks-clippy.sh .
