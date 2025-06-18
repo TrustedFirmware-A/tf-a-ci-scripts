@@ -81,9 +81,13 @@ def print_coverage(coverity_dir, tf_dir, exclude_paths=[], log_filename=None):
     with open(coverity_build_log, encoding="utf-8") as build_log:
         for line in build_log:
             line = re.sub('//','/', line)
-            results = re.search("(?:COMPILING|EXECUTING):.*-c  *(.*\.c).*-o.*\.o", line)
+            results = re.search(r"\[STATUS\] Compiling (.+\.c)", line)
             if results is not None:
                 filename = results.group(1)
+
+                if os.path.isabs(filename):
+                    filename = os.path.relpath(filename, tf_dir)
+
                 if filename not in analyzed:
                     analyzed.append(filename)
 
