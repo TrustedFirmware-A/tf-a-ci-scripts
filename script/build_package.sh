@@ -654,7 +654,7 @@ build_rfa() {
 
 	source "$config_file"
 
-	cd "$tf_root/rust"
+	cd "$tf_root"
 
 	# Always distclean when running on Jenkins. Skip distclean when running
 	# locally and explicitly requested.
@@ -1529,7 +1529,7 @@ for mode in $modes; do
 			fi
 			show_head "$TFA"
 
-			rfa_build_root="$tf_root/rust/target"
+			rfa_build_root="$tf_root/target"
 			echo "Building Rusted Firmware ($mode) ..." |& log_separator
 
 			if not_upon "$local_ci"; then

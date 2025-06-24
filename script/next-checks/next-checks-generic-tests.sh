@@ -45,7 +45,6 @@ ERROR_COUNT=0
 # Run cargo test
 
 if [ "$REPO_NAME" == "trusted-firmware-a" ]; then
-  cd rust
   # These tests are platform independent. However, we are specifying a platform:
   #     The fvp platform is expected to cover all platform independent features that can be tested
   #     with cargo test.
