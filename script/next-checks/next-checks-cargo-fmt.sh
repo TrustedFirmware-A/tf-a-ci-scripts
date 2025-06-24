@@ -19,7 +19,7 @@ LOG_FILE=`mktemp -t common.XXXX`
 
 EXIT_VALUE=0
 
-cargo fmt --manifest-path=${TF_ROOT}/rust/Cargo.toml --all -- --check  &> "$LOG_FILE"
+cargo fmt --all -- --check  &> "$LOG_FILE"
 
 if [ "$?" -ne 0 ]; then
     EXIT_VALUE=1

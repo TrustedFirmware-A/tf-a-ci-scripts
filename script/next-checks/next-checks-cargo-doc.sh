@@ -19,7 +19,7 @@ echo "****** $TEST_CASE ******" >> "$LOG_TEST_FILENAME"
 echo >> "$LOG_TEST_FILENAME"
 echo "Platforms:" >> "$LOG_TEST_FILENAME"
 
-available_platforms=$(make --silent -C ${TF_ROOT}/rust list_platforms)
+available_platforms=$(make --silent -C ${TF_ROOT} list_platforms)
 
 # Run cargo doc for all platforms
 for plat in $available_platforms
@@ -27,7 +27,7 @@ do
     echo >> $LOG_FILE
     echo "############### ${TEST_CASE} - platform: ${plat}" >> "$LOG_FILE"
     echo >> $LOG_FILE
-    make -C ${TF_ROOT}/rust PLAT=${plat} cargo-doc >> "$LOG_FILE" 2>&1
+    make -C ${TF_ROOT} PLAT=${plat} cargo-doc >> "$LOG_FILE" 2>&1
 
     if [ "$?" -ne 0 ]; then
         echo -e "  ${plat}\t: FAIL" >> "$LOG_TEST_FILENAME"
