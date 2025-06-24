@@ -49,6 +49,6 @@ index 6acd1b60f..11d23e0f1 100644
 +	 * sure SCR_EL3.IRQ is cleared so that IRQ is now handled in lower EL
 +	 */
 +	modify_scr_el3_irq();
- 	return MAKE_SMCCC_VERSION(SMCCC_MAJOR_VERSION, SMCCC_MINOR_VERSION);
+ 	return (int32_t)MAKE_SMCCC_VERSION(SMCCC_MAJOR_VERSION, SMCCC_MINOR_VERSION);
  }
  

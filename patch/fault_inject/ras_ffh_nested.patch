@@ -51,6 +51,6 @@ index 6acd1b60f..76a5b6ded 100644
 +	 * again while exiting EL3 in reflection path.
 +	 */
 +	target_ea_to_lower_el();
- 	return MAKE_SMCCC_VERSION(SMCCC_MAJOR_VERSION, SMCCC_MINOR_VERSION);
+ 	return (int32_t)MAKE_SMCCC_VERSION(SMCCC_MAJOR_VERSION, SMCCC_MINOR_VERSION);
  }
  
