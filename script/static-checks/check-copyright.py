@@ -181,20 +181,9 @@ Patch mode.
 Instead of checking all files in the source tree, the script will consider
 only files that are modified by the latest patch(es).""",
                         action="store_true")
-
-    (rc, stdout, stderr) = utils.shell_command(['git', 'merge-base', 'HEAD', 'refs/remotes/origin/master'])
-    if rc:
-        print("Git merge-base command failed. Cannot determine base commit.")
-        sys.exit(rc)
-    merge_bases = stdout.splitlines()
-
-    # This should not happen, but it's better to be safe.
-    if len(merge_bases) > 1:
-        print("WARNING: Multiple merge bases found. Using the first one as base commit.")
-
     parser.add_argument("--from-ref",
                         help="Base commit in patch mode (default: %(default)s)",
-                        default=merge_bases[0])
+                        default="remotes/origin/integration")
     parser.add_argument("--to-ref",
                         help="Final commit in patch mode (default: %(default)s)",
                         default="HEAD")
