@@ -4,11 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-function get_base_branch() {
-    # Remove prefix
-    echo origin/${GERRIT_BRANCH#refs/heads/}
-}
-
 function get_merge_base() {
-    git merge-base HEAD $(get_base_branch) | head -1
+    git fetch origin ${GERRIT_BRANCH#refs/heads/}
+    git merge-base HEAD FETCH_HEAD | head -1
 }
