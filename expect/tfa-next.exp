@@ -1,10 +1,12 @@
 #
-# Copyright (c) 2024 Arm Limited. All rights reserved.
+# Copyright (c) 2024-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 # Expect script for Rusted Firmware
 #
+
+source [file join [file dirname [info script]] utils.inc]
 
 source [file join [file dirname [info script]] handle-arguments.inc]
 
@@ -12,5 +14,26 @@ source [file join [file dirname [info script]] trusted-firmware.inc]
 
 expect_string "Rust BL31 starting"
 expect_string "Booting Secure World"
+expect_string "Booting Normal World"
 
-exit_uart 0
+set failed 1
+
+expect {
+	-re {([0-9]+)/([0-9]+) tests passed in normal world} {
+		set passed_normal $expect_out(1,string)
+		set total_normal $expect_out(2,string)
+		set failed [expr { $passed_normal != $total_normal }]
+	}
+}
+
+expect {
+	-re {([0-9]+)/([0-9]+) tests passed in secure world} {
+		if { $failed == 0 } {
+			set passed_secure $expect_out(1,string)
+			set total_secure $expect_out(2,string)
+			set failed [expr { $passed_secure != $total_secure }]
+		}
+	}
+}
+
+exit_uart [expr { $failed ? -1 : 0 }]

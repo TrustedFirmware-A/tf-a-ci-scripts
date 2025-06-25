@@ -1,0 +1,17 @@
+#
+# Copyright (c) 2025 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Rusted Firmware
+#
+
+source [file join [file dirname [info script]] handle-arguments.inc]
+
+source [file join [file dirname [info script]] trusted-firmware.inc]
+
+expect_string "Rust BL31 starting"
+expect_string "Booting Secure World"
+# TODO: expect "Booting Realm World" when we add some realm world payload to run
+
+exit_uart 0
