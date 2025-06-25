@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2024 Arm Limited. All rights reserved.
+# Copyright (c) 2024-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -8,6 +8,6 @@
 
 source $ci_root/expect-lava/trusted-firmware.inc
 
-expect_string+=('i;Rust BL31 starting')
-
-expect_string+=('i;Booting Secure World')
+# if the "N/M tests passed in (normal|secure) world" pattern is matched,
+# we succeed if N = M and fail if N != M
+expect_string+=('m;Rust BL31 starting;([0-9]+)/\1 tests passed in secure world;Booting Secure World@Booting Normal World@([0-9]+)/\1 tests passed in normal world')

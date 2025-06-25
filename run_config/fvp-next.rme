@@ -15,7 +15,7 @@ generate_lava_job() {
 	# scripts to work properly and not hang up waiting for BL1->BL31.
 	uart="0" set_expect_variable "skip_early_boot_msgs" "1"
 
-	uart="0" file="tfa-next.exp" track_expect
+	uart="0" file="tfa-next-rme.exp" track_expect
 	# Track the rest of the UARTs to aid in debugging.
 	uart="1" file="hold_uart.exp" track_expect
 	uart="2" file="hold_uart.exp" track_expect
