@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2024, Arm Limited. All rights reserved.
+# Copyright (c) 2024-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -39,6 +39,7 @@ generate_lava_job() {
 		has_d128="1" \
 		has_brbe="1" \
 		has_trbe="1" \
+		has_fgwte3="1" \
 		has_fgt2="1" \
 		has_csv2_2="1" \
 		has_s1pie="1" \
