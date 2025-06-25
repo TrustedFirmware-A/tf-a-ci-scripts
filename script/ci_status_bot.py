@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 import requests
 
-openci_url = "http://ci.trustedfirmware.org/"
+openci_url = "https://ci.trustedfirmware.org/"
 
 
 class Job:
@@ -35,7 +35,7 @@ class Job:
             self.jobs = []
 
     def __str__(self) -> str:
-        return f"{'✅' if self.passed else '❌'} *{self.name}*"
+        return f"{'✅' if self.passed else '❌'} *{self.name}* [#{self.number}]({self.url})"
 
     def __iter__(self):
         yield from self.jobs
@@ -53,10 +53,6 @@ class Job:
 
 
 class SubJob(Job):
-
-    def __str__(self) -> str:
-        return f"• *{self.name}* [#{self.number}]({self.url}) {'✅' if self.passed else '❌'}"
-
     @classmethod
     def get_jobs_from_console_log(cls, log):
         sub_jobs = []
@@ -82,11 +78,14 @@ def main():
     print("🟢" if all(j.passed for j in jobs) else "🔴", "Daily Status")
 
     for j in jobs:
-        print("\n", j, f"[#{j.number}]({j.url})", "\n")
-        if j.name == "tf-a-daily" or not j.passed:
+        print("*", j)
+        if j.name == "tf-a-daily":
             for subjob in j:
-                print(subjob)
-                subjob.print_failed_subjobs()
+                print("    *", subjob)
+        elif not j.passed:
+            for subjob in j:
+                if not subjob.passed:
+                    print("    *", subjob)
 
 
 if __name__ == "__main__":
