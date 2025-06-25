@@ -69,7 +69,7 @@ REPORT = "report.html"
 REPORT_JSON = "report.json"
 
 # Maximum depth for the tree of results, excluding status
-MAX_RESULTS_DEPTH = 6
+MAX_RESULTS_DEPTH = 8
 
 # We'd have a minimum of 3: group, a build config, a run config.
 MIN_RESULTS_DEPTH = 3
@@ -83,7 +83,9 @@ LEVEL_HEADERS = [
         "TFTF Build Config",
         "SPM Build Config",
         "RMM Build Config",
+        "TFUT Build Config",
         "Run Config",
+        "TFUT Run Config",
         "Status"
 ]
 
@@ -433,13 +435,15 @@ def main(fd):
     results = ResultNode(0)
     for i, f in enumerate(test_files):
         # Test description is generated in the following format:
-        #   seq%group%build_config:run_config.test
+        #   seq%group%build_config:tf_run_config,tfut_run_config.test
         _, group, desc = f.split("%")
         test_config = desc[:-len(TEST_SUFFIX)]
         build_config, run_config = test_config.split(":")
         spare_commas = "," * (MAX_RESULTS_DEPTH - MIN_RESULTS_DEPTH)
-        tf_config, tftf_config, spm_config, rmm_config, *_ = (build_config +
+        tf_config, tftf_config, spm_config, rmm_config, tfut_config, *_ = (build_config +
                 spare_commas).split(",")
+        run_configs = (run_config + ",").split(",")
+        tf_run_config, tfut_run = (run_configs + [""])[:2]
 
         build_number = child_build_numbers[i]
         if not opts.from_json:
@@ -455,9 +459,11 @@ def main(fd):
         tftf_node = tf_node.set_child(tftf_config)
         spm_node = tftf_node.set_child(spm_config)
         rmm_node = spm_node.set_child(rmm_config)
-        run_node = rmm_node.set_child(run_config)
-        run_node.set_result(test_result, build_number)
-        run_node.set_desc(os.path.join(workspace, f))
+        tfut_node = rmm_node.set_child(tfut_config)
+        run_node = tfut_node.set_child(tf_run_config)
+        tfut_run_node = run_node.set_child(tfut_run)
+        tfut_run_node.set_result(test_result, build_number)
+        tfut_run_node.set_desc(os.path.join(workspace, f))
 
     # Emit page header element
     print(PAGE_HEADER, file=fd)
