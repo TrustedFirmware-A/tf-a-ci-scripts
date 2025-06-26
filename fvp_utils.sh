@@ -460,6 +460,7 @@ docker_registry_append() {
 # generate GPT image and archive it
 gen_gpt_bin() {
     fip_bin="$1"
+    bl2_fip_bin="$(dirname "$fip_bin")/bl2_$(basename "$fip_bin")"
     gpt_image="fip_gpt.bin"
     # the FIP partition type is not standardized, so generate one
     fip_type_uuid=`uuidgen --sha1 --namespace @dns --name "fip_type_uuid"`
@@ -478,6 +479,24 @@ gen_gpt_bin() {
         bberror "fip.bin ($fip_bin_size bytes) is larger than the GPT partition ($fip_max_size bytes)"
     fi
 
+    has_bl2_fip=0
+    if [ -f "$bl2_fip_bin" ]; then
+        has_bl2_fip=1
+        echo "BL2 FIP detected: $bl2_fip_bin"
+
+        bl2_fip_type_uuid=$(uuidgen --sha1 --namespace @dns --name "bl2_fip_type_uuid")
+        bl2_fip_bin_size=$(stat -c %s $bl2_fip_bin)
+        FIP_BL2_uuid=$(uuidgen)
+        bl2_fip_max_size=$fip_max_size
+
+        if [ $bl2_fip_max_size -lt $bl2_fip_bin_size ]; then
+            bberror "bl2_fip.bin ($bl2_fip_bin_size bytes) is larger than the GPT partition ($bl2_fip_max_size bytes)"
+        fi
+
+    else
+        echo "No BL2 FIP found. Proceeding without it."
+    fi
+
     # maximum metadata size 512B.
     # This is the current size of the metadata rounded up to an integer number of sectors.
     metadata_max_size=512
@@ -488,7 +507,7 @@ gen_gpt_bin() {
     python3 $ci_root/generate_fwu_metadata.py --metadata_file $metadata_file \
                                --image_data "[('$fip_type_uuid', '$location_uuid', ['$FIP_A_uuid', '$FIP_B_uuid'])]"
 
-    # create GPT image. The GPT contains 1 FIP partition: FIP_A.
+    # create GPT image. If BL2_FIP does not exists, the GPT contains 1 FIP partition: FIP_A.
     # the GPT layout is the following:
     #
     #      +----------------------+
@@ -507,44 +526,112 @@ gen_gpt_bin() {
     # LBA-1| Secondary GPT Header |
     #      +----------------------+
 
+    # create GPT image. If BL2_FIP exists, The GPT contains 2 FIP partitions: FIP_BL2 and FIP_A.
+    # the GPT layout is the following:
+    #
+    #      +----------------------+
+    # LBA0 | Protective MBR       |
+    #      ------------------------
+    # LBA1 | Primary GPT Header   |
+    #      ------------------------
+    # LBA34| FIP_BL2              |
+    #      ------------------------
+    #      | FIP_A                |
+    #      ------------------------
+    #      | FIP_B                |
+    #      ------------------------
+    #      | FWU-Metadata         |
+    #      ------------------------
+    #      | Bkup-FWU-Metadata    |
+    #      ------------------------
+    # LBA-1| Secondary GPT Header |
+    #      +----------------------+
+
     sector_size=512 # in bytes
     gpt_header_size=33 # in sectors
     num_sectors_fip=`expr $fip_max_size / $sector_size`
     num_sectors_metadata=`expr $metadata_max_size / $sector_size`
+
     start_sector_1=`expr 1 + $gpt_header_size` # size of MBR is 1 sector
-    start_sector_2=`expr $start_sector_1 + $num_sectors_fip`
-    start_sector_3=`expr $start_sector_2 + $num_sectors_fip`
-    start_sector_4=`expr $start_sector_3 + $num_sectors_metadata`
-    num_sectors_gpt=`expr $start_sector_4 + $num_sectors_metadata + $gpt_header_size`
-    gpt_size=`expr $num_sectors_gpt \* $sector_size`
 
-    # create raw image
-    dd if=/dev/zero of=$gpt_image bs=$gpt_size count=1
+    if [ "$has_bl2_fip" -eq 1 ]; then
+        num_sectors_bl2_fip=$(expr $bl2_fip_max_size / $sector_size)
 
-    # create the GPT layout
-    sgdisk $gpt_image \
-           --set-alignment $partition_alignment \
-           --disk-guid $location_uuid \
-           \
-           --new 1:$start_sector_1:+$num_sectors_fip \
-           --change-name 1:FIP_A \
-           --typecode 1:$fip_type_uuid \
-           --partition-guid 1:$FIP_A_uuid \
-	   \
-           --new 2:$start_sector_2:+$num_sectors_fip \
-           --change-name 2:FIP_B \
-           --typecode 2:$fip_type_uuid \
-           --partition-guid 2:$FIP_B_uuid \
-           \
-           --new 3:$start_sector_3:+$num_sectors_metadata \
-           --change-name 3:FWU-Metadata \
-           --typecode 3:$metadata_type_uuid \
-           \
-           --new 4:$start_sector_4:+$num_sectors_metadata \
-           --change-name 4:Bkup-FWU-Metadata \
-           --typecode 4:$metadata_type_uuid
+        start_sector_2=`expr $start_sector_1 + $num_sectors_bl2_fip`
+        start_sector_3=`expr $start_sector_2 + $num_sectors_fip`
+        start_sector_4=`expr $start_sector_3 + $num_sectors_fip`
+        start_sector_5=`expr $start_sector_4 + $num_sectors_metadata`
+        num_sectors_gpt=`expr $start_sector_5 + $num_sectors_metadata + $gpt_header_size`
+        gpt_size=`expr $num_sectors_gpt \* $sector_size`
+
+        # create raw image
+        dd if=/dev/zero of=$gpt_image bs=$gpt_size count=1
+
+        sgdisk $gpt_image \
+            --set-alignment $partition_alignment \
+            --disk-guid $location_uuid \
+            \
+            --new 1:$start_sector_1:+$num_sectors_bl2_fip \
+            --change-name 1:FIP_BL2 \
+            --typecode 1:$bl2_fip_type_uuid \
+            --partition-guid 1:$FIP_BL2_uuid \
+	        \
+            --new 2:$start_sector_2:+$num_sectors_fip \
+            --change-name 2:FIP_A \
+            --typecode 2:$fip_type_uuid \
+            --partition-guid 2:$FIP_A_uuid \
+	        \
+            --new 3:$start_sector_3:+$num_sectors_fip \
+            --change-name 3:FIP_B \
+            --typecode 3:$fip_type_uuid \
+            --partition-guid 3:$FIP_B_uuid \
+            \
+            --new 4:$start_sector_4:+$num_sectors_metadata \
+            --change-name 4:FWU-Metadata \
+            --typecode 4:$metadata_type_uuid \
+            \
+            --new 5:$start_sector_5:+$num_sectors_metadata \
+            --change-name 5:Bkup-FWU-Metadata \
+            --typecode 5:$metadata_type_uuid
+
+    else
+        start_sector_2=`expr $start_sector_1 + $num_sectors_fip`
+        start_sector_3=`expr $start_sector_2 + $num_sectors_fip`
+        start_sector_4=`expr $start_sector_3 + $num_sectors_metadata`
+        num_sectors_gpt=`expr $start_sector_4 + $num_sectors_metadata + $gpt_header_size`
+        gpt_size=`expr $num_sectors_gpt \* $sector_size`
+
+        # create raw image
+        dd if=/dev/zero of=$gpt_image bs=$gpt_size count=1
+
+        sgdisk $gpt_image \
+            --set-alignment $partition_alignment \
+            --disk-guid $location_uuid \
+            \
+            --new 1:$start_sector_1:+$num_sectors_fip \
+            --change-name 1:FIP_A \
+            --typecode 1:$fip_type_uuid \
+            --partition-guid 1:$FIP_A_uuid \
+	        \
+            --new 2:$start_sector_2:+$num_sectors_fip \
+            --change-name 2:FIP_B \
+            --typecode 2:$fip_type_uuid \
+            --partition-guid 2:$FIP_B_uuid \
+            \
+            --new 3:$start_sector_3:+$num_sectors_metadata \
+            --change-name 3:FWU-Metadata \
+            --typecode 3:$metadata_type_uuid \
+            \
+            --new 4:$start_sector_4:+$num_sectors_metadata \
+            --change-name 4:Bkup-FWU-Metadata \
+            --typecode 4:$metadata_type_uuid
+
+    fi
 
     # populate the GPT partitions
+    if [ "$has_bl2_fip" -eq 1 ]; then
+        dd if=$bl2_fip_bin of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FIP_BL2$" | awk '{print $2}') count=$num_sectors_bl2_fip conv=notrunc
+    fi
     dd if=$fip_bin of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FIP_A$" | awk '{print $2}') count=$num_sectors_fip conv=notrunc
     dd if=$fip_bin of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FIP_B$" | awk '{print $2}') count=$num_sectors_fip conv=notrunc
     dd if=$metadata_file of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FWU-Metadata$" | awk '{print $2}') count=$num_sectors_metadata conv=notrunc
