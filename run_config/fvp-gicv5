@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	local model="base-aemv8a-gicv5"
+
+	# save the gic_config that the run will happen with
+	archive_file "${tf_root}/plat/arm/board/fvp/gicv5_config.yaml"
+
+	model="$model" gicv5_yaml_path="$archive/gicv5_config.yaml" gen_model_params
+	model="$model" gen_fvp_yaml
+}

@@ -77,7 +77,7 @@ fvp_models=(
 [base-aemv8a-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
 [base-aemva]="${fvp_base_revc_aemva};FVP_Base_RevC-2xAEMvA"
 [base-aemv8a]="${fvp_base_revc_aemva};FVP_Base_RevC-2xAEMvA"
-[base-aemv8a-gicv5]="${fvp_base_revc_aemva_gicv5};FVP_Base_RevC-2xAEMvA_GICv5"
+[base-aemv8a-gicv5]="${fvp_base_revc_aemva_gicv5};FVP_Base_RevC-2xAEMvA_GICV5"
 [cortex-a32x4]="${fvp_arm_std_library};FVP_Base_Cortex-A32"
 [cortex-a35x4]="${fvp_arm_std_library};FVP_Base_Cortex-A35"
 [cortex-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A53"
@@ -320,6 +320,7 @@ gen_fvp_yaml() {
         [tl]="tl.bin"
         [tmp]="tmp.bin"
         [uboot]="uboot.bin"
+        [gicv5_config]="gicv5_config.yaml"
     )
 
     declare -A fvp_artefact_urls=(
@@ -371,6 +372,7 @@ gen_fvp_yaml() {
         [tl]="$(gen_bin_url tl.bin)"
         [tmp]="$(gen_bin_url tmp.bin)"
         [uboot]="$(gen_bin_url uboot.bin)"
+        [gicv5_config]="$(gen_bin_url gicv5_config.yaml)"
     )
 
     # In LAVA we don't provide the paths to the artefacts directly, but instead
@@ -427,6 +429,7 @@ gen_fvp_yaml() {
         ["[= ]tl.bin"]="={TL}"
         ["[= ].*/tmp.bin"]="={TMP}"
         ["[= ]uboot.bin"]="={UBOOT}"
+        ["gicv5_config_file=[^\\n]*gicv5_config\\.yaml"]="gicv5_config_file={GICV5_CONFIG}"
     )
 
     declare -a fvp_artefacts
