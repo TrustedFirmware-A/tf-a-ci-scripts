@@ -5,88 +5,95 @@ from dataclasses import dataclass
 
 import requests
 
+# Constants to produce the report with
 openci_url = "https://ci.trustedfirmware.org/"
+job_names = ["tf-a-daily", "tf-a-tftf-main"]
 
+# Jenkins API helpers
+def get_job_url(job_name: str) -> str:
+    return openci_url + f"job/{job_name}/api/json"
 
+def get_build_url(job_name: str, build_number: str) -> str:
+    return openci_url + f"job/{job_name}/{build_number}"
+
+def get_build_api(build_url: str) -> str:
+    return build_url + "/api/json"
+
+def get_build_console(build_url: str) -> str:
+    return build_url + "/consoleText"
+
+"""Finds the latest run of a given job by name"""
 class Job:
+    def __init__(self, job_name: str) -> None:
+        req = requests.get(get_job_url(job_name)).json()
+        name = req["displayName"]
+        number = req["lastCompletedBuild"]["number"]
 
-    def __init__(self, name: str, response: dict, get_sub_jobs=False) -> None:
-        self.name = name
-        self.url = (
-            response["url"]
-            if openci_url in response["url"]
-            else openci_url + response["url"]
-        )
-        self.number = (
-            response["buildNumber"] if "buildNumber" in response else response["number"]
-        )
+        self.build = Build(name, name, number, level=0)
+        self.passed = self.build.passed
 
-        if "result" in response:
-            self.passed = response["result"].lower() == "success"
+    def print_build_status(self):
+        self.build.print_build_status()
 
-        if get_sub_jobs and not "subBuilds" in response:
-            console = requests.get(self.url + "consoleText").text
-            self.set_sub_jobs(SubJob.get_jobs_from_console_log(console))
-        elif "subBuilds" in response:
-            self.set_sub_jobs(
-                list(map(lambda j: SubJob(j["jobAlias"], j), response["subBuilds"]))
-            )
-        else:
-            self.jobs = []
+"""Represents an individual build. Will recursively fetch sub builds"""
+class Build:
+    def __init__(self, job_name: str, pretty_job_name: str, build_number: str, level: int) -> None:
+        self.url = get_build_url(job_name, build_number)
+        req = requests.get(get_build_api(self.url)).json()
+        self.passed = req["result"].lower() == "success"
+
+        self.name = pretty_job_name
+        # The full display name is "{job_name} {build_number}"
+        if self.name == "":
+            self.name = req["fullDisplayName"].split(" ")[0]
+        # and builds should show up with their configuration name
+        elif self.name == "tf-a-builder":
+            self.name = req["actions"][0]["parameters"][1]["value"]
+
+        self.level = level
+        self.number = build_number
+        self.sub_builds = []
+
+        # parent job passed => children passed. Skip
+        if not self.passed:
+            # the main jobs list sub builds nicely
+            self.sub_builds = [
+                # the gateways get an alias to differentiate them
+                Build(build["jobName"], build["jobAlias"], build["buildNumber"], level + 1)
+                for build in req.get("subBuilds", [])
+            ]
+            # gateways don't, since they determine them dynamically
+            if self.sub_builds == []:
+                self.sub_builds = [
+                    Build(name, name, num, level + 1)
+                    for name, num in self.get_builds_from_console_log()
+                ]
+
+    # extracts (child_name, child_number) from the console output of a build
+    def get_builds_from_console_log(self) -> str:
+        log = requests.get(get_build_console(self.url)).text
+
+        return re.findall(r"(tf-a[-\w+]+) #(\d+) started", log)
+
+    def print_build_status(self):
+        print(self)
+
+        for build in self.sub_builds:
+            if not build.passed:
+                build.print_build_status()
 
     def __str__(self) -> str:
-        return f"{'✅' if self.passed else '❌'} *{self.name}* [#{self.number}]({self.url})"
-
-    def __iter__(self):
-        yield from self.jobs
-
-    def failed_sub_jobs(self):
-        return list(filter(lambda j: not j.passed, self.jobs))
-
-    def print_failed_subjobs(self):
-        for j in self.failed_sub_jobs():
-            print(" " * 2, j)
-
-    def set_sub_jobs(self, jobs):
-        self.jobs = jobs
-        self.passed = not self.failed_sub_jobs()
-
-
-class SubJob(Job):
-    @classmethod
-    def get_jobs_from_console_log(cls, log):
-        sub_jobs = []
-
-        for name, num in re.findall(r"(tf-a[-\w+]+) #(\d+) started", log):
-            response = requests.get(openci_url + f"job/{name}/{num}/api/json").json()
-            sub_jobs.append(cls(name, response, get_sub_jobs=False))
-        return sub_jobs
-
+        return (f"{' ' * self.level * 4}* {'✅' if self.passed else '❌'} "
+                f"*{self.name}* [#{self.number}]({self.url})"
+               )
 
 def main():
-    job_urls = map(
-        lambda j: openci_url + f"job/{j}/api/json", ["tf-a-daily", "tf-a-tftf-main"]
-    )
-
-    jobs = list(
-        map(
-            lambda r: Job(r["displayName"], r["lastCompletedBuild"], get_sub_jobs=True),
-            map(lambda j: requests.get(j).json(), job_urls),
-        )
-    )
+    jobs = [Job(name) for name in job_names]
 
     print("🟢" if all(j.passed for j in jobs) else "🔴", "Daily Status")
 
     for j in jobs:
-        print("*", j)
-        if j.name == "tf-a-daily":
-            for subjob in j:
-                print("    *", subjob)
-        elif not j.passed:
-            for subjob in j:
-                if not subjob.passed:
-                    print("    *", subjob)
-
+        j.print_build_status()
 
 if __name__ == "__main__":
     main()
