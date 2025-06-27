@@ -40,6 +40,11 @@ fi
 
 cat <<EOF >"$model_param_file"
 
+-C bp.terminal_0.start_port=5000
+-C bp.terminal_1.start_port=5001
+-C bp.terminal_2.start_port=5002
+-C bp.terminal_3.start_port=5003
+
 -C bp.ve_sysregs.exit_on_shutdown=1
 -C pctl.startup=$pctl_startup
 
