@@ -6,6 +6,6 @@
 #
 
 pre_tfut_build() {
-	set_hook_var "COVERAGE" "0"
+	set_hook_var "COVERAGE" "OFF"
 }
 

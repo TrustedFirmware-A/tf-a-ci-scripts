@@ -211,6 +211,16 @@ collect_tfut_artefacts() {
 	popd
 }
 
+collect_tfut_coverage() {
+	if [ "$coverage" != "ON" ]; then
+                return
+        fi
+
+	pushd "$tfut_root/build"
+	touch "${to:?}/tfut_coverage.txt"
+	popd
+}
+
 # Map the UART ID used for expect with the UART descriptor and port
 # used by the FPGA automation tools.
 map_uart() {
@@ -806,12 +816,13 @@ build_tfut() {
         cat <<EOF | log_separator >/dev/null
 
 Build command line:
-	cmake $(echo "$cmake_config") -G"Unix Makefiles" --debug-output -DCMAKE_VERBOSE_MAKEFILE -DUNIT_TEST_PROJECT_PATH="$tf_root" ..
+cmake $(echo "$cmake_config") -G"Unix Makefiles" --debug-output -DCMAKE_VERBOSE_MAKEFILE -DCOVERAGE="$COVERAGE" -DUNIT_TEST_PROJECT_PATH="$tf_root" ..
         make $(echo "$config" | tr '\n' ' ') DEBUG=$DEBUG V=1 $build_targets
 
 EOF
 	cmake $(echo "$cmake_config") -G"Unix Makefiles" --debug-output \
 		-DCMAKE_VERBOSE_MAKEFILE=ON 				\
+		-DCOVERAGE="$COVERAGE" 					\
 		-DUNIT_TEST_PROJECT_PATH="$tf_root" 			\
 		.. &>> "$build_log" || fail_build
 	echo "Done with cmake" >> "$build_log"
@@ -1585,6 +1596,8 @@ for mode in $modes; do
 		build_tfut
 
 		from="$tfut_build_root" to="$archive" collect_tfut_artefacts
+
+		to="$archive" coverage="$COVERAGE" collect_tfut_coverage
 
 		echo "##########"
 		echo

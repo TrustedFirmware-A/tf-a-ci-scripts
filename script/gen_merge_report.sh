@@ -45,7 +45,7 @@ test_results = data['test_results']
 test_files = data['test_files']
 for index, build_number in enumerate(test_results):
     if ("bmcov" in test_files[index] or
-    "code-coverage" in test_files[index]) and test_results[build_number] == "SUCCESS":
+    "coverage" in test_files[index]) and test_results[build_number] == "SUCCESS":
         merge_number += 1
         base_url = "{}job/{}/{}/{}".format(
                         server, data['job'], build_number, "$ARTIFACT_PATH")
@@ -267,11 +267,17 @@ EOF
 
 OUTDIR=""
 index=""
+ls -al
 case "$TEST_GROUPS" in
     scp*)
             project="scp"
             jenkins_archive_folder=reports
             individual_report_folder=html/qa-code-coverage/lcov/index.html
+            ;;
+    tfut*)
+            project="tfut"
+            jenkins_archive_folder=merge/outdir
+            individual_report_folder=unit_tests/trusted-firmware-a-coverage/index.html
             ;;
     tf*)
             project="trusted_firmware"

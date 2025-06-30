@@ -26,7 +26,7 @@ mkdir -p "$pid_dir"
 export run_root
 export pid_dir
 
-export tfut_root="${tfut_root:-$workspace/tfut}"
+export tfut_root="${tfut_root:-$workspace/tf-a-unit-tests}"
 
 kill_and_reap() {
 	local gid
@@ -64,6 +64,43 @@ cleanup() {
 		done < <(find -name '*.pid')
 	fi
 
+	popd
+}
+
+# Check coverage and make reports
+run_coverage() {
+	if [ -f "tfut_coverage.txt" ]; then
+		COVERAGE="ON"
+	else
+		COVERAGE="OFF"
+	fi
+
+	# Switch to the tfut root directory to check for coverage
+	pushd "$tfut_root/build"
+	if [ "$COVERAGE" = "ON" ]; then
+		echo "Generating coverage report..."
+		make coverage_report
+		cp -r ./tf-a-unit-tests-coverage "$workspace/unit_tests/"
+		cp -r  ./trusted-firmware-a-coverage  "$workspace/unit_tests/"
+		mkdir "$workspace/trace_report/"
+		cp -r  ./trusted-firmware-a-coverage/* "$workspace/trace_report/"
+		cp ./coverage.info "$workspace/trace_report/"
+		cat > "$workspace/config_file.json" <<EOF
+{
+	"configuration": {
+		"sources": [
+		{
+			"type": "git",
+			"URL": "https://review.trustedfirmware.org/TF-A/trusted-firmware-a",
+			"LOCATION": "trusted-firmware-a"
+		}
+		]
+	}
+}
+EOF
+	else
+		echo "Code coverage is disabled."
+	fi
 	popd
 }
 
@@ -107,6 +144,7 @@ chmod +x "$run_sh"
 if upon "$test_run"; then
 	echo
         "$run_sh" "$@" -v -c
+        run_coverage
         exit 0
 fi
 
@@ -120,6 +158,7 @@ if upon "$jenkins_run"; then
 else
 	"$run_sh" "$@" -c -v
 fi
+run_coverage
 batch_pid=$!
 
 # Wait for all children. Note that the wait below is *not* a timed wait.
