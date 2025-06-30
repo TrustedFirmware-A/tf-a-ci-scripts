@@ -11,6 +11,7 @@ if  is_arm_jenkins_env || upon "$local_ci"; then
 
 	default_var etm_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/ETMv4ExamplePlugin.so"
 	default_var ete_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/libete-plugin.so"
+	default_var generictrace_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/GenericTrace.so"
 else
         # OpenCI enviroment
         source "$ci_root/fvp_utils.sh"
@@ -20,9 +21,10 @@ else
 	models_dir="$(echo ${fvp_models[$model]} | awk -F ';' '{print $2}')"
         set_model_path "$models_dir"
 
-        # ScalableVectorExtension is located at /opt/model/*/plugins/${model_flavour}
-	default_var etm_plugin_path "${models_dir/models/plugins}/ETMv4ExamplePlugin.so"
-	default_var ete_plugin_path "${models_dir/models/plugins}/libete-plugin.so"
+	default_var ete_plugin_path "/opt/model/Base_RevC_AEMvA_pkg/plugins/Linux64_GCC-9.3/libete-plugin.so"
+	default_var etm_plugin_path "/opt/model/Base_RevC_AEMvA_pkg/plugins/Linux64_GCC-9.3/ETMv4ExamplePlugin.so"
+	default_var generictrace_plugin_path "/opt/model/Base_RevC_AEMvA_pkg/plugins/Linux64_GCC-9.3/GenericTrace.so"
+
 fi
 
 default_var is_dual_cluster 1

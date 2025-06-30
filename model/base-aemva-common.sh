@@ -243,7 +243,7 @@ if [ "$has_smmuv3_params" = "1" ]; then
 -C pci.tbu0_pre_smmu_logger.trace_debug=1
 -C pci.pci_smmuv3.mmu.all_error_messages_through_trace=1
 -C TRACE.GenericTrace.trace-sources=verbose_commentary,smmu_initial_transaction,smmu_final_transaction,*.pci.pci_smmuv3.mmu.*,*.pci.smmulogger.*,*.pci.tbu0_pre_smmu_logger.*,smmu_poison_tw_data
---plugin $warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/GenericTrace.so
+--plugin $generictrace_plugin_path
 EOF
 
 # If RME is implemented:
