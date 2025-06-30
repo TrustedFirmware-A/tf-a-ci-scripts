@@ -10,4 +10,4 @@ source $ci_root/expect-lava/trusted-firmware.inc
 
 expect_string+=('i;Rust BL31 starting')
 
-expect_string+=('i;Entering next stage...')
+expect_string+=('i;Booting Secure World')
