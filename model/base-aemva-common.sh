@@ -303,14 +303,7 @@ if [ "$has_smmuv3_params" = "1" ]; then
 -C pci.pci_smmuv3.mmu.SMMU_S_IDR1=0xA0000002
 -C pci.pci_smmuv3.mmu.SMMU_S_IDR2=0
 -C pci.pci_smmuv3.mmu.SMMU_S_IDR3=0
--C pci.smmulogger.trace_debug=1
--C pci.smmulogger.trace_snoops=1
--C pci.tbu0_pre_smmu_logger.trace_snoops=1
--C pci.tbu0_pre_smmu_logger.trace_debug=1
 -C pci.dma330x4.use_smmuv3testengine_not_dmacs=1
--C pci.pci_smmuv3.mmu.all_error_messages_through_trace=1
--C TRACE.GenericTrace.trace-sources=verbose_commentary,smmu_initial_transaction,smmu_final_transaction,*.pci.pci_smmuv3.mmu.*,*.pci.smmulogger.*,*.pci.tbu0_pre_smmu_logger.*,smmu_poison_tw_data
---plugin $generictrace_plugin_path
 -C cci550.force_on_from_start=1
 EOF
 
