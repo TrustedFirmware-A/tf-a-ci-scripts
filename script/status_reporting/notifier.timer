@@ -1,0 +1,9 @@
+[Unit]
+Description="Runs every weekday at 8am (before UK and US have started)"
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 8:00:00
+Persistent=true
+
+[Install]
+WantedBy=multi-user.target

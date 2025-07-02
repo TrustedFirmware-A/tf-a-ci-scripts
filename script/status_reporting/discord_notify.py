@@ -1,3 +1,26 @@
+#!/usr/bin/env -S uv run --script
+
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "aiohttp~=3.12.15",
+#     "discord.py~=2.6.2",
+# ]
+# ///
+
+"""
+Discord webhook notifier for the daily CI status.
+
+Installing as a notification service:
+  1. Copy the timer and service files to /etc/systemd/system/.
+  2. Edit the ExecStart property in /etc/systemd/system/notifier.service to
+     point to this file and give it a webhook argument. Make sure to either have
+     `uv` available for root or have all packages installed in a venv.
+  3. run `sudo chmod 600 /etc/systemd/system/notifier.service` to keep the
+     webhook secret as much as possible.
+  4. run `sudo systemctl enable --now notifier.timer`.
+"""
+
 import argparse
 import asyncio
 
