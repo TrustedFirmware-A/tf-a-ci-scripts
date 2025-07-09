@@ -25,26 +25,63 @@ import sys
 import utils
 from itertools import islice
 
-# File extensions to check
-VALID_FILE_EXTENSIONS = ('.c', '.conf', '.dts', '.dtsi', '.editorconfig',
-                         '.h', '.i', '.ld', 'Makefile', '.mk', '.msvc',
-                         '.py', '.S', '.scat', '.sh', '.rs')
+class TfaConfig:
+    def __init__(self):
+        # File extensions to check
+        self.valid_file_ext = (
+            '.c', '.conf', '.dts', '.dtsi', '.editorconfig',
+            '.h', '.i', '.ld', 'Makefile', '.mk', '.msvc',
+            '.py', '.S', '.scat', '.sh', '.rs'
+        )
 
-# Paths inside the tree to ignore. Hidden folders and files are always ignored.
-# They mustn't end in '/'.
-IGNORED_FOLDERS = (
-    'include/lib/hob',
-    'include/lib/libfdt',
-    'lib/compiler-rt',
-    'lib/hob',
-    'lib/libfdt',
-    'lib/zlib'
-)
+        # Paths inside the tree to ignore. Hidden folders and files are always
+        # ignored. They mustn't end in '/'.
+        self.ignored_folders = (
+            'include/lib/hob',
+            'include/lib/libfdt',
+            'lib/compiler-rt',
+            'lib/hob',
+            'lib/libfdt',
+            'lib/zlib'
+        )
 
-# List of ignored files in folders that aren't ignored
-IGNORED_FILES = (
-    'include/tools_share/uuid.h'
-)
+        # List of ignored files in folders that aren't ignored
+        self.ignored_files = (
+            'include/tools_share/uuid.h',
+        )
+
+        self.copyright_line = LINE_START + 'Copyright' + '.*' + TIME_PERIOD + '.*' + EOL
+        self.copyright_pattern = re.compile(self.copyright_line, re.MULTILINE)
+        self.copyright_check_year = True
+
+class RfaConfig:
+    def __init__(self):
+        # File extensions to check
+        self.valid_file_ext = (
+            '.c', '.conf', '.dts', '.dtsi', '.editorconfig',
+            '.h', '.i', '.ld', 'Makefile', '.mk', '.msvc',
+            '.py', '.S', '.scat', '.sh', '.rs'
+        )
+
+        # Paths inside the tree to ignore. Hidden folders and files are always
+        # ignored. They mustn't end in '/'.
+        self.ignored_folders = (
+            'include/lib/hob',
+            'include/lib/libfdt',
+            'lib/compiler-rt',
+            'lib/hob',
+            'lib/libfdt',
+            'lib/zlib'
+        )
+
+        # List of ignored files in folders that aren't ignored
+        self.ignored_files = (
+            'include/tools_share/uuid.h',
+        )
+
+        self.copyright_line = LINE_START + 'Copyright The Rusted Firmware-A Contributors.' + EOL
+        self.copyright_pattern = re.compile(self.copyright_line, re.MULTILINE)
+        self.copyright_check_year = False
 
 # Supported comment styles (Python regex)
 COMMENT_PATTERN = '(\*|/\*|\#|//)'
@@ -61,26 +98,17 @@ EOL = SPACING + '$'
 # Year or period as YYYY or YYYY-YYYY
 TIME_PERIOD = '[0-9]{4}(-[0-9]{4})?'
 
+CURRENT_YEAR = str(datetime.datetime.now().year)
+
 # Any string with valid license ID, don't allow adding postfix
 LICENSE_ID = '.*(BSD-3-Clause|BSD-2-Clause-FreeBSD|MIT)([ ,.\);].*)?'
-
-# File must contain both lines to pass the check
-COPYRIGHT_LINE = LINE_START + 'Copyright' + '.*' + TIME_PERIOD + '.*' + EOL
-RUST_COPYRIGHT_LINE = LINE_START + 'Copyright The Rusted Firmware-A Contributors.' + EOL
-
 LICENSE_ID_LINE = LINE_START + 'SPDX-License-Identifier:' + LICENSE_ID + EOL
-
-# Compiled license patterns
-COPYRIGHT_PATTERN = re.compile(COPYRIGHT_LINE, re.MULTILINE)
-RUST_COPYRIGHT_PATTERN = re.compile(RUST_COPYRIGHT_LINE, re.MULTILINE)
 LICENSE_ID_PATTERN = re.compile(LICENSE_ID_LINE, re.MULTILINE)
-
-CURRENT_YEAR = str(datetime.datetime.now().year)
 
 COPYRIGHT_OK = 0
 COPYRIGHT_ERROR = 1
 
-def check_copyright(path, args, copyright_pattern, check_year, encoding='utf-8'):
+def check_copyright(path, copyright_pattern, check_year, encoding='utf-8'):
     '''Checks a file for a correct copyright header.'''
 
     result = COPYRIGHT_OK
@@ -104,13 +132,16 @@ def check_copyright(path, args, copyright_pattern, check_year, encoding='utf-8')
     return result
 
 def main(args):
+    # Load the project's configuration (either TF-A's or RF-A's).
+    if not args.rusted:
+        config = TfaConfig()
+    else:
+        config = RfaConfig()
+
     print("Checking the copyrights in the code...")
 
     if args.verbose:
-        if args.rusted:
-            print ("Copyright regexp: " + RUST_COPYRIGHT_LINE)
-        else:
-            print ("Copyright regexp: " + COPYRIGHT_LINE)
+        print ("Copyright regexp: " + config.copyright_line)
         print ("License regexp: " + LICENSE_ID_LINE)
 
     if args.patch:
@@ -139,7 +170,7 @@ def main(args):
 
     for f in files:
 
-        if utils.file_is_ignored(f, VALID_FILE_EXTENSIONS, IGNORED_FILES, IGNORED_FOLDERS):
+        if utils.file_is_ignored(f, config.valid_file_ext, config.ignored_files, config.ignored_folders):
             if args.verbose:
                 print("Ignoring file " + f)
             continue
@@ -147,9 +178,7 @@ def main(args):
         if args.verbose:
             print("Checking file " + f)
 
-        copyright_pattern = RUST_COPYRIGHT_PATTERN if args.rusted else COPYRIGHT_PATTERN
-        check_year = not args.rusted
-        rc = check_copyright(f, args, copyright_pattern, check_year)
+        rc = check_copyright(f, config.copyright_pattern, config.copyright_check_year)
 
         if rc == COPYRIGHT_OK:
             count_ok += 1
