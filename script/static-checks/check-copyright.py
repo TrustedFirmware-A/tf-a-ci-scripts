@@ -31,7 +31,7 @@ class TfaConfig:
         self.valid_file_ext = (
             '.c', '.conf', '.dts', '.dtsi', '.editorconfig',
             '.h', '.i', '.ld', 'Makefile', '.mk', '.msvc',
-            '.py', '.S', '.scat', '.sh', '.rs'
+            '.py', '.S', '.scat', '.sh'
         )
 
         # Paths inside the tree to ignore. Hidden folders and files are always
@@ -58,25 +58,17 @@ class RfaConfig:
     def __init__(self):
         # File extensions to check
         self.valid_file_ext = (
-            '.c', '.conf', '.dts', '.dtsi', '.editorconfig',
-            '.h', '.i', '.ld', 'Makefile', '.mk', '.msvc',
-            '.py', '.S', '.scat', '.sh', '.rs'
+            '.h', '.ld', 'Makefile', '.mk',
+            '.py', '.S', '.sh', '.rs'
         )
 
         # Paths inside the tree to ignore. Hidden folders and files are always
         # ignored. They mustn't end in '/'.
         self.ignored_folders = (
-            'include/lib/hob',
-            'include/lib/libfdt',
-            'lib/compiler-rt',
-            'lib/hob',
-            'lib/libfdt',
-            'lib/zlib'
         )
 
         # List of ignored files in folders that aren't ignored
         self.ignored_files = (
-            'include/tools_share/uuid.h',
         )
 
         self.copyright_line = LINE_START + 'Copyright The Rusted Firmware-A Contributors.' + EOL
