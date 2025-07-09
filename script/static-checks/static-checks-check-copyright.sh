@@ -20,7 +20,7 @@ echo "# Check Copyright Test"
 
 LOG_FILE=`mktemp -t common.XXXX`
 
-"$CI_ROOT"/script/static-checks/check-copyright.py --tree "$DIRECTORY" "$COPYRIGHT_FLAGS" --patch --from-ref $(get_merge_base) &> "$LOG_FILE"
+"$CI_ROOT"/script/static-checks/check-copyright.py --tree "$DIRECTORY" $COPYRIGHT_FLAGS --patch --from-ref $(get_merge_base) &> "$LOG_FILE"
 RES=$?
 
 if [ -s "$LOG_FILE" ]; then
