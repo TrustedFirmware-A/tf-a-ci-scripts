@@ -596,8 +596,12 @@ corrupt_gpt_bin() {
             seek=$(gdisk -l $bin | grep " FWU-Metadata$" | awk '{print $2}')
             count=1
             ;;
+        "mbr")
+            seek=0
+            count=1
+            ;;
         *)
-            echo "Invalid $corrupt_data. Use 'header', 'partition-entries'"
+            echo "Invalid $corrupt_data. Use 'header', 'partition-entries', 'fwu-metadata' or 'mbr'."
             return 1
             ;;
     esac
