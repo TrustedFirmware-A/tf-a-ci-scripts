@@ -47,6 +47,7 @@ generate_lava_job() {
 		gicv3_ext_interrupt_range="1" \
 		gicd_ext_ppi_count="64" \
 		gicd_ext_spi_count="1024" \
+		has_rng="1" \
 		gen_model_params
 
 	model="$model" next_bin="1" gen_fvp_yaml
