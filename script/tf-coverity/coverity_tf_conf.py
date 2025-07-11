@@ -114,4 +114,9 @@ exclude_paths = [
     ("plat/arm/board/juno/certificate/src/juno_tbb_ext.c", "Used to build Juno cert_create"),
     ("plat/arm/board/juno/certificate/src/juno_tbb_key.c", "Used to build Juno cert_create"),
     ("plat/arm/board/juno/fip/plat_def_uuid_config.c", "Used to build Juno fiptool"),
+
+    # Exclude the following files used for LX2160A host tools (cert_create)
+    ("plat/nxp/soc-lx2160a/lx2162aqds/cert_create_helper/src/pdef_tbb_cert.c", "Used to build LX2160A cert_create"),
+    ("plat/nxp/soc-lx2160a/lx2162aqds/cert_create_helper/src/pdef_tbb_ext.c", "Used to build LX2160A cert_create"),
+    ("plat/nxp/soc-lx2160a/lx2162aqds/cert_create_helper/src/pdef_tbb_key.c", "Used to build LX2160A cert_create"),
 ]
