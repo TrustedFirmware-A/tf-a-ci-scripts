@@ -1,0 +1,12 @@
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Trusted Firmware Test Framework
+#
+
+expect_string+=('i;NS_BL1U: Invalid image size')
+expect_string+=('i;NS_BL1U: Invalid SMC')
+expect_string+=('i;NS_BL1U: IMAGE_COPY with invalid image_id')
+expect_string+=('i;PANIC in file')
