@@ -17,7 +17,7 @@ if [[ "$2" == "patch" ]]; then
   echo "# Check for banned APIs in the patch"
   TEST_CASE="Banned API check on patch(es)"
   "$CI_ROOT/script/static-checks/check-banned-api.py" --tree "$1" \
-      --patch --from-ref $(get_merge_base) \
+      --patch --from-ref ${merge_base} \
       &> "$LOG_FILE"
 else
   echo "# Check for banned APIs in entire source tree"
