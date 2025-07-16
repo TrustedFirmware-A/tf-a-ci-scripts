@@ -17,7 +17,7 @@ if [[ "$2" == "patch" ]]; then
   TEST_CASE="Order of includes on the patch series"
   echo "# $TEST_CASE"
   "$CI_ROOT/script/static-checks/check-include-order.py" --tree "$1" \
-      --patch --from-ref $(get_merge_base) \
+      --patch --from-ref ${merge_base} \
       &> "$LOG_FILE"
 else
   echo "# Check order of includes of the entire source tree"
