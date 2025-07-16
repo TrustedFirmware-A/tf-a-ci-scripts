@@ -24,7 +24,7 @@ LOG_FILE=$(mktemp -t coding-style-check.XXXX)
 chmod +x $CI_ROOT/script/static-checks/checkpatch.pl
 
 CHECKPATCH=$CI_ROOT/script/static-checks/checkpatch.pl \
-  make checkpatch BASE_COMMIT=$(get_merge_base) &> "$LOG_FILE"
+  make checkpatch BASE_COMMIT=${merge_base} &> "$LOG_FILE"
 RES=$?
 
 if [[ "$RES" == 0 ]]; then

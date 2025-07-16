@@ -20,7 +20,7 @@ LOG_FILE=$(mktemp -t common.XXXX)
 if [[ "$2" == "patch" ]]; then
     cd "$1"
     shopt -s globstar
-    parent=$(get_merge_base)
+    parent=${merge_base}
     git diff $parent..HEAD --no-ext-diff --unified=0 --exit-code -a \
       --no-prefix **/*.{S,c,h,i,dts,dtsi,rst,mk} Makefile | \
       awk '/^\+/ && /\r$/' &> "$LOG_FILE"

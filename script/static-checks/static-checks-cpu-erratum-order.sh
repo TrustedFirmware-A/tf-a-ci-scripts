@@ -14,7 +14,7 @@ if [[ "$2" == "patch" ]]; then
   TEST_CASE="Checking ascending order of CPU ERRATUM and CVE in the patch series"
   echo "# $TEST_CASE"
   "$CI_ROOT/script/static-checks/static-checks-cpu-erratum-order.py" --tree "$1" \
-      --patch --from-ref $(get_merge_base) &> "$LOG_FILE"
+      --patch --from-ref ${merge_base} &> "$LOG_FILE"
 else
   TEST_CASE="Checking ascending order of CPU ERRATUM and CVE in the entire source tree"
   echo "# $TEST_CASE"

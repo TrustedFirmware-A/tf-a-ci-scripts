@@ -17,7 +17,31 @@ cd -
 
 . $CI_ROOT/script/static-checks/common.sh
 
-# Initialize log file
+merge_base=$(get_merge_base)
+if [[ -z "$merge_base" ]]; then
+    echo "Failed to find merge base, fetching entire change history"
+
+    # Set GERRIT_REFSPEC if not already defined
+    if [[ -z "$GERRIT_REFSPEC" ]]; then
+        if [[ "$TF_GERRIT_PROJECT" == *tf-a-tests ]]; then
+            GERRIT_REFSPEC="$TFTF_GERRIT_REFSPEC"
+        else
+            GERRIT_REFSPEC="$TF_GERRIT_REFSPEC"
+        fi
+    fi
+
+    git fetch --depth=100 origin "$GERRIT_REFSPEC"
+    git checkout FETCH_HEAD
+
+    merge_base=$(get_merge_base)
+
+    if [[ -z "$merge_base" ]]; then
+        echo "Failed to determine merge base after fetching. Exiting." >&2
+        exit 1
+    fi
+fi
+
+export merge_base
 
 export LOG_TEST_FILENAME=$(pwd)/static-checks.log
 
@@ -29,10 +53,11 @@ echo "###### Static checks ######" > "$LOG_TEST_FILENAME"
 echo >> "$LOG_TEST_FILENAME"
 
 echo "Patch series being checked:" >> "$LOG_TEST_FILENAME"
-git log --oneline $(get_merge_base)..HEAD >> "$LOG_TEST_FILENAME"
+git log --oneline ${merge_base}..HEAD >> "$LOG_TEST_FILENAME"
 echo >> "$LOG_TEST_FILENAME"
 echo "Base branch reference commit:" >> "$LOG_TEST_FILENAME"
-git log --oneline -1 $(get_merge_base) >> "$LOG_TEST_FILENAME"
+git log --oneline -1 ${merge_base} >> "$LOG_TEST_FILENAME"
+
 
 echo >> "$LOG_TEST_FILENAME"
 
