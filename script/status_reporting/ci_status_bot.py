@@ -105,7 +105,7 @@ class Build:
         return message
 
     def __str__(self) -> str:
-        return (f"{' ' * self.level * 4}* {'✅' if self.passed else '❌'} "
+        return (f"{' ' * self.level * 2}* {'✅' if self.passed else '❌'} "
                 f"**{self.name}** [#{self.build_number}]({self.url})\n"
                )
 
