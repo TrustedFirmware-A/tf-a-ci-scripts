@@ -28,7 +28,7 @@ async def get_patch_counts(session, query: str) -> str:
                 break
 
     message = "Patches in review:\n"
-    for name, count in totals.items():
+    for name, count in sorted(totals.items(), key=lambda it: it[1], reverse=True):
         message += f"* {name}: {count}\n"
     return message
 
