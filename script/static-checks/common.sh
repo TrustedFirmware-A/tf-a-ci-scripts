@@ -5,6 +5,6 @@
 #
 
 function get_merge_base() {
-    git fetch origin ${GERRIT_BRANCH#refs/heads/}
+    git fetch --unshallow origin ${GERRIT_BRANCH#refs/heads/}
     git merge-base HEAD FETCH_HEAD | head -1
 }
