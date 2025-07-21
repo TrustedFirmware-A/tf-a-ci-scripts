@@ -30,7 +30,7 @@ if [[ -z "$merge_base" ]]; then
         fi
     fi
 
-    git fetch --depth=100 origin "$GERRIT_REFSPEC"
+    git fetch --unshallow --update-shallow origin "$GERRIT_REFSPEC"
     git checkout FETCH_HEAD
 
     merge_base=$(get_merge_base)
