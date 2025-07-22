@@ -1102,7 +1102,8 @@ tf_config="$(echo "$build_configs" | awk -F, '{print $1}')"
 tftf_config="$(echo "$build_configs" | awk -F, '{print $2}')"
 spm_config="$(echo "$build_configs" | awk -F, '{print $3}')"
 rmm_config="$(echo "$build_configs" | awk -F, '{print $4}')"
-tfut_config="$(echo "$build_configs" | awk -F, '{print $5}')"
+rfa_config="$(echo "$build_configs" | awk -F, '{print $5}')"
+tfut_config="$(echo "$build_configs" | awk -F, '{print $6}')"
 
 test_config_file="$ci_root/group/$test_group/$test_config"
 
