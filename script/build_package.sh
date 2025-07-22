@@ -1443,46 +1443,46 @@ for mode in $modes; do
 		)
 	fi
 
-        # TF RMM build
-        if  config_valid "$rmm_config"; then
-                (
-                echo "##########"
+	# TF RMM build
+	if  config_valid "$rmm_config"; then
+			(
+			echo "##########"
 
-                plat_utils="$(get_rmm_opt PLAT_UTILS)"
-                if [ -z ${plat_utils} ]; then
-                        # Source platform-specific utilities.
-                        plat="$(get_rmm_opt PLAT)"
-                        extra_options="$(get_rmm_opt EXTRA_OPTIONS)"
-                        extra_targets="$(get_rmm_opt EXTRA_TARGETS "")"
-                        rmm_toolchain="$(get_rmm_opt TOOLCHAIN gnu)"
-                        rmm_fpu_use_at_rel2="$(get_rmm_opt RMM_FPU_USE_AT_REL2 OFF)"
-                        rmm_attest_el3_token_sign="$(get_rmm_opt ATTEST_EL3_TOKEN_SIGN OFF)"
-                        rmm_v1_1="$(get_rmm_opt RMM_V1_1 ON)"
-                        plat_utils="$ci_root/${plat}_utils.sh"
-                else
-                        # Source platform-specific utilities by
-                        # using plat_utils name.
-                        plat_utils="$ci_root/${plat_utils}.sh"
-                fi
+			plat_utils="$(get_rmm_opt PLAT_UTILS)"
+			if [ -z ${plat_utils} ]; then
+					# Source platform-specific utilities.
+					plat="$(get_rmm_opt PLAT)"
+					extra_options="$(get_rmm_opt EXTRA_OPTIONS)"
+					extra_targets="$(get_rmm_opt EXTRA_TARGETS "")"
+					rmm_toolchain="$(get_rmm_opt TOOLCHAIN gnu)"
+					rmm_fpu_use_at_rel2="$(get_rmm_opt RMM_FPU_USE_AT_REL2 OFF)"
+					rmm_attest_el3_token_sign="$(get_rmm_opt ATTEST_EL3_TOKEN_SIGN OFF)"
+					rmm_v1_1="$(get_rmm_opt RMM_V1_1 ON)"
+					plat_utils="$ci_root/${plat}_utils.sh"
+			else
+					# Source platform-specific utilities by
+					# using plat_utils name.
+					plat_utils="$ci_root/${plat_utils}.sh"
+			fi
 
-                if [ -f "$plat_utils" ]; then
-                        source "$plat_utils"
-                fi
+			if [ -f "$plat_utils" ]; then
+					source "$plat_utils"
+			fi
 
-                archive="$build_archive"
-                rmm_build_root="$rmm_root/build"
+			archive="$build_archive"
+			rmm_build_root="$rmm_root/build"
 
-                echo "Building Trusted Firmware RMM ($mode) ..." |& log_separator
+			echo "Building Trusted Firmware RMM ($mode) ..." |& log_separator
 
-                #call_hook pre_rmm_build
-                build_rmm
+			#call_hook pre_rmm_build
+			build_rmm
 
-                # Collect all rmm.* files: rmm.img, rmm.elf, rmm.dump, rmm.map
-                from="$rmm_build_root" to="$archive" collect_build_artefacts
+			# Collect all rmm.* files: rmm.img, rmm.elf, rmm.dump, rmm.map
+			from="$rmm_build_root" to="$archive" collect_build_artefacts
 
-                echo "##########"
-                )
-        fi
+			echo "##########"
+			)
+	fi
 
 	# TF build
 	if config_valid "$tf_config"; then
