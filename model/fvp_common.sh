@@ -121,7 +121,7 @@ fi
 # runs, so that FVP trace log was properly dumped (and parsed by LAVA).
 # Don't use it for other OpenCI runs, as it may lead to race condition
 # with LAVA's capturing of FVP output.
-if echo "$RUN_CONFIG" | grep -Eiq 'tftf|spm|next'; then
+if echo "$RUN_CONFIG" | grep -Eiq 'tftf|spm|rfa'; then
     is_arm_env=0
     if is_arm_jenkins_env; then
         is_arm_env=1

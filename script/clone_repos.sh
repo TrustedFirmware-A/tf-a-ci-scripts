@@ -400,6 +400,13 @@ if not_upon "$no_tf"; then
 		clone_and_sync
 fi
 
+RFA_REFSPEC="${rfa_refspec:-$RFA_REFSPEC}"
+if not_upon "$no_rfa"; then
+	url="$rfa_src_repo_url" name="rusted-firmware-a" ref="RFA_REFSPEC" \
+		loc="RFA_CHECKOUT_LOC" \
+		clone_and_sync
+fi
+
 TFTF_REFSPEC="${tftf_refspec:-$TFTF_REFSPEC}"
 if not_upon "$no_tftf"; then
 	# Clone Trusted Firmware TF repository

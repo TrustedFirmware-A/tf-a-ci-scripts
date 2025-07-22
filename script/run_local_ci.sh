@@ -361,6 +361,15 @@ else
 	let "++local_count"
 fi
 
+if [ -z "$rfa_root" ]; then
+	in_red "NOTE: NOT using local work tree for RF-A"
+else
+	rfa_root="$(readlink -f $rfa_root)"
+	rfa_refspec=
+	in_green "Using local work tree for RF-A"
+	let "++local_count"
+fi
+
 if [ -z "$tfm_tests_root" ]; then
 	in_red "NOTE: NOT using local work tree for TF-M-TESTS"
 else
@@ -419,7 +428,7 @@ else
 fi
 
 # Use clone_repos.sh to clone and share repositories that aren't local.
-no_tf="$tf_root" no_tftf="$tftf_root" no_spm="$spm_root" no_rmm="$rmm_root" \
+no_tf="$tf_root" no_tftf="$tftf_root" no_spm="$spm_root" no_rmm="$rmm_root" no_rfa="$rfa_root" \
 no_ci="$ci_root" no_cc="$import_cc" no_tfm_tests="$tfm_tests_root" no_tfm_extras="$tfm_extras_root" \
 	bash $minus_x "$ci_root/script/clone_repos.sh"
 
