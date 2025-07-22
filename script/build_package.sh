@@ -1671,43 +1671,43 @@ for mode in $modes; do
 		)
 	fi
 
-        # TF RMM build
-        if  config_valid "$rmm_config"; then
-                (
-                echo "##########"
+	# TF RMM build
+	if  config_valid "$rmm_config"; then
+			(
+			echo "##########"
 
-                plat_utils="$(get_rmm_opt PLAT_UTILS)"
-                if [ -z ${plat_utils} ]; then
-                        # Source platform-specific utilities.
-                        plat="$(get_rmm_opt PLAT)"
-                        plat_utils="$ci_root/${plat}_utils.sh"
-                else
-                        # Source platform-specific utilities by
-                        # using plat_utils name.
-                        plat_utils="$ci_root/${plat_utils}.sh"
-                fi
+			plat_utils="$(get_rmm_opt PLAT_UTILS)"
+			if [ -z ${plat_utils} ]; then
+					# Source platform-specific utilities.
+					plat="$(get_rmm_opt PLAT)"
+					plat_utils="$ci_root/${plat}_utils.sh"
+			else
+					# Source platform-specific utilities by
+					# using plat_utils name.
+					plat_utils="$ci_root/${plat_utils}.sh"
+			fi
 
-                if [ -f "$plat_utils" ]; then
-                        source "$plat_utils"
-                fi
+			if [ -f "$plat_utils" ]; then
+					source "$plat_utils"
+			fi
 
-                archive="$build_archive"
-                rmm_build_root="$rmm_root/build"
+			archive="$build_archive"
+			rmm_build_root="$rmm_root/build"
 
-                echo "Building Trusted Firmware RMM ($mode) ..." |& log_separator
+			echo "Building Trusted Firmware RMM ($mode) ..." |& log_separator
 
-                #call_hook pre_rmm_build
-                build_rmm
+			#call_hook pre_rmm_build
+			build_rmm
 
-                # Collect all rmm.* files: rmm.img, rmm.elf, rmm.dump, rmm.map
-                from="$rmm_build_root" to="$archive" collect_build_artefacts
+			# Collect all rmm.* files: rmm.img, rmm.elf, rmm.dump, rmm.map
+			from="$rmm_build_root" to="$archive" collect_build_artefacts
 
-                # Clear any local changes made by applied patches
-                undo_rmm_patches
+			# Clear any local changes made by applied patches
+			undo_rmm_patches
 
-                echo "##########"
-                )
-        fi
+			echo "##########"
+			)
+	fi
 
 	# TF build
 	if config_valid "$tf_config"; then
