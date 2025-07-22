@@ -1,0 +1,3 @@
+PLAT=qemu
+CARGO="cargo +nightly"
+BTI_EL3=1
