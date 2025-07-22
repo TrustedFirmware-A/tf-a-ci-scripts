@@ -11,7 +11,7 @@ generate_lava_job_template() {
 generate_lava_job() {
 	local model="base-aemv8a"
 
-	uart="0" file="tfa-next.exp" track_expect
+	uart="0" file="rfa.exp" track_expect
 	# Track the rest of the UARTs to aid in debugging.
 	uart="1" file="hold_uart.exp" track_expect
 	uart="2" file="hold_uart.exp" track_expect

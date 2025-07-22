@@ -19,6 +19,7 @@ fi
 
 # Directory to where the source code e.g. for Trusted Firmware is checked out.
 export tf_root="${tf_root:-$workspace/trusted_firmware}"
+export rfa_root="${rfa_root:-$workspace/rusted-firmware-a}"
 export tftf_root="${tftf_root:-$workspace/trusted_firmware_tf}"
 export tfut_root="${tfut_root:-$workspace/tfut}"
 cc_root="${cc_root:-$ccpathspec}"
@@ -30,6 +31,7 @@ tf_refspec="$TF_REFSPEC"
 tftf_refspec="$TFTF_REFSPEC"
 spm_refspec="$SPM_REFSPEC"
 rmm_refspec="$RMM_REFSPEC"
+rfa_refspec="$RFA_REFSPEC"
 tfut_gerrit_refspec="$TFUT_GERRIT_REFSPEC"
 
 test_config="${TEST_CONFIG:?}"
@@ -517,6 +519,16 @@ get_tf_opt() {
 	)
 }
 
+get_rfa_opt() {
+	(
+	name="${1:?}"
+	if config_valid "$rfa_config_file"; then
+		source "$rfa_config_file"
+		echo "${!name}"
+	fi
+	)
+}
+
 get_rmm_opt() {
         (
         name="${1:?}"
@@ -647,20 +659,20 @@ EOF
 
 build_rfa() {
 	(
-	config_file="${tf_build_config:-$tf_config_file}"
+	config_file="${rfa_build_config:-$rfa_config_file}"
 
 	# Build the 'all' target by default.
-	build_targets="${tf_build_targets:-all}"
+	build_targets="${rfa_build_targets:-all}"
 
 	source "$config_file"
 
-	cd "$tf_root"
+	cd "$rfa_root"
 
 	# Always distclean when running on Jenkins. Skip distclean when running
 	# locally and explicitly requested.
 	if upon "$jenkins_run" || not_upon "$dont_clean"; then
 		echo "Cleaning TF-A..."
-		make -C "$TFA" distclean &>>"$build_log" || fail_build
+		make -C "$tf_root" distclean &>>"$build_log" || fail_build
 
 		echo 'Cleaning RF-A...'
 		cargo clean &>>"$build_log" || fail_build
@@ -870,6 +882,11 @@ set_package_var() {
 set_tf_build_targets() {
 	echo "Set build target to '${targets:?}'"
 	set_hook_var "tf_build_targets" "$targets"
+}
+
+set_rfa_build_targets() {
+	echo "Set build target to '${targets:?}'"
+	set_hook_var "rfa_build_targets" "$targets"
 }
 
 set_tftf_build_targets() {
@@ -1111,10 +1128,12 @@ tf_config_file="$ci_root/tf_config/$tf_config"
 tftf_config_file="$ci_root/tftf_config/$tftf_config"
 spm_config_file="$ci_root/spm_config/$spm_config"
 rmm_config_file="$ci_root/rmm_config/$rmm_config"
+rfa_config_file="$ci_root/rfa_config/$rfa_config"
 tfut_config_file="$ci_root/tfut_config/$tfut_config"
 
 # File that keeps track of applied patches
 tf_patch_record="$workspace/tf_patches"
+rfa_patch_record="$workspace/rfa_patches"
 
 # Split run config into TF and TFUT components
 run_config_tfa="$(echo "$run_config" | awk -F, '{print $1}')"
@@ -1128,6 +1147,15 @@ else
 	echo "Trusted Firmware config:"
 	echo
 	sort "$tf_config_file" | sed '/^\s*$/d;s/^/\t/'
+	echo
+fi
+
+if ! config_valid "$rfa_config"; then
+	rfa_config=
+else
+	echo "RF-A config:"
+	echo
+	sort "$rfa_config_file" | sed '/^\s*$/d;s/^/\t/'
 	echo
 fi
 
@@ -1178,6 +1206,16 @@ if { [ "$tf_config" ] || [ "$tfut_config" ]; } && assert_can_git_clone "tf_root"
 	clone_url="${TF_CHECKOUT_LOC:-$tf_src_repo_url}" where="$tf_root" \
 		refspec="$TF_REFSPEC" clone_repo 2>&1 | tee -a "$build_log"
 	show_head "$tf_root"
+fi
+
+if [ "$rfa_config" ] && assert_can_git_clone "rfa_root"; then
+	# If the Rusted Firmware repository has already been checked out, use
+	# that location. Otherwise, clone one ourselves.
+	echo "Cloning Rusted Firmware..."
+
+	clone_url="${RFA_CHECKOUT_LOC:-$rfa_src_repo_url}" where="$rfa_root" \
+	    refspec="$RFA_REFSPEC" clone_repo &>>"$build_log"
+	show_head "$rfa_root"
 fi
 
 if [ "$tftf_config" ] && assert_can_git_clone "tftf_root"; then
@@ -1484,6 +1522,83 @@ for mode in $modes; do
 			)
 	fi
 
+	# RF-A build
+	if config_valid "$rfa_config"; then
+		(
+		echo "##########"
+
+		plat="$(get_rfa_opt PLAT)"
+		plat_utils="$ci_root/${plat}_utils.sh"
+		if [ -f "$plat_utils" ]; then
+		    source "$plat_utils"
+		fi
+
+		fvp_tsram_size="$(get_rfa_opt FVP_TRUSTED_SRAM_SIZE)"
+		fvp_tsram_size="${fvp_tsram_size:-256}"
+
+		archive="$build_archive"
+
+		# Clone TF-A repo if required. Save its path into the
+		# special variable "TFA", which is used by RF-A build
+		# system.
+		export TFA="${TFA:-$tf_root}"
+		if assert_can_git_clone "TFA"; then
+			echo "Cloning TF-A..."
+			clone_url="$tf_src_repo_url" where="$TFA" clone_repo
+		fi
+		show_head "$TFA"
+
+		rfa_build_root="$rfa_root/target"
+		echo "Building Rusted Firmware ($mode) ..." |& log_separator
+
+		if not_upon "$local_ci"; then
+			# In the CI Dockerfile, rustup is installed by the root user in the
+			# non-default location /usr/local/rustup, so $RUSTUP_HOME is required to
+			# access rust config e.g. default toolchains and run cargo
+			#
+			# Leave $CARGO_HOME blank so when this script is run in CI by the buildslave
+			# user, it uses the default /home/buildslave/.cargo directory which it has
+			# write permissions for - that allows it to download new crates during
+			# compilation
+			#
+			# The buildslave user does not have write permissions to the default
+			# $CARGO_HOME=/usr/local/cargo dir and so will error when trying to download
+			# new crates otherwise
+			#
+			# note: $PATH still contains /usr/local/cargo/bin at this point so cargo is
+			# still run via the root installation
+			#
+			# see https://github.com/rust-lang/rustup/issues/1085
+			set_hook_var "RUSTUP_HOME" "/usr/local/rustup"
+		fi
+
+		# Call pre-build hook
+		call_hook pre_rfa_build
+
+		build_rfa
+
+		# Call post-build hook
+		call_hook post_rfa_build
+
+		# Pre-archive hook
+		call_hook pre_rfa_archive
+
+		from="$rfa_build_root" to="$archive" collect_rfa_artefacts
+
+		# Post-archive hook
+		call_hook post_rfa_archive
+
+		call_hook fetch_rfa_resource
+		call_hook post_fetch_rfa_resource
+
+		# Generate LAVA job files if necessary
+		call_hook generate_lava_job_template
+		call_hook generate_lava_job
+
+		echo "##########"
+		)
+	fi
+
 	# TF build
 	if config_valid "$tf_config"; then
 		(
@@ -1510,59 +1625,16 @@ for mode in $modes; do
 		fvp_tsram_size="${fvp_tsram_size:-384}"
 
 		archive="$build_archive"
-
-		if not_upon "$(get_tf_opt RUST)"; then
-			tf_build_root="$archive/build/tfa"
-			mkdir -p ${tf_build_root}
-			# we rely on the patch record to know when to setup a clone.
-			# Remove it to signal we're building again.
-			rm -rf "$tf_patch_record"
-
-			echo "Building Trusted Firmware ($mode) ..." |& log_separator
-		else
-			# Clone TF-A repo if required. Save its path into the
-			# special variable "TFA", which is used by RF-A build
-			# system.
-			export TFA="${TFA-$workspace/tfa}"
-			if assert_can_git_clone "TFA"; then
-				echo "Cloning TF-A..."
-				clone_url="$tf_src_repo_url" where="$TFA" clone_repo
-			fi
-			show_head "$TFA"
-
-			rfa_build_root="$tf_root/target"
-			echo "Building Rusted Firmware ($mode) ..." |& log_separator
-
-			if not_upon "$local_ci"; then
-				# In the CI Dockerfile, rustup is installed by the root user in the
-				# non-default location /usr/local/rustup, so $RUSTUP_HOME is required to
-				# access rust config e.g. default toolchains and run cargo
-				#
-				# Leave $CARGO_HOME blank so when this script is run in CI by the buildslave
-				# user, it uses the default /home/buildslave/.cargo directory which it has
-				# write permissions for - that allows it to download new crates during
-				# compilation
-				#
-				# The buildslave user does not have write permissions to the default
-				# $CARGO_HOME=/usr/local/cargo dir and so will error when trying to download
-				# new crates otherwise
-				#
-				# note: $PATH still contains /usr/local/cargo/bin at this point so cargo is
-				# still run via the root installation
-				#
-				# see https://github.com/rust-lang/rustup/issues/1085
-				set_hook_var "RUSTUP_HOME" "/usr/local/rustup"
-			fi
-		fi
+		tf_build_root="$archive/build/tfa"
+		echo "Building Trusted Firmware ($mode) ..." |& log_separator
+		# we rely on the patch record to know when to setup a clone.
+		# Remove it to signal we're building again.
+		rm -rf "$tf_patch_record"
 
 		# Call pre-build hook
 		call_hook pre_tf_build
 
-		if upon "$(get_tf_opt RUST)"; then
-			build_rfa
-		else
-			build_tf
-		fi
+		build_tf
 
 		# Call post-build hook
 		call_hook post_tf_build
@@ -1570,11 +1642,7 @@ for mode in $modes; do
 		# Pre-archive hook
 		call_hook pre_tf_archive
 
-		if not_upon "$(get_tf_opt RUST)"; then
-			from="$tf_build_root" to="$archive" collect_build_artefacts
-		else
-			from="$rfa_build_root" to="$archive" collect_rfa_artefacts
-		fi
+		from="$tf_build_root" to="$archive" collect_build_artefacts
 
 		# Post-archive hook
 		call_hook post_tf_archive
