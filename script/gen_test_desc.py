@@ -51,6 +51,12 @@ def translate_build_config(group, config_list):
         # Reshuffle them into the canonical format
         config_list = [config_list[1], config_list[2], config_list[4], config_list[5], config_list[3], config_list[0]]
 
+    if group.startswith("rfa-"):
+        # RF-A configs would be specified in the following format:
+        #  rfa_config, rmm_config, tf_config
+        # Reshuffle them into the canonical format
+        config_list = [config_list[2], config_list[3], config_list[5], config_list[6], config_list[4], config_list[1], config_list[0]]
+
     if group.startswith("tf-l3-code-coverage"):
         # coverage configs would be specified in the following format:
         #  tf_config, tftf_config, spm_config, scp_config, scp_tools
@@ -66,9 +72,9 @@ def gen_desc(group, test):
     build_config, run_config = test.split(":")
 
     # Test descriptors are always generated in the following order:
-    #  tf_config, tftf_config, scp_config, scp_tools, spm_config, rmm_config
+    #  tf_config, tftf_config, scp_config, scp_tools, spm_config, rmm_config, rfa_config
     # Fill missing configs to the right with "nil".
-    config_list = (build_config.split(",") + ["nil"] * 6)[:6]
+    config_list = (build_config.split(",") + ["nil"] * 7)[:7]
 
     # Perform any group-specific translation on the config
     config_list = translate_build_config(group, config_list)

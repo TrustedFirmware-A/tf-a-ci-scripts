@@ -1273,6 +1273,8 @@ scp_config="$(echo "$build_configs" | awk -F, '{print $3}')"
 scp_tools_config="$(echo "$build_configs" | awk -F, '{print $4}')"
 spm_config="$(echo "$build_configs" | awk -F, '{print $5}')"
 rmm_config="$(echo "$build_configs" | awk -F, '{print $6}')"
+rfa_config="$(echo "$build_configs" | awk -F, '{print $7}')"
+
 
 test_config_file="$ci_root/group/$test_group/$test_config"
 
