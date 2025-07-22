@@ -17,7 +17,9 @@ generate_lava_job() {
 	uart="2" file="hold_uart.exp" track_expect
 	uart="3" file="hold_uart.exp" track_expect
 
-	model="$model" arch_version="8.4" gen_model_params
+	model="$model" \
+		has_branch_target_exception="1" \
+		arch_version="8.4" gen_model_params
 
 	model="$model" gen_fvp_yaml
 }
