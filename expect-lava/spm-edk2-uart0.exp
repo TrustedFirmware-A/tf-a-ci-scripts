@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021 Arm Limited. All rights reserved.
+# Copyright (c) 2021-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -12,8 +12,6 @@
 source $ci_root/expect-lava/trusted-firmware.inc
 
 # EDK2 section
-expect_string+=('i;UEFI firmware')
-
 expect_string+=('i;UEFI Interactive Shell')
 
 expect_string+=('i;any other key to continue.')
@@ -22,4 +20,4 @@ expect_string+=('i;Shell>;;;\r')
 
 expect_string+=('i;FS0:;;;fs0:\r')
 
-expect_string+=('i;FS0:;Loading driver at .* UefiInfo.efi;;UefiInfo.efi\r')
+expect_string+=('i;FS0:;UEFI Hello World!;;HelloWorld.efi\r')

@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
 post_tf_build() {
 	# Fetch EDK2 and pre-built partition files
-	url="$tfa_downloads/spm/FVP_AARCH64_EFI.fd" fetch_file
-	url="$tfa_downloads/spm/STANDALONESMM.fd" fetch_file
+	url="$tfa_downloads/spm/fw-handoff/FVP_AARCH64_EFI.fd" fetch_file
+	url="$tfa_downloads/spm/fw-handoff/BL32_AP_MM.fd" fetch_file
 
 	archive_file "FVP_AARCH64_EFI.fd"
-	archive_file "STANDALONESMM.fd"
+	archive_file "BL32_AP_MM.fd"
 
-	build_fip BL33="$archive/FVP_AARCH64_EFI.fd" BL32="$archive/STANDALONESMM.fd"
+	build_fip BL33="$archive/FVP_AARCH64_EFI.fd" BL32="$archive/BL32_AP_MM.fd"
 }
 
 generate_lava_job_template() {
 	uart="0" file="spm-edk2-uart0.exp" track_expect
-	uart="2" file="spm-edk2-uart2.exp" track_expect
+	uart="1" file="spm-edk2-uart1.exp" track_expect
 
 	payload_type="tftf" gen_yaml_template
 }
