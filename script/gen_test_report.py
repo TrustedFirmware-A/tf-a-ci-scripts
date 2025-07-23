@@ -69,7 +69,7 @@ REPORT = "report.html"
 REPORT_JSON = "report.json"
 
 # Maximum depth for the tree of results, excluding status
-MAX_RESULTS_DEPTH = 8
+MAX_RESULTS_DEPTH = 9
 
 # We'd have a minimum of 3: group, a build config, a run config.
 MIN_RESULTS_DEPTH = 3
@@ -83,6 +83,7 @@ LEVEL_HEADERS = [
         "TFTF Build Config",
         "SPM Build Config",
         "RMM Build Config",
+        "RF-A Build Config",
         "TFUT Build Config",
         "Run Config",
         "TFUT Run Config",
@@ -440,7 +441,7 @@ def main(fd):
         test_config = desc[:-len(TEST_SUFFIX)]
         build_config, run_config = test_config.split(":")
         spare_commas = "," * (MAX_RESULTS_DEPTH - MIN_RESULTS_DEPTH)
-        tf_config, tftf_config, spm_config, rmm_config, tfut_config, *_ = (build_config +
+        tf_config, tftf_config, spm_config, rmm_config, rfa_config, tfut_config, *_ = (build_config +
                 spare_commas).split(",")
         run_configs = (run_config + ",").split(",")
         tf_run_config, tfut_run = (run_configs + [""])[:2]
@@ -459,7 +460,8 @@ def main(fd):
         tftf_node = tf_node.set_child(tftf_config)
         spm_node = tftf_node.set_child(spm_config)
         rmm_node = spm_node.set_child(rmm_config)
-        tfut_node = rmm_node.set_child(tfut_config)
+        rfa_node = rmm_node.set_child(rfa_config)
+        tfut_node = rfa_node.set_child(tfut_config)
         run_node = tfut_node.set_child(tf_run_config)
         tfut_run_node = run_node.set_child(tfut_run)
         tfut_run_node.set_result(test_result, build_number)
