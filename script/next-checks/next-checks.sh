@@ -14,13 +14,13 @@ export RUSTUP_HOME=/usr/local/rustup
 
 # For local runs, we require GERRIT_BRANCH to be set to get the merge-base/diff
 # between the checked out commit and the tip of $GERRIT_BRANCH - for running
-# next tests, usually this will be tfa-next
-export GERRIT_BRANCH=${GERRIT_BRANCH:="tfa-next"}
+# next tests, usually this will be main
+export GERRIT_BRANCH=${GERRIT_BRANCH:="main"}
 
 if [ "$IS_CONTINUOUS_INTEGRATION" == 1 ]; then
-    # git operations rely on access to tfa-next branch, we need to access via SSH for that to work currently
+    # git operations rely on access to main branch, we need to access via SSH for that to work currently
     SSH_PARAMS="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PubkeyAcceptedKeyTypes=+ssh-rsa -p 29418 -i ${CI_BOT_KEY}"
-    REPO_SSH_URL="ssh://${CI_BOT_USERNAME}@review.trustedfirmware.org:29418/TF-A/trusted-firmware-a"
+    REPO_SSH_URL="ssh://${CI_BOT_USERNAME}@review.trustedfirmware.org:29418/RF-A/rusted-firmware-a"
     export GIT_SSH_COMMAND="ssh ${SSH_PARAMS}"
     git remote set-url origin ${REPO_SSH_URL}
     git fetch --unshallow --update-shallow origin
