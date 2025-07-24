@@ -140,7 +140,7 @@ clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=0
 
 # SPM support with SPM at EL3 and TSP at S-EL1
 clean_build $fvp_common_flags CTX_INCLUDE_PAUTH_REGS=1 CTX_INCLUDE_EL2_REGS=0 EL3_EXCEPTION_HANDLING=0 \
-       	SPD=spmd SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1 \
+       	SPD=spmd SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1 FVP_TRUSTED_SRAM_SIZE=384 \
        	ARM_SPMC_MANIFEST_DTS=plat/arm/board/fvp/fdts/fvp_tsp_sp_manifest.dts
 
 # SPM support with Secure hafnium as SPM sitting at S-EL2
@@ -154,7 +154,8 @@ clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=1 ARM_ARCH_MINOR=4 \
 	CTX_INCLUDE_EL2_REGS=1 SP_LAYOUT_FILE=dummy ENABLE_SPMD_LP=1
 
 # SPM support with SPM sitting at EL3
-clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1
+clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1 \
+        FVP_TRUSTED_SRAM_SIZE=384
 
 # Firmware Handoff framework support
 clean_build $fvp_common_flags TRANSFER_LIST=1
