@@ -1,0 +1,2 @@
+PLAT=qemu
+NEED_BL31=no
