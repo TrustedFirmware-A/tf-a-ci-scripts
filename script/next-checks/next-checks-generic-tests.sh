@@ -28,7 +28,7 @@ export GIT_SSH_COMMAND="ssh ${SSH_PARAMS}"
 
 cd "${REPO_NAME}"
 
-if [ "$REPO_NAME" == "trusted-firmware-a" ] && ["$IS_CONTINUOUS_INTEGRATION" == 1 ]; then
+if [ "$REPO_NAME" == "rusted-firmware-a" ] && ["$IS_CONTINUOUS_INTEGRATION" == 1 ]; then
     git remote set-url origin ${REPO_SSH_URL}
     git fetch origin
 fi
@@ -44,7 +44,7 @@ ERROR_COUNT=0
 
 # Run cargo test
 
-if [ "$REPO_NAME" == "trusted-firmware-a" ]; then
+if [ "$REPO_NAME" == "rusted-firmware-a" ]; then
   # These tests are platform independent. However, we are specifying a platform:
   #     The fvp platform is expected to cover all platform independent features that can be tested
   #     with cargo test.
@@ -75,7 +75,7 @@ echo
 
 # Run cargo doc
 
-if [ "$REPO_NAME" != "trusted-firmware-a" ]; then
+if [ "$REPO_NAME" != "rusted-firmware-a" ]; then
   echo "cargo doc --no-deps" >> "$LOG_TEST_FILENAME" 2>&1
 
   RUSTDOCFLAGS="-D warnings" cargo doc --no-deps >> "$LOG_TEST_FILENAME" 2>&1
