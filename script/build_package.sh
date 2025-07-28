@@ -954,7 +954,35 @@ apply_patch() {
 }
 
 apply_tf_patch() {
-	pushd "$tf_root"
+	root="$tf_root"
+	new_root="$archive/tfa_mirror"
+
+	# paralell builds are only used locally. Don't do for CI since this will
+	# have a speed penalty. Also skip if this was already done as a single
+	# job may apply many patches.
+	if upon "$local_ci" && [[ ! -d $new_root ]]; then
+		root=$new_root
+		diff=$(mktempfile)
+
+		# get anything still uncommitted
+		pushd  $tf_root
+		git diff HEAD > $diff
+		popd
+
+		# git will hard link when cloning locally, no need for --depth=1
+		git clone "$tf_root" $root --shallow-submodules
+
+		tf_root=$root # next apply_tf_patch will run in the same hook
+		set_hook_var "tf_root" "$root" # for anyone outside the hook
+
+		# apply uncommited changes so they are picked up in the build
+		pushd  $tf_root
+		git apply $diff &> /dev/null || true
+		popd
+
+	fi
+
+	pushd "$root"
 	patch_record="$tf_patch_record" apply_patch "$1"
 	popd
 }
