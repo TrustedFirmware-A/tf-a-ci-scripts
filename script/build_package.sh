@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2024 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -661,13 +661,13 @@ build_spm() {
 	cat <<EOF | log_separator >/dev/null
 
 Build command line:
-	make $make_j_opts $(cat "$config_file" | tr '\n' ' ')
+	make $make_j_opts OUT=$spm_build_root $(cat "$config_file" | tr '\n' ' ')
 
 EOF
 
 	# Build SPM. Since build output is being directed to the build log, have
 	# descriptor 3 point to the current terminal for build wrappers to vent.
-	make $make_j_opts $(cat "$config_file") 3>&1 &>>"$build_log" \
+	make $make_j_opts OUT=$spm_build_root $(cat "$config_file") 3>&1 &>>"$build_log" \
 		|| fail_build
 	)
 }
@@ -1277,8 +1277,10 @@ for mode in $modes; do
 		# SPM build generates two sets of binaries, one for normal and other
 		# for Secure world. We need both set of binaries for CI.
 		archive="$build_archive"
-		spm_build_root="$spm_root/out/reference/$spm_secure_out_dir"
-		hafnium_build_root="$spm_root/out/reference/$spm_non_secure_out_dir"
+		spm_build_root="$archive/build/spm"
+
+		spm_secure_build_root="$spm_build_root/$spm_secure_out_dir"
+		spm_ns_build_root="$spm_build_root/$spm_non_secure_out_dir"
 
 		echo "spm_build_root is $spm_build_root"
 		echo "Building SPM ($mode) ..." |& log_separator
@@ -1289,15 +1291,15 @@ for mode in $modes; do
 		build_spm
 
 		# Show SPM/Hafnium binary details
-		cksum $spm_build_root/hafnium.bin
+		cksum $spm_secure_build_root/hafnium.bin
 
 		# Some platforms only have secure configuration enabled. Hence,
 		# non secure hanfnium binary might not be built.
-		if [ -f $hafnium_build_root/hafnium.bin ]; then
-			cksum $hafnium_build_root/hafnium.bin
+		if [ -f $spm_ns_build_root/hafnium.bin ]; then
+			cksum $spm_ns_build_root/hafnium.bin
 		fi
 
-		secure_from="$spm_build_root" non_secure_from="$hafnium_build_root" to="$archive" collect_spm_artefacts
+		secure_from="$spm_secure_build_root" non_secure_from="$spm_ns_build_root" to="$archive" collect_spm_artefacts
 
 		echo "##########"
 		echo
