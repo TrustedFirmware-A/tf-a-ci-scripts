@@ -953,12 +953,6 @@ apply_patch() {
 	fi
 }
 
-apply_tftf_patch() {
-	pushd "$tftf_root"
-	patch_record="$tftf_patch_record" apply_patch "$1"
-	popd
-}
-
 apply_tf_patch() {
 	pushd "$tf_root"
 	patch_record="$tf_patch_record" apply_patch "$1"
