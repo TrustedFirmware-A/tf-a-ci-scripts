@@ -38,8 +38,14 @@ cc_config="${CC_ENABLE:-}"
 
 export archive="$artefacts"
 build_log="$artefacts/build.log"
-fiptool="$tf_root/tools/fiptool/fiptool"
-cert_create="$tf_root/tools/cert_create/cert_create"
+
+fiptool_path() {
+	echo $tf_build_root/$(get_tf_opt PLAT)/${bin_mode}/tools/fiptool/fiptool
+}
+
+cert_create_path() {
+	echo $tf_build_root/$(get_tf_opt PLAT)/${bin_mode}/tools/cert_create/cert_create
+}
 
 # Validate $bin_mode
 case "$bin_mode" in
@@ -268,6 +274,7 @@ extract_fip() {
 		fip="$(basename "$1")"
 	fi
 
+	fiptool=$(fiptool_path)
 	"$fiptool" unpack "$fip"
 	echo "Extracted FIP: $fip"
 }
@@ -336,6 +343,7 @@ build_tf_extra() {
 }
 
 fip_update() {
+	fiptool=$(fiptool_path)
 	# Before the update process, check if the given image is supported by
 	# the fiptool. It's assumed that both fiptool and cert_create move in
 	# tandem, and therefore, if one has support, the other has it too.
@@ -417,6 +425,7 @@ fip_update() {
 		done
 
 		# Create certificates
+		cert_create=$(cert_create_path)
 		"$cert_create" $cert_args $common_args &>>"$build_log"
 
 		# Recreate and archive FIP

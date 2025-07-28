@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2023-2024, Arm Limited. All rights reserved.
+# Copyright (c) 2023-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -86,6 +86,7 @@ update_fip() {
 	archive_file "signed_scp_romfw.bin"
 
 	# Create FIP layout
+	fiptool=$(fiptool_path)
 	"$fiptool" update \
 		--align 8192 --rse-bl2 "$archive/rse_bl2_signed.bin" \
 		--align 8192 --rse-scp-bl1 "$archive/signed_scp_romfw.bin" \

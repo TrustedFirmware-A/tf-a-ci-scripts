@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2021-2023 Arm Limited. All rights reserved.
+# Copyright (c) 2021-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -42,6 +42,7 @@ gen_recovery_image() {
         scp_uuid="cfacc2c4-15e8-4668-82be-430a38fad705"
         mcp_uuid="54464222-a4cf-4bf8-b1b6-cee7dade539e"
 
+	fiptool=$(fiptool_path)
         # Create FIP for SCP
         "$fiptool" create --blob \
                 uuid=$scp_uuid,file=$tf_build_root/n1sdp/$bin_mode/bl1.bin \
