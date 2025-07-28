@@ -671,9 +671,6 @@ build_rfa() {
 	# Always distclean when running on Jenkins. Skip distclean when running
 	# locally and explicitly requested.
 	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		echo "Cleaning TF-A..."
-		make -C "$tf_root" distclean &>>"$build_log" || fail_build
-
 		echo 'Cleaning RF-A...'
 		cargo clean &>>"$build_log" || fail_build
 	fi
@@ -689,9 +686,8 @@ cargo version:
 $(cargo --version 2>&1)
 EOF
 
-	# Build RF-A and TF-A. Since build output is being directed to the build
-	# log, have descriptor 3 point to the current terminal for build
-	# wrappers to vent.
+	# Build RF-A. Since build output is being directed to the build log, have
+	# descriptor 3 point to the current terminal for build wrappers to vent.
 	eval make $make_j_opts $(cat "$config_file") \
 	    DEBUG="$DEBUG" \
 		$build_targets 3>&1 &>>"$build_log" || fail_build
@@ -1522,83 +1518,6 @@ for mode in $modes; do
 			)
 	fi
 
-	# RF-A build
-	if config_valid "$rfa_config"; then
-		(
-		echo "##########"
-
-		plat="$(get_rfa_opt PLAT)"
-		plat_utils="$ci_root/${plat}_utils.sh"
-		if [ -f "$plat_utils" ]; then
-		    source "$plat_utils"
-		fi
-
-		fvp_tsram_size="$(get_rfa_opt FVP_TRUSTED_SRAM_SIZE)"
-		fvp_tsram_size="${fvp_tsram_size:-256}"
-
-		archive="$build_archive"
-
-		# Clone TF-A repo if required. Save its path into the
-		# special variable "TFA", which is used by RF-A build
-		# system.
-		export TFA="${TFA:-$tf_root}"
-		if assert_can_git_clone "TFA"; then
-			echo "Cloning TF-A..."
-			clone_url="$tf_src_repo_url" where="$TFA" clone_repo
-		fi
-		show_head "$TFA"
-
-		rfa_build_root="$rfa_root/target"
-		echo "Building Rusted Firmware ($mode) ..." |& log_separator
-
-		if not_upon "$local_ci"; then
-			# In the CI Dockerfile, rustup is installed by the root user in the
-			# non-default location /usr/local/rustup, so $RUSTUP_HOME is required to
-			# access rust config e.g. default toolchains and run cargo
-			#
-			# Leave $CARGO_HOME blank so when this script is run in CI by the buildslave
-			# user, it uses the default /home/buildslave/.cargo directory which it has
-			# write permissions for - that allows it to download new crates during
-			# compilation
-			#
-			# The buildslave user does not have write permissions to the default
-			# $CARGO_HOME=/usr/local/cargo dir and so will error when trying to download
-			# new crates otherwise
-			#
-			# note: $PATH still contains /usr/local/cargo/bin at this point so cargo is
-			# still run via the root installation
-			#
-			# see https://github.com/rust-lang/rustup/issues/1085
-			set_hook_var "RUSTUP_HOME" "/usr/local/rustup"
-		fi
-
-		# Call pre-build hook
-		call_hook pre_rfa_build
-
-		build_rfa
-
-		# Call post-build hook
-		call_hook post_rfa_build
-
-		# Pre-archive hook
-		call_hook pre_rfa_archive
-
-		from="$rfa_build_root" to="$archive" collect_rfa_artefacts
-
-		# Post-archive hook
-		call_hook post_rfa_archive
-
-		call_hook fetch_rfa_resource
-		call_hook post_fetch_rfa_resource
-
-		# Generate LAVA job files if necessary
-		call_hook generate_lava_job_template
-		call_hook generate_lava_job
-
-		echo "##########"
-		)
-	fi
-
 	# TF build
 	if config_valid "$tf_config"; then
 		(
@@ -1649,6 +1568,72 @@ for mode in $modes; do
 
 		call_hook fetch_tf_resource
 		call_hook post_fetch_tf_resource
+
+		# Generate LAVA job files if necessary
+		call_hook generate_lava_job_template
+		call_hook generate_lava_job
+
+		echo "##########"
+		)
+	fi
+
+	# RF-A build
+	if config_valid "$rfa_config"; then
+		(
+		echo "##########"
+
+		plat="$(get_rfa_opt PLAT)"
+		plat_utils="$ci_root/${plat}_utils.sh"
+		if [ -f "$plat_utils" ]; then
+		    source "$plat_utils"
+		fi
+
+		archive="$build_archive"
+
+		tf_build_root="$tf_root/build"
+		rfa_build_root="$rfa_root/target"
+
+		echo "Building Rusted Firmware ($mode) ..." |& log_separator
+
+		if not_upon "$local_ci"; then
+			# In the CI Dockerfile, rustup is installed by the root user in the
+			# non-default location /usr/local/rustup, so $RUSTUP_HOME is required to
+			# access rust config e.g. default toolchains and run cargo
+			#
+			# Leave $CARGO_HOME blank so when this script is run in CI by the buildslave
+			# user, it uses the default /home/buildslave/.cargo directory which it has
+			# write permissions for - that allows it to download new crates during
+			# compilation
+			#
+			# The buildslave user does not have write permissions to the default
+			# $CARGO_HOME=/usr/local/cargo dir and so will error when trying to download
+			# new crates otherwise
+			#
+			# note: $PATH still contains /usr/local/cargo/bin at this point so cargo is
+			# still run via the root installation
+			#
+			# see https://github.com/rust-lang/rustup/issues/1085
+			set_hook_var "RUSTUP_HOME" "/usr/local/rustup"
+		fi
+
+		# Call pre-build hook
+		call_hook pre_rfa_build
+
+		build_rfa
+
+		# Call post-build hook
+		call_hook post_rfa_build
+
+		# Pre-archive hook
+		call_hook pre_rfa_archive
+
+		from="$rfa_build_root" to="$archive" collect_rfa_artefacts
+
+		# Post-archive hook
+		call_hook post_rfa_archive
+
+		call_hook fetch_rfa_resource
+		call_hook post_fetch_rfa_resource
 
 		# Generate LAVA job files if necessary
 		call_hook generate_lava_job_template
