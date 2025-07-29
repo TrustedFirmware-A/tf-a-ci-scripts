@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2020-2024, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -20,10 +20,10 @@ scp_ram_addr=0x0bd80000
 ap_bl1_flash_load_addr=0x70000000
 ap_bl1_flash_size=0x20000
 
-if [ $plat_variant -eq 3 ]; then
+if [[ $plat_variant -eq 3 ]]; then
 	rse_revision="2fe1f7e"
 	scp_revision="ac2b4f1"
-elif [ $plat_variant -eq 4 ]; then
+elif [[ $plat_variant -eq 4 ]]; then
 	rse_revision="ad367d8d1"
 fi
 
