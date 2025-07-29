@@ -201,7 +201,6 @@ fi
 if [ "$has_rme" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C bp.refcounter.non_arch_start_at_default=1
--C bp.refcounter.use_real_time=0
 -C bp.has_rme=1
 EOF
 fi
