@@ -297,11 +297,11 @@ clean_build $juno_common_flags CSS_USE_SCMI_SDS_DRIVER=0
 # TRNG Service
 clean_build $juno_common_flags TRNG_SUPPORT=1
 
-# SPMC AT EL3 Support
+# SPMC AT EL3 Support with MEASURED_BOOT
 clean_build $juno_common_flags BL32=1 NS_TIMER_SWITCH=1 \
-	CSS_NON_SECURE_UART=1 CSS_USE_SCMI_SDS_DRIVER=1 \
+	CSS_NON_SECURE_UART=1 CSS_USE_SCMI_SDS_DRIVER=1 USE_COHERENT_MEM=0\
 	SPD=spmd  SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1 CTX_INCLUDE_EL2_REGS=0 \
-	HOB_LIST=1
+	TRANSFER_LIST=1 HOB_LIST=1 MEASURED_BOOT=1 MBEDTLS_DIR=$(pwd)/mbedtls
 
 #
 # Reference Design Platform RD-N2
