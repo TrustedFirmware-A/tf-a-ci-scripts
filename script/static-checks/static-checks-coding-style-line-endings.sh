@@ -5,10 +5,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-this_dir="$(readlink -f "$(dirname "$0")")"
-. $this_dir/common.sh
-
-
 TEST_CASE="Line endings are valid"
 
 EXIT_VALUE=0

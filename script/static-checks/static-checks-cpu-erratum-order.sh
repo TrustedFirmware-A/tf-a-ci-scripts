@@ -5,9 +5,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-this_dir="$(readlink -f "$(dirname "$0")")"
-. $this_dir/common.sh
-
 LOG_FILE=$(mktemp -t cpu_workaround_order_check_log.XXXX)
 
 if [[ "$2" == "patch" ]]; then

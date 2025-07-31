@@ -7,10 +7,6 @@
 
 # test-package-check-copyright.sh DIRECTORY
 
-this_dir="$(readlink -f "$(dirname "$0")")"
-. $this_dir/common.sh
-
-
 DIRECTORY="$1"
 
 TEST_CASE="Copyright headers of files modified by this patch"

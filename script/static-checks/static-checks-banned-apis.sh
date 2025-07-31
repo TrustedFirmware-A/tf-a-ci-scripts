@@ -7,10 +7,6 @@
 
 # static-checks-banned-apis.sh <path-to-root-folder> [patch]
 
-this_dir="$(readlink -f "$(dirname "$0")")"
-. $this_dir/common.sh
-
-
 LOG_FILE=$(mktemp -t banned-api-check.XXXX)
 
 if [[ "$2" == "patch" ]]; then
@@ -43,5 +39,3 @@ echo >> "$LOG_TEST_FILENAME"
 rm -f "$LOG_FILE"
 
 exit "$EXIT_VALUE"
-
-
