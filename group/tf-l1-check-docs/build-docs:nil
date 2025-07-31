@@ -11,5 +11,5 @@ pre_tf_build() {
 }
 
 post_tf_build() {
-	mv "$tf_root/docs/build" "$archive"
+	mv "$tf_build_root/docs" "$archive"
 }
