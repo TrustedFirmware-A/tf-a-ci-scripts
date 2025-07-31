@@ -15,33 +15,12 @@ cd "$(dirname "$0")/../.."
 export CI_ROOT=$(pwd)
 cd -
 
-. $CI_ROOT/script/static-checks/common.sh
+git fetch --unshallow --update-shallow origin
+git fetch --unshallow --update-shallow origin ${GERRIT_BRANCH} ${GERRIT_REFSPEC}
 
-merge_base=$(get_merge_base)
-if [[ -z "$merge_base" ]]; then
-    echo "Failed to find merge base, fetching entire change history"
-
-    # Set GERRIT_REFSPEC if not already defined
-    if [[ -z "$GERRIT_REFSPEC" ]]; then
-        if [[ "$TF_GERRIT_PROJECT" == *tf-a-tests ]]; then
-            GERRIT_REFSPEC="$TFTF_GERRIT_REFSPEC"
-        else
-            GERRIT_REFSPEC="$TF_GERRIT_REFSPEC"
-        fi
-    fi
-
-    git fetch --depth=100 origin "$GERRIT_REFSPEC"
-    git checkout FETCH_HEAD
-
-    merge_base=$(get_merge_base)
-
-    if [[ -z "$merge_base" ]]; then
-        echo "Failed to determine merge base after fetching. Exiting." >&2
-        exit 1
-    fi
-fi
-
-export merge_base
+export merge_base=$(git merge-base \
+    $(head -n1 .git/FETCH_HEAD | cut -f1) \
+    $(tail -n1 .git/FETCH_HEAD | cut -f1))
 
 export LOG_TEST_FILENAME=$(pwd)/static-checks.log
 

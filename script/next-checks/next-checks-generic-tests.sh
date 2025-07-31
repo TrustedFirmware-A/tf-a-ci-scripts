@@ -21,8 +21,7 @@ REPO_NAME=$2
 # next tests, usually this will be tfa-next
 export GERRIT_BRANCH=${GERRIT_BRANCH:="tfa-next"}
 
-# git operations e.g. ${get_merge_base} rely on access to tfa-next branch,
-# we need to access via SSH for that to work currently
+# git operations rely on access to tfa-next branch, we need to access via SSH for that to work currently
 SSH_PARAMS="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PubkeyAcceptedKeyTypes=+ssh-rsa -p 29418 -i ${CI_BOT_KEY}"
 REPO_SSH_URL="ssh://${CI_BOT_USERNAME}@review.trustedfirmware.org:29418/${REPO_SPACE}/${REPO_NAME}"
 export GIT_SSH_COMMAND="ssh ${SSH_PARAMS}"

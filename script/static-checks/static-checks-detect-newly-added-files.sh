@@ -11,10 +11,6 @@
 # It runs on every TF-A patch and detects the new files and updates
 # the patch contibutor to include them for Coverity Scan analysis.
 
-this_dir="$(readlink -f "$(dirname "$0")")"
-. $this_dir/common.sh
-
-
 LOG_FILE=$(mktemp -t files-detection-check.XXXX)
 TFA_PATCH_NEWFILES_LIST=$(mktemp -t tfa-patch-newfiles-list.XXXX)
 EXIT_VALUE=0

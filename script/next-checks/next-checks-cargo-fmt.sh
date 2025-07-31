@@ -6,9 +6,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-this_dir="$(readlink -f "$(dirname "$0")")"
-. $this_dir/../static-checks/common.sh
-
 TF_ROOT="$1"
 
 TEST_CASE="Rust cargo fmt checks"

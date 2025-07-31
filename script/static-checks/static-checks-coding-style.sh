@@ -9,10 +9,6 @@
 # against the Linux coding style using the checkpatch.pl script from
 # the Linux kernel source tree.
 
-this_dir="$(readlink -f "$(dirname "$0")")"
-. $this_dir/common.sh
-
-
 TEST_CASE="Coding style on current patch"
 
 echo "# Check coding style on the last patch"

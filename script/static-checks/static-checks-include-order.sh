@@ -7,10 +7,6 @@
 
 # unittest-include-order.sh <path-to-root-folder> [patch]
 
-this_dir="$(readlink -f "$(dirname "$0")")"
-. $this_dir/common.sh
-
-
 LOG_FILE=$(mktemp -t include-order-check.XXXX)
 
 if [[ "$2" == "patch" ]]; then

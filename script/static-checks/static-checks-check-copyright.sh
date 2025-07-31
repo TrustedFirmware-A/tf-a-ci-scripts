@@ -7,10 +7,6 @@
 
 # test-package-check-copyright.sh DIRECTORY COPYRIGHT_FLAGS
 
-this_dir="$(readlink -f "$(dirname "$0")")"
-. $this_dir/common.sh
-
-
 DIRECTORY="$1"
 COPYRIGHT_FLAGS="$2"
 
