@@ -145,7 +145,7 @@ get_ftpm_optee_bin() {
 get_dtb() {
 	local dtb_type="${dtb_type:?}"
 	local dtb_url
-	local dtb_saveas="$workspace/dtb.bin"
+	local dtb_saveas="$archive/dtb.bin"
 	local cc="$(get_tf_opt CROSS_COMPILE)"
 	local pp_flags="-P -nostdinc -undef -x assembler-with-cpp"
 
@@ -158,11 +158,11 @@ get_dtb() {
 		*)
 			# Preprocess DTS file
 			${cc}gcc -E ${pp_flags} -I"$tf_root/fdts" -I"$tf_root/include" \
-				-o "$workspace/${dtb_type}.pre.dts" \
+				-o "$archive/${dtb_type}.pre.dts" \
 				"$tf_root/fdts/${dtb_type}.dts"
 			# Generate DTB file from DTS
 			dtc -I dts -O dtb \
-				"$workspace/${dtb_type}.pre.dts" -o "$dtb_saveas"
+				"$archive/${dtb_type}.pre.dts" -o "$dtb_saveas"
 	esac
 
 	archive_file "$dtb_saveas"
