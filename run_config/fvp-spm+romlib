@@ -10,10 +10,6 @@ post_tf_build() {
 	build_fip BL33="$archive/tftf.bin" BL32="$archive/secure_hafnium.bin"
 }
 
-post_tf_archive() {
-	fvp_romlib_cleanup
-}
-
 generate_lava_job_template() {
 	payload_type="tftf" gen_yaml_template
 }

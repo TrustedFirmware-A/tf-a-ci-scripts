@@ -202,8 +202,6 @@ get_rootfs() {
 	popd
 }
 
-fvp_romlib_jmptbl_backup="$(mktempdir)/jmptbl.i"
-
 fvp_romlib_runtime() {
 	local tmpdir="$(mktempdir)"
 
@@ -212,8 +210,7 @@ fvp_romlib_runtime() {
 	mv "${tf_build_root:?}/${plat:?}/${mode:?}/bl1.bin" "$tmpdir/bl1.bin"
 
 	# Patch index file
-	cp "${tf_root:?}/plat/arm/board/fvp/jmptbl.i" "$fvp_romlib_jmptbl_backup"
-	sed -i '/fdt/ s/.$/&\ patch/' ${tf_root:?}/plat/arm/board/fvp/jmptbl.i
+	apply_tf_patch "fvp_romlib_runtime/jmptbl_i_patch.patch"
 
 	# Rebuild with patched file
 	echo "Building patched romlib:"
@@ -223,12 +220,6 @@ fvp_romlib_runtime() {
 	mv "$tmpdir/romlib.bin" "${tf_build_root:?}/${plat:?}/${mode:?}/romlib/romlib.bin"
 	mv "$tmpdir/bl1.bin" "${tf_build_root:?}/${plat:?}/${mode:?}/bl1.bin"
 }
-
-fvp_romlib_cleanup() {
-	# Restore original index
-	mv "$fvp_romlib_jmptbl_backup" "${tf_root:?}/plat/arm/board/fvp/jmptbl.i"
-}
-
 
 # Generates the final YAML-based LAVA job definition from a template file.
 #
