@@ -699,6 +699,21 @@ clean_build PLAT=rcar $(common_flags) BL32=Makefile \
     PMIC_ROHM_BD9571=0 RCAR_DRAM_SPLIT=0 RCAR_SYSTEM_SUSPEND=0 \
     AVS_SETTING_ENABLE=0 SPD=none TRUSTED_BOARD_BOOT=1
 
+# Renesas R-Car S4 Automotive SoC
+clean_build PLAT=rcar_gen4 $(common_flags) BL32=Makefile \
+    MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=S4 \
+    SPD=none CTX_INCLUDE_AARCH32_REGS=0 PTP_NONSECURE_ACCESS=1
+
+# Renesas R-Car V4H Automotive SoC
+clean_build PLAT=rcar_gen4 $(common_flags) BL32=Makefile \
+    MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=V4H \
+    SPD=none CTX_INCLUDE_AARCH32_REGS=0 PTP_NONSECURE_ACCESS=1
+
+# Renesas R-Car V4M Automotive SoC
+clean_build PLAT=rcar_gen4 $(common_flags) BL32=Makefile \
+    MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=V4M \
+    SPD=none CTX_INCLUDE_AARCH32_REGS=0 PTP_NONSECURE_ACCESS=1
+
 # Renesas HiHope RZ/G2M development kit
 clean_build PLAT=rzg $(common_flags) \
     MBEDTLS_DIR=$(pwd)/mbedtls LSI=G2M \

@@ -1,0 +1,8 @@
+BL32=Makefile
+BL33=Makefile
+CROSS_COMPILE=aarch64-none-elf-
+LSI=S4
+PLAT=rcar_gen4
+SPD=none
+CTX_INCLUDE_AARCH32_REGS=0
+PTP_NONSECURE_ACCESS=1
