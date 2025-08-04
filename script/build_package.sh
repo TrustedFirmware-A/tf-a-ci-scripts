@@ -20,19 +20,13 @@ fi
 # Directory to where the source code e.g. for Trusted Firmware is checked out.
 export tf_root="${tf_root:-$workspace/trusted_firmware}"
 export tftf_root="${tftf_root:-$workspace/trusted_firmware_tf}"
-export scp_root="${scp_root:-$workspace/scp}"
-scp_tools_root="${scp_tools_root:-$workspace/scp_tools}"
 cc_root="${cc_root:-$ccpathspec}"
 spm_root="${spm_root:-$workspace/spm}"
 rmm_root="${rmm_root:-$workspace/tf-rmm}"
 
-scp_tf_tools_root="$scp_tools_root/scp_tf_tools"
-
 # Refspecs
 tf_refspec="$TF_REFSPEC"
 tftf_refspec="$TFTF_REFSPEC"
-scp_refspec="$SCP_REFSPEC"
-scp_tools_commit="${SCP_TOOLS_COMMIT:-master}"
 spm_refspec="$SPM_REFSPEC"
 rmm_refspec="$RMM_REFSPEC"
 
@@ -182,38 +176,6 @@ collect_build_artefacts() {
 		echo "Did you set 'dont_clean' but forgot to run 'distclean'?"
 		die
 	fi
-}
-
-# SCP and MCP binaries are named firmware.{bin,elf}, and are placed under
-# scp/mcp_ramfw and scp/mcp_romfw directories, so can't be collected by
-# collect_build_artefacts function.
-collect_scp_artefacts() {
-	to="${to:?}" \
-	find "$scp_root" \( \( -name "*.bin" -o -name '*.elf' \) -and ! -name 'CMake*' \) -exec bash -c '
-		for file; do
-			ext="$(echo $file | awk -F. "{print \$NF}")"
-			case $file in
-				*/firmware-scp_ramfw/bin/*|*/firmware-scp_ramfw_fvp/bin/*)
-					cp $file $to/scp_ram.$ext
-					;;
-				*/firmware-scp_romfw/bin/*)
-					cp $file $to/scp_rom.$ext
-					;;
-				*/firmware-mcp_ramfw/bin/*|*/firmware-mcp_ramfw_fvp/bin/*)
-					cp $file $to/mcp_ram.$ext
-					;;
-				*/firmware-mcp_romfw/bin/*)
-					cp $file $to/mcp_rom.$ext
-					;;
-				*/firmware-scp_romfw_bypass/bin/*)
-					cp $file $to/scp_rom_bypass.$ext
-					;;
-				*)
-					echo "Unknown SCP binary: $file" >&2
-					;;
-			esac
-		done
-	' bash '{}' +
 }
 
 # Collect SPM/hafnium artefacts with "secure_" appended to the files
@@ -485,16 +447,6 @@ update_fip_hw_config() {
 	fi
 }
 
-get_scp_opt() {
-	(
-	name="${1:?}"
-	if config_valid "$scp_config_file"; then
-		source "$scp_config_file"
-		echo "${!name}"
-	fi
-	)
-}
-
 get_tftf_opt() {
 	(
 	name="${1:?}"
@@ -655,212 +607,6 @@ EOF
 	)
 }
 
-build_scp() {
-	(
-	config_file="${scp_build_config:-$scp_config_file}"
-
-	source "$config_file"
-
-	cd "$scp_root"
-
-	# Always distclean when running on Jenkins. Skip distclean when running
-	# locally and explicitly requested.
-	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		make -f Makefile.cmake clean &>>"$build_log" || fail_build
-	fi
-
-	python3 -m venv .venv
-	. .venv/bin/activate
-
-	# Install extra tools used by CMake build system
-	pip install -r requirements.txt --timeout 30 --retries 15
-
-	# Log build command line. It is left unfolded on purpose to assist
-	# copying to clipboard.
-	cat <<EOF | log_separator >/dev/null
-
-SCP build command line:
-	make -f Makefile.cmake $(cat "$config_file" | tr '\n' ' ') \
-		TOOLCHAIN=GNU \
-		MODE="$mode" \
-		EXTRA_CONFIG_ARGS+=-DDISABLE_CPPCHECK=true \
-		V=1 &>>"$build_log"
-
-EOF
-
-	# Build SCP
-	make -f Makefile.cmake $(cat "$config_file" | tr '\n' ' ') \
-		TOOLCHAIN=GNU \
-		MODE="$mode" \
-		EXTRA_CONFIG_ARGS+=-DDISABLE_CPPCHECK=true \
-		V=1 &>>"$build_log" \
-		|| fail_build
-	)
-}
-
-clone_scp_tools() {
-
-	if [ ! -d "$scp_tools_root" ]; then
-		echo "Cloning SCP-tools ... $scp_tools_commit" |& log_separator
-
-	  	clone_url="${SCP_TOOLS_CHECKOUT_LOC:-$scp_tools_src_repo_url}" \
-			where="$scp_tools_root" \
-			refspec="${scp_tools_commit}"
-			clone_repo &>>"$build_log"
-	else
-		echo "Already cloned SCP-tools ..." |& log_separator
-	fi
-
-	show_head "$scp_tools_root"
-
-	cd "$scp_tools_root"
-
-	echo "Updating submodules"
-
-	git submodule init
-
-	git submodule update
-
-	lib_commit=$(grep "'scmi_lib_commit'" run_tests/settings.py | cut -d':' -f 2 | tr -d "'" | tr -d ",")
-
-	cd "scmi"
-	git checkout $lib_commit
-
-	git show --quiet --no-color | sed 's/^/  > /g'
-}
-
-clone_tf_for_scp_tools() {
-	scp_tools_arm_tf="$scp_tools_root/arm-tf"
-
-	if [ ! -d "$scp_tools_arm_tf" ]; then
-		echo "Cloning TF-4-SCP-tools ..." |& log_separator
-
-		clone_url="$tf_for_scp_tools_src_repo_url"
-		where="$scp_tools_arm_tf"
-
-		git clone "$clone_url" "$where"
-
-		cd "$scp_tools_arm_tf"
-
-		git checkout --track origin/juno-v4.3
-
-		git show --quiet --no-color | sed 's/^/  > /g'
-
-	else
-		echo "Already cloned TF-4-SCP-tools ..." |& log_separator
-	fi
-}
-
-build_scmi_lib_scp_tools() {
-	(
-	cd "$scp_tools_root"
-
-	cd "scmi"
-
-	scp_tools_arm_tf="$scp_tools_root/arm-tf"
-
-	cross_compile="$(set_cross_compile_gcc_linaro_toolchain)"
-
-	std_libs="-I$scp_tools_arm_tf/include/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/common/tbbr"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/drivers/arm"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/lib"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/lib/aarch64"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/lib/stdlib"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/lib/stdlib/sys"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/lib/xlat_tables"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/plat/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/plat/arm/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/plat/arm/css/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/plat/arm/board/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/plat/arm/soc/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/plat/arm/board/juno/include"
-
-	cflags="-Og -g"
-	cflags="$cflags -mgeneral-regs-only"
-	cflags="$cflags -mstrict-align"
-	cflags="$cflags -nostdinc"
-	cflags="$cflags -fno-inline"
-	cflags="$cflags -ffreestanding"
-	cflags="$cflags -ffunction-sections"
-	cflags="$cflags -fdata-sections"
-	cflags="$cflags -DAARCH64"
-	cflags="$cflags -DPRId32=\"ld\""
-	cflags="$cflags -DVERBOSE_LEVEL=3"
-
-	cflags="$cflags $std_libs"
-
-	protocols="performance,power_domain,system_power,reset"
-
-	echo "Building SCMI library (SCP-tools) ..."
-
-	make "CROSS_COMPILE=$cross_compile" \
-		"CFLAGS=$cflags" \
-		"PLAT=baremetal" \
-		"PROTOCOLS=$protocols" \
-		"clean" \
-		"all"
-	)
-}
-
-build_tf_for_scp_tools() {
-
-	cd "$scp_tools_root/arm-tf"
-
-	cross_compile="$(set_cross_compile_gcc_linaro_toolchain)"
-
-	if [ "$1" = "release" ]; then
-		echo "Build TF-4-SCP-Tools rls..."
-	else
-		echo "Build TF-4-SCP-Tools dbg..."
-
-		make realclean
-
-		make "BM_TEST=scmi" \
-			"ARM_BOARD_OPTIMISE_MEM=1" \
-			"BM_CSS=juno" \
-			"CSS_USE_SCMI_SDS_DRIVER=1" \
-			"PLAT=juno" \
-			"DEBUG=1" \
-			"PLATFORM=juno" \
-			"CROSS_COMPILE=$cross_compile" \
-			"BM_WORKSPACE=$scp_tools_root/baremetal"
-
-		archive_file "build/juno/debug/bl1.bin"
-
-		archive_file "build/juno/debug/bl2.bin"
-
-		archive_file "build/juno/debug/bl31.bin"
-	fi
-}
-
-build_fip_for_scp_tools() {
-
-	cd "$scp_tools_root/arm-tf"
-
-	cross_compile="$(set_cross_compile_gcc_linaro_toolchain)"
-
-	if [ ! -d "$scp_root/build/juno/GNU/debug/firmware-scp_ramfw" ]; then
-		make fiptool
-		echo "Make FIP 4 SCP-Tools rls..."
-
-	else
-		make fiptool
-		echo "Make FIP 4 SCP-Tools dbg..."
-
-		make "PLAT=juno" \
-			"all" \
-			"fip" \
-			"DEBUG=1" \
-			"CROSS_COMPILE=$cross_compile" \
-			"BL31=$scp_tools_root/arm-tf/build/juno/debug/bl31.bin" \
-			"BL33=$scp_tools_root/baremetal/dummy_bl33" \
-			"SCP_BL2=$scp_root/build/juno/GNU/$mode/firmware-scp_ramfw/bin/juno-bl2.bin"
-
-		archive_file "$scp_tools_root/arm-tf/build/juno/debug/fip.bin"
-	fi
-}
-
 build_cc() {
 # Building code coverage plugin
 	ARM_DIR=/arm
@@ -988,11 +734,6 @@ set_tf_build_targets() {
 set_tftf_build_targets() {
 	echo "Set build target to '${targets:?}'"
 	set_hook_var "tftf_build_targets" "$targets"
-}
-
-set_scp_build_targets() {
-	echo "Set build target to '${targets:?}'"
-	set_hook_var "scp_build_targets" "$targets"
 }
 
 set_spm_build_targets() {
@@ -1227,17 +968,13 @@ echo
 
 tf_config="$(echo "$build_configs" | awk -F, '{print $1}')"
 tftf_config="$(echo "$build_configs" | awk -F, '{print $2}')"
-scp_config="$(echo "$build_configs" | awk -F, '{print $3}')"
-scp_tools_config="$(echo "$build_configs" | awk -F, '{print $4}')"
-spm_config="$(echo "$build_configs" | awk -F, '{print $5}')"
-rmm_config="$(echo "$build_configs" | awk -F, '{print $6}')"
+spm_config="$(echo "$build_configs" | awk -F, '{print $3}')"
+rmm_config="$(echo "$build_configs" | awk -F, '{print $4}')"
 
 test_config_file="$ci_root/group/$test_group/$test_config"
 
 tf_config_file="$ci_root/tf_config/$tf_config"
 tftf_config_file="$ci_root/tftf_config/$tftf_config"
-scp_config_file="$ci_root/scp_config/$scp_config"
-scp_tools_config_file="$ci_root/scp_tools_config/$scp_tools_config"
 spm_config_file="$ci_root/spm_config/$spm_config"
 rmm_config_file="$ci_root/rmm_config/$rmm_config"
 
@@ -1263,23 +1000,6 @@ else
 	echo
 	sort "$tftf_config_file" | sed '/^\s*$/d;s/^/\t/'
 	echo
-fi
-
-if ! config_valid "$scp_config"; then
-	scp_config=
-else
-	echo "SCP firmware config:"
-	echo
-	sort "$scp_config_file" | sed '/^\s*$/d;s/^/\t/'
-	echo
-fi
-
-if ! config_valid "$scp_tools_config"; then
-	scp_tools_config=
-else
-	echo "SCP Tools config:"
-	echo
-	sort "$scp_tools_config_file" | sed '/^\s*$/d;s/^/\t/'
 fi
 
 if ! config_valid "$spm_config"; then
@@ -1323,36 +1043,6 @@ if [ "$tftf_config" ] && assert_can_git_clone "tftf_root"; then
 	clone_url="${TFTF_CHECKOUT_LOC:-$tftf_src_repo_url}" where="$tftf_root" \
 		refspec="$TFTF_REFSPEC" clone_repo &>>"$build_log"
 	show_head "$tftf_root"
-fi
-
-if [ "$scp_config" ] && assert_can_git_clone "scp_root"; then
-	# If the SCP firmware repository has already been checked out,
-	# use that location. Otherwise, clone one ourselves.
-	echo "Cloning SCP Firmware..."
-	clone_url="${SCP_CHECKOUT_LOC:-$scp_src_repo_url}" where="$scp_root" \
-		refspec="${SCP_REFSPEC-master-upstream}" clone_repo &>>"$build_log"
-
-	pushd "$scp_root"
-
-	# Use filer submodule as a reference if it exists
-	if [ -d "$SCP_CHECKOUT_LOC/cmsis" ]; then
-		cmsis_reference="--reference $SCP_CHECKOUT_LOC/cmsis"
-	fi
-
-	# If we don't have a reference yet, fall back to $cmsis_root if set, or
-	# then to project filer if accessible.
-	if [ -z "$cmsis_reference" ]; then
-		cmsis_ref_repo="${cmsis_root:-$project_filer/ref-repos/cmsis}"
-		if [ -d "$cmsis_ref_repo" ]; then
-			cmsis_reference="--reference $cmsis_ref_repo"
-		fi
-	fi
-
-	git submodule -q update $cmsis_reference --init
-
-	popd
-
-	show_head "$scp_root"
 fi
 
 if [ -n "$cc_config" ] ; then
@@ -1495,51 +1185,6 @@ for mode in $modes; do
 	if config_valid "$cc_config"; then
 	 # Build code coverage plugin
 		build_cc
-	fi
-
-	# SCP build
-	if config_valid "$scp_config"; then
-		(
-		echo "##########"
-
-		# Source platform-specific utilities
-		plat="$(get_scp_opt PRODUCT)"
-		plat_utils="$ci_root/${plat}_utils.sh"
-		if [ -f "$plat_utils" ]; then
-			source "$plat_utils"
-		fi
-
-		archive="$build_archive"
-		scp_build_root="$scp_root/build"
-
-		echo "Building SCP Firmware ($mode) ..." |& log_separator
-
-		build_scp
-		to="$archive" collect_scp_artefacts
-
-		echo "##########"
-		echo
-		)
-	fi
-
-	# SCP-tools build
-	if config_valid "$scp_tools_config"; then
-		(
-		echo "##########"
-
-		archive="$build_archive"
-		scp_tools_build_root="$scp_tools_root/build"
-
-		clone_scp_tools
-
-		echo "##########"
-		echo
-
-		echo "##########"
-		clone_tf_for_scp_tools
-		echo "##########"
-		echo
-		)
 	fi
 
 	# TFTF build

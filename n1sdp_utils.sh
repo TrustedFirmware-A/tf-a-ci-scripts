@@ -21,22 +21,14 @@ fetch_prebuilt_fw_images() {
                 fetch_and_archive
 
         #Fetch pre-built SCP/MCP binaries if they haven't been built
-        if [ ! -f "$archive/mcp_rom.bin" ]; then
-                url="$scp_mcp_prebuilts/mcp_romfw.bin" filename="mcp_rom.bin" \
-                        fetch_and_archive
-        fi
-        if [ ! -f "$archive/scp_rom.bin" ]; then
-                url="$scp_mcp_prebuilts/scp_romfw.bin" filename="scp_rom.bin" \
-                        fetch_and_archive
-        fi
-        if [ ! -f "$archive/scp_ram.bin" ]; then
-                url="$scp_mcp_prebuilts/scp_ramfw.bin" filename="scp_ram.bin" \
-                        fetch_and_archive
-        fi
-        if [ ! -f "$archive/mcp_ram.bin" ]; then
-                url="$scp_mcp_prebuilts/mcp_ramfw.bin" filename="mcp_ram.bin" \
-                        fetch_and_archive
-        fi
+        url="$scp_mcp_prebuilts/mcp_romfw.bin" filename="mcp_rom.bin" \
+                fetch_and_archive
+        url="$scp_mcp_prebuilts/scp_romfw.bin" filename="scp_rom.bin" \
+                fetch_and_archive
+        url="$scp_mcp_prebuilts/scp_ramfw.bin" filename="scp_ram.bin" \
+                fetch_and_archive
+        url="$scp_mcp_prebuilts/mcp_ramfw.bin" filename="mcp_ram.bin" \
+                fetch_and_archive
 }
 
 gen_recovery_image() {

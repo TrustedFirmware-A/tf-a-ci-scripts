@@ -69,7 +69,7 @@ REPORT = "report.html"
 REPORT_JSON = "report.json"
 
 # Maximum depth for the tree of results, excluding status
-MAX_RESULTS_DEPTH = 8
+MAX_RESULTS_DEPTH = 6
 
 # We'd have a minimum of 3: group, a build config, a run config.
 MIN_RESULTS_DEPTH = 3
@@ -81,8 +81,6 @@ LEVEL_HEADERS = [
         "Test Group",
         "TF Build Config",
         "TFTF Build Config",
-        "SCP Build Config",
-        "SCP tools Config",
         "SPM Build Config",
         "RMM Build Config",
         "Run Config",
@@ -277,7 +275,6 @@ def result_to_html(node_stack):
         if not Level_empty[child_node.depth - 1]:
             # - TF config might be "nil" for TFTF-only build configs;
             # - TFTF config might not be present for non-TFTF runs;
-            # - SCP config might not be present for non-SCP builds;
             # - All build-only configs have runconfig as "nil";
             #
             # Make nil cells empty, and grey empty cells out.
@@ -441,7 +438,7 @@ def main(fd):
         test_config = desc[:-len(TEST_SUFFIX)]
         build_config, run_config = test_config.split(":")
         spare_commas = "," * (MAX_RESULTS_DEPTH - MIN_RESULTS_DEPTH)
-        tf_config, tftf_config, scp_config, scp_tools, spm_config, rmm_config, *_ = (build_config +
+        tf_config, tftf_config, spm_config, rmm_config, *_ = (build_config +
                 spare_commas).split(",")
 
         build_number = child_build_numbers[i]
@@ -456,9 +453,7 @@ def main(fd):
         group_node = results.set_child(group)
         tf_node = group_node.set_child(tf_config)
         tftf_node = tf_node.set_child(tftf_config)
-        scp_node = tftf_node.set_child(scp_config)
-        scp_tools_node = scp_node.set_child(scp_tools)
-        spm_node = scp_tools_node.set_child(spm_config)
+        spm_node = tftf_node.set_child(spm_config)
         rmm_node = spm_node.set_child(rmm_config)
         run_node = rmm_node.set_child(run_config)
         run_node.set_result(test_result, build_number)
