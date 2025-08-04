@@ -16,7 +16,7 @@ fi
 # only way to have a board-accessible URL at the moment is to have build
 # artefacts archived. Therefore, only for Juno do we spawn the build as a
 # separate job; otherwise, we build within this job.
-if echo "$RUN_CONFIG" | grep -iqe '^juno' -iqe '^scp_juno'; then
+if echo "$RUN_CONFIG" | grep -iqe '^juno'; then
 	exit 0
 else
 	exit 1

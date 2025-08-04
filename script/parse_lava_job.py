@@ -59,13 +59,6 @@ def scmi_parse_phase(results, case, special_case, expected_skip_count):
     if (fail_count > 0) or (skip_count > expected_skip_count):
         report_job_failure()
 
-def parse_scp_scmi_results():
-    #
-    # All protocols but sensor
-    #
-    all_prot_expected_skip_count = 9
-    scmi_parse_phase(results, "scp-scmi-all-protocol", "", all_prot_expected_skip_count)
-
 def parse_cmd_line():
     parser = argparse.ArgumentParser(description="Parse results from LAVA. "
         "The results must be provided as a YAML file.")
@@ -103,13 +96,6 @@ with open(args.file) as fd:
     elif args.payload_type == "tftf":
         session = "TFTF"
         suite = "tftf"
-    elif args.payload_type == "scp_tests_scmi":
-        session = "SCMI"
-        suite = "scp-scmi"
-        parse_scp_scmi_results()
-
-        print("All tests passed.")
-        report_job_success()
     else:
         raise Exception("Payload not defined")
 

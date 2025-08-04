@@ -33,18 +33,11 @@ def get_env(variable):
 # Perform group-specific translation on the build config
 def translate_build_config(group, config_list):
     # config_list contains build configs as read from the test config
-    if group.startswith("scp-"):
-        # SCP configs would be specified in the following format:
-        #  scp_config, tf_config, tftf_config, scp_tools
-        # Reshuffle them into the canonical format
-        config_list = [config_list[1], config_list[2], config_list[0], config_list[3]]
-
     if group.startswith("spm-"):
         # SPM configs would be specified in the following format:
-        #  spm_config, tf_config, tftf_config, scp_config, scp_tools
+        #  spm_config, tf_config, tftf_config
         # Reshuffle them into the canonical format
-        config_list = [config_list[1], config_list[2], config_list[3], config_list[4], config_list[0]]
-
+        config_list = [config_list[1], config_list[2], config_list[0]]
     return config_list
 
 
@@ -54,9 +47,9 @@ def gen_desc(group, test):
     build_config, run_config = test.split(":")
 
     # Test descriptors are always generated in the following order:
-    #  tf_config, tftf_config, scp_config, scp_tools, spm_config
+    #  tf_config, tftf_config, spm_config, rmm_config
     # Fill missing configs to the right with "nil".
-    config_list = (build_config.split(",") + ["nil"] * 5)[:5]
+    config_list = (build_config.split(",") + ["nil"] * 4)[:4]
 
     # Perform any group-specific translation on the config
     config_list = translate_build_config(group, config_list)

@@ -1,8 +1,0 @@
-#
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
-#
-# SPDX-License-Identifier: BSD-3-Clause
-#
-
-Files in this directory sets System Control Processor (SCP) build options as
-they ought to appear on the build command line.

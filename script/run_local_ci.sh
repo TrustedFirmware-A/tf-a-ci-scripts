@@ -248,18 +248,16 @@ if [ -z "${test_groups}" ]; then
 
     # default the rest to nil if not present
     tftf_config="${tftf_config:-nil}"
-    scp_config="${scp_config:-nil}"
-    scp_tools="${scp_tools:-nil}"
     spm_config="${spm_config:-nil}"
     run_config="${run_config:-nil}"
 
     # construct the 'long form' so it takes into account all possible configurations
-    if echo ${test_group} | grep -q '^scp-'; then
-	tg=$(printf "%s/%s,%s,%s,%s:%s" "${test_group}" "${scp_config}" "${tf_config}" "${tftf_config}" "${scp_tools}" "${run_config}")
-    elif echo ${test_group} | grep -q '^spm-'; then
-	tg=$(printf "%s/%s,%s,%s,%s,%s:%s" "${test_group}" "${spm_config}" "${tf_config}" "${tftf_config}" "${scp_config}" "${scp_tools}" "${run_config}")
+    if echo ${test_group} | grep -q '^spm-'; then
+	tg=$(printf "%s/%s,%s,%s:%s" "${test_group}" "${spm_config}" "${tf_config}" "${tftf_config}" "${run_config}")
+    elif echo ${test_group} | grep -q '^rmm-'; then
+	tg=$(printf "%s/%s,%s,%s,%s:%s" "${test_group}" "${rmm_config}" "${tf_config}" "${tftf_config}" "${spm_config}" "${run_config}")
     else
-	tg=$(printf "%s/%s,%s,%s,%s,%s:%s" "${test_group}" "${tf_config}" "${tftf_config}" "${scp_config}" "${scp_tools}" "${spm_config}" "${run_config}")
+	tg=$(printf "%s/%s,%s,%s:%s" "${test_group}" "${tf_config}" "${tftf_config}" "${spm_config}" "${run_config}")
     fi
 
     # trim any ',nil:' from it
@@ -314,15 +312,6 @@ else
 	let "++local_count"
 fi
 
-if [ -z "$scp_root" ]; then
-	in_red "NOTE: NOT using local work tree for SCP"
-else
-	scp_root="$(readlink -f $scp_root)"
-	scp_refspec=
-	in_green "Using local work tree for SCP"
-	let "++local_count"
-fi
-
 if [ -n "$cc_enable" ]; then
 	in_green "Code Coverage enabled"
 	if [ -z "$TOOLCHAIN" ]; then
@@ -374,15 +363,6 @@ rm -rf "$workspace"
 mkdir -p "$workspace"
 
 source "$ci_root/utils.sh"
-
-# SCP is not cloned by default
-export clone_scp
-export scp_root
-if not_upon "$scp_root" && upon "$clone_scp"; then
-	clone_scp=1
-else
-	clone_scp=0
-fi
 
 # Enable of code coverage and whether there is a local plugin
 if upon "$cc_enable" && not_upon "$cc_path"; then

@@ -1,5 +1,0 @@
-PRODUCT=juno
-EXTRA_CONFIG_ARGS+=-DCMAKE_ASM_COMPILER=/arm/pdsw/downloads/scp-models/tools/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-gcc
-EXTRA_CONFIG_ARGS+=-DCMAKE_C_COMPILER=/arm/pdsw/downloads/scp-models/tools/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-gcc
-EXTRA_CONFIG_ARGS+=-DCMAKE_CXX_COMPILER=/arm/pdsw/downloads/scp-models/tools/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-g++
-EXTRA_CONFIG_ARGS+=-DSCP_LOG_LEVEL=CRIT

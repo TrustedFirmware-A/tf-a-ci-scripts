@@ -9,8 +9,6 @@ set -e
 
 if echo "$RUN_CONFIG" | grep -iq 'tftf'; then
 	payload_type="tftf"
-elif echo "$RUN_CONFIG" | grep -iq 'scmi'; then
-	payload_type="scp_tests_scmi"
 else
 	payload_type="linux"
 fi

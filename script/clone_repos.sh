@@ -228,42 +228,6 @@ if not_upon "$no_cc"; then
 	popd
 fi
 
-SCP_REFSPEC="${scp_refspec:-$SCP_REFSPEC}"
-if upon "$clone_scp"; then
-	# Clone SCP Firmware repository
-	# NOTE: currently scp/firmware:master is not tracking the upstream.
-	# Therefore, if the url is gerrit.oss.arm.com/scp/firmware and there is
-	# no ref_spec, then set the ref_spec to master-upstream.
-	if [ "$scp_src_repo_url" = "$scp_src_repo_default" ]; then
-		SCP_REFSPEC="${SCP_REFSPEC:-master-upstream}"
-	fi
-
-	url="$scp_src_repo_url" name="scp" ref="SCP_REFSPEC" \
-		loc="SCP_CHECKOUT_LOC" clone_and_sync
-
-	pushd "$ci_scratch/scp"
-
-	# Edit the submodule URL to point to the reference repository so that
-	# all submodule update pick from the reference repository instead of
-	# Github.
-	cmsis_ref_repo="${cmsis_root:-$project_filer/ref-repos/cmsis}"
-	if [ -d "$cmsis_ref_repo" ]; then
-		cmsis_reference="--reference $cmsis_ref_repo"
-	fi
-	git submodule -q update $cmsis_reference --init
-
-	eval cmsis_dir="$(git submodule status | grep cmsis | awk 'NR==1{print $2}')"
-
-	# Workaround while fixing permissions on /arm/projectscratch/ssg/trusted-fw/ref-repos/cmsis
-	cd $cmsis_dir
-	code_cov_emit_param "CMSIS" "URL" "$(git remote -v | grep fetch |  awk '{print $2}')"
-	code_cov_emit_param "CMSIS" "COMMIT" "$(git rev-parse HEAD)"
-	code_cov_emit_param "CMSIS" "REFSPEC" "master"
-	cd ..
-	########################################
-	popd
-fi
-
 SPM_REFSPEC="${spm_refspec:-$SPM_REFSPEC}"
 if not_upon "$no_spm"; then
 	# Clone SPM repository
@@ -289,8 +253,6 @@ if not_upon "$no_tfm_extras"; then
 	url="$tf_m_extras_src_repo_url" name="tf-m-extras" ref="TF_M_EXTRAS_REFSPEC" \
 		loc="TF_M_EXTRAS_PATH" clone_and_sync
 fi
-
-echo "SCP_TOOLS_COMMIT=$SCP_TOOLS_COMMIT" >> "$param_file"
 
 # Copy environment file to ci_scratch for sub-jobs' access
 cp "$env_file" "$ci_scratch"
