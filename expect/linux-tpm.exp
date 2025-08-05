@@ -17,7 +17,7 @@ set FTPM_DIGEST [get_param ftpm_digest "ftpm_event_log"]
 set non_zero_pcr "(?!(\\s00){16})((\\s(\[0-9a-f\]){2}){16}\\s)"
 set zero_pcr "(\\s00){16}\\s+(00\\s){16}"
 
-capture_log $TFA_DIGEST "Booting BL31"
+capture_log $TFA_DIGEST "Booting BL31|Finished using crypto library"
 
 expect {
         "login" {
