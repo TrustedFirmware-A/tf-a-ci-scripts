@@ -19,5 +19,5 @@ generate_lava_job() {
 
 	model="$model" arch_version="8.4" gen_model_params
 
-	model="$model" next_bin="1" gen_fvp_yaml
+	model="$model" gen_fvp_yaml
 }

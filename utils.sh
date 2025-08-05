@@ -184,16 +184,10 @@ filter_artefacts(){
 # Generate link to an archived binary.
 gen_bin_url() {
 	local bin_mode="${bin_mode:?}"
-	local next_bin="${next_bin:?}"
 	local bin="${1:?}"
 
 	if upon "$jenkins_run"; then
-		if upon "$next_bin"; then
-			date_time="$(date +'%Y-%m-%d-%H%M%S')"
-			echo "https://downloads.trustedfirmware.org/tf-a/next/artifacts/$date_time/$bin_mode/$bin"
-		else
-			echo "$jenkins_url/job/$JOB_NAME/$BUILD_NUMBER/artifact/artefacts/$bin_mode/$bin"
-		fi
+		echo "$jenkins_url/job/$JOB_NAME/$BUILD_NUMBER/artifact/artefacts/$bin_mode/$bin"
 	else
 		echo "file://$workspace/artefacts/$bin_mode/$bin"
 	fi

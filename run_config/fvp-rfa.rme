@@ -50,5 +50,5 @@ generate_lava_job() {
 		has_rng="1" \
 		gen_model_params
 
-	model="$model" next_bin="1" gen_fvp_yaml
+	model="$model" gen_fvp_yaml
 }
