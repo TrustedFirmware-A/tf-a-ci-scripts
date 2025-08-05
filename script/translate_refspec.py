@@ -24,6 +24,7 @@ gerrit_tforg = gerrit.GerritServer("review.trustedfirmware.org")
 projects = {
     # Projects hosted on Arm Gerrit server.
     "arm": {
+        "rusted-firmware": gerrit.GerritProject("trusted-firmware/rusted-firmware-a", gerrit_arm),
         "trusted-firmware": gerrit.GerritProject("pdcs-platforms/ap/tf-topics", gerrit_arm),
         "trusted-firmware-tf": gerrit.GerritProject("trusted-firmware/tf-a-tests", gerrit_arm),
         "trusted-firmware-ci": gerrit.GerritProject("pdswinf/ci/pdcs-platforms/platform-ci", gerrit_arm),
@@ -37,8 +38,8 @@ projects = {
 
     # Projects hosted on trustedfirmware.org Gerrit server.
     "tforg": {
-        "trusted-firmware": gerrit.GerritProject("TF-A/trusted-firmware-a", gerrit_tforg),
         "rusted-firmware": gerrit.GerritProject("RF-A/rusted-firmware-a", gerrit_tforg),
+        "trusted-firmware": gerrit.GerritProject("TF-A/trusted-firmware-a", gerrit_tforg),
         "trusted-firmware-tf": gerrit.GerritProject("TF-A/tf-a-tests", gerrit_tforg),
         "trusted-firmware-ci": gerrit.GerritProject("ci/tf-a-ci-scripts", gerrit_tforg),
         "spm": gerrit.GerritProject("hafnium/hafnium", gerrit_tforg),
