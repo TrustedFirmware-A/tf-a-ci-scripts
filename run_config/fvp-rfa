@@ -19,7 +19,7 @@ generate_lava_job() {
 
 	model="$model" \
 		has_branch_target_exception="1" \
-		arch_version="8.4" gen_model_params
+		arch_version="9.0" gen_model_params
 
 	model="$model" gen_fvp_yaml
 }
