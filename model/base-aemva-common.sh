@@ -394,6 +394,13 @@ if [ "$arch_version" = "8.9" ]; then
 EOF
 fi
 
+if [ "$arch_version" = "9.0" ]; then
+       cat <<EOF >>"$model_param_file"
+-C cluster0.has_arm_v9-0=1
+-C cluster1.has_arm_v9-0=1
+EOF
+fi
+
 if [ "$arch_version" = "9.2" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_arm_v9-2=1
