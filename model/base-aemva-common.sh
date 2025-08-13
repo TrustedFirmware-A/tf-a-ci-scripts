@@ -72,6 +72,9 @@ reset_var nvcounter_diag
 # Enable FEAT_MPAM
 reset_var has_mpam
 
+# Enable FEAT_MPAM_PE_BW_CTRL
+reset_var mpam_has_bw_ctrl
+
 # Enable SMMUv3 functionality
 reset_var has_smmuv3_params
 
@@ -425,6 +428,15 @@ if [ "$has_mpam" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_mpam=2
 -C cluster1.has_mpam=2
+EOF
+fi
+
+if [ "$mpam_has_bw_ctrl" = "1" ]; then
+       cat <<EOF >>"$model_param_file"
+-C cluster0.mpam_frac=1
+-C cluster0.mpam_has_bw_ctrl=1
+-C cluster1.mpam_frac=1
+-C cluster1.mpam_has_bw_ctrl=1
 EOF
 fi
 

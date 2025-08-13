@@ -20,6 +20,7 @@ generate_lava_job() {
 		has_sme="1" has_sme2="1" \
 		has_sme_fa64="1" \
 		has_mpam="1" \
+		mpam_has_bw_ctrl="1" \
 		has_ecv="1" \
 		has_fpmr="1" \
 		has_translation_hardening="1" \
