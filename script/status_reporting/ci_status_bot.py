@@ -77,7 +77,8 @@ class Build:
                 for build in req.get("subBuilds", [])
             ]
             # gateways don't, since they determine them dynamically
-            if self.sub_builds == []:
+            # but the windows job doesn't parse. It's a leaf anyway so skip
+            if self.sub_builds == [] and self.name != "tf-a-windows-builder":
                 self.sub_builds = [
                     Build(self.session, name, name, num, self.level + 1)
                     for name, num in await self.get_builds_from_console_log()
