@@ -76,6 +76,23 @@ if [ "$REPO_NAME" != "rusted-firmware-a" ]; then
   echo "-------------------------------------" >> "$LOG_TEST_FILENAME" 2>&1
 fi
 
+# Run cargo vet
+
+if [ "$REPO_NAME" == "rusted-firmware-a" ]; then
+  echo "cargo vet:" >> "$LOG_TEST_FILENAME" 2>&1
+
+  cargo vet >> "$LOG_TEST_FILENAME" 2>&1
+
+  if [ "$?" != 0 ]; then
+    echo "cargo vet: FAILURE"
+    ((ERROR_COUNT++))
+  else
+    echo "cargo vet: PASS"
+  fi
+
+  echo "-------------------------------------" >> "$LOG_TEST_FILENAME" 2>&1
+fi
+
 cd -
 if [ "$ERROR_COUNT" != 0 ]; then
   echo "Some cargo checks have failed."
