@@ -17,19 +17,12 @@ export RUSTUP_HOME=/usr/local/rustup
 # next tests, usually this will be main
 export GERRIT_BRANCH=${GERRIT_BRANCH:="main"}
 
-if [ "$IS_CONTINUOUS_INTEGRATION" == 1 ]; then
-    # git operations rely on access to main branch, we need to access via SSH for that to work currently
-    SSH_PARAMS="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PubkeyAcceptedKeyTypes=+ssh-rsa -p 29418 -i ${CI_BOT_KEY}"
-    REPO_SSH_URL="ssh://${CI_BOT_USERNAME}@review.trustedfirmware.org:29418/RF-A/rusted-firmware-a"
-    export GIT_SSH_COMMAND="ssh ${SSH_PARAMS}"
-    git remote set-url origin ${REPO_SSH_URL}
-    git fetch --unshallow --update-shallow origin
-    git fetch --unshallow --update-shallow origin ${GERRIT_BRANCH} ${GERRIT_REFSPEC}
+git fetch --unshallow --update-shallow origin
+git fetch --unshallow --update-shallow origin ${GERRIT_BRANCH} ${GERRIT_REFSPEC}
 
-    export merge_base=$(git merge-base \
-      $(head -n1 .git/FETCH_HEAD | cut -f1) \
-      $(tail -n1 .git/FETCH_HEAD | cut -f1))
-fi
+export merge_base=$(git merge-base \
+    $(head -n1 .git/FETCH_HEAD | cut -f1) \
+    $(tail -n1 .git/FETCH_HEAD | cut -f1))
 
 # Find the absolute path of the scripts' top directory
 cd "$(dirname "$0")/../.."

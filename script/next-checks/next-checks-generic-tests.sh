@@ -16,22 +16,8 @@ export RUSTUP_HOME=/usr/local/rustup
 
 REPO_SPACE=$1
 REPO_NAME=$2
-# For local runs, we require GERRIT_BRANCH to be set to get the merge-base/diff
-# between the checked out commit and the tip of $GERRIT_BRANCH - for running
-# next tests, usually this will be tfa-next
-export GERRIT_BRANCH=${GERRIT_BRANCH:="tfa-next"}
-
-# git operations rely on access to tfa-next branch, we need to access via SSH for that to work currently
-SSH_PARAMS="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PubkeyAcceptedKeyTypes=+ssh-rsa -p 29418 -i ${CI_BOT_KEY}"
-REPO_SSH_URL="ssh://${CI_BOT_USERNAME}@review.trustedfirmware.org:29418/${REPO_SPACE}/${REPO_NAME}"
-export GIT_SSH_COMMAND="ssh ${SSH_PARAMS}"
 
 cd "${REPO_NAME}"
-
-if [ "$REPO_NAME" == "rusted-firmware-a" ] && ["$IS_CONTINUOUS_INTEGRATION" == 1 ]; then
-    git remote set-url origin ${REPO_SSH_URL}
-    git fetch origin
-fi
 
 TEST_CASE="cargo test checks"
 
