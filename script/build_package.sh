@@ -695,7 +695,7 @@ build_rmm() {
 	config_file="${rmm_build_config:-$rmm_config_file}"
 
 	# Build fiptool and all targets by default
-	export CROSS_COMPILE="${aarch64_none_elf_prefix}"
+	export CROSS_COMPILE="aarch64-none-elf-"
 
 	source "$config_file"
 
