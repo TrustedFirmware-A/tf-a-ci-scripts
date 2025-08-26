@@ -24,14 +24,27 @@ clean_build()
 # Defines common flags between platforms
 common_flags() {
     local release="${1:-}"
-    local num_cpus="$(/usr/bin/getconf _NPROCESSORS_ONLN)"
-    local parallel_make="-j $num_cpus"
+    local jobs
+
+    # By default, scale number of jobs based on number of available processors
+    jobs=$(nproc || getconf _NPROCESSORS_ONLN || echo 1)
+
+    # Scale number of jobs based on control group CPU quota if configured
+    if [[ -r /sys/fs/cgroup/cpu.max ]]; then
+        if read -r quota period < /sys/fs/cgroup/cpu.max; then
+            # If quota is "max", then there is no restriction on CPU usage
+            if [[ "${quota}" != "max" ]]; then
+                jobs=$((quota / period))
+                jobs=$((jobs == 0 ? 1 : jobs))
+            fi
+        fi
+    fi
 
     # default to debug mode, unless a parameter is passed to the function
     debug="DEBUG=1"
     [ -n "$release" ] && debug=""
 
-    echo " $parallel_make $debug -s "
+    echo " --jobs ${jobs@Q} $debug -s "
 }
 
 # Check if execution environment is ARM's jenkins (Jenkins running under ARM
