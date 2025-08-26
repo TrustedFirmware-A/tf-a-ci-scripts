@@ -5,6 +5,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
+source "$ci_root/utils.sh"
+
 # Launch a program. Have its PID saved in a file with given name with .pid
 # suffix. When the program exits, create a file with .success suffix, or one
 # with .fail if it fails. This function blocks, so the caller must '&' this if
