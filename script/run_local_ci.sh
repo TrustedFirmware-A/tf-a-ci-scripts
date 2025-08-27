@@ -111,13 +111,13 @@ run_one_test() {
 	# messages but also any debugging prints. This is the default and it
 	# gets redirected to a file per job for archiving and disambiguation
 	# when running in parallel.
+	console_file="$workspace/console.log"
 	if [ "$parallel" -gt 1 ]; then
-		console_file="$workspace/console.log"
 		exec >> $console_file 2>&1
 	else
 		# when running in serial, no scrambling is possible so print to
 		# stdout
-		exec >&5 2>&1
+		exec > >(tee $console_file >&5) 2>&1
 	fi
 
 	# Unset make flags for build script
