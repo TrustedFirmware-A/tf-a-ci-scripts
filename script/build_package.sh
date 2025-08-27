@@ -114,7 +114,7 @@ call_hook() {
 
 	[ -z "$func" ] && return 0
 
-	echo "=== Calling hooks: $1 ==="
+	echo "=== Calling hooks: $1 ===" &>>"$build_log"
 
 	: >"$hook_env_file"
 
@@ -123,7 +123,7 @@ call_hook() {
 			(
 			source "$ci_root/run_config/$config_fragment"
 			call_func "$func" "$config_fragment"
-			)
+			) &>>"$build_log" || fail_build
 		done
 	fi
 
@@ -132,7 +132,7 @@ call_hook() {
 			(
 			source "$ci_root/run_config_tfut/$config_fragment"
 			call_func "$func" "$config_fragment"
-			)
+			) &>>"$build_log" || fail_build
 		done
 	fi
 
@@ -146,7 +146,7 @@ call_hook() {
 	# Have any variables set take effect
 	source "$hook_env_file"
 
-	echo "=== End calling hooks: $1 ==="
+	echo "=== End calling hooks: $1 ===" &>>"$build_log"
 }
 
 # Set a variable from within a hook
