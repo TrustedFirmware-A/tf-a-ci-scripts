@@ -143,8 +143,19 @@ run_one_test() {
 
 		"run")
 			#Run unit tests (TFUT)
-			if config_valid "$run_config_tfut" && not_upon "$skip_tfut_runs"; then
+			if config_valid "$run_config_tfut"; then
 				echo "running TFUT: $config_string" >&5
+
+				if upon "$skip_tfut_runs"; then
+					#No run config for TFUT
+					if grep -q -e "--BUILD UNSTABLE--" "$log_file"; then
+						print_unstable "$config_string (tfut) (not run)" >&5
+					else
+						print_success "$config_string (tfut) (not run)" >&5
+					fi
+					exit 0
+				fi
+
 				if bash $minus_x "$ci_root/script/run_unit_tests.sh"; then
 					if grep -q -e "--BUILD UNSTABLE--" \
 						"$log_file"; then
@@ -152,6 +163,7 @@ run_one_test() {
 					else
 						print_success "$config_string (tfut)" >&5
 					fi
+					exit 0
 				else
 					{
 					print_failure "$config_string (tfut) (run)" >&5
@@ -160,14 +172,6 @@ run_one_test() {
 					fi
 					} >&5
 					exit 1
-				fi
-			else
-				#No run config for TFUT
-				if grep -q -e "--BUILD UNSTABLE--" \
-					"$log_file"; then
-					print_unstable "$config_string (tfut) (not run)" >&5
-				else
-					print_success "$config_string (tfut) (not run)" >&5
 				fi
 			fi
 
