@@ -316,10 +316,7 @@ fail_build() {
 	fi
 
 	echo
-	echo "Build failed! Full build log below:"
-	echo "[...]"
-	echo
-	cat "$build_log"
+	echo "Build failed!"
 	echo
 	echo "See $log_path for full output"
 	echo
