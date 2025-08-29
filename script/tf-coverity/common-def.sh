@@ -44,7 +44,7 @@ common_flags() {
     debug="DEBUG=1"
     [ -n "$release" ] && debug=""
 
-    echo " -j ${jobs@Q} $debug -s "
+    echo " --jobs=${jobs} $debug -s "
 }
 
 # Check if execution environment is ARM's jenkins (Jenkins running under ARM
