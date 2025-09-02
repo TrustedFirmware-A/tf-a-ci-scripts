@@ -42,8 +42,10 @@ def add_gerrit_arg(parser):
         "-q", "--tforg-gerrit-query",
         default=(
             "(parentproject:TF-A OR parentproject:TF-RMM OR parentproject:TS OR "
-            "parentproject:hafnium OR project:^ci/hafnium-.%2B OR project:^ci/tf-a-.%2B) "
-            "(branch:integration OR branch:master OR branch:^topics\\/.*) -is:wip is:open"
+            "parentproject:hafnium OR parentproject:RF-A OR "
+            "project:^ci/hafnium-.%2B OR project:^ci/tf-a-.%2B) "
+            "(branch:integration OR branch:master OR branch:main OR "
+            "branch:^topics\\/.*) -is:wip is:open"
         ), help="the query to pass to tforg's Gerrit (as written in the query box)"
     )
 
