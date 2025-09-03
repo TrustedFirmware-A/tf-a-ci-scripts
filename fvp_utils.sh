@@ -57,7 +57,6 @@ default_model_dtb="dtb.bin"
 # FVP containers and model paths
 fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build}_linux64;/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
-fvp_base_aemv8r="fvp:fvp_base_aemv8r_${model_version}_${model_build};/opt/model/AEMv8R_base_pkg/models/${model_flavour}"
 fvp_rd_1_ae="fvp:fvp_rd_1_ae_${model_version}_${model_build};/opt/model/FVP_RD_1_AE/models/${model_flavour}"
 
 # CSS model list
@@ -101,7 +100,6 @@ fvp_models=(
 [neoverse_n2]="${fvp_arm_std_library};FVP_Base_Neoverse-N2"
 [neoverse-v1x4]="${fvp_arm_std_library};FVP_Base_Neoverse-V1"
 [tc4]="${fvp_tc4};FVP_TC4"
-[baser-aemv8r]="${fvp_base_aemv8r};FVP_BaseR_AEMv8R"
 [rd1ae]="${fvp_rd_1_ae};FVP_RD_1_AE"
 )
 
