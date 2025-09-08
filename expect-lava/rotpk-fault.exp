@@ -1,0 +1,10 @@
+#
+# Copyright (c) 2025 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#
+
+prompt='BL2: Failed to load image id 3'
+expect_string+=("i;${prompt}")
+
