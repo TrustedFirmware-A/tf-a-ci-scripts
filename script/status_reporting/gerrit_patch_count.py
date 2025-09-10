@@ -43,6 +43,7 @@ def add_gerrit_arg(parser):
         default=(
             "(parentproject:TF-A OR parentproject:TF-RMM OR parentproject:TS OR "
             "parentproject:hafnium OR parentproject:RF-A OR "
+            "parentproject:arm-firmware-crates OR "
             "project:^ci/hafnium-.%2B OR project:^ci/tf-a-.%2B) "
             "(branch:integration OR branch:master OR branch:main OR "
             "branch:^topics\\/.*) -is:wip is:open"
