@@ -1,19 +1,19 @@
 diff --git a/lib/psci/psci_common.c b/lib/psci/psci_common.c
-index 25e30d489..8ff7fee51 100644
+index dc7dd2f8b..dbf0f40f5 100644
 --- a/lib/psci/psci_common.c
 +++ b/lib/psci/psci_common.c
-@@ -1284,6 +1284,10 @@ void __dead2 psci_pwrdown_cpu_end_terminal(void)
+@@ -1327,6 +1327,10 @@ void __dead2 psci_pwrdown_cpu_end_terminal(void)
  	panic();
  }
  
-+#include <travis.h>
-+#include <cortex_gelas.h>
++#include <c1_ultra.h>
++#include <c1_pro.h>
 +static bool should_abandon[PLATFORM_CORE_COUNT];
 +
  /*******************************************************************************
   * Finish a non-terminal power down sequence, ending with a wfi. In case of
   * wakeup will unwind any CPU specific actions and return.
-@@ -1294,11 +1298,23 @@ void psci_pwrdown_cpu_end_wakeup(unsigned int power_level)
+@@ -1337,11 +1341,23 @@ void psci_pwrdown_cpu_end_wakeup(unsigned int power_level)
  	/* ensure write buffer empty */
  	dsbsy();
  
@@ -30,8 +30,8 @@ index 25e30d489..8ff7fee51 100644
 -	wfi();
 +	/* only abandon for cores that support it */
 +	if (!(abandon &&
-+	     (midr == EXTRACT_PARTNUM(CORTEX_GELAS_MIDR)
-+	      || midr == EXTRACT_PARTNUM(TRAVIS_MIDR))))
++	     (midr == EXTRACT_PARTNUM(C1_PRO_MIDR)
++	      || midr == EXTRACT_PARTNUM(C1_ULTRA_MIDR))))
 +	{
 +		wfi();
 +	}
