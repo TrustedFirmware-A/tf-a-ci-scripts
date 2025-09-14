@@ -434,6 +434,18 @@ clean_build $(common_flags) \
             SPD=spmd \
             SPMD_SPM_AT_SEL2=0
 
+#
+# RD-Aspen platform
+#
+clean_build $(common_flags) \
+            PLAT=rdaspen \
+            ${ARM_TBB_OPTIONS} \
+            GENERATE_COT=1 \
+            COT=tbbr \
+            ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem \
+            bl2 \
+            bl31
+
 # Partners' platforms.
 # Enable as many features as possible.
 # We don't need to clean between each build here because we only do one build
