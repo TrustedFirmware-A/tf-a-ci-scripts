@@ -6,3 +6,4 @@ KEY_ALG=ecdsa
 PLAT=fvp
 ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_ecdsa.pem
 TRUSTED_BOARD_BOOT=1
+FVP_TRUSTED_SRAM_SIZE=384
