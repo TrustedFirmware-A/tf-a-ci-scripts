@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-set -x
+set +x
 
 # Jenkins Parameterized Trigger Plugin mangles job names as passed via
 # environment variables, replacing most non-alphanumeric chars with
