@@ -299,6 +299,7 @@ def patch_has_cpu_files(base_commit, end_commit):
             "git",
             "diff",
             "--name-only",
+            "--diff-filter=ACMRT",
             base_commit + ".." + end_commit,
             "lib/cpus/aarch64/"
         ],
