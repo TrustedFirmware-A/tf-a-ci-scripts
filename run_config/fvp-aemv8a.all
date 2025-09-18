@@ -45,6 +45,7 @@ generate_lava_job() {
 		supports_system_trace_filter_regs="1" \
 		accelerator_support_level="3" \
 		has_mops="1" \
+		checked_pointer_arithmetic_support_level="2" \
 		arch_version="9.4" \
 		gen_model_params
 
