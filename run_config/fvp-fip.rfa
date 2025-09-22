@@ -15,7 +15,7 @@ post_rfa_archive() {
 	build_fip BL33="${archive}/bl33.bin" BL32="${archive}/bl32.bin"
 
 	find $tf_build_root \( -name "fip.bin" \) -exec cp -t "${archive}" '{}' +
-
+	fiptool=$(fiptool_path)
 	"$fiptool" update \
 		--soc-fw "$archive/bl31.bin" \
 		--out "$archive/fip.bin" \

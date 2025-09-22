@@ -15,6 +15,7 @@ import csv
 import argparse
 import json
 import subprocess
+from datetime import datetime
 from io import StringIO
 from unidiff import PatchSet
 from config import MESSAGE_TOKENS, CPU_PATH_TOKEN, CPU_ERRATA_TOKEN, DOC_PATH_TOKEN, DOC_ERRATA_TOKEN
@@ -119,11 +120,10 @@ def main():
     global global_debug
     global_debug = args.debug
 
-    csv_columns = ["index", "commit id in the integration branch", "commit summary",
+    csv_columns = ["index", "commit id in the integration branch", "committer date", "commit summary",
                    "score", "Gerrit Change-Id", "patch link for the LTS branch",
-                   "patch link for the integration branch"]
+                   "patch link for the integration branch", "To be cherry-picked"]
     csv_data = []
-    idx = 1
 
     repo = git.Repo(args.repo)
 
@@ -173,24 +173,33 @@ def main():
             gerrit_links = query_gerrit(gerrit_user, ssh_keyfile, change_id)
             # Append data to CSV
             csv_data.append({
-                "index": idx,
                 "commit id in the integration branch": cmt.hexsha,
+                "committer date": cmt.committed_date,
                 "commit summary": cmt.summary,
                 "score": score,
                 "Gerrit Change-Id": change_id,
                 "patch link for the LTS branch": gerrit_links.get(lts_branch, "N/A"),
-                "patch link for the integration branch": gerrit_links.get("integration", "N/A")
+                "patch link for the integration branch": gerrit_links.get("integration", "N/A"),
+                "To be cherry-picked": "N" if gerrit_links.get(lts_branch) else "Y"
             })
-            idx += 1
             at_least_one_match = True
 
     if at_least_one_match == True:
         try:
+            # Sort by committer date first (from oldest to newest)
+            csv_data.sort(key=lambda row: int(row["committer date"]))
+
+            idx = 1
             with open(args.csv_path, "w", newline='') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
                 writer.writeheader()
                 for data in csv_data:
+                    # Convert timestamp to human-readable date before writing
+                    ts = int(data["committer date"])
+                    data["index"] = idx
+                    data["committer date"] = datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
                     writer.writerow(data)
+                    idx += 1
         except:
             print("\n\nERROR: Couldn't open CSV file due to error: ", sys.exc_info()[0])
 

@@ -1,9 +1,0 @@
-#
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
-#
-# SPDX-License-Identifier: BSD-3-Clause
-#
-
-# Gerrit bot requires:
-
-pygerrit2>=2.0.9

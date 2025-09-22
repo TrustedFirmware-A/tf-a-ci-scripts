@@ -25,16 +25,10 @@ source "${ci_root}/lava_utils.sh"
 if [ -n "$host_env" ]; then
   source "$host_env"
 else
-  # Are we running on Arm infrastructure?
-  if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
-    source "$ci_root/arm-env.sh"
-  elif echo "$JENKINS_PUBLIC_URL" | grep -q "jenkins.openci"; then
-	# This is Arm infrastructure while migration from ci.trustedfirmware.org
+  if echo "$JENKINS_PUBLIC_URL" | grep -q "staging"; then
+	source "$ci_root/openci-staging-env.sh"
+  else
     source "$ci_root/openci-env.sh"
-  elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.trustedfirmware.org"; then
-    source "$ci_root/openci-env.sh"
-  elif echo "$JENKINS_PUBLIC_URL" | grep -q "ci.staging.trustedfirmware.org"; then
-    source "$ci_root/openci-staging-env.sh"
   fi
 fi
 
@@ -191,6 +185,26 @@ gen_bin_url() {
 	else
 		echo "file://$workspace/artefacts/$bin_mode/$bin"
 	fi
+}
+
+# Generate link for code coverage plugin
+gen_cc_url(){
+	local filename="coverage_trace.so"
+
+	if upon "$jenkins_run"; then
+		echo "${coverage_trace_plugin}"
+	else
+
+		local url="https://downloads.trustedfirmware.org/coverage-plugin/qa-tools/coverage-tool/coverage-plugin/${filename}"
+		local local_path="$workspace/artefacts/${bin_mode:?}/${filename}"
+
+		mkdir -p "$(dirname "$local_path")"
+		url="$url" saveas="$local_path" fetch_file
+		coverage_trace_plugin=$local_path
+
+		echo $coverage_trace_plugin
+	fi
+
 }
 
 get_boot_image() {
@@ -461,7 +475,25 @@ setup_llvm_toolchain() {
 	archive="${2:-"$workspace/llvm.tar.xz"}"
 	target_dir="${3:-$llvm_dir}"
 
-	if is_arm_jenkins_env || upon "$local_ci"; then
+	if upon "$retain_paths"; then
+		return
+	fi
+
+	if upon "$local_ci"; then
+		url="$link" saveas="$archive" fetch_file
+		mkdir -p $target_dir
+		extract_tarball $archive $target_dir --strip-components=1 -k
+	fi
+}
+
+# Fetch and extract the latest supported version of the GCC toolchain from
+# a compressed archive file to a target directory, if it is required.
+setup_gcc_toolchain() {
+	link="${1:-$gcc_archive}"
+	archive="${2:-"$workspace/gcc.tar.xz"}"
+	target_dir="${3:-$gcc_dir}"
+
+	if upon "$local_ci"; then
 		url="$link" saveas="$archive" fetch_file
 		mkdir -p $target_dir
 		extract_tarball $archive $target_dir --strip-components=1 -k
@@ -528,6 +560,16 @@ set_cross_compile_gcc_linaro_toolchain() {
     echo "${cross_compile_path}/gcc-linaro-6.2.1-2016.11-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"
 }
 
+# Check if a config is valid
+config_valid() {
+	local config="${1?}"
+	if [ -z "$config" ] || [ "$(basename "$config")" = "nil" ]; then
+		return 1
+	fi
+
+	return 0
+}
+
 if is_jenkins_env; then
 	jenkins_run=1
 	umask 0002
@@ -562,8 +604,6 @@ tftf_src_repo_url="${tftf_src_repo_url:-https://$tforg_gerrit_url/TF-A/tf-a-test
 ci_src_repo_url="${ci_src_repo_url:-$CI_SRC_REPO_URL}"
 ci_src_repo_url="${ci_src_repo_url:-https://$tforg_gerrit_url/ci/tf-a-ci-scripts}"
 tf_ci_repo_url="$ci_src_repo_url"
-scp_src_repo_url="${scp_src_repo_url:-$SCP_SRC_REPO_URL}"
-scp_src_repo_url="${scp_src_repo_url:-$scp_src_repo_default}"
 spm_src_repo_url="${spm_src_repo_url:-$SPM_SRC_REPO_URL}"
 spm_src_repo_url="${spm_src_repo_url:-https://$tforg_gerrit_url/hafnium/hafnium}"
 rmm_src_repo_url="${rmm_src_repo_url:-$RMM_SRC_REPO_URL}"
@@ -574,13 +614,15 @@ tf_m_tests_src_repo_url="${tf_m_tests_src_repo_url:-$TF_M_TESTS_REPO_URL}"
 tf_m_tests_src_repo_url="${tf_m_tests_src_repo_url:-https://$tforg_gerrit_url/TF-M/tf-m-tests}"
 tf_m_extras_src_repo_url="${tf_m_extras_src_repo_url:-$TF_M_EXTRAS_REPO_URL}"
 tf_m_extras_src_repo_url="${tf_m_extras_src_repo_url:-https://$tforg_gerrit_url/TF-M/tf-m-extras}"
+tfut_src_repo_url="${tfut_src_repo_url:-$TFUT_SRC_REPO_URL}"
+tfut_src_repo_url="${tfut_src_repo_url:-https://$tforg_gerrit_url/TF-A/tf-a-unit-tests}"
 
 tf_downloads="${tf_downloads:-file:///downloads/}"
 tfa_downloads="${tfa_downloads:-file:///downloads/tf-a}"
 css_downloads="${css_downloads:-$tfa_downloads/css}"
 
 # SCP/MCP release binaries.
-scp_mcp_downloads="${scp_mcp_downloads:-$tfa_downloads/css_scp_2.15.0}"
+scp_mcp_downloads="${scp_mcp_downloads:-$tfa_downloads/css_scp_2.14.0}"
 
 linaro_2001_release="${linaro_2001_release:-$tfa_downloads/linaro/20.01}"
 linaro_release="${linaro_release:-$linaro_2001_release}"
@@ -608,18 +650,16 @@ coverity_default_checkers=(
 
 docker_registry="${docker_registry:-}"
 
-# Define toolchain version and toolchain binary paths
-toolchain_version="13.3.rel1"
+#GCC archive public hosting available at arm_website.
+gcc_version="14.2.rel1"
+gcc_archive="${gcc_archive:-https://developer.arm.com/-/media/Files/downloads/gnu/$gcc_version/binrel/arm-gnu-toolchain-$gcc_version-x86_64-aarch64-none-elf.tar.xz}"
 
-aarch64_none_elf_dir="${nfs_volume}/pdsw/tools/arm-gnu-toolchain-${toolchain_version}-x86_64-aarch64-none-elf"
-aarch64_none_elf_prefix="aarch64-none-elf-"
-
-arm_none_eabi_dir="${nfs_volume}/pdsw/tools/arm-gnu-toolchain-${toolchain_version}-x86_64-arm-none-eabi"
-arm_none_eabi_prefix="arm-none-eabi-"
+if [ -n "$gcc_space" ]; then
+    gcc_dir="$gcc_space/gcc-$gcc_version"
+fi
 
 path_list=(
-		"${aarch64_none_elf_dir}/bin"
-		"${arm_none_eabi_dir}/bin"
+		"${gcc_dir:+${gcc_dir}/bin}"
 		"${llvm_dir}/bin"
 		"$coverity_path/bin"
 )
@@ -639,6 +679,12 @@ if upon "$retain_paths"; then
 	op="append" extend_path "LM_LICENSE_FILE" "license_path_list"
 else
 	# Otherwise, prepend CI paths so that they take effect before local ones
+	# Check if the gcc_dir directory does NOT exist.
+	# If it doesn't, execute setup_gcc_toolchain to download and set up the
+	# GCC toolchain.
+	if [ ! -d "$gcc_dir" ]; then
+		setup_gcc_toolchain
+	fi
 	extend_path "PATH" "path_list"
 	extend_path "LD_LIBRARY_PATH" "ld_library_path_list"
 	extend_path "LM_LICENSE_FILE" "license_path_list"

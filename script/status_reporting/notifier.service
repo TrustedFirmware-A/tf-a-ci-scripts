@@ -1,0 +1,5 @@
+[Unit]
+Description="Pushes a notification about the CI to Discord"
+
+[Service]
+ExecStart=/path/to/platform-ci/script/status_reporting/discord_notify.py <discord_webhook_url>

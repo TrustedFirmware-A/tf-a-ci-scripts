@@ -111,7 +111,7 @@ juno_aarch32_runtime() {
 
 	# Copy BL32 to a temporary directoy, and update it in the FIP
 	local tmpdir="$(mktempdir)"
-	from="$tf_root/build/juno/$mode" to="$tmpdir" collect_build_artefacts
+	from="$tf_build_root/juno/$mode" to="$tmpdir" collect_build_artefacts
 	bin_name="tos-fw" src="$tmpdir/bl32.bin" fip_update
 }
 

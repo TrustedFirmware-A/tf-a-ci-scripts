@@ -8,7 +8,7 @@
 # Build TF-A with tf-a-tests and TRP
 post_tf_build() {
 	# Stash the TRP binary
-	archive_file "${tf_root}/build/fvp/${bin_mode}/rmm.bin"
+	archive_file "${tf_build_root}/fvp/${bin_mode}/rmm.bin"
 
 	build_fip BL33="$archive/tftf.bin" RMM="$archive/rmm.bin"
 }

@@ -93,7 +93,10 @@ TIME_PERIOD = '[0-9]{4}(-[0-9]{4})?'
 CURRENT_YEAR = str(datetime.datetime.now().year)
 
 # Any string with valid license ID, don't allow adding postfix
-LICENSE_ID = '.*(BSD-3-Clause|BSD-2-Clause-FreeBSD|MIT)([ ,.\);].*)?'
+LICENSE_ID = '.*(BSD-3-Clause|BSD-2-Clause-FreeBSD|MIT|Apache-2.0)([ ,.\);].*)?'
+
+# File must contain both lines to pass the check
+COPYRIGHT_LINE = LINE_START + 'Copyright' + '.*' + TIME_PERIOD + '.*' + EOL
 LICENSE_ID_LINE = LINE_START + 'SPDX-License-Identifier:' + LICENSE_ID + EOL
 LICENSE_ID_PATTERN = re.compile(LICENSE_ID_LINE, re.MULTILINE)
 

@@ -6,5 +6,18 @@
 #
 
 post_tf_build() {
-	build_fip BL33="$archive/tftf.bin" BL32="$archive/bl32.bin"
+	# Set initial FIP (Firmware Image Package) options
+	options="BL33=$archive/tftf.bin BL32=$archive/bl32.bin"
+
+	# If TF-A config is 'opteed', include additional OP-TEE binary options
+	if [[ "$tf_config" == *opteed* ]]; then
+		options="$options BL32_EXTRA1=$archive/bl32_extra1.bin"
+
+		if [[ -f "$archive/bl32_extra2.bin" ]]; then
+			options="$options BL32_EXTRA2=$archive/bl32_extra2.bin"
+		fi
+	fi
+
+	# Build the FIP with the collected options
+	build_fip $options
 }

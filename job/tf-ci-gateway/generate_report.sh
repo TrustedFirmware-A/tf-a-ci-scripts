@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-set -ex
+set -x
 
 # Jenkins Parameterized Trigger Plugin mangles job names as passed via
 # environment variables, replacing most non-alphanumeric chars with
@@ -59,13 +59,13 @@ if [ "$CI_ROOT" ]; then
 		--meta-data clone.data \
 		--meta-data override.data \
 		--meta-data inject.data \
-		--meta-data html:coverity.data \
-		|| true
+		--meta-data html:coverity.data
 
     # Only call to merge reports if the test groups are for code coverage
-    if [[ $TEST_GROUPS == *"code-coverage"* ]] ||
-    [[ $TEST_GROUPS == "scp-boot-tests-coverage" ]]; then
+    if [[ $TEST_GROUPS == *"coverage"* ]] ||
+       [[ $TEST_GROUPS == "scp-boot-tests-coverage" ]]; then
   	   source $CI_ROOT/script/gen_merge_report.sh "${WORKSPACE}/report.json" \
   		   "${WORKSPACE}/report.html"
+      echo "Finished merging reports..."
     fi
 fi

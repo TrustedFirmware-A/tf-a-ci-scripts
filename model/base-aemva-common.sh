@@ -72,6 +72,9 @@ reset_var nvcounter_diag
 # Enable FEAT_MPAM
 reset_var has_mpam
 
+# Enable FEAT_MPAM_PE_BW_CTRL
+reset_var mpam_has_bw_ctrl
+
 # Enable SMMUv3 functionality
 reset_var has_smmuv3_params
 
@@ -110,6 +113,9 @@ reset_var has_gcs
 
 # Enable FEAT_FGT2
 reset_var has_fgt2
+
+# Enable FEAT_FGWTE3
+reset_var has_fgwte3
 
 # Layout of MPIDR. 0=AFF0 is CPUID, 1=AFF1 is CPUID
 reset_var mpidr_layout
@@ -198,7 +204,6 @@ fi
 if [ "$has_rme" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C bp.refcounter.non_arch_start_at_default=1
--C bp.refcounter.use_real_time=0
 -C bp.has_rme=1
 EOF
 fi
@@ -302,6 +307,7 @@ if [ "$has_smmuv3_params" = "1" ]; then
 -C pci.smmulogger.trace_snoops=1
 -C pci.tbu0_pre_smmu_logger.trace_snoops=1
 -C pci.tbu0_pre_smmu_logger.trace_debug=1
+-C pci.dma330x4.use_smmuv3testengine_not_dmacs=1
 -C pci.pci_smmuv3.mmu.all_error_messages_through_trace=1
 -C TRACE.GenericTrace.trace-sources=verbose_commentary,smmu_initial_transaction,smmu_final_transaction,*.pci.pci_smmuv3.mmu.*,*.pci.smmulogger.*,*.pci.tbu0_pre_smmu_logger.*,smmu_poison_tw_data
 --plugin $generictrace_plugin_path
@@ -426,6 +432,15 @@ if [ "$has_mpam" = "1" ]; then
 EOF
 fi
 
+if [ "$mpam_has_bw_ctrl" = "1" ]; then
+       cat <<EOF >>"$model_param_file"
+-C cluster0.mpam_frac=1
+-C cluster0.mpam_has_bw_ctrl=1
+-C cluster1.mpam_frac=1
+-C cluster1.mpam_has_bw_ctrl=1
+EOF
+fi
+
 # FEAT_RME is enabled for the PE, plus additional arch options
 if [ "$has_rme" = "1" ]; then
         cat <<EOF >>"$model_param_file"
@@ -478,6 +493,13 @@ if [ "$has_fgt2" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_fgt2=2
 -C cluster1.has_fgt2=2
+EOF
+fi
+
+if [ "$has_fgwte3" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_fgwte3=1
+-C cluster1.has_fgwte3=1
 EOF
 fi
 
@@ -579,6 +601,13 @@ if [ "$has_mops" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_mops_option=1
 -C cluster1.has_mops_option=1
+EOF
+fi
+
+if [ "$has_twed" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_delayed_wfe_trap=2
+-C cluster1.has_delayed_wfe_trap=2
 EOF
 fi
 

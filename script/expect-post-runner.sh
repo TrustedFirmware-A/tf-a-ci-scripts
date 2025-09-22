@@ -18,6 +18,14 @@ trap - ERR
 
 archive="${WORKSPACE}/artefacts-lava"
 
+if [ $(get_run_env $archive "verify_hashes" 0) -eq 1 ]; then
+    echo "Enabling hash verification for measured boot"
+    export verify_hashes=1
+    export ci_root
+    export artefacts_dir=$archive
+    export tfa_log="${archive}/tfa_event_log"
+fi
+
 # Extract UART numbering from the FVP common log using the ports script
 declare -a ports=()
 

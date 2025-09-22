@@ -1,9 +1,9 @@
-diff --git a/bl31/bl31_main.c b/bl31/bl31_main.c
-index 8c5ba6f2e..21ed3b686 100644
---- a/bl31/bl31_main.c
-+++ b/bl31/bl31_main.c
-@@ -112,6 +112,19 @@ void bl31_setup(u_register_t arg0, u_register_t arg1, u_register_t arg2,
- 	report_ctx_memory_usage();
+diff --git i/bl31/bl31_main.c w/bl31/bl31_main.c
+index bf870a392..65eb3b8f2 100644
+--- i/bl31/bl31_main.c
++++ w/bl31/bl31_main.c
+@@ -94,6 +94,19 @@ static void __init bl31_lib_init(void)
+ 	cm_init();
  }
  
 +/*
@@ -22,7 +22,7 @@ index 8c5ba6f2e..21ed3b686 100644
  /*******************************************************************************
   * BL31 is responsible for setting up the runtime services for the primary cpu
   * before passing control to the bootloader or an Operating System. This
-@@ -224,6 +237,10 @@ void bl31_main(void)
+@@ -235,6 +248,10 @@ void __no_pauth bl31_main(u_register_t arg0, u_register_t arg1, u_register_t arg
  
  	console_flush();
  	console_switch_state(CONSOLE_FLAG_RUNTIME);
@@ -32,4 +32,4 @@ index 8c5ba6f2e..21ed3b686 100644
 +	ubsan_test_add_overflow();
  }
  
- /*******************************************************************************
+ void __no_pauth bl31_warmboot(void)

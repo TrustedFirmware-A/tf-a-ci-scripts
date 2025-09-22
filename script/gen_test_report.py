@@ -81,12 +81,12 @@ LEVEL_HEADERS = [
         "Test Group",
         "TF Build Config",
         "TFTF Build Config",
-        "SCP Build Config",
-        "SCP tools Config",
         "SPM Build Config",
         "RMM Build Config",
         "RF-A Build Config",
+        "TFUT Build Config",
         "Run Config",
+        "TFUT Run Config",
         "Status"
 ]
 
@@ -278,7 +278,6 @@ def result_to_html(node_stack):
         if not Level_empty[child_node.depth - 1]:
             # - TF config might be "nil" for TFTF-only build configs;
             # - TFTF config might not be present for non-TFTF runs;
-            # - SCP config might not be present for non-SCP builds;
             # - All build-only configs have runconfig as "nil";
             #
             # Make nil cells empty, and grey empty cells out.
@@ -437,13 +436,15 @@ def main(fd):
     results = ResultNode(0)
     for i, f in enumerate(test_files):
         # Test description is generated in the following format:
-        #   seq%group%build_config:run_config.test
+        #   seq%group%build_config:tf_run_config,tfut_run_config.test
         _, group, desc = f.split("%")
         test_config = desc[:-len(TEST_SUFFIX)]
         build_config, run_config = test_config.split(":")
         spare_commas = "," * (MAX_RESULTS_DEPTH - MIN_RESULTS_DEPTH)
-        tf_config, tftf_config, scp_config, scp_tools, spm_config, rmm_config, rfa_config, *_ = (build_config +
+        tf_config, tftf_config, spm_config, rmm_config, rfa_config, tfut_config, *_ = (build_config +
                 spare_commas).split(",")
+        run_configs = (run_config + ",").split(",")
+        tf_run_config, tfut_run = (run_configs + [""])[:2]
 
         build_number = child_build_numbers[i]
         if not opts.from_json:
@@ -457,14 +458,14 @@ def main(fd):
         group_node = results.set_child(group)
         tf_node = group_node.set_child(tf_config)
         tftf_node = tf_node.set_child(tftf_config)
-        scp_node = tftf_node.set_child(scp_config)
-        scp_tools_node = scp_node.set_child(scp_tools)
-        spm_node = scp_tools_node.set_child(spm_config)
+        spm_node = tftf_node.set_child(spm_config)
         rmm_node = spm_node.set_child(rmm_config)
         rfa_node = rmm_node.set_child(rfa_config)
-        run_node = rfa_node.set_child(run_config)
-        run_node.set_result(test_result, build_number)
-        run_node.set_desc(os.path.join(workspace, f))
+        tfut_node = rfa_node.set_child(tfut_config)
+        run_node = tfut_node.set_child(tf_run_config)
+        tfut_run_node = run_node.set_child(tfut_run)
+        tfut_run_node.set_result(test_result, build_number)
+        tfut_run_node.set_desc(os.path.join(workspace, f))
 
     # Emit page header element
     print(PAGE_HEADER, file=fd)

@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2025 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for EDK2 UART1
+#
+# Refer to handle-arguments.inc for the list of parameters.
+#
+
+source [file join [file dirname [info script]] handle-arguments.inc]
+
+# EDK2 section
+expect_string "UEFI firmware" "EDK2 starting"
+
+source [file join [file dirname [info script]] uart-hold.inc]

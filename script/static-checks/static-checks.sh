@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2024 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -70,6 +70,21 @@ if [ "$?" != 0 ]; then
   ((WARNING_COUNT++))
 else
   echo "Include order test: PASS"
+fi
+echo
+
+# Check ascending order of CPU ERRATUM and CVE added.
+
+if [ "$IS_CONTINUOUS_INTEGRATION" == 1 ]; then
+    "$CI_ROOT"/script/static-checks/static-checks-cpu-erratum-order.sh . patch
+else
+    "$CI_ROOT"/script/static-checks/static-checks-cpu-erratum-order.sh .
+fi
+if [ "$?" != 0 ]; then
+  echo "CPU Errata, CVE in-order test: FAILURE"
+  ((ERROR_COUNT++))
+else
+  echo "CPU Errata, CVE in-order test: PASS"
 fi
 echo
 

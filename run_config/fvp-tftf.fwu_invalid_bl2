@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+corrupt_bl2_gpt(){
+    echo "Corrupting BL2 FIP GPT partition in $1"
+    fip_max_size=$1
+    sector_size=512
+    gpt_image="$archive/fip_gpt.bin"
+    num_sectors_bl2_fip=$(expr $fip_max_size / $sector_size)
+
+    dd if=/dev/urandom of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FIP_BL2$" | awk '{print $2}') count=$num_sectors_bl2_fip conv=notrunc
+}
+
+post_tf_build() {
+	build_fip BL33="$archive/tftf.bin"
+}
+
+post_tf_archive() {
+    # Maximum FIP size is 2MiB = 2097152
+	gen_gpt_bin "$archive/fip.bin" 2097152
+
+    corrupt_bl2_gpt 2097152
+}
+
+generate_lava_job_template() {
+	uart="0" timeout=60 file="fwu_invalid_bl2.exp" track_expect
+
+	payload_type="tftf" gen_yaml_template
+}

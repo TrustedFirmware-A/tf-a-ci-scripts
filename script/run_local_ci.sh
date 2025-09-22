@@ -48,7 +48,7 @@ all:
 
 EOF
 
-	# If we're using local checkouts for either TF or TFTF, we must
+	# If we're using local checkouts for either TF-A or TFTF, we must
 	# serialise builds
 	while [ "$i" -lt "$num" ]; do
 		{
@@ -74,6 +74,8 @@ EOF
 # This function is invoked from the Makefile. Descriptor 5 points to the active
 # terminal.
 run_one_test() {
+	source "$ci_root/utils.sh"
+
 	id="${1%%_*}"
 	action="${1##*_}"
 	test_file="$(find -name "$id*.test" -printf "%f\n")"
@@ -91,6 +93,9 @@ run_one_test() {
 	source "$id/env"
 	set +a
 
+	run_config_tfa="$(echo "$RUN_CONFIG" | awk -F, '{print $1}')"
+	run_config_tfut="$(echo "$RUN_CONFIG" | awk -F, '{print $2}')"
+
 	# Makefiles don't like commas and colons in file names. We therefore
 	# replace them with _
 	config_subst="$(echo "$TEST_CONFIG" | tr ',:' '_')"
@@ -99,11 +104,20 @@ run_one_test() {
 	mkdir -p "$workspace"
 
 	log_file="$workspace/artefacts/build.log"
+	# fd 5 is the terminal where run_local_ci.sh is running. *Only* status
+	# of the run is printed as this is shared for all jobs and this may
+	# happen in parallel.
+	# Each job has its own verbose output as well. This will be progress
+	# messages but also any debugging prints. This is the default and it
+	# gets redirected to a file per job for archiving and disambiguation
+	# when running in parallel.
+	console_file="$workspace/console.log"
 	if [ "$parallel" -gt 1 ]; then
-		console_file="$workspace/console.log"
-		exec 6>>"$console_file"
+		exec >> $console_file 2>&1
 	else
-		exec 6>&5
+		# when running in serial, no scrambling is possible so print to
+		# stdout
+		exec > >(tee $console_file >&5) 2>&1
 	fi
 
 	# Unset make flags for build script
@@ -117,10 +131,8 @@ run_one_test() {
 	case "$action" in
 		"build")
 			echo "building: $config_string" >&5
-			if ! ccpathspec="$cc_path_spec" bash $minus_x "$ci_root/script/build_package.sh" \
-					>&6 2>&1; then
-				{
-				print_failure "$config_string (build)"
+			if ! ccpathspec="$cc_path_spec" bash $minus_x "$ci_root/script/build_package.sh"; then {
+				print_failure "$config_string (build)" >&5
 				if [ "$console_file" ]; then
 					echo "	see $console_file"
 				fi
@@ -130,16 +142,49 @@ run_one_test() {
 			;;
 
 		"run")
-			# Local runs for FVP, QEMU, or arm_fpga unless asked not to
-			if echo "$RUN_CONFIG" | grep -q "^\(fvp\|qemu\)" && \
+			#Run unit tests (TFUT)
+			if config_valid "$run_config_tfut"; then
+				echo "running TFUT: $config_string" >&5
+
+				if upon "$skip_tfut_runs"; then
+					#No run config for TFUT
+					if grep -q -e "--BUILD UNSTABLE--" "$log_file"; then
+						print_unstable "$config_string (tfut) (not run)" >&5
+					else
+						print_success "$config_string (tfut) (not run)" >&5
+					fi
+					exit 0
+				fi
+
+				if bash $minus_x "$ci_root/script/run_unit_tests.sh"; then
+					if grep -q -e "--BUILD UNSTABLE--" \
+						"$log_file"; then
+						print_unstable "$config_string (tfut)" >&5
+					else
+						print_success "$config_string (tfut)" >&5
+					fi
+					exit 0
+				else
+					{
+					print_failure "$config_string (tfut) (run)" >&5
+					if [ "$console_file" ]; then
+						echo "	see $console_file"
+					fi
+					} >&5
+					exit 1
+				fi
+			fi
+
+			#Run TF-A
+			if echo "$run_config_tfa" | grep -q "^\(fvp\|qemu\)" && \
 					not_upon "$skip_runs"; then
-				echo "running: $config_string" >&5
+				# Local runs for FVP, QEMU, or arm_fpga unless asked not to
+				echo "running TF-A: $config_string" >&5
 				if [ -n "$cc_enable" ]; then
 					# Enable of code coverage during run
 					if cc_enable="$cc_enable" trace_file_prefix=tr \
 					coverage_trace_plugin=$cc_path_spec/scripts/tools/code_coverage/fastmodel_baremetal/bmcov/model-plugin/CoverageTrace.so \
-					bash $minus_x "$ci_root/script/run_package.sh" \
-						>&6 2>&1; then
+					bash $minus_x "$ci_root/script/run_package.sh"; then
 						if grep -q -e "--BUILD UNSTABLE--" \
 							"$log_file"; then
 							print_unstable "$config_string" >&5
@@ -162,7 +207,7 @@ run_one_test() {
 						exit 0
 					else
 						{
-						print_failure "$config_string (run)"
+						print_failure "$config_string (run)" >&5
 						if [ "$console_file" ]; then
 							echo "	see $console_file"
 						fi
@@ -170,8 +215,7 @@ run_one_test() {
 						exit 1
 					fi
 				else
-					if bash $minus_x "$ci_root/script/run_package.sh" \
-						>&6 2>&1; then
+					if bash $minus_x "$ci_root/script/run_package.sh"; then
 						if grep -q -e "--BUILD UNSTABLE--" \
 							"$log_file"; then
 							print_unstable "$config_string" >&5
@@ -181,7 +225,7 @@ run_one_test() {
 						exit 0
 					else
 						{
-						print_failure "$config_string (run)"
+						print_failure "$config_string (run)" >&5
 						if [ "$console_file" ]; then
 							echo "	see $console_file"
 						fi
@@ -191,11 +235,10 @@ run_one_test() {
 				fi
 			else
 				# Local runs for arm_fpga platform
-				if echo "$RUN_CONFIG" | grep -q "^arm_fpga" && \
+				if echo "$run_config_tfa" | grep -q "^arm_fpga" && \
 					not_upon "$skip_runs"; then
 					echo "running: $config_string" >&5
-					if bash $minus_x "$ci_root/script/test_fpga_payload.sh" \
-						>&6 2>&1; then
+					if bash $minus_x "$ci_root/script/test_fpga_payload.sh"; then
 						if grep -q -e "--BUILD UNSTABLE--" \
 							"$log_file"; then
 							print_unstable "$config_string" >&5
@@ -205,7 +248,7 @@ run_one_test() {
 						exit 0
 					else
 						{
-						print_failure "$config_string (run)"
+						print_failure "$config_string (run)" >&5
 						if [ "$console_file" ]; then
 							echo "	see $console_file"
 						fi
@@ -233,6 +276,9 @@ run_one_test() {
 export -f run_one_test
 
 workspace="${workspace:?}"
+if [[ "$retain_paths" -eq 0 ]]; then
+	gcc_space="${gcc_space:?Environment variable 'gcc_space' must be set}"
+fi
 ci_root="$(readlink -f "$(dirname "$0")/..")"
 
 # If this script was invoked with bash -x, have subsequent build/run invocations
@@ -248,18 +294,16 @@ if [ -z "${test_groups}" ]; then
 
     # default the rest to nil if not present
     tftf_config="${tftf_config:-nil}"
-    scp_config="${scp_config:-nil}"
-    scp_tools="${scp_tools:-nil}"
     spm_config="${spm_config:-nil}"
     run_config="${run_config:-nil}"
 
     # construct the 'long form' so it takes into account all possible configurations
-    if echo ${test_group} | grep -q '^scp-'; then
-	tg=$(printf "%s/%s,%s,%s,%s:%s" "${test_group}" "${scp_config}" "${tf_config}" "${tftf_config}" "${scp_tools}" "${run_config}")
-    elif echo ${test_group} | grep -q '^spm-'; then
-	tg=$(printf "%s/%s,%s,%s,%s,%s:%s" "${test_group}" "${spm_config}" "${tf_config}" "${tftf_config}" "${scp_config}" "${scp_tools}" "${run_config}")
+    if echo ${test_group} | grep -q '^spm-'; then
+	tg=$(printf "%s/%s,%s,%s:%s" "${test_group}" "${spm_config}" "${tf_config}" "${tftf_config}" "${run_config}")
+    elif echo ${test_group} | grep -q '^rmm-'; then
+	tg=$(printf "%s/%s,%s,%s,%s:%s" "${test_group}" "${rmm_config}" "${tf_config}" "${tftf_config}" "${spm_config}" "${run_config}")
     else
-	tg=$(printf "%s/%s,%s,%s,%s,%s:%s" "${test_group}" "${tf_config}" "${tftf_config}" "${scp_config}" "${scp_tools}" "${spm_config}" "${run_config}")
+	tg=$(printf "%s/%s,%s,%s:%s" "${test_group}" "${tf_config}" "${tftf_config}" "${spm_config}" "${run_config}")
     fi
 
     # trim any ',nil:' from it
@@ -296,11 +340,11 @@ test_groups="${test_groups:?}"
 local_count=0
 
 if [ -z "$tf_root" ]; then
-	in_red "NOTE: NOT using local work tree for TF"
+	in_red "NOTE: NOT using local work tree for TF-A"
 else
 	tf_root="$(readlink -f $tf_root)"
 	tf_refspec=
-	in_green "Using local work tree for TF"
+	in_green "Using local work tree for TF-A"
 	let "++local_count"
 fi
 
@@ -311,15 +355,6 @@ else
 	tftf_root="$(readlink -f $tftf_root)"
 	tftf_refspec=
 	in_green "Using local work tree for TFTF"
-	let "++local_count"
-fi
-
-if [ -z "$scp_root" ]; then
-	in_red "NOTE: NOT using local work tree for SCP"
-else
-	scp_root="$(readlink -f $scp_root)"
-	scp_refspec=
-	in_green "Using local work tree for SCP"
 	let "++local_count"
 fi
 
@@ -411,15 +446,6 @@ mkdir -p "$workspace"
 
 source "$ci_root/utils.sh"
 
-# SCP is not cloned by default
-export clone_scp
-export scp_root
-if not_upon "$scp_root" && upon "$clone_scp"; then
-	clone_scp=1
-else
-	clone_scp=0
-fi
-
 # Enable of code coverage and whether there is a local plugin
 if upon "$cc_enable" && not_upon "$cc_path"; then
 	no_cc_t=1
@@ -435,13 +461,6 @@ no_ci="$ci_root" no_cc="$import_cc" no_tfm_tests="$tfm_tests_root" no_tfm_extras
 set -a
 source "$workspace/env"
 set +a
-
-if [ "$local_count" -gt 0 ]; then
-	# At least one repository is local
-	serialize_builds=1
-else
-	dont_clean=0
-fi
 
 export -f upon not_upon
 
@@ -479,4 +498,4 @@ if not_upon "$keep_going"; then
 	keep_going=
 fi
 
-MAKEFLAGS= make -r -j "$parallel" ${keep_going+-k} 5>&1 &>"make.log"
+MAKEFLAGS= make -r -j "$parallel" ${keep_going+-k} 5>&1 |& tee "make.log"

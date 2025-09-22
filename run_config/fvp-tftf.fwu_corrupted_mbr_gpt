@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+post_tf_build() {
+	build_fip BL33="$archive/tftf.bin"
+}
+
+post_tf_archive() {
+        # Maximum FIP size is 2MiB = 2097152
+	gen_gpt_bin "$archive/fip.bin" 2097152
+
+	# Corrupt the mbr to fail the update
+	corrupt_gpt_bin "$archive/fip_gpt.bin" "mbr"
+}
+
+generate_lava_job_template() {
+	uart="0" file="crash_gpt.exp" track_expect
+	uart="1" file="crash_panic.exp" track_expect
+
+	payload_type="tftf" gen_yaml_template
+}

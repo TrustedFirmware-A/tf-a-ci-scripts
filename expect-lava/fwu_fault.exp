@@ -1,0 +1,3 @@
+prompt='WARNING: Image id=1 size out of bounds'
+expect_string+=("i;${prompt}")
+

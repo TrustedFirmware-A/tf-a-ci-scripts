@@ -1,0 +1,10 @@
+#
+# Copyright (c) 2025 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for EDK2 UART1
+#
+
+# EDK2 section
+expect_string+=('i;UEFI firmware')

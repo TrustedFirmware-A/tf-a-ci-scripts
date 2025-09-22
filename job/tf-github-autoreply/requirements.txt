@@ -1,9 +1,0 @@
-#
-# Copyright (c) 2019-2020 Arm Limited. All rights reserved.
-#
-# SPDX-License-Identifier: BSD-3-Clause
-#
-
-#github_pr_bot.py requires:
-
-pygithub>=1.44

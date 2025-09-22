@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2022 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -13,18 +13,7 @@ source [file join [file dirname [info script]] handle-arguments.inc]
 # Trusted Firmware boot section
 source [file join [file dirname [info script]] trusted-firmware.inc]
 
-# EDK2 section
-expect {
-	"UEFI firmware" {
-		message "EDK2 starting"
-	}
-}
-
-expect {
-	"UEFI Interactive Shell" {
-		message "EDK2 shell starting"
-	}
-}
+expect_string "UEFI Interactive Shell" "EDK2 shell starting"
 
 expect {
 	"any other key to continue." {
@@ -40,14 +29,8 @@ expect {
 
 expect {
 	"FS0:" {
-		send "UefiInfo.efi\r"
+		send "HelloWorld.efi\r"
 		message "Loading UEFI application"
-	}
-}
-
-expect {
-	-re "Loading driver at .* UefiInfo.efi" {
-		message "UEFI application is being loaded"
 	}
 }
 

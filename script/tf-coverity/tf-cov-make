@@ -114,8 +114,8 @@ clean_build $fvp_common_flags FVP_USE_SP804_TIMER=1
 # Using the CCN driver and multi cluster topology
 clean_build $fvp_common_flags FVP_CLUSTER_COUNT=4
 
-# PMF
-clean_build $fvp_common_flags ENABLE_PMF=1
+# PMF and ACS SMC handler support
+clean_build $fvp_common_flags ENABLE_PMF=1 ENABLE_ACS_SMC=1
 
 # stack protector
 clean_build $fvp_common_flags ENABLE_STACK_PROTECTOR=strong
@@ -140,7 +140,7 @@ clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=0
 
 # SPM support with SPM at EL3 and TSP at S-EL1
 clean_build $fvp_common_flags CTX_INCLUDE_PAUTH_REGS=1 CTX_INCLUDE_EL2_REGS=0 EL3_EXCEPTION_HANDLING=0 \
-       	SPD=spmd SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1 \
+       	SPD=spmd SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1 FVP_TRUSTED_SRAM_SIZE=384 \
        	ARM_SPMC_MANIFEST_DTS=plat/arm/board/fvp/fdts/fvp_tsp_sp_manifest.dts
 
 # SPM support with Secure hafnium as SPM sitting at S-EL2
@@ -154,12 +154,15 @@ clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=1 ARM_ARCH_MINOR=4 \
 	CTX_INCLUDE_EL2_REGS=1 SP_LAYOUT_FILE=dummy ENABLE_SPMD_LP=1
 
 # SPM support with SPM sitting at EL3
-clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1
+clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1 \
+        FVP_TRUSTED_SRAM_SIZE=384
 
 # Firmware Handoff framework support
 clean_build $fvp_common_flags TRANSFER_LIST=1
 clean_build $fvp_common_flags CROSS_COMPILE=arm-none-eabi- TRANSFER_LIST=1 \
     AARCH32_SP=sp_min ARCH=aarch32
+clean_build $fvp_common_flags TRANSFER_LIST=1 ${ARM_TBB_OPTIONS} \
+    MBOOT_EL_HASH_ALG=sha256 MEASURED_BOOT=1 FVP_TRUSTED_SRAM_SIZE=384
 
 # HOB List support
 clean_build $fvp_common_flags HOB_LIST=1
@@ -219,6 +222,9 @@ clean_build $fvp_common_flags GIC_EXT_INTID=1
 # Using GICv4 features with extended PPI and SPI range
 clean_build $fvp_common_flags GIC_ENABLE_V4_EXTN=1 GIC_EXT_INTID=1
 
+# GICv5
+clean_build $fvp_common_flags FVP_USE_GIC_DRIVER=FVP_GICV5 FVP_DT_PREFIX=fvp-base-gicv3-psci
+
 # Measured Boot
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} MBOOT_EL_HASH_ALG=sha256 MEASURED_BOOT=1 USE_ROMLIB=1
 
@@ -268,6 +274,12 @@ clean_build $fvp_common_flags CTX_INCLUDE_AARCH32_REGS=0 HW_ASSISTED_COHERENCY=1
 # Sign Realm tokens with EL3 signing service
 clean_build $fvp_common_flags ENABLE_RME=1 RMMD_ENABLE_EL3_TOKEN_SIGN=1
 
+# Build with Live Firmware Activation support
+clean_build $fvp_common_flags LFA_SUPPORT=1
+
+# Build with RMM Live Firmware Activation support
+clean_build $fvp_common_flags ENABLE_RME=1 LFA_SUPPORT=1
+
 #
 # Juno platform
 # We'll use the following flags for all Juno builds.
@@ -284,6 +296,12 @@ clean_build $juno_common_flags CSS_USE_SCMI_SDS_DRIVER=0
 
 # TRNG Service
 clean_build $juno_common_flags TRNG_SUPPORT=1
+
+# SPMC AT EL3 Support with MEASURED_BOOT
+clean_build $juno_common_flags BL32=1 NS_TIMER_SWITCH=1 \
+	CSS_NON_SECURE_UART=1 CSS_USE_SCMI_SDS_DRIVER=1 USE_COHERENT_MEM=0\
+	SPD=spmd  SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1 CTX_INCLUDE_EL2_REGS=0 \
+	TRANSFER_LIST=1 HOB_LIST=1 MEASURED_BOOT=1 MBEDTLS_DIR=$(pwd)/mbedtls
 
 #
 # Reference Design Platform RD-N2
@@ -473,14 +491,14 @@ make PLAT=zynqmp $(common_flags) \
 clean_build PLAT=versal $(common_flags)
 clean_build PLAT=versal $(common_flags) VERSAL_PLATFORM=versal_virt
 
-# Build Xilinx Versal NET platform
-clean_build PLAT=versal_net $(common_flags)
+# Build Xilinx Versal NET platform with SDEI support
+clean_build PLAT=versal_net $(common_flags) SDEI_SUPPORT=1
 
 # Build Xilinx Versal NET without Platform Management support
 clean_build PLAT=versal_net $(common_flags) TFA_NO_PM=1
 
 # Build Xilinx Versal Gen 2 platform
-clean_build PLAT=versal2 $(common_flags)
+clean_build PLAT=versal2 $(common_flags) TFA_NO_PM=1
 clean_build PLAT=versal2 $(common_flags) TRANSFER_LIST=1
 
 # Platforms from Allwinner
@@ -517,6 +535,8 @@ make PLAT=imx8qx $(common_flags) all
 make PLAT=imx8ulp $(common_flags) all
 
 make PLAT=imx93 $(common_flags) all
+make PLAT=imx94 $(common_flags) all
+make PLAT=imx95 $(common_flags) all
 
 # Platforms for NXP Layerscape
 nxp_sb_flags="TRUSTED_BOARD_BOOT=1 CST_DIR=$(pwd) SPD=opteed"
@@ -585,6 +605,9 @@ clean_build PLAT=ls1088aqds $(common_flags) all BOOT_MODE=nor $nxp_sb_fuse_flags
 
 # s32g274ardb2
 clean_build PLAT=s32g274ardb2 $(common_flags) all
+
+# Platforms from Altera
+make PLAT=agilex3 $(common_flags) all
 
 # Platforms from Intel
 make PLAT=stratix10 $(common_flags) all
@@ -678,6 +701,21 @@ clean_build PLAT=rcar $(common_flags) BL32=Makefile \
     MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=V3M MACHINE=eagle \
     PMIC_ROHM_BD9571=0 RCAR_DRAM_SPLIT=0 RCAR_SYSTEM_SUSPEND=0 \
     AVS_SETTING_ENABLE=0 SPD=none TRUSTED_BOARD_BOOT=1
+
+# Renesas R-Car S4 Automotive SoC
+clean_build PLAT=rcar_gen4 $(common_flags) BL32=Makefile \
+    MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=S4 \
+    SPD=none CTX_INCLUDE_AARCH32_REGS=0 PTP_NONSECURE_ACCESS=1
+
+# Renesas R-Car V4H Automotive SoC
+clean_build PLAT=rcar_gen4 $(common_flags) BL32=Makefile \
+    MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=V4H \
+    SPD=none CTX_INCLUDE_AARCH32_REGS=0 PTP_NONSECURE_ACCESS=1
+
+# Renesas R-Car V4M Automotive SoC
+clean_build PLAT=rcar_gen4 $(common_flags) BL32=Makefile \
+    MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=V4M \
+    SPD=none CTX_INCLUDE_AARCH32_REGS=0 PTP_NONSECURE_ACCESS=1
 
 # Renesas HiHope RZ/G2M development kit
 clean_build PLAT=rzg $(common_flags) \

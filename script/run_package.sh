@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -11,16 +11,12 @@ set -e
 # group. That way, we can kill a background process group in one go.
 set -m
 ci_root="$(readlink -f "$(dirname "$0")/..")"
-source "$ci_root/utils.sh"
+source "$ci_root/script/run_common.sh"
 
 artefacts="${artefacts-$workspace/artefacts}"
 
 run_root="$workspace/run"
 pid_dir="$workspace/pids"
-
-# This variable avoids graceful termination of the model when
-# launched with the parameter 'bp.pl011_uart0.shutdown_on_eot=1'
-exit_on_model_param=0
 
 # Model exit parameter string
 model_exit_param_string="bp.pl011_uart0.shutdown_on_eot=1"
@@ -60,60 +56,32 @@ cleanup() {
 	sig=${1:-SIGINT}
 	echo "signal received: $sig"
 
-	# Avoid the model termination gracefully when the parameter 'exit_on_model_param'
-	# is set and test if exited successfully.
-	if [ "$exit_on_model_param" -eq 0 ] || [ "$sig" != "EXIT" ]; then
-		# Kill all background processes so far and wait for them
-		while read pid; do
-			pid="$(cat $pid)"
-			echo $pid
-			# Forcefully killing model process does not show statistical
-			# data (Host CPU time spent running in User and System). Safely
-			# kill the model by using SIGINT(^C) that helps in printing
-			# statistical data.
-			if [ "$pid" == "$model_pid" ] && [ "${COVERAGE_ON}" != "1" ]; then
-				model_cid=$(pgrep -P "$model_pid" | xargs)
-				# ignore errors
-				kill -SIGINT "$model_cid" &>/dev/null || true
-				# Allow some time to print data, we can't use wait since the process is
-				# a child of the daemonized launch process.
-				sleep 5
+	while read pid; do
+		pid="$(cat $pid)"
+		echo $pid
+		# Forcefully killing model process does not show statistical
+		# data (Host CPU time spent running in User and System). Safely
+		# kill the model by using SIGINT(^C) that helps in printing
+		# statistical data.
+		if [ "$pid" == "$model_pid" ] && [ "${COVERAGE_ON}" != "1" ]; then
+			model_cid=$(pgrep -P "$model_pid" | xargs || true)
+			if [ -z "$model_cid" ]; then
+				echo "Model quit by itself. Not killing!"
+				continue
 			fi
 
-			kill_and_reap "$pid"
+			# ignore errors
+			kill -SIGINT "$model_cid" &>/dev/null || true
+			# Allow some time to print data, we can't use wait since the process is
+			# a child of the daemonized launch process.
+			sleep 5
+		fi
 
-		done < <(find -name '*.pid')
-	fi
+		kill_and_reap "$pid"
+
+	done < <(find -name '*.pid')
 
 	popd
-}
-
-# Launch a program. Have its PID saved in a file with given name with .pid
-# suffix. When the program exits, create a file with .success suffix, or one
-# with .fail if it fails. This function blocks, so the caller must '&' this if
-# they want to continue. Call must wait for $pid_dir/$name.pid to be created
-# should it want to read it.
-launch() {
-	local pid
-
-	"$@" &
-	pid="$!"
-	echo "$pid" > "$pid_dir/${name:?}.pid"
-	if wait "$pid"; then
-		touch "$pid_dir/$name.success"
-	else
-		touch "$pid_dir/$name.fail"
-	fi
-}
-
-# Provide signal as an argument to the trap function.
-trap_with_sig() {
-	local func
-
-	func="$1" ; shift
-	for sig ; do
-		trap "$func $sig" "$sig"
-	done
 }
 
 # Cleanup actions
@@ -146,6 +114,11 @@ cd "$run_cwd"
 # Source environment for run
 if [ -f "run/env" ]; then
 	source "run/env"
+fi
+
+if [ -v verify_hashes ]; then
+	export verify_hashes=1
+	export artefacts_dir=$run_cwd
 fi
 
 # Source model environment for run
@@ -449,9 +422,6 @@ if [ ${#failed[@]} != 0 ]; then
 fi
 
 popd
-
-# Capture whether the model is running with the 'exit model parameter' or not.
-exit_on_model_param=$(grep -wc "$model_exit_param_string" "$run_cwd/model_params")
 
 if [ "$result" -eq 0 ]; then
 	echo "Test success!"

@@ -1,9 +1,0 @@
-#
-# Copyright (c) 2021 Arm Limited. All rights reserved.
-#
-# SPDX-License-Identifier: BSD-3-Clause
-#
-# Expect script for Standalone MM partition UART2
-#
-
-# Handled by ../expect-post/spm-edk2-uart2.exp

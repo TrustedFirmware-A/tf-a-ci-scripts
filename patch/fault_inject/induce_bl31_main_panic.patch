@@ -1,8 +1,8 @@
-diff --git a/bl31/bl31_main.c b/bl31/bl31_main.c
-index 8c5ba6f2e..b1ef0b005 100644
---- a/bl31/bl31_main.c
-+++ b/bl31/bl31_main.c
-@@ -224,6 +224,8 @@ void bl31_main(void)
+diff --git i/bl31/bl31_main.c w/bl31/bl31_main.c
+index bc1bfc963..d95b836ea 100644
+--- i/bl31/bl31_main.c
++++ w/bl31/bl31_main.c
+@@ -235,6 +235,8 @@ void __no_pauth bl31_main(u_register_t arg0, u_register_t arg1, u_register_t arg
  
  	console_flush();
  	console_switch_state(CONSOLE_FLAG_RUNTIME);
@@ -10,4 +10,4 @@ index 8c5ba6f2e..b1ef0b005 100644
 +	panic();
  }
  
- /*******************************************************************************
+ void __no_pauth bl31_warmboot(void)

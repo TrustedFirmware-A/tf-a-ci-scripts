@@ -9,8 +9,10 @@ timeouts:
   job:
     minutes: 45
   actions:
-    lava-test-monitor:
-      seconds: 120
+#    lava-test-monitor:
+#      seconds: 120
+    lava-test-monitor: # See change Id53135364cd1e65675d66cc635d840ec069685ef
+      minutes: 30
   connections:
     lava-test-monitor:
       seconds: 120

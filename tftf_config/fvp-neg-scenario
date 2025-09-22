@@ -1,0 +1,7 @@
+CROSS_COMPILE=aarch64-none-elf-
+FWU=1
+NEW_TEST_SESSION=0
+PLAT=fvp
+TESTS=neg_scenario
+USE_NVM=1
+

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2021-2023 Arm Limited. All rights reserved.
+# Copyright (c) 2021-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -21,22 +21,14 @@ fetch_prebuilt_fw_images() {
                 fetch_and_archive
 
         #Fetch pre-built SCP/MCP binaries if they haven't been built
-        if [ ! -f "$archive/mcp_rom.bin" ]; then
-                url="$scp_mcp_prebuilts/mcp_romfw.bin" filename="mcp_rom.bin" \
-                        fetch_and_archive
-        fi
-        if [ ! -f "$archive/scp_rom.bin" ]; then
-                url="$scp_mcp_prebuilts/scp_romfw.bin" filename="scp_rom.bin" \
-                        fetch_and_archive
-        fi
-        if [ ! -f "$archive/scp_ram.bin" ]; then
-                url="$scp_mcp_prebuilts/scp_ramfw.bin" filename="scp_ram.bin" \
-                        fetch_and_archive
-        fi
-        if [ ! -f "$archive/mcp_ram.bin" ]; then
-                url="$scp_mcp_prebuilts/mcp_ramfw.bin" filename="mcp_ram.bin" \
-                        fetch_and_archive
-        fi
+        url="$scp_mcp_prebuilts/mcp_romfw.bin" filename="mcp_rom.bin" \
+                fetch_and_archive
+        url="$scp_mcp_prebuilts/scp_romfw.bin" filename="scp_rom.bin" \
+                fetch_and_archive
+        url="$scp_mcp_prebuilts/scp_ramfw.bin" filename="scp_ram.bin" \
+                fetch_and_archive
+        url="$scp_mcp_prebuilts/mcp_ramfw.bin" filename="mcp_ram.bin" \
+                fetch_and_archive
 }
 
 gen_recovery_image() {
@@ -50,6 +42,7 @@ gen_recovery_image() {
         scp_uuid="cfacc2c4-15e8-4668-82be-430a38fad705"
         mcp_uuid="54464222-a4cf-4bf8-b1b6-cee7dade539e"
 
+	fiptool=$(fiptool_path)
         # Create FIP for SCP
         "$fiptool" create --blob \
                 uuid=$scp_uuid,file=$tf_build_root/n1sdp/$bin_mode/bl1.bin \

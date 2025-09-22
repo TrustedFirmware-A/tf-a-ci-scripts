@@ -6,5 +6,11 @@
 #
 
 post_tf_build() {
-	url="${optee_path}/tee-raw.bin" filename="bl32.bin" fetch_and_archive
+	# Fetch and archive the OP-TEE header binary as 'bl32.bin'
+	url="${optee_path}/tee-header_v2.bin" filename="bl32.bin" \
+		fetch_and_archive
+
+	# Fetch and archive the OP-TEE pager binary as 'bl32_extra1.bin'
+	url="${optee_path}/tee-pager_v2.bin" filename="bl32_extra1.bin" \
+		fetch_and_archive
 }

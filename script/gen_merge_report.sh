@@ -45,7 +45,7 @@ test_results = data['test_results']
 test_files = data['test_files']
 for index, build_number in enumerate(test_results):
     if ("bmcov" in test_files[index] or
-    "code-coverage" in test_files[index]) and test_results[build_number] == "SUCCESS":
+    "coverage" in test_files[index]) and test_results[build_number] == "SUCCESS":
         merge_number += 1
         base_url = "{}job/{}/{}/{}".format(
                         server, data['job'], build_number, "$ARTIFACT_PATH")
@@ -235,8 +235,8 @@ s = """
         merged = false
         if (q = row.querySelector('td.success a.buildlink')) {
           href = q.href
-          buildId = href.split("/").at(-2)
-          if (mergedIds.include(buildId)) {
+          buildId = Number(href.split("/").at(-2))
+          if (mergedIds.includes(buildId)) {
               cell.classList.add("success")
               const url = href.replace('console', 'artifact/${individual_report_folder}')
               button.addEventListener('click', () => {
@@ -267,11 +267,17 @@ EOF
 
 OUTDIR=""
 index=""
+ls -al
 case "$TEST_GROUPS" in
     scp*)
             project="scp"
             jenkins_archive_folder=reports
             individual_report_folder=html/qa-code-coverage/lcov/index.html
+            ;;
+    tfut*)
+            project="tfut"
+            jenkins_archive_folder=merge/outdir
+            individual_report_folder=unit_tests/trusted-firmware-a-coverage/index.html
             ;;
     tf*)
             project="trusted_firmware"
@@ -304,13 +310,13 @@ pushd $OUTDIR
     fi
 
      source ${WORKSPACE}/qa-tools/coverage-tool/coverage-reporting/merge.sh \
-        -j $MERGE_CONFIGURATION -l ${OUTDIR}/${COVERAGE_FOLDER} -w $WORKSPACE -c
+        -j $MERGE_CONFIGURATION -l ${OUTDIR}/${COVERAGE_FOLDER} \
+        -w $WORKSPACE -c -i -d
     # backward compatibility with old qa-tools
     [ $? -eq 0 ] && status=true || status=false
 
     # merged_status is set at 'merge.sh' indicating if merging reports was ok
     ${merged_status:-$status} && generate_code_coverage_summary "${REPORT_HTML}"
-    generate_code_coverage_column "${REPORT_HTML}"
+    generate_code_coverage_column "${REPORT_HTML}" || true
     cp "${REPORT_HTML}" "$OUTDIR"
-
 popd

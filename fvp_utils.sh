@@ -39,16 +39,17 @@ uefi_ci_bin_url="${uefi_ci_bin_url:-$uefi_downloads/Artifacts/Linux/github/fvp/s
 
 uboot32_fip_url="$linaro_release/fvp32-latest-busybox-uboot/fip.bin"
 if [[ "$test_config" == *handoff* ]]; then
+	optee_path=$tfa_downloads/optee/handoff/4.6.0
 	uboot_url="${tfa_downloads}/handoff/fvp/u-boot.bin"
 else
-	uboot_url="$linaro_release/fvp-latest-busybox-uboot/bl33-uboot.bin"
+	optee_version="4.5.0"
+
+	optee_path=$tfa_downloads/optee/${optee_version}
+	uboot_url="${tfa_downloads}/linux_boot/fvp/u-boot.bin"
 fi
 uboot_script_url="${tfa_downloads}/linux_boot/fvp/boot.scr"
 
-rootfs_url="$linaro_release/lt-vexpress64-openembedded_minimal-armv8-gcc-5.2_20170127-761.img.gz"
-
-optee_version="4.4.0"
-optee_path=$tfa_downloads/optee/${optee_version}
+rootfs_url="${tfa_downloads}/linux_boot/fvp/rootfs.ext4"
 
 # Default FVP model variables
 default_model_dtb="dtb.bin"
@@ -56,7 +57,6 @@ default_model_dtb="dtb.bin"
 # FVP containers and model paths
 fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build}_linux64;/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
-fvp_base_aemv8r="fvp:fvp_base_aemv8r_${model_version}_${model_build};/opt/model/AEMv8R_base_pkg/models/${model_flavour}"
 fvp_rd_1_ae="fvp:fvp_rd_1_ae_${model_version}_${model_build};/opt/model/FVP_RD_1_AE/models/${model_flavour}"
 
 # CSS model list
@@ -100,7 +100,6 @@ fvp_models=(
 [neoverse_n2]="${fvp_arm_std_library};FVP_Base_Neoverse-N2"
 [neoverse-v1x4]="${fvp_arm_std_library};FVP_Base_Neoverse-V1"
 [tc4]="${fvp_tc4};FVP_TC4"
-[baser-aemv8r]="${fvp_base_aemv8r};FVP_BaseR_AEMv8R"
 [rd1ae]="${fvp_rd_1_ae};FVP_RD_1_AE"
 )
 
@@ -144,7 +143,7 @@ get_ftpm_optee_bin() {
 get_dtb() {
 	local dtb_type="${dtb_type:?}"
 	local dtb_url
-	local dtb_saveas="$workspace/dtb.bin"
+	local dtb_saveas="$archive/dtb.bin"
 	local cc="$(get_tf_opt CROSS_COMPILE)"
 	local pp_flags="-P -nostdinc -undef -x assembler-with-cpp"
 
@@ -157,11 +156,11 @@ get_dtb() {
 		*)
 			# Preprocess DTS file
 			${cc}gcc -E ${pp_flags} -I"$tf_root/fdts" -I"$tf_root/include" \
-				-o "$workspace/${dtb_type}.pre.dts" \
+				-o "$archive/${dtb_type}.pre.dts" \
 				"$tf_root/fdts/${dtb_type}.dts"
 			# Generate DTB file from DTS
 			dtc -I dts -O dtb \
-				"$workspace/${dtb_type}.pre.dts" -o "$dtb_saveas"
+				"$archive/${dtb_type}.pre.dts" -o "$dtb_saveas"
 	esac
 
 	archive_file "$dtb_saveas"
@@ -201,8 +200,6 @@ get_rootfs() {
 	popd
 }
 
-fvp_romlib_jmptbl_backup="$(mktempdir)/jmptbl.i"
-
 fvp_romlib_runtime() {
 	local tmpdir="$(mktempdir)"
 
@@ -211,8 +208,7 @@ fvp_romlib_runtime() {
 	mv "${tf_build_root:?}/${plat:?}/${mode:?}/bl1.bin" "$tmpdir/bl1.bin"
 
 	# Patch index file
-	cp "${tf_root:?}/plat/arm/board/fvp/jmptbl.i" "$fvp_romlib_jmptbl_backup"
-	sed -i '/fdt/ s/.$/&\ patch/' ${tf_root:?}/plat/arm/board/fvp/jmptbl.i
+	apply_tf_patch "fvp_romlib_runtime/jmptbl_i_patch.patch"
 
 	# Rebuild with patched file
 	echo "Building patched romlib:"
@@ -222,12 +218,6 @@ fvp_romlib_runtime() {
 	mv "$tmpdir/romlib.bin" "${tf_build_root:?}/${plat:?}/${mode:?}/romlib/romlib.bin"
 	mv "$tmpdir/bl1.bin" "${tf_build_root:?}/${plat:?}/${mode:?}/bl1.bin"
 }
-
-fvp_romlib_cleanup() {
-	# Restore original index
-	mv "$fvp_romlib_jmptbl_backup" "${tf_root:?}/plat/arm/board/fvp/jmptbl.i"
-}
-
 
 # Generates the final YAML-based LAVA job definition from a template file.
 #
@@ -346,7 +336,7 @@ gen_fvp_yaml() {
         [cactus_primary]="$(gen_bin_url cactus-primary.pkg)"
         [cactus_secondary]="$(gen_bin_url cactus-secondary.pkg)"
         [cactus_tertiary]="$(gen_bin_url cactus-tertiary.pkg)"
-        [coverage_trace_plugin]="${coverage_trace_plugin}"
+        [coverage_trace_plugin]="$(gen_cc_url)"
         [dtb]="$(gen_bin_url ${model_dtb})"
         [el3_payload]="$(gen_bin_url el3_payload.bin)"
         [fip]="$(gen_bin_url fip.bin)"
@@ -468,6 +458,7 @@ docker_registry_append() {
 # generate GPT image and archive it
 gen_gpt_bin() {
     fip_bin="$1"
+    bl2_fip_bin="$(dirname "$fip_bin")/bl2_$(basename "$fip_bin")"
     gpt_image="fip_gpt.bin"
     # the FIP partition type is not standardized, so generate one
     fip_type_uuid=`uuidgen --sha1 --namespace @dns --name "fip_type_uuid"`
@@ -486,6 +477,24 @@ gen_gpt_bin() {
         bberror "fip.bin ($fip_bin_size bytes) is larger than the GPT partition ($fip_max_size bytes)"
     fi
 
+    has_bl2_fip=0
+    if [ -f "$bl2_fip_bin" ]; then
+        has_bl2_fip=1
+        echo "BL2 FIP detected: $bl2_fip_bin"
+
+        bl2_fip_type_uuid=$(uuidgen --sha1 --namespace @dns --name "bl2_fip_type_uuid")
+        bl2_fip_bin_size=$(stat -c %s $bl2_fip_bin)
+        FIP_BL2_uuid=$(uuidgen)
+        bl2_fip_max_size=$fip_max_size
+
+        if [ $bl2_fip_max_size -lt $bl2_fip_bin_size ]; then
+            bberror "bl2_fip.bin ($bl2_fip_bin_size bytes) is larger than the GPT partition ($bl2_fip_max_size bytes)"
+        fi
+
+    else
+        echo "No BL2 FIP found. Proceeding without it."
+    fi
+
     # maximum metadata size 512B.
     # This is the current size of the metadata rounded up to an integer number of sectors.
     metadata_max_size=512
@@ -496,7 +505,7 @@ gen_gpt_bin() {
     python3 $ci_root/generate_fwu_metadata.py --metadata_file $metadata_file \
                                --image_data "[('$fip_type_uuid', '$location_uuid', ['$FIP_A_uuid', '$FIP_B_uuid'])]"
 
-    # create GPT image. The GPT contains 1 FIP partition: FIP_A.
+    # create GPT image. If BL2_FIP does not exists, the GPT contains 1 FIP partition: FIP_A.
     # the GPT layout is the following:
     #
     #      +----------------------+
@@ -515,44 +524,112 @@ gen_gpt_bin() {
     # LBA-1| Secondary GPT Header |
     #      +----------------------+
 
+    # create GPT image. If BL2_FIP exists, The GPT contains 2 FIP partitions: FIP_BL2 and FIP_A.
+    # the GPT layout is the following:
+    #
+    #      +----------------------+
+    # LBA0 | Protective MBR       |
+    #      ------------------------
+    # LBA1 | Primary GPT Header   |
+    #      ------------------------
+    # LBA34| FIP_BL2              |
+    #      ------------------------
+    #      | FIP_A                |
+    #      ------------------------
+    #      | FIP_B                |
+    #      ------------------------
+    #      | FWU-Metadata         |
+    #      ------------------------
+    #      | Bkup-FWU-Metadata    |
+    #      ------------------------
+    # LBA-1| Secondary GPT Header |
+    #      +----------------------+
+
     sector_size=512 # in bytes
     gpt_header_size=33 # in sectors
     num_sectors_fip=`expr $fip_max_size / $sector_size`
     num_sectors_metadata=`expr $metadata_max_size / $sector_size`
+
     start_sector_1=`expr 1 + $gpt_header_size` # size of MBR is 1 sector
-    start_sector_2=`expr $start_sector_1 + $num_sectors_fip`
-    start_sector_3=`expr $start_sector_2 + $num_sectors_fip`
-    start_sector_4=`expr $start_sector_3 + $num_sectors_metadata`
-    num_sectors_gpt=`expr $start_sector_4 + $num_sectors_metadata + $gpt_header_size`
-    gpt_size=`expr $num_sectors_gpt \* $sector_size`
 
-    # create raw image
-    dd if=/dev/zero of=$gpt_image bs=$gpt_size count=1
+    if [ "$has_bl2_fip" -eq 1 ]; then
+        num_sectors_bl2_fip=$(expr $bl2_fip_max_size / $sector_size)
 
-    # create the GPT layout
-    sgdisk $gpt_image \
-           --set-alignment $partition_alignment \
-           --disk-guid $location_uuid \
-           \
-           --new 1:$start_sector_1:+$num_sectors_fip \
-           --change-name 1:FIP_A \
-           --typecode 1:$fip_type_uuid \
-           --partition-guid 1:$FIP_A_uuid \
-	   \
-           --new 2:$start_sector_2:+$num_sectors_fip \
-           --change-name 2:FIP_B \
-           --typecode 2:$fip_type_uuid \
-           --partition-guid 2:$FIP_B_uuid \
-           \
-           --new 3:$start_sector_3:+$num_sectors_metadata \
-           --change-name 3:FWU-Metadata \
-           --typecode 3:$metadata_type_uuid \
-           \
-           --new 4:$start_sector_4:+$num_sectors_metadata \
-           --change-name 4:Bkup-FWU-Metadata \
-           --typecode 4:$metadata_type_uuid
+        start_sector_2=`expr $start_sector_1 + $num_sectors_bl2_fip`
+        start_sector_3=`expr $start_sector_2 + $num_sectors_fip`
+        start_sector_4=`expr $start_sector_3 + $num_sectors_fip`
+        start_sector_5=`expr $start_sector_4 + $num_sectors_metadata`
+        num_sectors_gpt=`expr $start_sector_5 + $num_sectors_metadata + $gpt_header_size`
+        gpt_size=`expr $num_sectors_gpt \* $sector_size`
+
+        # create raw image
+        dd if=/dev/zero of=$gpt_image bs=$gpt_size count=1
+
+        sgdisk $gpt_image \
+            --set-alignment $partition_alignment \
+            --disk-guid $location_uuid \
+            \
+            --new 1:$start_sector_1:+$num_sectors_bl2_fip \
+            --change-name 1:FIP_BL2 \
+            --typecode 1:$bl2_fip_type_uuid \
+            --partition-guid 1:$FIP_BL2_uuid \
+	        \
+            --new 2:$start_sector_2:+$num_sectors_fip \
+            --change-name 2:FIP_A \
+            --typecode 2:$fip_type_uuid \
+            --partition-guid 2:$FIP_A_uuid \
+	        \
+            --new 3:$start_sector_3:+$num_sectors_fip \
+            --change-name 3:FIP_B \
+            --typecode 3:$fip_type_uuid \
+            --partition-guid 3:$FIP_B_uuid \
+            \
+            --new 4:$start_sector_4:+$num_sectors_metadata \
+            --change-name 4:FWU-Metadata \
+            --typecode 4:$metadata_type_uuid \
+            \
+            --new 5:$start_sector_5:+$num_sectors_metadata \
+            --change-name 5:Bkup-FWU-Metadata \
+            --typecode 5:$metadata_type_uuid
+
+    else
+        start_sector_2=`expr $start_sector_1 + $num_sectors_fip`
+        start_sector_3=`expr $start_sector_2 + $num_sectors_fip`
+        start_sector_4=`expr $start_sector_3 + $num_sectors_metadata`
+        num_sectors_gpt=`expr $start_sector_4 + $num_sectors_metadata + $gpt_header_size`
+        gpt_size=`expr $num_sectors_gpt \* $sector_size`
+
+        # create raw image
+        dd if=/dev/zero of=$gpt_image bs=$gpt_size count=1
+
+        sgdisk $gpt_image \
+            --set-alignment $partition_alignment \
+            --disk-guid $location_uuid \
+            \
+            --new 1:$start_sector_1:+$num_sectors_fip \
+            --change-name 1:FIP_A \
+            --typecode 1:$fip_type_uuid \
+            --partition-guid 1:$FIP_A_uuid \
+	        \
+            --new 2:$start_sector_2:+$num_sectors_fip \
+            --change-name 2:FIP_B \
+            --typecode 2:$fip_type_uuid \
+            --partition-guid 2:$FIP_B_uuid \
+            \
+            --new 3:$start_sector_3:+$num_sectors_metadata \
+            --change-name 3:FWU-Metadata \
+            --typecode 3:$metadata_type_uuid \
+            \
+            --new 4:$start_sector_4:+$num_sectors_metadata \
+            --change-name 4:Bkup-FWU-Metadata \
+            --typecode 4:$metadata_type_uuid
+
+    fi
 
     # populate the GPT partitions
+    if [ "$has_bl2_fip" -eq 1 ]; then
+        dd if=$bl2_fip_bin of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FIP_BL2$" | awk '{print $2}') count=$num_sectors_bl2_fip conv=notrunc
+    fi
     dd if=$fip_bin of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FIP_A$" | awk '{print $2}') count=$num_sectors_fip conv=notrunc
     dd if=$fip_bin of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FIP_B$" | awk '{print $2}') count=$num_sectors_fip conv=notrunc
     dd if=$metadata_file of=$gpt_image bs=$sector_size seek=$(gdisk -l $gpt_image | grep " FWU-Metadata$" | awk '{print $2}') count=$num_sectors_metadata conv=notrunc
@@ -595,8 +672,20 @@ corrupt_gpt_bin() {
             seek=$(gdisk -l $bin | grep " FWU-Metadata$" | awk '{print $2}')
             count=1
             ;;
+        "mbr")
+            seek=0
+            count=1
+            ;;
+        "secondary-header")
+            # Secondary GPT header is present in LBA-1 last block before the
+            # end of the GPT image.
+            # Secondary GPT header is located after the backup FWU metadata,
+            # which is 1 sector in size.
+            seek=$(( $(gdisk -l "$bin" | grep " Bkup-FWU-Metadata$" | awk '{print $2}') + 1 ))
+            count=1
+            ;;
         *)
-            echo "Invalid $corrupt_data. Use 'header', 'partition-entries'"
+            echo "Invalid $corrupt_data. Use 'header', 'partition-entries', 'fwu-metadata' or 'mbr', 'fwu-metadata' or 'secondary-header'."
             return 1
             ;;
     esac

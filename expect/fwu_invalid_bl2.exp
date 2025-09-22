@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Trusted Firmware Test Framework
+#
+
+source [file join [file dirname [info script]] handle-arguments.inc]
+
+expect_string "NS_BL1U: Invalid image size"
+expect_string "NS_BL1U: Invalid SMC"
+expect_string "NS_BL1U: IMAGE_COPY with invalid image_id"
+expect_string "PANIC in file"
+
+exit_uart 0

@@ -1,0 +1,12 @@
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Trusted Firmware Test Framework
+#
+
+expect_string+=('i;BL1: Booting BL2')
+expect_string+=('i;BL2: Loading image id 3')
+expect_string+=('i;BL2: Failed to load image id 3')
+expect_string+=('i;PANIC in file')

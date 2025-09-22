@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2024 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -21,22 +21,18 @@ fi
 export tf_root="${tf_root:-$workspace/trusted_firmware}"
 export rfa_root="${rfa_root:-$workspace/rusted-firmware-a}"
 export tftf_root="${tftf_root:-$workspace/trusted_firmware_tf}"
-export scp_root="${scp_root:-$workspace/scp}"
-scp_tools_root="${scp_tools_root:-$workspace/scp_tools}"
+export tfut_root="${tfut_root:-$workspace/tfut}"
 cc_root="${cc_root:-$ccpathspec}"
 spm_root="${spm_root:-$workspace/spm}"
 rmm_root="${rmm_root:-$workspace/tf-rmm}"
 
-scp_tf_tools_root="$scp_tools_root/scp_tf_tools"
-
 # Refspecs
 tf_refspec="$TF_REFSPEC"
 tftf_refspec="$TFTF_REFSPEC"
-scp_refspec="$SCP_REFSPEC"
-scp_tools_commit="${SCP_TOOLS_COMMIT:-master}"
 spm_refspec="$SPM_REFSPEC"
 rmm_refspec="$RMM_REFSPEC"
 rfa_refspec="$RFA_REFSPEC"
+tfut_gerrit_refspec="$TFUT_GERRIT_REFSPEC"
 
 test_config="${TEST_CONFIG:?}"
 test_group="${TEST_GROUP:?}"
@@ -44,10 +40,16 @@ build_configs="${BUILD_CONFIG:?}"
 run_config="${RUN_CONFIG:?}"
 cc_config="${CC_ENABLE:-}"
 
-archive="$artefacts"
+export archive="$artefacts"
 build_log="$artefacts/build.log"
-fiptool="$tf_root/tools/fiptool/fiptool"
-cert_create="$tf_root/tools/cert_create/cert_create"
+
+fiptool_path() {
+	echo $tf_build_root/$(get_tf_opt PLAT)/${bin_mode}/tools/fiptool/fiptool
+}
+
+cert_create_path() {
+	echo $tf_build_root/$(get_tf_opt PLAT)/${bin_mode}/tools/cert_create/cert_create
+}
 
 # Validate $bin_mode
 case "$bin_mode" in
@@ -60,16 +62,6 @@ esac
 
 # File to save any environem
 hook_env_file="$(mktempfile)"
-
-# Check if a config is valid
-config_valid() {
-	local config="${1?}"
-	if [ -z "$config" ] || [ "$(basename "$config")" = "nil" ]; then
-		return 1
-	fi
-
-	return 0
-}
 
 # Echo from a build wrapper. Print to descriptor 3 that's opened by the build
 # function.
@@ -124,7 +116,7 @@ call_hook() {
 
 	[ -z "$func" ] && return 0
 
-	echo "=== Calling hooks: $1 ==="
+	echo "=== Calling hooks: $1 ===" &>>"$build_log"
 
 	: >"$hook_env_file"
 
@@ -133,7 +125,16 @@ call_hook() {
 			(
 			source "$ci_root/run_config/$config_fragment"
 			call_func "$func" "$config_fragment"
-			)
+			) &>>"$build_log" || fail_build
+		done
+	fi
+
+	if [ "$run_config_tfut_candidates" ]; then
+		for config_fragment in $run_config_tfut_candidates; do
+			(
+			source "$ci_root/run_config_tfut/$config_fragment"
+			call_func "$func" "$config_fragment"
+			) &>>"$build_log" || fail_build
 		done
 	fi
 
@@ -147,7 +148,7 @@ call_hook() {
 	# Have any variables set take effect
 	source "$hook_env_file"
 
-	echo "=== End calling hooks: $1 ==="
+	echo "=== End calling hooks: $1 ===" &>>"$build_log"
 }
 
 # Set a variable from within a hook
@@ -179,43 +180,11 @@ collect_build_artefacts() {
 		return
 	fi
 
-	if ! find "$from" \( -name "*.bin" -o -name '*.elf' -o -name '*.dtb' -o -name '*.axf' -o -name '*.stm32' \) -exec cp -t "${to:?}" '{}' +; then
+	if ! find "$from" \( -name "*.bin" -o -name '*.elf' -o -name '*.dtb' -o -name '*.axf' -o -name '*.stm32' -o -name '*.img' \) -exec cp -t "${to:?}" '{}' +; then
 		echo "You probably are running local CI on local repositories."
 		echo "Did you set 'dont_clean' but forgot to run 'distclean'?"
 		die
 	fi
-}
-
-# SCP and MCP binaries are named firmware.{bin,elf}, and are placed under
-# scp/mcp_ramfw and scp/mcp_romfw directories, so can't be collected by
-# collect_build_artefacts function.
-collect_scp_artefacts() {
-	to="${to:?}" \
-	find "$scp_root" \( \( -name "*.bin" -o -name '*.elf' \) -and ! -name 'CMake*' \) -exec bash -c '
-		for file; do
-			ext="$(echo $file | awk -F. "{print \$NF}")"
-			case $file in
-				*/firmware-scp_ramfw/bin/*|*/firmware-scp_ramfw_fvp/bin/*)
-					cp $file $to/scp_ram.$ext
-					;;
-				*/firmware-scp_romfw/bin/*)
-					cp $file $to/scp_rom.$ext
-					;;
-				*/firmware-mcp_ramfw/bin/*|*/firmware-mcp_ramfw_fvp/bin/*)
-					cp $file $to/mcp_ram.$ext
-					;;
-				*/firmware-mcp_romfw/bin/*)
-					cp $file $to/mcp_rom.$ext
-					;;
-				*/firmware-scp_romfw_bypass/bin/*)
-					cp $file $to/scp_rom_bypass.$ext
-					;;
-				*)
-					echo "Unknown SCP binary: $file" >&2
-					;;
-			esac
-		done
-	' bash '{}' +
 }
 
 # Collect SPM/hafnium artefacts with "secure_" appended to the files
@@ -240,6 +209,30 @@ collect_rfa_artefacts() {
 		echo "Did you set 'dont_clean' but forgot to run 'distclean'?"
 		die
 	fi
+}
+
+collect_tfut_artefacts() {
+	if [ ! -d "${from:?}" ]; then
+                return
+        fi
+
+	pushd "$tfut_root/build"
+	artefact_list=$(python3 "$ci_root/script/get_ut_test_list.py")
+	for artefact in $artefact_list; do
+		cp -t "${to:?}" "$from/$artefact"
+	done
+	echo "$artefact_list" | tr ' ' '\n' > "${to:?}/tfut_artefacts.txt"
+	popd
+}
+
+collect_tfut_coverage() {
+	if [ "$coverage" != "ON" ]; then
+                return
+        fi
+
+	pushd "$tfut_root/build"
+	touch "${to:?}/tfut_coverage.txt"
+	popd
 }
 
 # Map the UART ID used for expect with the UART descriptor and port
@@ -320,6 +313,7 @@ extract_fip() {
 		fip="$(basename "$1")"
 	fi
 
+	fiptool=$(fiptool_path)
 	"$fiptool" unpack "$fip"
 	echo "Extracted FIP: $fip"
 }
@@ -336,10 +330,7 @@ fail_build() {
 	fi
 
 	echo
-	echo "Build failed! Full build log below:"
-	echo "[...]"
-	echo
-	cat "$build_log"
+	echo "Build failed!"
 	echo
 	echo "See $log_path for full output"
 	echo
@@ -359,7 +350,14 @@ build_fip() {
 		set +a
 	fi
 
-	make -C "$tf_root" $(cat "$tf_config_file") DEBUG="$DEBUG" V=1 "$@" \
+    if [ "$(get_tf_opt MEASURED_BOOT)" = 1 ]; then
+		# These are needed for accurate hash verification
+		local build_args_path="${workspace}/fip_build_args"
+		echo $@ > $build_args_path
+		archive_file $build_args_path
+	fi
+
+	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" BUILD_BASE=$tf_build_root V=1 "$@" \
 		${fip_targets:-fip} &>>"$build_log" || fail_build
 	)
 }
@@ -382,12 +380,13 @@ build_tf_extra() {
 		set +a
 	fi
 
-	make -C "$tf_root" $(cat "$tf_config_file") DEBUG="$DEBUG" V=1 "$@" \
+	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" V=1 BUILD_BASE=$tf_build_root "$@" \
 		${tf_extra_rules} &>>"$build_log" || fail_build
 	)
 }
 
 fip_update() {
+	fiptool=$(fiptool_path)
 	# Before the update process, check if the given image is supported by
 	# the fiptool. It's assumed that both fiptool and cert_create move in
 	# tandem, and therefore, if one has support, the other has it too.
@@ -469,6 +468,7 @@ fip_update() {
 		done
 
 		# Create certificates
+		cert_create=$(cert_create_path)
 		"$cert_create" $cert_args $common_args &>>"$build_log"
 
 		# Recreate and archive FIP
@@ -497,16 +497,6 @@ update_fip_hw_config() {
 		# Remove the DTB so that model won't load it
 		rm -f "$archive/dtb.bin"
 	fi
-}
-
-get_scp_opt() {
-	(
-	name="${1:?}"
-	if config_valid "$scp_config_file"; then
-		source "$scp_config_file"
-		echo "${!name}"
-	fi
-	)
 }
 
 get_tftf_opt() {
@@ -542,9 +532,16 @@ get_rfa_opt() {
 get_rmm_opt() {
         (
         name="${1:?}"
+        default="$2"
         if config_valid "$rmm_config_file"; then
                 source "$rmm_config_file"
-                echo "${!name}"
+                # If !name is not defined, go with the default
+                # value (if defined)
+                if [ -z "${!name}" ]; then
+                        echo "$default"
+                else
+                        echo "${!name}"
+                fi
         fi
         )
 }
@@ -586,6 +583,16 @@ build_tf() {
 	   not_upon "${QCBOR_DIR}"; then
 		emit_env "QCBOR_DIR" "$WORKSPACE/qcbor"
 	fi
+
+    # Hash verification only occurs if there is a sufficient amount of
+    # information in the event log, which is as long as EVENT_LOG_LEVEL
+    # is set to at least 20 or if it is a debug build
+    if [[ ("$(get_tf_opt MEASURED_BOOT)" -eq 1) &&
+        (($bin_mode == "debug") || ("$(get_tf_opt EVENT_LOG_LEVEL)" -ge 20)) ]]; then
+		# This variable is later exported to the expect scripts so
+		# the hashes in the TF-A event log can be verified
+		set_run_env "verify_hashes" "1"
+	fi
 	if [ -f "$env_file" ]; then
 		set -a
 		source "$env_file"
@@ -599,12 +606,12 @@ build_tf() {
 		extend_path "PATH" "path_list"
 	fi
 
-	cd "$tf_root"
+	pushd "$tf_root"
 
 	# Always distclean when running on Jenkins. Skip distclean when running
 	# locally and explicitly requested.
 	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		make distclean &>>"$build_log" || fail_build
+		make distclean BUILD_BASE=$tf_build_root &>>"$build_log" || fail_build
 	fi
 
 	# Log build command line. It is left unfolded on purpose to assist
@@ -612,7 +619,7 @@ build_tf() {
 	cat <<EOF | log_separator >/dev/null
 
 Build command line:
-	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 $build_targets
+	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 BUILD_BASE=$tf_build_root $build_targets
 
 CC version:
 $(${CC-${CROSS_COMPILE}gcc} -v 2>&1)
@@ -625,12 +632,17 @@ EOF
 	# Build TF. Since build output is being directed to the build log, have
 	# descriptor 3 point to the current terminal for build wrappers to vent.
 	$tf_build_wrapper poetry run make $make_j_opts $(cat "$config_file") \
-		DEBUG="$DEBUG" V=1 SPIN_ON_BL1_EXIT="$connect_debugger" \
+		DEBUG="$DEBUG" V=1 BUILD_BASE="$tf_build_root" SPIN_ON_BL1_EXIT="$connect_debugger" \
 		$build_targets 3>&1 &>>"$build_log" || fail_build
 
         if [ "$build_targets" != "doc" ]; then
-                (poetry run memory -sr "$tf_build_root" 2>&1 || true) | tee -a "$build_log"
+                (poetry run memory --root "$tf_build_root" symbols 2>&1 || true) | tee -a "${build_log}"
+
+                for map in $(find "${tf_build_root}" -name '*.map'); do
+                    (poetry run memory --root "${tf_build_root}" summary "${map}" 2>&1 || true) | tee -a "${build_log}"
+                done
         fi
+	popd
 	)
 }
 
@@ -663,8 +675,9 @@ cargo version:
 $(cargo --version 2>&1)
 EOF
 
-	# Build RF-A. Since build output is being directed to the build log, have
-	# descriptor 3 point to the current terminal for build wrappers to vent.
+	# Build RF-A and TF-A. Since build output is being directed to the build
+	# log, have descriptor 3 point to the current terminal for build
+	# wrappers to vent.
 	eval make $make_j_opts $(cat "$config_file") \
 	    DEBUG="$DEBUG" \
 		$build_targets 3>&1 &>>"$build_log" || fail_build
@@ -685,7 +698,7 @@ build_tftf() {
 	# Always distclean when running on Jenkins. Skip distclean when running
 	# locally and explicitly requested.
 	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		make distclean &>>"$build_log" || fail_build
+		make distclean BUILD_BASE="$tftf_build_root" &>>"$build_log" || fail_build
 	fi
 
 	# TFTF build system cannot reliably deal with -j option, so we avoid
@@ -695,219 +708,13 @@ build_tftf() {
 	cat <<EOF | log_separator >/dev/null
 
 Build command line:
-	make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 $build_targets
+	make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 BUILD_BASE="$tftf_build_root" $build_targets
 
 EOF
 
-	make $make_j_opts $(cat "$config_file") DEBUG="$DEBUG" V=1 \
+	make $make_j_opts $(cat "$config_file") DEBUG="$DEBUG" V=1 BUILD_BASE="$tftf_build_root" \
 		$build_targets &>>"$build_log" || fail_build
 	)
-}
-
-build_scp() {
-	(
-	config_file="${scp_build_config:-$scp_config_file}"
-
-	source "$config_file"
-
-	cd "$scp_root"
-
-	# Always distclean when running on Jenkins. Skip distclean when running
-	# locally and explicitly requested.
-	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		make -f Makefile.cmake clean &>>"$build_log" || fail_build
-	fi
-
-	python3 -m venv .venv
-	. .venv/bin/activate
-
-	# Install extra tools used by CMake build system
-	pip install -r requirements.txt --timeout 30 --retries 15
-
-	# Log build command line. It is left unfolded on purpose to assist
-	# copying to clipboard.
-	cat <<EOF | log_separator >/dev/null
-
-SCP build command line:
-	make -f Makefile.cmake $(cat "$config_file" | tr '\n' ' ') \
-		TOOLCHAIN=GNU \
-		MODE="$mode" \
-		EXTRA_CONFIG_ARGS+=-DDISABLE_CPPCHECK=true \
-		V=1 &>>"$build_log"
-
-EOF
-
-	# Build SCP
-	make -f Makefile.cmake $(cat "$config_file" | tr '\n' ' ') \
-		TOOLCHAIN=GNU \
-		MODE="$mode" \
-		EXTRA_CONFIG_ARGS+=-DDISABLE_CPPCHECK=true \
-		V=1 &>>"$build_log" \
-		|| fail_build
-	)
-}
-
-clone_scp_tools() {
-
-	if [ ! -d "$scp_tools_root" ]; then
-		echo "Cloning SCP-tools ... $scp_tools_commit" |& log_separator
-
-	  	clone_url="${SCP_TOOLS_CHECKOUT_LOC:-$scp_tools_src_repo_url}" \
-			where="$scp_tools_root" \
-			refspec="${scp_tools_commit}"
-			clone_repo &>>"$build_log"
-	else
-		echo "Already cloned SCP-tools ..." |& log_separator
-	fi
-
-	show_head "$scp_tools_root"
-
-	cd "$scp_tools_root"
-
-	echo "Updating submodules"
-
-	git submodule init
-
-	git submodule update
-
-	lib_commit=$(grep "'scmi_lib_commit'" run_tests/settings.py | cut -d':' -f 2 | tr -d "'" | tr -d ",")
-
-	cd "scmi"
-	git checkout $lib_commit
-
-	git show --quiet --no-color | sed 's/^/  > /g'
-}
-
-clone_tf_for_scp_tools() {
-	scp_tools_arm_tf="$scp_tools_root/arm-tf"
-
-	if [ ! -d "$scp_tools_arm_tf" ]; then
-		echo "Cloning TF-4-SCP-tools ..." |& log_separator
-
-		clone_url="$tf_for_scp_tools_src_repo_url"
-		where="$scp_tools_arm_tf"
-
-		git clone "$clone_url" "$where"
-
-		cd "$scp_tools_arm_tf"
-
-		git checkout --track origin/juno-v4.3
-
-		git show --quiet --no-color | sed 's/^/  > /g'
-
-	else
-		echo "Already cloned TF-4-SCP-tools ..." |& log_separator
-	fi
-}
-
-build_scmi_lib_scp_tools() {
-	(
-	cd "$scp_tools_root"
-
-	cd "scmi"
-
-	scp_tools_arm_tf="$scp_tools_root/arm-tf"
-
-	cross_compile="$(set_cross_compile_gcc_linaro_toolchain)"
-
-	std_libs="-I$scp_tools_arm_tf/include/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/common/tbbr"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/drivers/arm"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/lib"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/lib/aarch64"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/lib/stdlib"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/lib/stdlib/sys"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/lib/xlat_tables"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/plat/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/plat/arm/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/plat/arm/css/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/plat/arm/board/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/include/plat/arm/soc/common"
-	std_libs="$std_libs -I$scp_tools_arm_tf/plat/arm/board/juno/include"
-
-	cflags="-Og -g"
-	cflags="$cflags -mgeneral-regs-only"
-	cflags="$cflags -mstrict-align"
-	cflags="$cflags -nostdinc"
-	cflags="$cflags -fno-inline"
-	cflags="$cflags -ffreestanding"
-	cflags="$cflags -ffunction-sections"
-	cflags="$cflags -fdata-sections"
-	cflags="$cflags -DAARCH64"
-	cflags="$cflags -DPRId32=\"ld\""
-	cflags="$cflags -DVERBOSE_LEVEL=3"
-
-	cflags="$cflags $std_libs"
-
-	protocols="performance,power_domain,system_power,reset"
-
-	echo "Building SCMI library (SCP-tools) ..."
-
-	make "CROSS_COMPILE=$cross_compile" \
-		"CFLAGS=$cflags" \
-		"PLAT=baremetal" \
-		"PROTOCOLS=$protocols" \
-		"clean" \
-		"all"
-	)
-}
-
-build_tf_for_scp_tools() {
-
-	cd "$scp_tools_root/arm-tf"
-
-	cross_compile="$(set_cross_compile_gcc_linaro_toolchain)"
-
-	if [ "$1" = "release" ]; then
-		echo "Build TF-4-SCP-Tools rls..."
-	else
-		echo "Build TF-4-SCP-Tools dbg..."
-
-		make realclean
-
-		make "BM_TEST=scmi" \
-			"ARM_BOARD_OPTIMISE_MEM=1" \
-			"BM_CSS=juno" \
-			"CSS_USE_SCMI_SDS_DRIVER=1" \
-			"PLAT=juno" \
-			"DEBUG=1" \
-			"PLATFORM=juno" \
-			"CROSS_COMPILE=$cross_compile" \
-			"BM_WORKSPACE=$scp_tools_root/baremetal"
-
-		archive_file "build/juno/debug/bl1.bin"
-
-		archive_file "build/juno/debug/bl2.bin"
-
-		archive_file "build/juno/debug/bl31.bin"
-	fi
-}
-
-build_fip_for_scp_tools() {
-
-	cd "$scp_tools_root/arm-tf"
-
-	cross_compile="$(set_cross_compile_gcc_linaro_toolchain)"
-
-	if [ ! -d "$scp_root/build/juno/GNU/debug/firmware-scp_ramfw" ]; then
-		make fiptool
-		echo "Make FIP 4 SCP-Tools rls..."
-
-	else
-		make fiptool
-		echo "Make FIP 4 SCP-Tools dbg..."
-
-		make "PLAT=juno" \
-			"all" \
-			"fip" \
-			"DEBUG=1" \
-			"CROSS_COMPILE=$cross_compile" \
-			"BL31=$scp_tools_root/arm-tf/build/juno/debug/bl31.bin" \
-			"BL33=$scp_tools_root/baremetal/dummy_bl33" \
-			"SCP_BL2=$scp_root/build/juno/GNU/$mode/firmware-scp_ramfw/bin/juno-bl2.bin"
-
-		archive_file "$scp_tools_root/arm-tf/build/juno/debug/fip.bin"
-	fi
 }
 
 build_cc() {
@@ -955,13 +762,13 @@ build_spm() {
 	cat <<EOF | log_separator >/dev/null
 
 Build command line:
-	make $make_j_opts $(cat "$config_file" | tr '\n' ' ')
+	make $make_j_opts OUT=$spm_build_root $(cat "$config_file" | tr '\n' ' ')
 
 EOF
 
 	# Build SPM. Since build output is being directed to the build log, have
 	# descriptor 3 point to the current terminal for build wrappers to vent.
-	make $make_j_opts $(cat "$config_file") 3>&1 &>>"$build_log" \
+	make $make_j_opts OUT=$spm_build_root $(cat "$config_file") 3>&1 &>>"$build_log" \
 		|| fail_build
 	)
 }
@@ -972,8 +779,7 @@ build_rmm() {
 	config_file="${rmm_build_config:-$rmm_config_file}"
 
 	# Build fiptool and all targets by default
-	build_targets="${rmm_build_targets}"
-	export CROSS_COMPILE="${aarch64_none_elf_prefix}"
+	export CROSS_COMPILE="aarch64-none-elf-"
 
 	source "$config_file"
 
@@ -999,21 +805,90 @@ build_rmm() {
 		rm -rf $rmm_build_root
 	fi
 
+	if not_upon "$local_ci"; then
+                connect_debugger=0
+	fi
+
 	# Log build command line. It is left unfolded on purpose to assist
 	# copying to clipboard.
 	cat <<EOF | log_separator >/dev/null
 
 Build command line:
-	cmake -DRMM_CONFIG=${plat}_defcfg $cmake_gen -S $rmm_root -B $rmm_build_root -DCMAKE_BUILD_TYPE=$cmake_build_type
-	cmake --build $rmm_build_root $make_j_opts -v
+        cmake -DRMM_CONFIG=${plat}_defcfg "$cmake_gen" -S $rmm_root -B $rmm_build_root -DRMM_TOOLCHAIN=$rmm_toolchain -DRMM_FPU_USE_AT_REL2=$rmm_fpu_use_at_rel2 -DATTEST_EL3_TOKEN_SIGN=$rmm_attest_el3_token_sign -DRMM_V1_1=$rmm_v1_1 ${extra_options}
+        cmake --build $rmm_build_root --config $cmake_build_type $make_j_opts -v ${extra_targets+-- $extra_targets}
+
 EOF
-	if not_upon "$local_ci"; then
-		connect_debugger=0
+        cmake \
+             -DRMM_CONFIG=${plat}_defcfg $cmake_gen \
+             -S $rmm_root -B $rmm_build_root \
+             -DRMM_TOOLCHAIN=$rmm_toolchain \
+             -DRMM_FPU_USE_AT_REL2=$rmm_fpu_use_at_rel2 \
+             -DATTEST_EL3_TOKEN_SIGN=$rmm_attest_el3_token_sign \
+             -DRMM_V1_1=$rmm_v1_1 \
+             ${extra_options}
+        cmake --build $rmm_build_root --config $cmake_build_type $make_j_opts -v ${extra_targets+-- $extra_targets} 3>&1 &>>"$build_log" || fail_build
+        )
+}
+
+build_tfut() {
+	(
+	config_file="${tfut_build_config:-$tfut_config_file}"
+
+        # Build tfut target by default
+        build_targets="${tfut_build_targets:-all}"
+
+        source "$config_file"
+
+	mkdir -p "$tfut_root/build"
+        cd "$tfut_root/build"
+
+        # Always distclean when running on Jenkins. Skip distclean when running
+        # locally and explicitly requested.
+        if upon "$jenkins_run" || not_upon "$dont_clean"; then
+                #make clean &>>"$build_log" || fail_build
+		rm -Rf * || fail_build
+        fi
+
+	#Override build targets only if the run config did not set them.
+	if [ $build_targets == "all" ]; then
+		tests_line=$(cat "$config_file" | { grep "tests=" || :; })
+		if [ -z "$tests_line" ]; then
+			build_targets=$(echo "$tests_line" | awk -F= '{ print $NF }')
+		fi
 	fi
 
-	cmake -DRMM_CONFIG=${plat}_defcfg $cmake_gen -S $rmm_root -B $rmm_build_root -DCMAKE_BUILD_TYPE=$cmake_build_type
-	cmake --build $rmm_build_root $make_j_opts -v 3>&1 &>>"$build_log" || fail_build
-	)
+	#TODO: extract vars from env to use them for cmake
+
+	test -f "$config_file"
+
+	config=$(cat "$config_file" | grep -v "tests=") \
+		&& cmake_config=$(echo "$config" | sed -e 's/^/\-D/')
+
+	# Check if cmake is installed
+	if ! command -v cmake &> /dev/null
+	then
+		echo "cmake could not be found"
+		exit 1
+	fi
+
+	# Log build command line
+        cat <<EOF | log_separator >/dev/null
+
+Build command line:
+cmake $(echo "$cmake_config") -G"Unix Makefiles" --debug-output -DCMAKE_VERBOSE_MAKEFILE -DCOVERAGE="$COVERAGE" -DUNIT_TEST_PROJECT_PATH="$tf_root" ..
+        make $(echo "$config" | tr '\n' ' ') DEBUG=$DEBUG V=1 $build_targets
+
+EOF
+	cmake $(echo "$cmake_config") -G"Unix Makefiles" --debug-output \
+		-DCMAKE_VERBOSE_MAKEFILE=ON 				\
+		-DCOVERAGE="$COVERAGE" 					\
+		-DUNIT_TEST_PROJECT_PATH="$tf_root" 			\
+		.. &>> "$build_log" || fail_build
+	echo "Done with cmake" >> "$build_log"
+        make $(echo "$config") VERBOSE=1 \
+                $build_targets &>> "$build_log" || fail_build
+        )
+
 }
 
 # Set metadata for the whole package so that it can be used by both Jenkins and
@@ -1037,14 +912,14 @@ set_tftf_build_targets() {
 	set_hook_var "tftf_build_targets" "$targets"
 }
 
-set_scp_build_targets() {
-	echo "Set build target to '${targets:?}'"
-	set_hook_var "scp_build_targets" "$targets"
-}
-
 set_spm_build_targets() {
 	echo "Set build target to '${targets:?}'"
 	set_hook_var "spm_build_targets" "$targets"
+}
+
+add_tfut_build_targets() {
+	echo "Add TFUT build targets '${targets:?}'"
+	append_hook_var "tfut_build_targets" "$targets "
 }
 
 set_spm_out_dir() {
@@ -1102,7 +977,14 @@ gen_model_params() {
 }
 
 set_model_path() {
-	set_run_env "model_path" "${1:?}"
+	local input_path="${1:?}"
+
+	if upon "$retain_paths"; then
+		set_run_env "model_path" "$(basename "$input_path")"
+		return
+	fi
+
+	set_run_env "model_path" "$input_path"
 }
 
 set_model_env() {
@@ -1250,25 +1132,39 @@ apply_patch() {
 	fi
 }
 
-apply_tftf_patch() {
-	pushd "$tftf_root"
-	patch_record="$tftf_patch_record" apply_patch "$1"
-	popd
-}
-
 apply_tf_patch() {
-	pushd "$tf_root"
+	root="$tf_root"
+	new_root="$archive/tfa_mirror"
+
+	# paralell builds are only used locally. Don't do for CI since this will
+	# have a speed penalty. Also skip if this was already done as a single
+	# job may apply many patches.
+	if upon "$local_ci" && [[ ! -d $new_root ]]; then
+		root=$new_root
+		diff=$(mktempfile)
+
+		# get anything still uncommitted
+		pushd  $tf_root
+		git diff HEAD > $diff
+		popd
+
+		# git will hard link when cloning locally, no need for --depth=1
+		git clone "$tf_root" $root --shallow-submodules
+
+		tf_root=$root # next apply_tf_patch will run in the same hook
+		set_hook_var "tf_root" "$root" # for anyone outside the hook
+
+		# apply uncommited changes so they are picked up in the build
+		pushd  $tf_root
+		git apply $diff &> /dev/null || true
+		popd
+
+	fi
+
+	pushd "$root"
 	patch_record="$tf_patch_record" apply_patch "$1"
 	popd
 }
-
-# Clear workspace for a local run
-if not_upon "$jenkins_run" && not_upon "$dont_clean"; then
-	rm -rf "$workspace"
-
-	# Clear residue from previous runs
-	rm -rf "$archive"
-fi
 
 mkdir -p "$workspace"
 mkdir -p "$archive"
@@ -1282,28 +1178,28 @@ echo
 
 tf_config="$(echo "$build_configs" | awk -F, '{print $1}')"
 tftf_config="$(echo "$build_configs" | awk -F, '{print $2}')"
-scp_config="$(echo "$build_configs" | awk -F, '{print $3}')"
-scp_tools_config="$(echo "$build_configs" | awk -F, '{print $4}')"
-spm_config="$(echo "$build_configs" | awk -F, '{print $5}')"
-rmm_config="$(echo "$build_configs" | awk -F, '{print $6}')"
-rfa_config="$(echo "$build_configs" | awk -F, '{print $7}')"
-
+spm_config="$(echo "$build_configs" | awk -F, '{print $3}')"
+rmm_config="$(echo "$build_configs" | awk -F, '{print $4}')"
+rfa_config="$(echo "$build_configs" | awk -F, '{print $5}')"
+tfut_config="$(echo "$build_configs" | awk -F, '{print $6}')"
 
 test_config_file="$ci_root/group/$test_group/$test_config"
 
 tf_config_file="$ci_root/tf_config/$tf_config"
 tftf_config_file="$ci_root/tftf_config/$tftf_config"
-scp_config_file="$ci_root/scp_config/$scp_config"
-scp_tools_config_file="$ci_root/scp_tools_config/$scp_tools_config"
 spm_config_file="$ci_root/spm_config/$spm_config"
 rmm_config_file="$ci_root/rmm_config/$rmm_config"
 rfa_config_file="$ci_root/rfa_config/$rfa_config"
-
+tfut_config_file="$ci_root/tfut_config/$tfut_config"
 
 # File that keeps track of applied patches
 tf_patch_record="$workspace/tf_patches"
 tftf_patch_record="$workspace/tftf_patches"
 rfa_patch_record="$workspace/rfa_patches"
+
+# Split run config into TF and TFUT components
+run_config_tfa="$(echo "$run_config" | awk -F, '{print $1}')"
+run_config_tfut="$(echo "$run_config" | awk -F, '{print $2}')"
 
 pushd "$workspace"
 
@@ -1334,23 +1230,6 @@ else
 	echo
 fi
 
-if ! config_valid "$scp_config"; then
-	scp_config=
-else
-	echo "SCP firmware config:"
-	echo
-	sort "$scp_config_file" | sed '/^\s*$/d;s/^/\t/'
-	echo
-fi
-
-if ! config_valid "$scp_tools_config"; then
-	scp_tools_config=
-else
-	echo "SCP Tools config:"
-	echo
-	sort "$scp_tools_config_file" | sed '/^\s*$/d;s/^/\t/'
-fi
-
 if ! config_valid "$spm_config"; then
 	spm_config=
 else
@@ -1372,11 +1251,20 @@ else
         echo
 fi
 
-if ! config_valid "$run_config"; then
-	run_config=
+if ! config_valid "$tfut_config"; then
+	tfut_config=
+else
+	echo "TFUT config:"
+	echo
+	sort "$tfut_config_file" | sed '/^\s*$/d;s/^/\t/'
+	echo
 fi
 
-if [ "$tf_config" ] && assert_can_git_clone "tf_root"; then
+if ! config_valid "$run_config_tfa"; then
+	run_config_tfa=
+fi
+
+if { [ "$tf_config" ] || [ "$tfut_config" ]; } && assert_can_git_clone "tf_root"; then
 	# If the Trusted Firmware repository has already been checked out, use
 	# that location. Otherwise, clone one ourselves.
 	echo "Cloning Trusted Firmware..."
@@ -1402,36 +1290,6 @@ if [ "$tftf_config" ] && assert_can_git_clone "tftf_root"; then
 	clone_url="${TFTF_CHECKOUT_LOC:-$tftf_src_repo_url}" where="$tftf_root" \
 		refspec="$TFTF_REFSPEC" clone_repo &>>"$build_log"
 	show_head "$tftf_root"
-fi
-
-if [ "$scp_config" ] && assert_can_git_clone "scp_root"; then
-	# If the SCP firmware repository has already been checked out,
-	# use that location. Otherwise, clone one ourselves.
-	echo "Cloning SCP Firmware..."
-	clone_url="${SCP_CHECKOUT_LOC:-$scp_src_repo_url}" where="$scp_root" \
-		refspec="${SCP_REFSPEC-master-upstream}" clone_repo &>>"$build_log"
-
-	pushd "$scp_root"
-
-	# Use filer submodule as a reference if it exists
-	if [ -d "$SCP_CHECKOUT_LOC/cmsis" ]; then
-		cmsis_reference="--reference $SCP_CHECKOUT_LOC/cmsis"
-	fi
-
-	# If we don't have a reference yet, fall back to $cmsis_root if set, or
-	# then to project filer if accessible.
-	if [ -z "$cmsis_reference" ]; then
-		cmsis_ref_repo="${cmsis_root:-$project_filer/ref-repos/cmsis}"
-		if [ -d "$cmsis_ref_repo" ]; then
-			cmsis_reference="--reference $cmsis_ref_repo"
-		fi
-	fi
-
-	git submodule -q update $cmsis_reference --init
-
-	popd
-
-	show_head "$scp_root"
 fi
 
 if [ -n "$cc_config" ] ; then
@@ -1486,10 +1344,19 @@ if [ "$rmm_config" ] && assert_can_git_clone "rmm_root"; then
 	show_head "$rmm_root"
 fi
 
-if [ "$run_config" ]; then
-	# Get candidates for run config
+if [ "$tfut_config" ] && assert_can_git_clone "tfut_root"; then
+	# If the Trusted Firmware UT repository has already been checked out,
+	# use that location. Otherwise, clone one ourselves.
+	echo "Cloning Trusted Firmware UT..."
+	clone_url="${TFUT_CHECKOUT_LOC:-$tfut_src_repo_url}" where="$tfut_root" \
+		refspec="$TFUT_GERRIT_REFSPEC" clone_repo &>>"$build_log"
+	show_head "$tfut_root"
+fi
+
+if [ "$run_config_tfa" ]; then
+	# Get candidates for TF-A run config
 	run_config_candidates="$("$ci_root/script/gen_run_config_candidates.py" \
-		"$run_config")"
+		"$run_config_tfa")"
 	if [ -z "$run_config_candidates" ]; then
 		die "No run config candidates!"
 	else
@@ -1506,6 +1373,20 @@ if [ "$run_config" ]; then
 				bin_mode="release"
 			fi
 		fi
+	fi
+fi
+
+if [ "$run_config_tfut" ]; then
+	# Get candidates for run TFUT config
+	run_config_tfut_candidates="$("$ci_root/script/gen_run_config_candidates.py" \
+		"--unit-testing" "$run_config_tfut")"
+	if [ -z "$run_config_tfut_candidates" ]; then
+		die "No run TFUT config candidates!"
+	else
+		echo
+		echo "Chosen fragments:"
+		echo
+		echo "$run_config_tfut_candidates" | sed 's/^\|\n/\t/g'
 	fi
 fi
 
@@ -1528,6 +1409,24 @@ fi
 # Install python build dependencies
 if is_arm_jenkins_env; then
 	source "$ci_root/script/install_python_deps.sh"
+fi
+
+# Install c-picker dependency
+if config_valid "$tfut_config"; then
+	echo "started building"
+	python3 -m venv .venv
+	source .venv/bin/activate
+
+	if ! python3 -m pip show c-picker &> /dev/null; then
+		echo "Installing c-picker"
+		pip install git+https://git.trustedfirmware.org/TS/trusted-services.git@topics/c-picker || {
+			echo "c-picker was not installed!"
+			exit 1
+		}
+		echo "c-picker was installed"
+	else
+		echo "c-picker is already installed"
+	fi
 fi
 
 # Print CMake version
@@ -1576,51 +1475,6 @@ for mode in $modes; do
 		build_cc
 	fi
 
-	# SCP build
-	if config_valid "$scp_config"; then
-		(
-		echo "##########"
-
-		# Source platform-specific utilities
-		plat="$(get_scp_opt PRODUCT)"
-		plat_utils="$ci_root/${plat}_utils.sh"
-		if [ -f "$plat_utils" ]; then
-			source "$plat_utils"
-		fi
-
-		archive="$build_archive"
-		scp_build_root="$scp_root/build"
-
-		echo "Building SCP Firmware ($mode) ..." |& log_separator
-
-		build_scp
-		to="$archive" collect_scp_artefacts
-
-		echo "##########"
-		echo
-		)
-	fi
-
-	# SCP-tools build
-	if config_valid "$scp_tools_config"; then
-		(
-		echo "##########"
-
-		archive="$build_archive"
-		scp_tools_build_root="$scp_tools_root/build"
-
-		clone_scp_tools
-
-		echo "##########"
-		echo
-
-		echo "##########"
-		clone_tf_for_scp_tools
-		echo "##########"
-		echo
-		)
-	fi
-
 	# TFTF build
 	if config_valid "$tftf_config"; then
 		(
@@ -1642,7 +1496,8 @@ for mode in $modes; do
 		fi
 
 		archive="$build_archive"
-		tftf_build_root="$tftf_root/build"
+		tftf_build_root="$archive/build/tftf"
+		mkdir -p ${tftf_build_root}
 
 		echo "Building Trusted Firmware TF ($mode) ..." |& log_separator
 
@@ -1679,8 +1534,10 @@ for mode in $modes; do
 		# SPM build generates two sets of binaries, one for normal and other
 		# for Secure world. We need both set of binaries for CI.
 		archive="$build_archive"
-		spm_build_root="$spm_root/out/reference/$spm_secure_out_dir"
-		hafnium_build_root="$spm_root/out/reference/$spm_non_secure_out_dir"
+		spm_build_root="$archive/build/spm"
+
+		spm_secure_build_root="$spm_build_root/$spm_secure_out_dir"
+		spm_ns_build_root="$spm_build_root/$spm_non_secure_out_dir"
 
 		echo "spm_build_root is $spm_build_root"
 		echo "Building SPM ($mode) ..." |& log_separator
@@ -1691,15 +1548,15 @@ for mode in $modes; do
 		build_spm
 
 		# Show SPM/Hafnium binary details
-		cksum $spm_build_root/hafnium.bin
+		cksum $spm_secure_build_root/hafnium.bin
 
 		# Some platforms only have secure configuration enabled. Hence,
 		# non secure hanfnium binary might not be built.
-		if [ -f $hafnium_build_root/hafnium.bin ]; then
-			cksum $hafnium_build_root/hafnium.bin
+		if [ -f $spm_ns_build_root/hafnium.bin ]; then
+			cksum $spm_ns_build_root/hafnium.bin
 		fi
 
-		secure_from="$spm_build_root" non_secure_from="$hafnium_build_root" to="$archive" collect_spm_artefacts
+		secure_from="$spm_secure_build_root" non_secure_from="$spm_ns_build_root" to="$archive" collect_spm_artefacts
 
 		echo "##########"
 		echo
@@ -1715,6 +1572,12 @@ for mode in $modes; do
 			if [ -z ${plat_utils} ]; then
 					# Source platform-specific utilities.
 					plat="$(get_rmm_opt PLAT)"
+					extra_options="$(get_rmm_opt EXTRA_OPTIONS)"
+					extra_targets="$(get_rmm_opt EXTRA_TARGETS "")"
+					rmm_toolchain="$(get_rmm_opt TOOLCHAIN gnu)"
+					rmm_fpu_use_at_rel2="$(get_rmm_opt RMM_FPU_USE_AT_REL2 OFF)"
+					rmm_attest_el3_token_sign="$(get_rmm_opt ATTEST_EL3_TOKEN_SIGN OFF)"
+					rmm_v1_1="$(get_rmm_opt RMM_V1_1 ON)"
 					plat_utils="$ci_root/${plat}_utils.sh"
 			else
 					# Source platform-specific utilities by
@@ -1772,6 +1635,8 @@ for mode in $modes; do
 		poetry -C "$tf_root" install --without docs
 
 		archive="$build_archive"
+		tf_build_root="$archive/build/tfa"
+		mkdir -p ${tf_build_root}
 
 		tf_build_root="$tf_root/build"
 		echo "Building Trusted Firmware ($mode) ..." |& log_separator
@@ -1872,9 +1737,39 @@ for mode in $modes; do
 		)
 	fi
 
+	# TFUT build
+	if config_valid "$tfut_config"; then
+		(
+		echo "##########"
+
+		archive="$build_archive"
+		tfut_build_root="$tfut_root/build"
+
+		echo "Building Trusted Firmware UT ($mode) ..." |& log_separator
+
+		# Clean TFUT build targets
+		set_hook_var "tfut_build_targets" ""
+
+		# Call pre-build hook
+		call_hook pre_tfut_build
+
+		build_tfut
+
+		from="$tfut_build_root" to="$archive" collect_tfut_artefacts
+
+		to="$archive" coverage="$COVERAGE" collect_tfut_coverage
+
+		echo "##########"
+		echo
+		)
+	fi
 	echo
 	echo
 done
+
+if config_valid "$tfut_config"; then
+	deactivate
+fi
 
 call_hook pre_package
 

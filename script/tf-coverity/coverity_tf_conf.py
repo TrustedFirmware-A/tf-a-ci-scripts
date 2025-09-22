@@ -29,6 +29,14 @@ exclude_paths = [
     ("drivers/scmi-msg/power_domain.c", "Not used by any upstream platform"),
 
     ("plat/arm/board/fvp/fconf/fconf_nt_config_getter.c", "Not currently used. Future functionality"),
+    ("plat/arm/board/fvp/aarch64/fvp_lsp_ras_sp.c", "Not used by any supported build config"),
+
+    # Exclude Neoverse RD ras files.
+    ("plat/arm/board/neoverse_rd/common/ras/nrd_ras_common.c", "Not currently used. Plans to enable for the near future"),
+    ("plat/arm/board/neoverse_rd/common/ras/nrd_ras_cpu.c", "Not currently used. Plans to enable for the near future"),
+    ("plat/arm/board/neoverse_rd/common/ras/nrd_ras_sram.c", "Not currently used. Plans to enable for the near future"),
+    ("plat/arm/board/neoverse_rd/platform/rdn2/rdn2_ras.c", "Not currently used. Plans to enable for the near future"),
+
     ("plat/arm/common/arm_tzc_dmc500.c", "Only used by deprecated SGM platforms"),
     ("plat/marvell/armada/a8k/common/plat_bl1_setup.c", "Not used by any upstream marvell platform"),
     ("plat/mediatek/mt8173/plat_mt_gic.c", "Deprecated code"),
@@ -106,4 +114,9 @@ exclude_paths = [
     ("plat/arm/board/juno/certificate/src/juno_tbb_ext.c", "Used to build Juno cert_create"),
     ("plat/arm/board/juno/certificate/src/juno_tbb_key.c", "Used to build Juno cert_create"),
     ("plat/arm/board/juno/fip/plat_def_uuid_config.c", "Used to build Juno fiptool"),
+
+    # Exclude the following files used for LX2160A host tools (cert_create)
+    ("plat/nxp/soc-lx2160a/lx2162aqds/cert_create_helper/src/pdef_tbb_cert.c", "Used to build LX2160A cert_create"),
+    ("plat/nxp/soc-lx2160a/lx2162aqds/cert_create_helper/src/pdef_tbb_ext.c", "Used to build LX2160A cert_create"),
+    ("plat/nxp/soc-lx2160a/lx2162aqds/cert_create_helper/src/pdef_tbb_key.c", "Used to build LX2160A cert_create"),
 ]
