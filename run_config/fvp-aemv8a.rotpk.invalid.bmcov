@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	local model="base-aemv8a"
+
+	model="$model" \
+		bmcov_plugin="1" \
+		uart0_shutdown_tag="ERROR:   BL2: Failed to load image id 3" \
+		bmcov_plugin_path="${coverage_trace_plugin}" \
+		gen_model_params
+
+	model="$model" gen_fvp_yaml
+}
