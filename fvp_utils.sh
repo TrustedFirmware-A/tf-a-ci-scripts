@@ -200,25 +200,6 @@ get_rootfs() {
 	popd
 }
 
-fvp_romlib_runtime() {
-	local tmpdir="$(mktempdir)"
-
-	# Save BL1 and romlib binaries from original build
-	mv "${tf_build_root:?}/${plat:?}/${mode:?}/romlib/romlib.bin" "$tmpdir/romlib.bin"
-	mv "${tf_build_root:?}/${plat:?}/${mode:?}/bl1.bin" "$tmpdir/bl1.bin"
-
-	# Patch index file
-	apply_tf_patch "fvp_romlib_runtime/jmptbl_i_patch.patch"
-
-	# Rebuild with patched file
-	echo "Building patched romlib:"
-	build_tf
-
-	# Retrieve original BL1 and romlib binaries
-	mv "$tmpdir/romlib.bin" "${tf_build_root:?}/${plat:?}/${mode:?}/romlib/romlib.bin"
-	mv "$tmpdir/bl1.bin" "${tf_build_root:?}/${plat:?}/${mode:?}/bl1.bin"
-}
-
 # Generates the final YAML-based LAVA job definition from a template file.
 #
 # The job definition template is expanded with visibility of all variables that

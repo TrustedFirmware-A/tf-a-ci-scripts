@@ -6,5 +6,4 @@
 #
 
 post_tf_build() {
-	fvp_romlib_runtime
 }

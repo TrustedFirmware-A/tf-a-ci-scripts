@@ -6,7 +6,6 @@
 #
 
 post_tf_build() {
-	fvp_romlib_runtime
 	build_fip BL33="$archive/tftf.bin" BL32="$archive/secure_hafnium.bin"
 }
 
