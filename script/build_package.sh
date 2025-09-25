@@ -1082,7 +1082,7 @@ apply_tf_patch() {
 		popd
 
 		# git will hard link when cloning locally, no need for --depth=1
-		git clone "$tf_root" $root --shallow-submodules
+		git clone "$tf_root" $root --shallow-submodules --recurse-submodules
 
 		tf_root=$root # next apply_tf_patch will run in the same hook
 		set_hook_var "tf_root" "$root" # for anyone outside the hook
