@@ -114,7 +114,7 @@ call_hook() {
 
 	[ -z "$func" ] && return 0
 
-	echo "=== Calling hooks: $1 ===" &>>"$build_log"
+	echo "=== Calling hooks: $1 ==="
 
 	: >"$hook_env_file"
 
@@ -123,7 +123,7 @@ call_hook() {
 			(
 			source "$ci_root/run_config/$config_fragment"
 			call_func "$func" "$config_fragment"
-			) &>>"$build_log" || fail_build
+			) || fail_build
 		done
 	fi
 
@@ -132,7 +132,7 @@ call_hook() {
 			(
 			source "$ci_root/run_config_tfut/$config_fragment"
 			call_func "$func" "$config_fragment"
-			) &>>"$build_log" || fail_build
+			) || fail_build
 		done
 	fi
 
@@ -141,12 +141,12 @@ call_hook() {
 	unset "$func"
 	source "$test_config_file"
 	call_func "$func" "$(basename $test_config_file)"
-	)
+	) || fail_build
 
 	# Have any variables set take effect
 	source "$hook_env_file"
 
-	echo "=== End calling hooks: $1 ===" &>>"$build_log"
+	echo "=== End calling hooks: $1 ==="
 }
 
 # Set a variable from within a hook
@@ -344,8 +344,8 @@ build_fip() {
 	fi
 
 	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" BUILD_BASE=$tf_build_root V=1 "$@" \
-		${fip_targets:-fip} &>>"$build_log" || fail_build
-	)
+		${fip_targets:-fip} 2>&1 | tee -a "$build_log" || fail_build
+	) 2>&1 | tee -a "$build_log" || fail_build
 }
 
 # Build any extra rule from TF-A makefile with supplied arguments.
@@ -367,7 +367,7 @@ build_tf_extra() {
 	fi
 
 	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" V=1 BUILD_BASE=$tf_build_root "$@" \
-		${tf_extra_rules} &>>"$build_log" || fail_build
+		${tf_extra_rules} 2>&1 | tee -a "$build_log" || fail_build
 	)
 }
 
@@ -430,7 +430,7 @@ fip_update() {
 		pushd "$fip_dir"
 
 		# Unpack FIP
-		"$fiptool" unpack "$archive/fip.bin" &>>"$build_log"
+		"$fiptool" unpack "$archive/fip.bin" 2>&1 | tee -a "$build_log"
 
 		# Remove all existing certificates
 		rm -f *-cert.bin
@@ -455,10 +455,10 @@ fip_update() {
 
 		# Create certificates
 		cert_create=$(cert_create_path)
-		"$cert_create" $cert_args $common_args &>>"$build_log"
+		"$cert_create" $cert_args $common_args 2>&1 | tee -a "$build_log"
 
 		# Recreate and archive FIP
-		"$fiptool" create $common_args "fip.bin" &>>"$build_log"
+		"$fiptool" create $common_args "fip.bin" 2>&1 | tee -a "$build_log"
 		archive_file "fip.bin"
 
 		popd
@@ -530,7 +530,7 @@ build_tf() {
 	# Build fiptool and all targets by default
 	build_targets="${tf_build_targets:-fiptool all}"
 
-	source "$config_file"
+	source "$config_file" || fail_build
 
 	# If it is a TBBR build, extract the MBED TLS library from archive
 	if [ "$(get_tf_opt TRUSTED_BOARD_BOOT)" = 1 ] ||
@@ -587,7 +587,7 @@ build_tf() {
 	# Always distclean when running on Jenkins. Skip distclean when running
 	# locally and explicitly requested.
 	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		make distclean BUILD_BASE=$tf_build_root &>>"$build_log" || fail_build
+		make distclean BUILD_BASE=$tf_build_root 2>&1 | tee -a "$build_log" || fail_build
 	fi
 
 	# Log build command line. It is left unfolded on purpose to assist
@@ -609,7 +609,7 @@ EOF
 	# descriptor 3 point to the current terminal for build wrappers to vent.
 	$tf_build_wrapper poetry run make $make_j_opts $(cat "$config_file") \
 		DEBUG="$DEBUG" V=1 BUILD_BASE="$tf_build_root" SPIN_ON_BL1_EXIT="$connect_debugger" \
-		$build_targets 3>&1 &>>"$build_log" || fail_build
+		$build_targets 3>&1 2>&1 | tee -a "$build_log" || fail_build
 
         if [ "$build_targets" != "doc" ]; then
                 (poetry run memory --root "$tf_build_root" symbols 2>&1 || true) | tee -a "${build_log}"
@@ -629,14 +629,14 @@ build_tftf() {
 	# Build tftf target by default
 	build_targets="${tftf_build_targets:-all}"
 
-	source "$config_file"
+	source "$config_file" || fail_build
 
 	cd "$tftf_root"
 
 	# Always distclean when running on Jenkins. Skip distclean when running
 	# locally and explicitly requested.
 	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		make distclean BUILD_BASE="$tftf_build_root" &>>"$build_log" || fail_build
+		make distclean BUILD_BASE="$tftf_build_root" 2>&1 | tee -a "$build_log" || fail_build
 	fi
 
 	# TFTF build system cannot reliably deal with -j option, so we avoid
@@ -651,7 +651,7 @@ Build command line:
 EOF
 
 	make $make_j_opts $(cat "$config_file") DEBUG="$DEBUG" V=1 BUILD_BASE="$tftf_build_root" \
-		$build_targets &>>"$build_log" || fail_build
+		$build_targets 2>&1 | tee -a "$build_log" || fail_build
 	)
 }
 
@@ -666,7 +666,7 @@ build_cc() {
 	fi  # Error if arm warehouse not found
 	cd "$ccpathspec/scripts/tools/code_coverage/fastmodel_baremetal/bmcov"
 
-	make -C model-plugin PVLIB_HOME=$PVLIB_HOME &>>"$build_log"
+	make -C model-plugin PVLIB_HOME=$PVLIB_HOME 2>&1 | tee -a "$build_log"
 }
 
 build_spm() {
@@ -674,7 +674,7 @@ build_spm() {
 	env_file="$workspace/spm.env"
 	config_file="${spm_build_config:-$spm_config_file}"
 
-	source "$config_file"
+	source "$config_file" || fail_build
 
 	if [ -f "$env_file" ]; then
 		set -a
@@ -691,7 +691,7 @@ build_spm() {
 		# yet been built. Hence only clean if out/reference directory
 	        # already exists.
 		if [ -d "out/reference" ]; then
-			make clean &>>"$build_log" || fail_build
+			make clean 2>&1 | tee -a "$build_log" || fail_build
 		fi
 	fi
 
@@ -706,7 +706,7 @@ EOF
 
 	# Build SPM. Since build output is being directed to the build log, have
 	# descriptor 3 point to the current terminal for build wrappers to vent.
-	make $make_j_opts OUT=$spm_build_root $(cat "$config_file") 3>&1 &>>"$build_log" \
+	make $make_j_opts OUT=$spm_build_root $(cat "$config_file") 3>&1 2>&1 | tee -a "$build_log" \
 		|| fail_build
 	)
 }
@@ -719,7 +719,7 @@ build_rmm() {
 	# Build fiptool and all targets by default
 	export CROSS_COMPILE="aarch64-none-elf-"
 
-	source "$config_file"
+	source "$config_file" || fail_build
 
 	if [ -f "$env_file" ]; then
 		set -a
@@ -764,7 +764,7 @@ EOF
              -DATTEST_EL3_TOKEN_SIGN=$rmm_attest_el3_token_sign \
              -DRMM_V1_1=$rmm_v1_1 \
              ${extra_options}
-        cmake --build $rmm_build_root --config $cmake_build_type $make_j_opts -v ${extra_targets+-- $extra_targets} 3>&1 &>>"$build_log" || fail_build
+        cmake --build $rmm_build_root --config $cmake_build_type $make_j_opts -v ${extra_targets+-- $extra_targets} 3>&1 2>&1 | tee -a "$build_log" || fail_build
         )
 }
 
@@ -775,7 +775,7 @@ build_tfut() {
         # Build tfut target by default
         build_targets="${tfut_build_targets:-all}"
 
-        source "$config_file"
+        source "$config_file" || fail_build
 
 	mkdir -p "$tfut_root/build"
         cd "$tfut_root/build"
@@ -821,10 +821,10 @@ EOF
 		-DCMAKE_VERBOSE_MAKEFILE=ON 				\
 		-DCOVERAGE="$COVERAGE" 					\
 		-DUNIT_TEST_PROJECT_PATH="$tf_root" 			\
-		.. &>> "$build_log" || fail_build
-	echo "Done with cmake" >> "$build_log"
+		.. 2>&1 | tee -a "$build_log" || fail_build
+	echo "Done with cmake" | tee -a "$build_log"
         make $(echo "$config") VERBOSE=1 \
-                $build_targets &>> "$build_log" || fail_build
+                $build_targets 2>&1 | tee -a "$build_log" || fail_build
         )
 
 }
@@ -1190,7 +1190,7 @@ if { [ "$tf_config" ] || [ "$tfut_config" ]; } && assert_can_git_clone "tf_root"
 	# that location. Otherwise, clone one ourselves.
 	echo "Cloning Trusted Firmware..."
 	clone_url="${TF_CHECKOUT_LOC:-$tf_src_repo_url}" where="$tf_root" \
-		refspec="$TF_REFSPEC" clone_repo &>>"$build_log"
+		refspec="$TF_REFSPEC" clone_repo 2>&1 | tee -a "$build_log"
 	show_head "$tf_root"
 fi
 
@@ -1199,7 +1199,7 @@ if [ "$tftf_config" ] && assert_can_git_clone "tftf_root"; then
 	# use that location. Otherwise, clone one ourselves.
 	echo "Cloning Trusted Firmware TF..."
 	clone_url="${TFTF_CHECKOUT_LOC:-$tftf_src_repo_url}" where="$tftf_root" \
-		refspec="$TFTF_REFSPEC" clone_repo &>>"$build_log"
+		refspec="$TFTF_REFSPEC" clone_repo 2>&1 | tee -a "$build_log"
 	show_head "$tftf_root"
 fi
 
@@ -1219,7 +1219,7 @@ if [ "$spm_config" ] ; then
 		echo "Cloning SPM..."
 		clone_url="${SPM_CHECKOUT_LOC:-$spm_src_repo_url}" \
 			where="$spm_root" refspec="$SPM_REFSPEC" \
-			clone_repo &>>"$build_log"
+			clone_repo 2>&1 | tee -a "$build_log"
 	fi
 
 	# Query git submodules
@@ -1251,7 +1251,7 @@ if [ "$rmm_config" ] && assert_can_git_clone "rmm_root"; then
 	# use that location. Otherwise, clone one ourselves.
 	echo "Cloning TF-RMM..."
 	clone_url="${RMM_CHECKOUT_LOC:-$rmm_src_repo_url}" where="$rmm_root" \
-		refspec="$RMM_REFSPEC" clone_repo &>>"$build_log"
+		refspec="$RMM_REFSPEC" clone_repo 2>&1 | tee -a "$build_log"
 	show_head "$rmm_root"
 fi
 
@@ -1260,7 +1260,7 @@ if [ "$tfut_config" ] && assert_can_git_clone "tfut_root"; then
 	# use that location. Otherwise, clone one ourselves.
 	echo "Cloning Trusted Firmware UT..."
 	clone_url="${TFUT_CHECKOUT_LOC:-$tfut_src_repo_url}" where="$tfut_root" \
-		refspec="$TFUT_GERRIT_REFSPEC" clone_repo &>>"$build_log"
+		refspec="$TFUT_GERRIT_REFSPEC" clone_repo 2>&1 | tee -a "$build_log"
 	show_head "$tfut_root"
 fi
 
