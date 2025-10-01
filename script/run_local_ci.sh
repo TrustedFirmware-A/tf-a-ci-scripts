@@ -78,7 +78,9 @@ run_one_test() {
 
 	id="${1%%_*}"
 	action="${1##*_}"
-	test_file="$(find -name "$id*.test" -printf "%f\n")"
+	# Subdirectories could change while traversing but all our files are in
+	# the top level directory.
+	test_file="$(find -maxdepth 1 -name "$id*.test" -printf "%f\n")"
 
 	mkdir -p "$id"
 
