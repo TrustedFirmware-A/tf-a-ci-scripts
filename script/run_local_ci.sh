@@ -419,13 +419,12 @@ fi
 # User preferences
 [ "$connect_debugger" ] && [ "$connect_debugger" -eq 1 ] && user_connect_debugger=1
 user_test_run="${user_connect_debugger:-$test_run}"
-user_dont_clean="$dont_clean"
 user_keep_going="$keep_going"
 user_primary_live="$primary_live"
 user_connect_debugger="${user_connect_debugger:-0}"
 
 export ci_root
-export dont_clean=0
+export dont_clean="${dont_clean:-0}"
 export local_ci=1
 export parallel
 export test_run=0
@@ -434,10 +433,12 @@ export cc_path_spec
 export import_cc
 export connect_debugger="$user_connect_debugger"
 
-rm -rf "$workspace"
-mkdir -p "$workspace"
-
 source "$ci_root/utils.sh"
+
+if not_upon "$dont_clean"; then
+	rm -rf "$workspace"
+fi
+mkdir -p "$workspace"
 
 # Enable of code coverage and whether there is a local plugin
 if upon "$cc_enable" && not_upon "$cc_path"; then
@@ -466,7 +467,6 @@ pushd "$workspace"
 if not_upon "$parallel" || echo "$parallel" | grep -vq "[0-9]"; then
 	parallel=1
 	test_run="$user_test_run"
-	dont_clean="$user_dont_clean"
 	primary_live="$user_primary_live"
 fi
 

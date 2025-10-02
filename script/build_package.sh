@@ -1366,7 +1366,7 @@ for mode in $modes; do
 	echo "===== Building package in mode: $mode ====="
 	# Build with a temporary archive
 	build_archive="$archive/$mode"
-	mkdir "$build_archive"
+	mkdir -p "$build_archive"
 
 	if [ "$mode" = "debug" ]; then
 		export bin_mode="debug"

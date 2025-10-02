@@ -52,7 +52,7 @@ pre_tf_build() {
 		saveas="${qcbor_release_archive}" \
 			url="https://github.com/laurencelundblade/QCBOR/archive/refs/tags/v1.2.tar.gz" \
 			fetch_file
-		mkdir $qcbor_folder
+		mkdir -p $qcbor_folder
 		tar -xzf "${qcbor_release_archive}" --directory=$qcbor_folder --strip-component=1
 	fi
 
