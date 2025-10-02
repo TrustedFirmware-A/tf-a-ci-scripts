@@ -21,6 +21,13 @@ pid_dir="$workspace/pids"
 # Model exit parameter string
 model_exit_param_string="bp.pl011_uart0.shutdown_on_eot=1"
 
+# since expect and the model run in parallel, expect might read the old run's
+# files before the model has had a chance to clear them. Clear all run artefacts
+# ahead of time to be sure everything is fresh
+if upon $dont_clean; then
+	rm -rf "$run_root" "$pid_dir"
+fi
+
 mkdir -p "$pid_dir"
 mkdir -p "$run_root"
 
