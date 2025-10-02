@@ -592,7 +592,7 @@ build_tf() {
 
 	# Log build command line. It is left unfolded on purpose to assist
 	# copying to clipboard.
-	cat <<EOF | log_separator >/dev/null
+	cat <<EOF | log_separator
 
 Build command line:
 	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 BUILD_BASE=$tf_build_root $build_targets
@@ -643,7 +643,7 @@ build_tftf() {
 	# using that.
 
 	# Log build command line
-	cat <<EOF | log_separator >/dev/null
+	cat <<EOF | log_separator
 
 Build command line:
 	make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 BUILD_BASE="$tftf_build_root" $build_targets
@@ -697,7 +697,7 @@ build_spm() {
 
 	# Log build command line. It is left unfolded on purpose to assist
 	# copying to clipboard.
-	cat <<EOF | log_separator >/dev/null
+	cat <<EOF | log_separator
 
 Build command line:
 	make $make_j_opts OUT=$spm_build_root $(cat "$config_file" | tr '\n' ' ')
@@ -749,7 +749,7 @@ build_rmm() {
 
 	# Log build command line. It is left unfolded on purpose to assist
 	# copying to clipboard.
-	cat <<EOF | log_separator >/dev/null
+	cat <<EOF | log_separator
 
 Build command line:
         cmake -DRMM_CONFIG=${plat}_defcfg "$cmake_gen" -S $rmm_root -B $rmm_build_root -DRMM_TOOLCHAIN=$rmm_toolchain -DRMM_FPU_USE_AT_REL2=$rmm_fpu_use_at_rel2 -DATTEST_EL3_TOKEN_SIGN=$rmm_attest_el3_token_sign -DRMM_V1_1=$rmm_v1_1 ${extra_options}
@@ -810,7 +810,7 @@ build_tfut() {
 	fi
 
 	# Log build command line
-        cat <<EOF | log_separator >/dev/null
+        cat <<EOF | log_separator
 
 Build command line:
 cmake $(echo "$cmake_config") -G"Unix Makefiles" --debug-output -DCMAKE_VERBOSE_MAKEFILE -DCOVERAGE="$COVERAGE" -DUNIT_TEST_PROJECT_PATH="$tf_root" ..
