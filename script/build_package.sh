@@ -522,6 +522,12 @@ get_rmm_opt() {
         )
 }
 
+clean_tf() {
+	pushd "$tf_root"
+	make distclean BUILD_BASE=$tf_build_root 2>&1 | tee -a "$build_log" || fail_build
+	popd
+}
+
 build_tf() {
 	(
 	env_file="$workspace/tf.env"
@@ -584,12 +590,6 @@ build_tf() {
 
 	pushd "$tf_root"
 
-	# Always distclean when running on Jenkins. Skip distclean when running
-	# locally and explicitly requested.
-	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		make distclean BUILD_BASE=$tf_build_root 2>&1 | tee -a "$build_log" || fail_build
-	fi
-
 	# Log build command line. It is left unfolded on purpose to assist
 	# copying to clipboard.
 	cat <<EOF | log_separator
@@ -632,12 +632,6 @@ build_tftf() {
 	source "$config_file" || fail_build
 
 	cd "$tftf_root"
-
-	# Always distclean when running on Jenkins. Skip distclean when running
-	# locally and explicitly requested.
-	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		make distclean BUILD_BASE="$tftf_build_root" 2>&1 | tee -a "$build_log" || fail_build
-	fi
 
 	# TFTF build system cannot reliably deal with -j option, so we avoid
 	# using that.
@@ -684,17 +678,6 @@ build_spm() {
 
 	cd "$spm_root"
 
-	# Always clean when running on Jenkins. Skip clean when running
-	# locally and explicitly requested.
-	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		# make clean fails on a fresh repo where the project has not
-		# yet been built. Hence only clean if out/reference directory
-	        # already exists.
-		if [ -d "out/reference" ]; then
-			make clean 2>&1 | tee -a "$build_log" || fail_build
-		fi
-	fi
-
 	# Log build command line. It is left unfolded on purpose to assist
 	# copying to clipboard.
 	cat <<EOF | log_separator
@@ -735,14 +718,6 @@ build_rmm() {
 		python3 -m pip install -r "$rmm_root/requirements.txt"
 	fi
 
-	# Always distclean when running on Jenkins. Skip distclean when running
-	# locally and explicitly requested.
-	if upon "$jenkins_run" || not_upon "$dont_clean"; then
-		# Remove 'rmm\build' folder
-		echo "Removing $rmm_build_root..."
-		rm -rf $rmm_build_root
-	fi
-
 	if not_upon "$local_ci"; then
                 connect_debugger=0
 	fi
@@ -779,13 +754,6 @@ build_tfut() {
 
 	mkdir -p "$tfut_root/build"
         cd "$tfut_root/build"
-
-        # Always distclean when running on Jenkins. Skip distclean when running
-        # locally and explicitly requested.
-        if upon "$jenkins_run" || not_upon "$dont_clean"; then
-                #make clean &>>"$build_log" || fail_build
-		rm -Rf * || fail_build
-        fi
 
 	#Override build targets only if the run config did not set them.
 	if [ $build_targets == "all" ]; then

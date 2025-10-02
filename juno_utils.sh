@@ -106,6 +106,9 @@ juno_aarch32_runtime() {
 		tf_build_targets="fiptool bl32"
 	fi
 
+	# rebuilding with a different commandline doesn't always produce sane
+	# results. So start fresh.
+	clean_tf
 	tf_build_config="$config_file" tf_build_targets="$tf_build_targets" \
 		build_tf
 
