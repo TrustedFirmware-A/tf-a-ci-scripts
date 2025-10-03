@@ -590,6 +590,13 @@ build_tf() {
 
 	pushd "$tf_root"
 
+	if [ -f "$tf_patch_record" ]; then
+		cat <<-EOF | log_separator
+		Building with patches:
+		        $(cat $tf_patch_record)
+		EOF
+	fi
+
 	# Log build command line. It is left unfolded on purpose to assist
 	# copying to clipboard.
 	cat <<EOF | log_separator
@@ -964,52 +971,6 @@ build_unstable() {
 	echo "--BUILD UNSTABLE--" | tee -a "$build_log"
 }
 
-undo_patch_record() {
-	if [ ! -f "${patch_record:?}" ]; then
-		return
-	fi
-
-	# Undo patches in reverse
-	echo
-	for patch_name in $(tac "$patch_record"); do
-		echo "Undoing $patch_name..."
-		if ! git apply -R "$ci_root/patch/$patch_name"; then
-			if upon "$local_ci"; then
-				echo
-				echo "Your local directory may have been dirtied."
-				echo
-			fi
-			fail_build
-		fi
-	done
-
-	rm -f "$patch_record"
-}
-
-undo_local_patches() {
-	pushd "$tf_root"
-	patch_record="$tf_patch_record" undo_patch_record
-	popd
-
-	if [ -d "$tftf_root" ]; then
-		pushd "$tftf_root"
-		patch_record="$tftf_patch_record" undo_patch_record
-		popd
-	fi
-}
-
-undo_tftf_patches() {
-	pushd "$tftf_root"
-	patch_record="$tftf_patch_record" undo_patch_record
-	popd
-}
-
-undo_tf_patches() {
-	pushd "$tf_root"
-	patch_record="$tf_patch_record" undo_patch_record
-	popd
-}
-
 apply_patch() {
 	# If skip_patches is set, the developer has applied required patches
 	# manually. They probably want to keep them applied for debugging
@@ -1030,9 +991,6 @@ apply_patch() {
 	if git apply < "$ci_root/patch/$1"; then
 		echo "$1" >> "${patch_record:?}"
 	else
-		if upon "$local_ci"; then
-			undo_local_patches
-		fi
 		fail_build
 	fi
 }
@@ -1044,29 +1002,40 @@ apply_tf_patch() {
 	# paralell builds are only used locally. Don't do for CI since this will
 	# have a speed penalty. Also skip if this was already done as a single
 	# job may apply many patches.
-	if upon "$local_ci" && [[ ! -d $new_root ]]; then
-		root=$new_root
-		diff=$(mktempfile)
+	if upon "$local_ci"; then
+		# collect diff on first run for either a fresh or dirty build
+		if [[ ! -d $new_root ]] || [[ ! -e "$tf_patch_record" ]]; then
+			diff=$(mktempfile)
 
-		# get anything still uncommitted
-		pushd  $tf_root
-		git diff HEAD > $diff
-		popd
+			# get anything still uncommitted
+			pushd  $tf_root
+			git diff HEAD > $diff
+			popd
+		fi
 
-		# git will hard link when cloning locally, no need for --depth=1
-		git clone "$tf_root" $root --shallow-submodules --recurse-submodules
+		if [[ ! -d $new_root ]]; then
+			# git will hard link when cloning locally, no need for --depth=1
+			git clone "$root" $new_root --shallow-submodules --recurse-submodules
+		fi
 
-		tf_root=$root # next apply_tf_patch will run in the same hook
-		set_hook_var "tf_root" "$root" # for anyone outside the hook
+		tf_root=$new_root # next apply_tf_patch will run in the same hook
+		set_hook_var "tf_root" "$tf_root" # for anyone outside the hook
 
-		# apply uncommited changes so they are picked up in the build
-		pushd  $tf_root
-		git apply $diff &> /dev/null || true
-		popd
+		if [[ ! -e "$tf_patch_record" ]]; then
+			# apply uncommited changes so they are picked up in the build
+			pushd  $tf_root
+			if upon "$dont_clean"; then
+				# tree is dirty, refresh
+				git stash
+			fi
+			git apply $diff &> /dev/null || true
+			popd
+			set +x
 
+		fi
 	fi
 
-	pushd "$root"
+	pushd "$tf_root"
 	patch_record="$tf_patch_record" apply_patch "$1"
 	popd
 }
@@ -1097,7 +1066,6 @@ tfut_config_file="$ci_root/tfut_config/$tfut_config"
 
 # File that keeps track of applied patches
 tf_patch_record="$workspace/tf_patches"
-tftf_patch_record="$workspace/tftf_patches"
 
 # Split run config into TF and TFUT components
 run_config_tfa="$(echo "$run_config" | awk -F, '{print $1}')"
@@ -1131,9 +1099,6 @@ else
 	sort "$spm_config_file" | sed '/^\s*$/d;s/^/\t/'
 	echo
 fi
-
-# File that keeps track of applied patches
-rmm_patch_record="$workspace/rmm_patches"
 
 if ! config_valid "$rmm_config"; then
         rmm_config=
@@ -1319,12 +1284,6 @@ else
         export cmake_gen=""
 fi
 
-undo_rmm_patches() {
-        pushd "$rmm_root"
-        patch_record="$rmm_patch_record" undo_patch_record
-        popd
-}
-
 modes="${bin_mode:-debug release}"
 for mode in $modes; do
 	echo "===== Building package in mode: $mode ====="
@@ -1382,9 +1341,6 @@ for mode in $modes; do
 		build_tftf
 
 		from="$tftf_build_root" to="$archive" collect_build_artefacts
-
-		# Clear any local changes made by applied patches
-		undo_tftf_patches
 
 		echo "##########"
 		echo
@@ -1475,9 +1431,6 @@ for mode in $modes; do
                 # Collect all rmm.* files: rmm.img, rmm.elf, rmm.dump, rmm.map
                 from="$rmm_build_root" to="$archive" collect_build_artefacts
 
-                # Clear any local changes made by applied patches
-                undo_rmm_patches
-
                 echo "##########"
                 )
         fi
@@ -1510,6 +1463,9 @@ for mode in $modes; do
 		archive="$build_archive"
 		tf_build_root="$archive/build/tfa"
 		mkdir -p ${tf_build_root}
+		# we rely on the patch record to know when to setup a clone.
+		# Remove it to signal we're building again.
+		rm -rf "$tf_patch_record"
 
 		echo "Building Trusted Firmware ($mode) ..." |& log_separator
 
@@ -1535,9 +1491,6 @@ for mode in $modes; do
 		# Generate LAVA job files if necessary
 		call_hook generate_lava_job_template
 		call_hook generate_lava_job
-
-		# Clear any local changes made by applied patches
-		undo_tf_patches
 
 		echo "##########"
 		)
