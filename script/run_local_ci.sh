@@ -119,7 +119,7 @@ run_one_test() {
 	else
 		# when running in serial, no scrambling is possible so print to
 		# stdout
-		exec > >(tee $console_file >&5) 2>&1
+		exec > >(tee -a $console_file >&5) 2>&1
 	fi
 
 	# Unset make flags for build script
