@@ -92,6 +92,9 @@ ${uart0_out+-C bp.pl011_uart0.out_file=$uart0_out}
 ${uart0_out+-C bp.pl011_uart0.unbuffered_output=1}
 ${uart1_out+-C bp.pl011_uart1.out_file=$uart1_out}
 
+$ust-C bp.pl011_uart0.shutdown_tag="$uart0_shutdown_tag"
+${uart0_shutdown_tag+$ust}
+
 ${no_quantum--Q ${quantum}}
 
 ${disable_visualisation+-C bp.vis.disable_visualisation=1}
