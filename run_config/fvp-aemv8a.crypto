@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	local model="base-aemv8a-crypto"
+
+	model="$model" \
+	has_aes="2" \
+	has_sha1="1" \
+	has_sha256="1" \
+	crypto_plugin="1" \
+	crypto_plugin_path="${crypto_plugin_path}" \
+	gen_model_params
+
+	model="$model" gen_fvp_yaml
+}
