@@ -1276,14 +1276,6 @@ if [ "$run_config_tfa" ]; then
 		echo
 		echo "$run_config_candidates" | sed 's/^\|\n/\t/g'
 		echo
-
-		if [ ! -n "$bin_mode" ]; then
-			if echo $run_config_candidates | grep -wq "debug"; then
-				bin_mode="debug"
-			else
-				bin_mode="release"
-			fi
-		fi
 	fi
 fi
 

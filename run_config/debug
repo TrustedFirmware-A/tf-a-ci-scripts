@@ -9,3 +9,6 @@ post_package() {
 	use_debug_bins
 }
 
+test_setup() {
+	set_hook_var "bin_mode" "debug"
+}

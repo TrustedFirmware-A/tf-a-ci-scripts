@@ -105,10 +105,10 @@ echo
 echo "RUNNING: $TEST_CONFIG"
 echo
 
-# Accept BIN_MODE from environment, or default to release. If bin_mode is set
-# and non-empty (intended to be set from command line), that takes precedence.
-pkg_bin_mode="${BIN_MODE:-release}"
-bin_mode="${bin_mode:-$pkg_bin_mode}"
+# Accept BIN_MODE from environment, or default to release. Some jobs mandate the
+# bin_mode so that takes precedence.
+bin_mode="${BIN_MODE:-$bin_mode}"
+bin_mode="${bin_mode:-release}"
 
 # Whether to display primary UART progress live on the console
 primary_live="${primary_live-$PRIMARY_LIVE}"
