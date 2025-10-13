@@ -1007,9 +1007,9 @@ apply_tf_patch() {
 		if [[ ! -d $new_root ]] || [[ ! -e "$tf_patch_record" ]]; then
 			diff=$(mktempfile)
 
-			# get anything still uncommitted
+			# get anything still uncommitted (including submodules)
 			pushd  $tf_root
-			git diff HEAD > $diff
+			git diff --submodule=diff HEAD > $diff
 			popd
 		fi
 
