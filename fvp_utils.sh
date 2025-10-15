@@ -37,21 +37,21 @@ romlib_addr="${romlib_addr:-0x03ff2000}"
 uefi_ci_bin_url="${DOWNLOAD_SERVER_TF_A_URL}/drtm/FVP_AARCH64_EFI.fd"
 
 uboot32_fip_url="$linaro_release/fvp32-latest-busybox-uboot/fip.bin"
-optee_version="4.7.0"
+optee_version="4.9.0"
 
+# OP-TEE binaries can be bumped using the script in
+# script/release/update-optee.sh.
 if [[ "$test_config" == *handoff* ]]; then
 	if [[ "$test_config" == *-lts-v2.14* ]]; then
 		# These configs predate the later handoff binary refresh on `master`.
 		optee_path="${DOWNLOAD_SERVER_TF_A_URL}/optee/${optee_version}/handoff"
 		uboot_url="${DOWNLOAD_SERVER_TF_A_URL}/handoff/fvp/u-boot.bin"
 	else
-		# FIXME: temporary paths to enable synchronization with EDK2, U-Boot,
-		# and OP-TEE following changes to the specification.
-		optee_path="${DOWNLOAD_SERVER_TF_A_URL}/optee/4.9.0-16-gd9659c541/handoff"
+		optee_path="${DOWNLOAD_SERVER_TF_A_URL}/optee/${optee_version}/handoff"
 		uboot_url="${DOWNLOAD_SERVER_TF_A_URL}/handoff/fvp/u-boot-89d1016b2a0.bin"
 	fi
 else
-	optee_path=$DOWNLOAD_SERVER_TF_A_URL/optee/${optee_version}
+	optee_path="$DOWNLOAD_SERVER_TF_A_URL/optee/${optee_version}"
 	uboot_url="${DOWNLOAD_SERVER_TF_A_URL}/linux_boot/fvp/u-boot.bin"
 fi
 uboot_script_url="${DOWNLOAD_SERVER_TF_A_URL}/linux_boot/fvp/boot.scr"
