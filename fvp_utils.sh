@@ -38,7 +38,7 @@ uefi_ci_bin_url="${DOWNLOAD_SERVER_TF_A_URL}/drtm/FVP_AARCH64_EFI.fd"
 
 uboot32_fip_url="$linaro_release/fvp32-latest-busybox-uboot.zip"
 fvp_uboot_bl33_url="$linaro_release/fvp-latest-busybox-uboot.zip"
-optee_version="4.9.0"
+optee_version="4.11.0"
 
 # OP-TEE binaries can be bumped using the script in
 # script/release/update-optee.sh.
