@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2025, Qualcomm Technologies, Inc. and/or its subsidiaries.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+    local ext_lib="libqtisec.a"
+
+    pushd "${workspace}"
+
+    if [ ! -f "${ext_lib}" ]; then
+        echo "Fetch ${ext_lib} for sc7280_chrome"
+        saveas="${ext_lib}" \
+            url="https://github.com/coreboot/qc_blobs/raw/master/sc7280/qtiseclib/libqtisec.a" \
+            fetch_file
+        pwd; ls -l
+    fi
+
+    popd "${workspace}"
+}

@@ -1,0 +1,4 @@
+COREBOOT=1
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=sc7280_chrome
+QTISECLIB_PATH=${workspace}/libqtisec.a
