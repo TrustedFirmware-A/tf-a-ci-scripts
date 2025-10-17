@@ -1,0 +1,5 @@
+BL32=Makefile
+BL33=Makefile
+CROSS_COMPILE=aarch64-none-elf-
+LSI=X5H
+PLAT=rcar_gen5

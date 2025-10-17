@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2025, Renesas Electronics Corporation. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	targets="bl31" set_tf_build_targets
+}
