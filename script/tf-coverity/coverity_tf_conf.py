@@ -119,4 +119,25 @@ exclude_paths = [
     ("plat/nxp/soc-lx2160a/lx2162aqds/cert_create_helper/src/pdef_tbb_cert.c", "Used to build LX2160A cert_create"),
     ("plat/nxp/soc-lx2160a/lx2162aqds/cert_create_helper/src/pdef_tbb_ext.c", "Used to build LX2160A cert_create"),
     ("plat/nxp/soc-lx2160a/lx2162aqds/cert_create_helper/src/pdef_tbb_key.c", "Used to build LX2160A cert_create"),
+
+    # Marvell A3700: exclude source files that currently fail to build with
+    # Arm GNU Toolchain 14.3.Rel1 (binutils 2.44). The WTMI/CM3 toolchain change
+    # introduces stricter ARM/Thumb linking checks in the vendor tree; until the
+    # Marvell upstream fixes are integrated, keep these paths excluded from
+    # tf-coverity to maintain a clean job.
+    # Re-enable by removing these exclusions once the Marvell updates and
+    # A3700 builds link cleanly under 14.3.Rel1.
+    ("plat/marvell/armada/a3k/a3700/board/pm_src.c", "Temporarily excluded"),
+    ("plat/marvell/armada/a3k/a3700/plat_bl31_setup.c", "Temporarily excluded"),
+    ("plat/marvell/armada/a3k/common/a3700_ea.c", "Temporarily excluded"),
+    ("plat/marvell/armada/a3k/common/a3700_sip_svc.c", "Temporarily excluded"),
+    ("plat/marvell/armada/a3k/common/aarch64/a3700_common.c", "Temporarily excluded"),
+    ("plat/marvell/armada/a3k/common/cm3_system_reset.c", "Temporarily excluded"),
+    ("plat/marvell/armada/a3k/common/dram_win.c", "Temporarily excluded"),
+    ("plat/marvell/armada/a3k/common/io_addr_dec.c", "Temporarily excluded"),
+    ("plat/marvell/armada/a3k/common/marvell_plat_config.c", "Temporarily excluded"),
+    ("plat/marvell/armada/a3k/common/plat_cci.c", "Temporarily excluded"),
+    ("plat/marvell/armada/a3k/common/plat_pm.c", "Temporarily excluded"),
+    ("plat/marvell/armada/common/marvell_cci.c", "Temporarily excluded"),
+    ("plat/marvell/armada/common/marvell_gicv3.c", "Temporarily excluded"),
 ]

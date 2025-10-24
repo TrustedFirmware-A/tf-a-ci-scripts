@@ -631,9 +631,6 @@ clean_build PLAT=stingray $(common_flags) BOARD_CFG=bcm958742t-ns3 \
     INCLUDE_EMMC_DRIVER_ERASE_CODE=1 USE_USB=yes
 
 # Platforms from Marvell
-make PLAT=a3700 $(common_flags) SCP_BL2=/dev/null CM3_SYSTEM_RESET=1 \
-    A3720_DB_PM_WAKEUP_SRC=1 HANDLE_EA_EL3_FIRST_NS=1 all
-
 # Source files from mv-ddr-marvell repository are necessary
 # to build below four platforms
 wget ${DOWNLOAD_SERVER_URL}/tf-a/mv-ddr-marvell/mv-ddr-marvell-5d41a995637de1dbc93f193db6ef0c8954cab316.tar.gz 2> /dev/null
