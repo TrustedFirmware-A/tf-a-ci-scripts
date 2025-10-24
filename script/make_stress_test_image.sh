@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2022 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 #
 # When pointed to a root file system archive ($root_fs) this script creates a
-# disk image file ($img_file of size $size_gb, or 5GB by default) with 2
-# partitions. Linaro OE ramdisk specifies the second partition as root device;
-# the first partition is unused. The second partition is formatted as ext2, and
-# the root file system extracted into it.
+# disk image file ($img_file of size $size_gb, or 5GB by default) with NO
+# partition table. The entire disk (/dev/vda) is formatted as ext2 and the
+# root file system is extracted into it.
 #
 # Test suites for stress testing are created under /opt/tests.
 
@@ -38,45 +37,20 @@ root_fs="$(readlink -f ${root_fs:?})"
 img_file="$(readlink -f ${img_file:?})"
 
 mount_dir="${mount_dir:-/mnt}"
-mount_dir="$(readlink -f $mount_dir)"
+mount_dir="$(readlink -f "$mount_dir")"
+mkdir -p "$mount_dir"
 
 # Create an image file. We assume 5G is enough
 size_gb="${size_gb:-5}"
 echo "Creating image file $img_file (${size_gb}GB)..."
-dd if=/dev/zero of="$img_file" bs=1M count="${size_gb}000" &>/dev/null
+dd if=/dev/zero of="$img_file" bs=1M count="${size_gb}000" status=none
 
-# Create a partition table, and then create 2 partitions. The boot expects the
-# root file system to be present in the second partition.
-echo "Creating partitions in $img_file..."
-sed 's/ *#.*$//' <<EOF | fdisk "$img_file" &>/dev/null
-o     # Create new partition table
-n     # New partition
-p     # Primary partition
-      # Default partition number
-      # Default start sector
-+1M   # Dummy partition of 1MB
-n     # New partition
-p     # Primary partition
-      # Default partition number
-      # Default start sector
-      # Default end sector
-w
-q
-EOF
+# Set up a loop device for the whole image (no partition table)
+loop_dev="$(losetup --show --find "$img_file")"
 
-# Get the offset of partition
-fdisk_out="$(fdisk -l "$img_file" | sed -n '$p')"
-
-offset="$(echo "$fdisk_out" | awk '{print $2 * 512}')"
-size="$(echo "$fdisk_out" | awk '{print (($3 - $2) * 512)}')"
-
-# Setup and identify loop device
-loop_dev="$(losetup --offset "$offset" --sizelimit "$size" --show --find \
-	"$img_file")"
-
-# Create ext2 file system on the mount
-echo "Formatting partition as ext2 in $img_file..."
-mkfs.ext2 "$loop_dev" &>/dev/null
+# Create ext2 filesystem on the whole device (/dev/vda equivalent)
+echo "Formatting $img_file as ext2 (whole disk)..."
+mkfs.ext2 -F "$loop_dev" >/dev/null
 
 # Mount loop device
 mount "$loop_dev" "$mount_dir"
@@ -106,7 +80,9 @@ echo "Cloning pm-qa..."
 git clone -q --depth 1 https://git.linaro.org/tools/pm-qa.git
 echo "Cloned pm-qa."
 
-cd
+# Sync and unmount
+sync
+cd /
 umount "$mount_dir"
 
 losetup -d "$loop_dev"
