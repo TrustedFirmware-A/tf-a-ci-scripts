@@ -649,7 +649,7 @@ coverity_default_checkers=(
 docker_registry="${docker_registry:-}"
 
 #GCC archive public hosting available at arm_website.
-gcc_version="14.2.rel1"
+gcc_version="14.3.rel1"
 gcc_archive="${gcc_archive:-https://developer.arm.com/-/media/Files/downloads/gnu/$gcc_version/binrel/arm-gnu-toolchain-$gcc_version-x86_64-aarch64-none-elf.tar.xz}"
 
 if [ -n "$gcc_space" ]; then
