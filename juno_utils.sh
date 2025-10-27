@@ -11,7 +11,7 @@ set -u
 scp_bl1_url="$scp_mcp_downloads/juno/platform_variant_BOARD/release/juno-bl1-bypass.bin"
 scp_bl2_url="$scp_mcp_downloads/juno/platform_variant_BOARD/release/juno-bl2.bin"
 
-psci_reset2_scp_bl2_url="$tfa_downloads/psci_reset2/scp_bl2.bin"
+psci_reset2_scp_bl2_url="$scp_mcp_downloads/juno/psci_reset2/juno-bl2.bin"
 uboot_bl33_url="$linaro_release/juno-latest-oe-uboot/SOFTWARE/bl33-uboot.bin"
 ml_uboot_bl33_url="$tfa_downloads/linux_boot/u-boot-juno.bin"
 uboot_env_url="$tfa_downloads/linux_boot/u-boot-env.bin"
