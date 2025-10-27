@@ -1,0 +1,2 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=rza3m_ek_nor
