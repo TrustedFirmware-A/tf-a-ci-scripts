@@ -133,9 +133,6 @@ reset_var mpidr_layout
 # is multi-threading compatible
 reset_var supports_multi_threading
 
-# ETM plugin to access ETM trace system registers
-reset_var etm_plugin
-
 # Trace filter register support
 reset_var supports_trace_filter_regs
 
@@ -186,8 +183,6 @@ ${bmcov_plugin+--plugin=$bmcov_plugin_path}
 
 ${nvcounter_version+-C bp.trusted_nv_counter.version=$nvcounter_version}
 ${nvcounter_diag+-C bp.trusted_nv_counter.diagnostics=$nvcounter_diag}
-
-${etm_plugin+--plugin=$etm_plugin_path}
 EOF
 
 # Store the fixed ROTPK hash in registers

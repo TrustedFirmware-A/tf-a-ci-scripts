@@ -12,7 +12,6 @@ generate_lava_job() {
 	uart="1" file="hold_uart.exp" track_expect
 
 	model="$model" \
-		etm_plugin="1" \
 		has_ete="1" \
 		has_sve="1" \
 		etm_present="1" \

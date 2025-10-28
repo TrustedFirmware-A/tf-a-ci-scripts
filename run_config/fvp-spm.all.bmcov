@@ -29,7 +29,6 @@ generate_lava_job() {
 	fi
 
 	model="$model" \
-		etm_plugin="1" \
 		has_ete="1" \
 		has_sve="1" \
 		etm_present="1" \
