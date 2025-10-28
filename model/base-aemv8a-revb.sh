@@ -6,8 +6,6 @@
 #
 
 # Use revb model
-set_model_path "$warehouse/SysGen/Models/$model_version/$model_build/external/models/$model_flavour/FVP_Base_AEMvA-AEMvA"
-
 default_var is_dual_cluster 1
 
 source "$ci_root/model/base-aemva-common.sh"

@@ -5,16 +5,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-if upon "$local_ci"; then
-	set_model_path "$warehouse/SysGen/SubSystemModels/$model_version/$model_build/models/$model_flavour/FVP_RD_1_AE"
-else
-	source "$ci_root/fvp_utils.sh"
-	# fvp_models variable contains the information for FVP paths, where 2nd field
-	# points to the /opt/model/*/models/${model_flavour}
-	models_dir="$(echo ${fvp_models[$model]} | awk -F ';' '{print $2}')"
-	set_model_path "$models_dir"
-fi
-
 # Write model command line options
 cat <<EOF >"$model_param_file"
 -C css.sysctrl.scp.terminal_uart_scp.start_port=5007

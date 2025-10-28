@@ -6,9 +6,7 @@
 #
 
 # Use revc model
-if  is_arm_jenkins_env || upon "$local_ci"; then
-	set_model_path "$warehouse/SysGen/Models/$model_version/$model_build/external/models/$model_flavour/FVP_Base_RevC-2xAEMvA"
-
+if upon "$local_ci"; then
 	default_var etm_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/ETMv4ExamplePlugin.so"
         default_var generictrace_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/GenericTrace.so"
 
@@ -16,11 +14,6 @@ if  is_arm_jenkins_env || upon "$local_ci"; then
 else
         # OpenCI enviroment
         source "$ci_root/fvp_utils.sh"
-
-        # fvp_models variable contains the information for FVP paths, where 2nd field
-	# points to the /opt/model/*/models/${model_flavour}
-	models_dir="$(echo ${fvp_models[$model]} | awk -F ';' '{print $2}')"
-        set_model_path "$models_dir"
 
         default_var etm_plugin_path "/opt/model/Base_RevC_AEMvA_pkg/plugins/Linux64_GCC-9.3/ETMv4ExamplePlugin.so"
         default_var generictrace_plugin_path "/opt/model/Base_RevC_AEMvA_pkg/plugins/Linux64_GCC-9.3/GenericTrace.so"

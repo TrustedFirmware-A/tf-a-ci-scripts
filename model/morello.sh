@@ -6,8 +6,6 @@
 #
 
 # Specific model version is set in post_fetch_tf_resource.
-set_model_path "$warehouse/SysGen/SubSystemModels/$model_version/$model_build/models/$model_flavour/FVP_Morello"
-
 cat <<EOF >"$model_param_file"
 -C css.scp.terminal_uart_aon.start_port=5000
 -C css.mcp.terminal_uart0.start_port=5001

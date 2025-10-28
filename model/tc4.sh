@@ -4,7 +4,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-set_model_path "$warehouse/SysGen/SubSystemModels/0.0/10096/models/Linux64_GCC-9.3/FVP_TC4"
 cat <<EOF >"$model_param_file"
 ${fip_gpt_bin+-C board.flashloader0.fname=$fip_gpt_bin}
 -C board.pl011_uart2.unbuffered_output=1

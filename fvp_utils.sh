@@ -217,6 +217,10 @@ gen_fvp_yaml() {
     local model_dir="$(echo "${model_params}"  | awk -F ';' '{print $2}')"
     local model_bin="$(echo "${model_params}"  | awk -F ';' '{print $3}')"
 
+    if upon "$local_ci"; then
+        set_model_path "$model_bin"
+    fi
+
     # this function expects a template, fail if it is not present
     if [ ! -f "$yaml_template_file" ]; then
         echo "ERROR: gen_fvp_yaml: template $yaml_template_file not available."

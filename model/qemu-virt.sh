@@ -6,8 +6,6 @@
 #
 
 # Generates a machine configuration for QEMU virt.
-set_model_path qemu-system-aarch64
-
 cat <<EOF >"$model_param_file"
 -M virt
 -machine 'secure=on,virtualization=on,gic-version=2'

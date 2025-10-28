@@ -891,11 +891,6 @@ gen_model_params() {
 set_model_path() {
 	local input_path="${1:?}"
 
-	if upon "$retain_paths"; then
-		set_run_env "model_path" "$(basename "$input_path")"
-		return
-	fi
-
 	set_run_env "model_path" "$input_path"
 }
 
