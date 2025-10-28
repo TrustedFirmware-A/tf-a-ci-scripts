@@ -8,7 +8,6 @@
 # Use revc model
 if upon "$local_ci"; then
 	default_var etm_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/ETMv4ExamplePlugin.so"
-        default_var generictrace_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/GenericTrace.so"
 
 	default_var bmcov_plugin_path "$workspace/artefacts/${bin_mode:?}/coverage_trace.so"
 else
@@ -16,7 +15,6 @@ else
         source "$ci_root/fvp_utils.sh"
 
         default_var etm_plugin_path "/opt/model/Base_RevC_AEMvA_pkg/plugins/Linux64_GCC-9.3/ETMv4ExamplePlugin.so"
-        default_var generictrace_plugin_path "/opt/model/Base_RevC_AEMvA_pkg/plugins/Linux64_GCC-9.3/GenericTrace.so"
 fi
 
 default_var is_dual_cluster 1
