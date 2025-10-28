@@ -1,14 +1,31 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2026, Arm Limited. All rights reserved.
+# Copyright (c) 2026, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
 # Use revc model
-if upon "$local_ci"; then
+if  is_arm_jenkins_env || upon "$local_ci"; then
+	set_model_path "$warehouse/SysGen/Models/$model_version/$model_build/external/models/$model_flavour/FVP_Base_RevC-2xAEMvA"
+
+	default_var etm_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/ETMv4ExamplePlugin.so"
+    default_var generictrace_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/GenericTrace.so"
+
 	default_var bmcov_plugin_path "$workspace/artefacts/${bin_mode:?}/coverage_trace.so"
-        default_var crypto_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/Crypto.so"
+    default_var crypto_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/Crypto.so"
+else
+    # OpenCI enviroment
+    source "$ci_root/fvp_utils.sh"
+
+    # fvp_models variable contains the information for FVP paths, where 2nd field
+	# points to the /opt/model/*/models/${model_flavour}
+	models_dir="$(echo ${fvp_models[$model]} | awk -F ';' '{print $2}')"
+    set_model_path "$models_dir"
+
+    default_var etm_plugin_path "/opt/model/Base_RevC_AEMvA_pkg/plugins/Linux64_GCC-9.3/ETMv4ExamplePlugin.so"
+    default_var generictrace_plugin_path "/opt/model/Base_RevC_AEMvA_pkg/plugins/Linux64_GCC-9.3/GenericTrace.so"
+    default_var crypto_plugin_path "/opt/model/Base_RevC_AEMvA_pkg/plugins/Linux64_GCC-9.3/Crypto.so"
 fi
 
 default_var is_dual_cluster 1

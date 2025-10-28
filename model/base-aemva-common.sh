@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2026, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -53,6 +53,8 @@ reset_var has_ete
 reset_var has_gicv4_1
 
 reset_var has_sve
+
+reset_var has_sve2
 
 reset_var has_sme
 
@@ -123,6 +125,37 @@ reset_var has_fgwte3
 # Enable FEAT_EBEP
 reset_var has_ebep
 
+# Enable FEAT_SHA3
+reset_var has_sha3
+
+# Enable FEAT_SHA1
+reset_var has_sha1
+
+# Enable FEAT_SHA256
+reset_var has_sha256
+
+# Enable FEAT_SHA512
+reset_var has_sha512
+
+# Enable FEAT_AES
+reset_var has_aes
+
+reset_var crypto_plugin
+
+# Enable FEAT_SHA256
+reset_var has_sha256
+
+# Enable FEAT_SHA512
+reset_var has_sha512
+
+# Enable FEAT_AES
+reset_var has_aes
+
+# Enable FEAT_RAS
+reset_var has_ras
+
+reset_var crypto_plugin
+
 # Enable FEAT_UINJ
 reset_var has_uinj
 
@@ -169,20 +202,25 @@ ${has_gicv4_1+-C has-gicv4.1=$has_gicv4_1}
 ${has_ete+-C cluster0.has_ete=1}
 ${has_sve+-C cluster0.has_sve=1}
 ${has_sve+-C cluster0.sve.veclen=$((128 / 8))}
+${has_sve2+-C cluster0.sve.has_sve2=1}
 ${has_sme+-C cluster0.sve.has_sme=1}
 ${has_sme2+-C cluster0.sve.has_sme2=1}
 ${has_sme_fa64+-C cluster0.sve.has_sme_fa64=1}
 ${sme_only+-C cluster0.sve.sme_only=1}
+${has_ras+-C cluster0.has_ras=${has_ras}}
 
 ${has_ete+-C cluster1.has_ete=1}
 ${has_sve+-C cluster1.has_sve=1}
 ${has_sve+-C cluster1.sve.veclen=$((128 / 8))}
+${has_sve2+-C cluster1.sve.has_sve2=1}
 ${has_sme+-C cluster1.sve.has_sme=1}
 ${has_sme2+-C cluster1.sve.has_sme2=1}
 ${has_sme_fa64+-C cluster1.sve.has_sme_fa64=1}
 ${sme_only+-C cluster1.sve.sme_only=1}
+${has_ras+-C cluster1.has_ras=${has_ras}}
 
 ${bmcov_plugin+--plugin=$bmcov_plugin_path}
+${crypto_plugin+--plugin=$crypto_plugin_path}
 
 ${nvcounter_version+-C bp.trusted_nv_counter.version=$nvcounter_version}
 ${nvcounter_diag+-C bp.trusted_nv_counter.diagnostics=$nvcounter_diag}
@@ -298,6 +336,31 @@ ${supports_crc32+-C cluster0.cpu1.enable_crc32=$supports_crc32}
 ${supports_crc32+-C cluster0.cpu2.enable_crc32=$supports_crc32}
 ${supports_crc32+-C cluster0.cpu3.enable_crc32=$supports_crc32}
 
+${has_aes+-C cluster0.cpu0.crypto_aes=2}
+${has_aes+-C cluster0.cpu1.crypto_aes=2}
+${has_aes+-C cluster0.cpu2.crypto_aes=2}
+${has_aes+-C cluster0.cpu3.crypto_aes=2}
+
+${has_sha1+-C cluster0.cpu0.crypto_sha1=1}
+${has_sha1+-C cluster0.cpu1.crypto_sha1=1}
+${has_sha1+-C cluster0.cpu2.crypto_sha1=1}
+${has_sha1+-C cluster0.cpu3.crypto_sha1=1}
+
+${has_sha256+-C cluster0.cpu0.crypto_sha256=1}
+${has_sha256+-C cluster0.cpu1.crypto_sha256=1}
+${has_sha256+-C cluster0.cpu2.crypto_sha256=1}
+${has_sha256+-C cluster0.cpu3.crypto_sha256=1}
+
+${has_sha512+-C cluster0.cpu0.crypto_sha512=$has_sha512}
+${has_sha512+-C cluster0.cpu1.crypto_sha512=$has_sha512}
+${has_sha512+-C cluster0.cpu2.crypto_sha512=$has_sha512}
+${has_sha512+-C cluster0.cpu3.crypto_sha512=$has_sha512}
+
+${has_sha3+-C cluster0.cpu0.crypto_sha3=$has_sha3}
+${has_sha3+-C cluster0.cpu1.crypto_sha3=$has_sha3}
+${has_sha3+-C cluster0.cpu2.crypto_sha3=$has_sha3}
+${has_sha3+-C cluster0.cpu3.crypto_sha3=$has_sha3}
+
 ${cache_state_modelled+-C cluster0.stage12_tlb_size=1024}
 ${cache_state_modelled+-C cluster0.check_memory_attributes=0}
 
@@ -352,6 +415,12 @@ EOF
 fi
 
 # Parameters to select architecture version
+if [ "$arch_version" = "8.2" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_arm_v8-2=1
+EOF
+fi
+
 if [ "$arch_version" = "8.3" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_arm_v8-3=1
@@ -713,6 +782,31 @@ ${supports_crc32+-C cluster1.cpu0.enable_crc32=$supports_crc32}
 ${supports_crc32+-C cluster1.cpu1.enable_crc32=$supports_crc32}
 ${supports_crc32+-C cluster1.cpu2.enable_crc32=$supports_crc32}
 ${supports_crc32+-C cluster1.cpu3.enable_crc32=$supports_crc32}
+
+${has_aes+-C cluster1.cpu0.crypto_aes=2}
+${has_aes+-C cluster1.cpu1.crypto_aes=2}
+${has_aes+-C cluster1.cpu2.crypto_aes=2}
+${has_aes+-C cluster1.cpu3.crypto_aes=2}
+
+${has_sha1+-C cluster1.cpu0.crypto_sha1=1}
+${has_sha1+-C cluster1.cpu1.crypto_sha1=1}
+${has_sha1+-C cluster1.cpu2.crypto_sha1=1}
+${has_sha1+-C cluster1.cpu3.crypto_sha1=1}
+
+${has_sha256+-C cluster1.cpu0.crypto_sha256=1}
+${has_sha256+-C cluster1.cpu1.crypto_sha256=1}
+${has_sha256+-C cluster1.cpu2.crypto_sha256=1}
+${has_sha256+-C cluster1.cpu3.crypto_sha256=1}
+
+${has_sha512+-C cluster1.cpu0.crypto_sha512=$has_sha512}
+${has_sha512+-C cluster1.cpu1.crypto_sha512=$has_sha512}
+${has_sha512+-C cluster1.cpu2.crypto_sha512=$has_sha512}
+${has_sha512+-C cluster1.cpu3.crypto_sha512=$has_sha512}
+
+${has_sha3+-C cluster1.cpu0.crypto_sha3=$has_sha3}
+${has_sha3+-C cluster1.cpu1.crypto_sha3=$has_sha3}
+${has_sha3+-C cluster1.cpu2.crypto_sha3=$has_sha3}
+${has_sha3+-C cluster1.cpu3.crypto_sha3=$has_sha3}
 
 ${cache_state_modelled+-C cluster1.stage12_tlb_size=1024}
 ${cache_state_modelled+-C cluster1.check_memory_attributes=0}

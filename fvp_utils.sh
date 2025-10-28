@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2020-2025, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2026, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -57,6 +57,7 @@ default_model_dtb="dtb.bin"
 # FVP containers and model paths
 fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library/FVP_Base"
 fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build}_linux64;/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
+fvp_base_revc_2xaemva_crypto="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build}_linux64_crypto;/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
 fvp_rd_1_ae="fvp:fvp_rd_1_ae_${model_version}_${model_build};/opt/model/FVP_RD_1_AE/models/${model_flavour}"
 
 # CSS model list
@@ -71,6 +72,7 @@ fvp_models=(
 [base-aemv8a-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
 [base-aemva]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
 [base-aemv8a]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
+[base-aemv8a-crypto]="${fvp_base_revc_2xaemva_crypto};FVP_Base_RevC-2xAEMvA"
 [cortex-a32x4]="${fvp_arm_std_library};FVP_Base_Cortex-A32"
 [cortex-a35x4]="${fvp_arm_std_library};FVP_Base_Cortex-A35"
 [cortex-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A53"

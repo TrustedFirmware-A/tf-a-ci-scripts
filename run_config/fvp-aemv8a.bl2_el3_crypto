@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	local model="base-aemv8a-crypto"
+
+	# BL2 is placed towards the middle of the Trusted SRAM based on (Total TSRAM / 2 + 0x2000)
+	local bl2_addr=$((0x4002000 + (fvp_tsram_size * 512)))
+
+	uart="0" set_expect_variable "skip_early_boot_msgs" "1"
+
+	model="$model" \
+	bl2_addr="${bl2_addr}" \
+	bl2_at_el3="1" \
+	has_aes="1" \
+	has_sha256="1" \
+	has_sha512="2" \
+	crypto_plugin="1" \
+	crypto_plugin_path="${crypto_plugin_path}" \
+	gen_model_params
+
+	model="$model" gen_fvp_yaml
+}
