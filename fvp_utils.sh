@@ -212,16 +212,16 @@ gen_fvp_yaml() {
     local yaml_job_file="$workspace/job.yaml"
     local lava_model_params="$workspace/lava_model_params"
 
-    # this function expects a template, quit if it is not present
-    if [ ! -f "$yaml_template_file" ]; then
-        echo "warning: gen_fvp_yaml: template $yaml_template_file not available, skipping generating LAVA job"
-	return
-    fi
-
     local model_params="${fvp_models[$model]}"
     local model_name="$(echo "${model_params}" | awk -F ';' '{print $1}')"
     local model_dir="$(echo "${model_params}"  | awk -F ';' '{print $2}')"
     local model_bin="$(echo "${model_params}"  | awk -F ';' '{print $3}')"
+
+    # this function expects a template, fail if it is not present
+    if [ ! -f "$yaml_template_file" ]; then
+        echo "ERROR: gen_fvp_yaml: template $yaml_template_file not available."
+        exit 1
+    fi
 
     # model params are required for correct yaml creation, quit if empty
     if [ -z "${model_name}" ]; then
