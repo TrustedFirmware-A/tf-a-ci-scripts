@@ -7,4 +7,6 @@
 
 fetch_tf_resource() {
 	uart="0" file="el3-test-payload.exp" track_expect
+
+	payload_type="tftf" gen_yaml_template
 }
