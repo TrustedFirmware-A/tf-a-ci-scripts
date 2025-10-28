@@ -16,5 +16,5 @@ generate_lava_job() {
 		bmcov_plugin_path="${coverage_trace_plugin}" \
 		gen_model_params
 
-	model="${model}" model_bin="FVP_Base_RevC-2xAEMvA" gen_fvp_yaml
+	model="${model}" gen_fvp_yaml
 }

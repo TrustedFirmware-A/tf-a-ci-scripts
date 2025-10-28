@@ -9,5 +9,5 @@ generate_lava_job() {
 	model="base-aemv8a" aarch32="1" arch_version="8.6" bmcov_plugin="1" \
 		bmcov_plugin_path="${coverage_trace_plugin}" \
 		gen_model_params
-	model="base-aemv8a" model_bin="FVP_Base_RevC-2xAEMvA" gen_fvp_yaml
+	model="base-aemv8a" gen_fvp_yaml
 }

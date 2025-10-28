@@ -16,6 +16,5 @@ generate_lava_job() {
 		gen_model_params
 
 	model="$model" \
-		model_bin="FVP_Base_RevC-2xAEMvA" \
 		gen_fvp_yaml
 }
