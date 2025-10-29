@@ -277,6 +277,7 @@ ${mpidr_layout+-C cluster0.mpidr_layout=$mpidr_layout}
 ${supports_multi_threading+-C cluster0.supports_multi_threading=$supports_multi_threading}
 
 ${has_v8_9_debug_extension+-C cluster0.has_v8_9_debug_extension=$has_v8_9_debug_extension}
+${has_v8_9_debug_extension+-C cluster0.cpu0.number-of-breakpoints=64}
 
 ${etm_present+-C cluster0.cpu0.etm-present=$etm_present}
 ${etm_present+-C cluster0.cpu1.etm-present=$etm_present}
@@ -655,6 +656,7 @@ ${mpidr_layout+-C cluster1.mpidr_layout=$mpidr_layout}
 ${supports_multi_threading+-C cluster1.supports_multi_threading=$supports_multi_threading}
 
 ${has_v8_9_debug_extension+-C cluster1.has_v8_9_debug_extension=$has_v8_9_debug_extension}
+${has_v8_9_debug_extension+-C cluster1.cpu0.number-of-breakpoints=64}
 
 ${etm_present+-C cluster1.cpu0.etm-present=$etm_present}
 ${etm_present+-C cluster1.cpu1.etm-present=$etm_present}
