@@ -198,24 +198,6 @@ make $fvp_common_flags SANITIZE_UB=on RESET_TO_BL31=1 FVP_TRUSTED_SRAM_SIZE=384 
 # debugfs feature
 clean_build $fvp_common_flags DEBUG=1 USE_DEBUGFS=1
 
-# MPAM feature
-clean_build $fvp_common_flags ENABLE_FEAT_MPAM=1
-
-# Debugv8p9 feature
-clean_build $fvp_common_flags ENABLE_FEAT_DEBUGV8P9=1
-
-# Feat_FGT2 (Fine-grained Traps 2) feature
-clean_build $fvp_common_flags ENABLE_FEAT_FGT2=1
-
-# Feat_FPMR (Floating Point Mode Register) feature
-clean_build $fvp_common_flags ENABLE_FEAT_FPMR=1
-
-# FEAT_TCR2
-clean_build $fvp_common_flags ENABLE_FEAT_TCR2=1
-
-# FEAT_THE, FEAT_SCTLR2
-clean_build $fvp_common_flags ENABLE_FEAT_THE=1 ENABLE_FEAT_SCTLR2=1
-
 # Using GICv3.1 driver with extended PPI and SPI range
 clean_build $fvp_common_flags GIC_EXT_INTID=1
 
@@ -245,17 +227,11 @@ clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} ARM_GPT_SUPPORT=1 PSA_FWU_SUPPO
 # PSA Crypto support
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} PSA_CRYPTO=1 FVP_TRUSTED_SRAM_SIZE=384
 
-# SME and HCX features
-clean_build $fvp_common_flags ENABLE_SME_FOR_NS=1 ENABLE_FEAT_HCX=1
-
-# SME2
-clean_build $fvp_common_flags ENABLE_SME2_FOR_NS=1 ENABLE_SME_FOR_NS=1 ENABLE_FEAT_HCX=1
-
 # Architectural Feature Detection mechanism
 clean_build $fvp_common_flags FEATURE_DETECTION=1
 
 # RNG trap feature
-clean_build $fvp_common_flags ENABLE_FEAT_RNG=1 ENABLE_FEAT_RNG_TRAP=1
+clean_build $fvp_common_flags ENABLE_FEAT_RNG_TRAP=1
 
 # OPTEE_ALLOW_SMC_LOAD and CROS_WIDEVINE_SMC features
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=opteed OPTEE_ALLOW_SMC_LOAD=1 CROS_WIDEVINE_SMC=1 PLAT_XLAT_TABLES_DYNAMIC=1 FVP_TRUSTED_SRAM_SIZE=384
