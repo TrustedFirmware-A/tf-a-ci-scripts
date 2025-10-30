@@ -117,6 +117,9 @@ reset_var has_fgt2
 # Enable FEAT_FGWTE3
 reset_var has_fgwte3
 
+# Enable FEAT_EBEP
+reset_var has_ebep
+
 # Layout of MPIDR. 0=AFF0 is CPUID, 1=AFF1 is CPUID
 reset_var mpidr_layout
 
@@ -494,6 +497,13 @@ if [ "$has_fgwte3" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_fgwte3=1
 -C cluster1.has_fgwte3=1
+EOF
+fi
+
+if [ "$has_ebep" = "1" ]; then
+       cat <<EOF >>"$model_param_file"
+-C cluster0.has_ebep=1
+-C cluster1.has_ebep=1
 EOF
 fi
 
