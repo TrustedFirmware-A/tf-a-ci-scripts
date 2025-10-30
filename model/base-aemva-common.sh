@@ -72,6 +72,9 @@ reset_var nvcounter_diag
 # Enable FEAT_MPAM
 reset_var has_mpam
 
+# Enable FEAT_IDTE3 support
+reset_var has_idte3
+
 # Enable FEAT_MPAM_PE_BW_CTRL
 reset_var mpam_has_bw_ctrl
 
@@ -435,6 +438,13 @@ if [ "$mpam_has_bw_ctrl" = "1" ]; then
 -C cluster0.mpam_has_bw_ctrl=1
 -C cluster1.mpam_frac=1
 -C cluster1.mpam_has_bw_ctrl=1
+EOF
+fi
+
+if [ "$has_idte3" = "1" ]; then
+       cat <<EOF >>"$model_param_file"
+-C cluster0.idte3_support_level=1
+-C cluster1.idte3_support_level=1
 EOF
 fi
 
