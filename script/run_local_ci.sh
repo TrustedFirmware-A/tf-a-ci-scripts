@@ -432,6 +432,7 @@ export primary_live=0
 export cc_path_spec
 export import_cc
 export connect_debugger="$user_connect_debugger"
+export dont_print_memory="${dont_print_memory:-1}"
 
 source "$ci_root/utils.sh"
 

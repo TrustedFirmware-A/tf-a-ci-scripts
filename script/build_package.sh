@@ -611,6 +611,10 @@ EOF
 		DEBUG="$DEBUG" V=1 BUILD_BASE="$tf_build_root" SPIN_ON_BL1_EXIT="$connect_debugger" \
 		$build_targets 3>&1 2>&1 | tee -a "$build_log" || fail_build
 
+	# the memory command is slow and we only want it for keeping a record
+	if upon "$dont_print_memory"; then
+		return
+	fi
         if [ "$build_targets" != "doc" ]; then
                 (poetry run memory --root "$tf_build_root" symbols 2>&1 || true) | tee -a "${build_log}"
 
