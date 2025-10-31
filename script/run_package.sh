@@ -360,7 +360,7 @@ result=0
 set +e
 pushd "$pid_dir"
 
-timeout=3600
+timeout=900
 
 echo
 
