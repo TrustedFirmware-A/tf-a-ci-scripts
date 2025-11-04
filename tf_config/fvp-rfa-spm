@@ -1,0 +1,7 @@
+PLAT=fvp
+FVP_TRUSTED_SRAM_SIZE=512
+SPD=spmd
+SPMD_SPM_AT_SEL2=1
+NEED_BL31=no
+CTX_INCLUDE_AARCH32_REGS=0
+SP_LAYOUT_FILE=${archive}/${mode}build/tftf/fvp/${bin_mode}/sp_layout.json
