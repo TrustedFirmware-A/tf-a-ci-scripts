@@ -1,0 +1,6 @@
+#
+# Copyright (c) 2021 Arm Limited. All rights reserved.
+#
+
+# FIXME: model hangs during Linux boot, issue under investigation by models
+# team. Revert the test once fixed.
