@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2025, STMicroelectronics - All Rights Reserved
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+    setup_llvm_toolchain
+}
