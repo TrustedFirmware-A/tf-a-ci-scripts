@@ -49,6 +49,7 @@ generate_lava_job() {
 		has_mops="1" \
 		checked_pointer_arithmetic_support_level="2" \
 		arch_version="9.4" \
+		has_uinj="1" \
 		gen_model_params
 
 	model="$model" gen_fvp_yaml

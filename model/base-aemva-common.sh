@@ -123,6 +123,9 @@ reset_var has_fgwte3
 # Enable FEAT_EBEP
 reset_var has_ebep
 
+# Enable FEAT_UINJ
+reset_var has_uinj
+
 # Layout of MPIDR. 0=AFF0 is CPUID, 1=AFF1 is CPUID
 reset_var mpidr_layout
 
@@ -622,6 +625,14 @@ if [ "$has_twed" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_delayed_wfe_trap=2
 -C cluster1.has_delayed_wfe_trap=2
+EOF
+fi
+
+# FEAT_UINJ support
+if [ "$has_uinj" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_uinj="2"
+-C cluster1.has_uinj="2"
 EOF
 fi
 
