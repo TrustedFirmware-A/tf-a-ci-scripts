@@ -17,6 +17,11 @@ export RUSTUP_HOME=/usr/local/rustup
 REPO_SPACE=$1
 REPO_NAME=$2
 
+# Find the absolute path of the scripts' top directory
+cd "$(dirname "$0")/../.."
+export CI_ROOT=$(pwd)
+cd -
+
 cd "${REPO_NAME}"
 
 TEST_CASE="cargo test checks"
@@ -88,6 +93,23 @@ if [ "$REPO_NAME" == "rusted-firmware-a" ]; then
     ((ERROR_COUNT++))
   else
     echo "cargo vet: PASS"
+  fi
+
+  echo "-------------------------------------" >> "$LOG_TEST_FILENAME" 2>&1
+fi
+
+# Run cargo fmt
+
+if [ "$REPO_NAME" != "rusted-firmware-a" ]; then
+  echo "cargo fmt:" >> "$LOG_TEST_FILENAME" 2>&1
+
+  "$CI_ROOT"/script/next-checks/next-checks-cargo-fmt.sh .
+
+  if [ "$?" != 0 ]; then
+    echo "cargo fmt: FAILURE"
+    ((ERROR_COUNT++))
+  else
+    echo "cargo fmt: PASS"
   fi
 
   echo "-------------------------------------" >> "$LOG_TEST_FILENAME" 2>&1
