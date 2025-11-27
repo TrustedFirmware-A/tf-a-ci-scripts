@@ -4,5 +4,6 @@ ARM_ROTPK_LOCATION_ID=ARM_ROTPK_DEVEL_RSA_ID
 COT=tbbr
 GENERATE_COT=1
 PLAT=rdaspen
+MEASURED_BOOT=1
 ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
 TRUSTED_BOARD_BOOT=1
