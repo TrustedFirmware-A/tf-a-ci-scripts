@@ -1,0 +1,44 @@
+device_type: bcm2837-rpi-3-b-32
+
+job_name: RPi TF-A test
+timeouts:
+  job:
+    minutes: 30
+  action:
+    minutes: 25
+  connection:
+    minutes: 2
+priority: high
+visibility: public
+
+actions:
+  - deploy:
+      timeout:
+        minutes: 25
+      to: flasher
+      images:
+        image:
+          url: ${rpi_image_url:?}
+          compression: xz
+        stub:
+          url: ${armstub_bin_url:?}
+  - boot:
+      timeout:
+        minutes: 15
+      method: minimal
+      prompts:
+        - "tfa@raspberrypi:~"
+      auto_login:
+        login_prompt: "login:"
+        username: tfa
+        password_prompt: "Password:"
+        password: mypassword
+
+  - test:
+      timeout:
+        minutes: 10
+      interactive:
+        - name: int_1
+          prompts: ["tfa@raspberrypi:~"]
+          script:
+            - command: "date"

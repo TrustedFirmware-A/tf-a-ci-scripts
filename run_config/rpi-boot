@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2025, Arm Limited.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+source "$ci_root/rpi_utils.sh"
+
+post_tf_archive() {
+	payload_type="dtpm_boot" gen_rpi_yaml
+}
