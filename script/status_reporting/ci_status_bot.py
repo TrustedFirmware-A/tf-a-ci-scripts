@@ -8,6 +8,15 @@ from dataclasses import dataclass
 
 import aiohttp
 
+
+@dataclass
+class BuildStatus:
+    name: str
+    build_number: str
+    url: str
+    passed: bool
+    sub_builds: list["BuildStatus"]
+
 # Constants to produce the report with
 openci_url = "https://ci.trustedfirmware.org/"
 
@@ -26,33 +35,38 @@ def get_build_console(build_url: str) -> str:
 
 async def get_json(session, url):
     async with session.get(url) as response:
-        return await response.json()
+        try:
+            return await response.json()
+        except Exception as e:
+            print(session, url)
+            raise e
+
 
 async def get_text(session, url):
     async with session.get(url) as response:
         return await response.text()
 
 """Finds the latest run of a given job by name"""
-async def process_job(session, job_name: str) -> str:
+async def process_job(session, job_name: str) -> BuildStatus:
     req = await get_json(session, get_job_url(job_name))
 
     name = req["displayName"]
     number = req["lastCompletedBuild"]["number"]
 
-    build = Build(session, name, name, number, level=0)
+    build = Build(session, name, name, number)
     await build.process()
 
-    return (build.passed, build.print_build_status())
+    return build.to_status()
 
 """Represents an individual build. Will recursively fetch sub builds"""
 class Build:
-    def __init__(self, session, job_name, pretty_job_name: str, build_number: str, level: int) -> None:
+    def __init__(self, session, job_name, pretty_job_name: str, build_number: str) -> None:
         self.session = session
         self.url = get_build_url(job_name, build_number)
         self.pretty_job_name = pretty_job_name
         self.name = None
-        self.build_number = build_number
-        self.level = level
+        self.build_number = str(build_number)
+        self.sub_builds = []
 
     async def process(self):
         req = await get_json(self.session, get_build_api(self.url))
@@ -66,21 +80,19 @@ class Build:
         elif self.name == "tf-a-builder":
             self.name = req["actions"][0]["parameters"][1]["value"]
 
-        self.sub_builds = []
-
         # parent job passed => children passed. Skip
         if not self.passed:
             # the main jobs list sub builds nicely
             self.sub_builds = [
                 # the gateways get an alias to differentiate them
-                Build(self.session, build["jobName"], build["jobAlias"], build["buildNumber"], self.level + 1)
+                Build(self.session, build["jobName"], build["jobAlias"], build["buildNumber"])
                 for build in req.get("subBuilds", [])
             ]
             # gateways don't, since they determine them dynamically
             # but the windows job doesn't parse. It's a leaf anyway so skip
             if self.sub_builds == [] and self.name != "tf-a-windows-builder":
                 self.sub_builds = [
-                    Build(self.session, name, name, num, self.level + 1)
+                    Build(self.session, name, name, num)
                     for name, num in await self.get_builds_from_console_log()
                 ]
 
@@ -90,42 +102,63 @@ class Build:
                 for build in self.sub_builds
             ])
 
+    def to_status(self) -> BuildStatus:
+        return BuildStatus(
+            name=self.name,
+            build_number=self.build_number,
+            url=self.url,
+            passed=self.passed,
+            sub_builds=[build.to_status() for build in self.sub_builds],
+        )
+
     # extracts (child_name, child_number) from the console output of a build
     async def get_builds_from_console_log(self) -> str:
         log = await get_text(self.session, get_build_console(self.url))
 
         return re.findall(r"(tf-a[-\w+]+) #(\d+) started", log)
 
-    def print_build_status(self) -> str:
-        message = "" + str(self)
-
-        for build in self.sub_builds:
-            if not build.passed:
-                message += build.print_build_status()
-        return message
-
-    def __str__(self) -> str:
-        return (f"{' ' * self.level * 2}* {'✅' if self.passed else '❌'} "
-                f"**{self.name}** [#{self.build_number}]({self.url})\n"
-               )
-
-async def main(session, job_names: list[str]) -> str:
-    # process jobs concurrently
-    results = await asyncio.gather(
+async def get_daily_jobs(session, job_names: list[str]) -> list[BuildStatus]:
+    return await asyncio.gather(
         *[process_job(session, name) for name in job_names]
     )
 
-    final_msg = "🟢" if all(j[0] for j in results) else "🔴"
-    final_msg += " Daily Status\n"
-    for passed, message in results:
-        final_msg += message
+def build_status_to_markdown(status: BuildStatus, level: int = 0) -> str:
+    message = (f"{' ' * level * 2}* {'✅' if status.passed else '❌'} "
+               f"**{status.name}** [#{status.build_number}]({status.url})\n")
+    if not status.passed:
+        for sub_status in status.sub_builds:
+            message += build_status_to_markdown(sub_status, level + 1)
+    return message
 
-    return final_msg
+def print_build_status(status: BuildStatus, level: int = 0) -> str:
+    """Return markdown for failing jobs only."""
+    if status.passed:
+        return ""
+
+    message = (f"{' ' * level * 2}* ❌ **{status.name}** "
+               f"[#{status.build_number}]({status.url})\n")
+    for sub_status in status.sub_builds:
+        message += print_build_status(sub_status, level + 1)
+    return message
+
+def format_daily_status(statuses: list[BuildStatus]) -> str:
+    header = ("🟢" if all(job.passed for job in statuses) else "🔴") + " Daily Status"
+
+    details = "".join(print_build_status(status) for status in statuses).rstrip()
+    if details:
+        return f"{header}\n{details}\n"
+    return header + "\n"
+
+async def main(session, job_names: list[str]) -> str:
+    statuses = await get_daily_jobs(session, job_names)
+    return format_daily_status(statuses)
 
 async def run_local(jobs: list[str]) -> str:
     async with aiohttp.ClientSession() as session:
-        msg = await main(session, jobs)
+        statuses = await get_daily_jobs(session, jobs)
+        msg = format_daily_status(statuses)
         print(msg)
+        return msg
 
 def add_jobs_arg(parser):
     parser.add_argument(

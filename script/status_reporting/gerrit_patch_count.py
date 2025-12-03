@@ -7,6 +7,12 @@ import sys
 
 import aiohttp
 
+def format_patch_totals(totals, header="Patches in review:", bullet="*"):
+    lines = [header]
+    for name, count in sorted(totals.items(), key=lambda it: it[1], reverse=True):
+        lines.append(f"{bullet} {name}: {count}")
+    return "\n".join(lines)
+
 async def get_patch_counts(session, query: str) -> str:
     url = "https://review.trustedfirmware.org/changes/?q="
     skip_arg = "&S={}"
@@ -26,16 +32,12 @@ async def get_patch_counts(session, query: str) -> str:
                 skip_num = len(data)
             else:
                 break
-
-    message = "Patches in review:\n"
-    for name, count in sorted(totals.items(), key=lambda it: it[1], reverse=True):
-        message += f"* {name}: {count}\n"
-    return message
+    return totals
 
 async def run_local(query: str) -> str:
     async with aiohttp.ClientSession() as session:
         msg = await get_patch_counts(session, query)
-        print(msg)
+        print(format_patch_totals(msg))
 
 def add_gerrit_arg(parser):
     parser.add_argument(
