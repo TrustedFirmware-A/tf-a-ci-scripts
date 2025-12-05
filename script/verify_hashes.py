@@ -13,6 +13,8 @@ import os
 import hashlib
 from enum import Enum
 from dataclasses import dataclass
+from typing import Dict, Iterable, Set
+
 
 # Stores identifiers in the log associated with the different images
 class ImageType(Enum):
@@ -30,22 +32,26 @@ class ImageType(Enum):
     STARTUP_LOCALITY = "StartupLocality"
     CRITICAL_DATA = "CRITICAL DATA"
 
+
 marker_to_image_type = {
-    "BL_2" : ImageType.BL2,
-    "SECURE_RT_EL3" : ImageType.BL31,
-    "NT_FW_CONFIG" : ImageType.NT_FW_CONFIG,
-    "TB_FW_CONFIG" : ImageType.TB_FW_CONFIG,
-    "SOC_FW_CONFIG" : ImageType.SOC_FW_CONFIG,
-    "FW_CONFIG" : ImageType.FW_CONFIG,
-    "BL_33" : ImageType.BL33,
-    "StartupLocality" : ImageType.STARTUP_LOCALITY,
-    "CRITICAL DATA" : ImageType.CRITICAL_DATA,
+    "BL_2": ImageType.BL2,
+    "SECURE_RT_EL3": ImageType.BL31,
+    "NT_FW_CONFIG": ImageType.NT_FW_CONFIG,
+    "TB_FW_CONFIG": ImageType.TB_FW_CONFIG,
+    "SOC_FW_CONFIG": ImageType.SOC_FW_CONFIG,
+    "FW_CONFIG": ImageType.FW_CONFIG,
+    "BL_33": ImageType.BL33,
+    "StartupLocality": ImageType.STARTUP_LOCALITY,
+    "CRITICAL DATA": ImageType.CRITICAL_DATA,
 }
+
 
 class HashType(Enum):
     UNKNOWN = "UNKNOWN"
     SHA256 = "SHA256"
     SHA384 = "SHA384"
+    SHA512 = "SHA512"
+
 
 PCR_EVENT_MARKER = "PCR_Event2"
 ALGORITHM_MARKER = "AlgorithmId"
@@ -71,57 +77,53 @@ out_file_path = f"{artefacts_dir}/tfa_event_log"
 # as the names of these can vary by test
 build_args_path = f"{artefacts_dir}/fip_build_args"
 
+
 # Structure:
 # - boolean for if an entry for this image has been found in the event log
 # - path to the built file
-# - hash type collected from the event log
-# - hash of the file from the event log
+# - hashes collected from the event log keyed by algorithm
 @dataclass
 class ImageData:
     found: bool
     path: str
-    hash_type: HashType
-    event_log_hash: str
+    event_log_hashes: Dict[HashType, str]
 
     def __init__(self, initial_path: str):
         self.found = False
         self.path = initial_path
-        self.hash_type = HashType.UNKNOWN
-        self.event_log_hash = ""
+        self.event_log_hashes = {}
 
-    # For convenience
-    def as_tuple(self):
-        return (self.found, self.path, self.hash_type, self.event_log_hash)
 
 # As event log entries for these images are found, their data will be stored
 # inside of the objects in this dictionary
 image_data = {
-    ImageType.BL2 : ImageData(f"{artefacts_dir}/bl2.bin"),
-    ImageType.BL31 : ImageData(f"{artefacts_dir}/bl31.bin"),
-    ImageType.FW_CONFIG : ImageData(f"{artefacts_dir}/fvp_fw_config.dtb"),
-    ImageType.TB_FW_CONFIG : ImageData(f"{artefacts_dir}/fvp_tb_fw_config.dtb"),
-    ImageType.NT_FW_CONFIG : ImageData(f"{artefacts_dir}/fvp_nt_fw_config.dtb"),
-    ImageType.SOC_FW_CONFIG : ImageData(f"{artefacts_dir}/fvp_soc_fw_config.dtb"),
-    ImageType.BL33 : ImageData(""),
-    ImageType.BL32 : ImageData(""),
-    ImageType.BL32_EXTRA1 : ImageData(""),
-    ImageType.BL32_EXTRA2 : ImageData(""),
-    ImageType.STARTUP_LOCALITY : ImageData(""),
-    ImageType.CRITICAL_DATA : ImageData(""),
+    ImageType.BL2: ImageData(f"{artefacts_dir}/bl2.bin"),
+    ImageType.BL31: ImageData(f"{artefacts_dir}/bl31.bin"),
+    ImageType.FW_CONFIG: ImageData(f"{artefacts_dir}/fvp_fw_config.dtb"),
+    ImageType.TB_FW_CONFIG: ImageData(f"{artefacts_dir}/fvp_tb_fw_config.dtb"),
+    ImageType.NT_FW_CONFIG: ImageData(f"{artefacts_dir}/fvp_nt_fw_config.dtb"),
+    ImageType.SOC_FW_CONFIG: ImageData(f"{artefacts_dir}/fvp_soc_fw_config.dtb"),
+    ImageType.BL33: ImageData(""),
+    ImageType.BL32: ImageData(""),
+    ImageType.BL32_EXTRA1: ImageData(""),
+    ImageType.BL32_EXTRA2: ImageData(""),
+    ImageType.STARTUP_LOCALITY: ImageData(""),
+    ImageType.CRITICAL_DATA: ImageData(""),
 }
+
 
 # Sometimes alternate paths are provided for some of the images used in the
 # FIP, so these need to be checked for and stored in the image_data dictionary
 def get_build_arg_paths():
     build_data = ""
-    with open(build_args_path, 'r') as f:
+    with open(build_args_path, "r") as f:
         build_data = f.read()
 
     components = build_data.split()
     for comp in components:
-        split_point = comp.find('=')
+        split_point = comp.find("=")
         name = comp[0:split_point]
-        path_value = comp[(split_point + 1):]
+        path_value = comp[(split_point + 1) :]
         image_type = ImageType.UNKNOWN
         if name == "BL33":
             image_type = ImageType.BL33
@@ -136,72 +138,143 @@ def get_build_arg_paths():
         if image_type != ImageType.UNKNOWN:
             image_data[image_type].path = path_value
 
-    # BL32 can show up as its own binary if it is not diven a different name in
-    # the build file
-    if (image_data[ImageType.BL32].path == "") and os.path.exists(f"{artefacts_dir}/bl32.bin"):
+    # BL32 can show up as its own binary if it is not given a different name in
+    # the build file.
+    if (image_data[ImageType.BL32].path == "") and os.path.exists(
+        f"{artefacts_dir}/bl32.bin"
+    ):
         image_data[ImageType.BL32].path = f"{artefacts_dir}/bl32.bin"
 
 
 # Only found images should have their hashes compared
 found_images = []
 
-# Get the hash of the file stored at the given path with the specified hash
-# algorithm
-def calc_file_hash(path: str, hash_type: HashType) -> str:
 
-    if hash_type == HashType.UNKNOWN:
-        return ""
+file_hash_cache: Dict[tuple[str, HashType], str] = {}
 
-    if (path == ""):
-        return "No path provided"
 
-    if not os.path.exists(path):
-        return f"No file available at path: {path}"
-
-    # Need to use this because the Docker image used for CI uses Python 3.10
-    # so hashlib.file_digest() can't be used
-    hasher = hashlib.new(hash_type.value.lower())
+def _hash_file(path: str, hash_types: Iterable[HashType]) -> Dict[HashType, str]:
+    hashers = {ht: hashlib.new(ht.value.lower()) for ht in hash_types}
     with open(path, "rb") as bin_file:
         while True:
             file_data = bin_file.read(BUF_SIZE)
-            if not file_data: # EOF
-                break;
-            hasher.update(file_data)
+            if not file_data:  # EOF
+                break
+            for hasher in hashers.values():
+                hasher.update(file_data)
+    return {ht: hasher.hexdigest() for ht, hasher in hashers.items()}
 
-    return hasher.hexdigest()
 
-# For a event log entry, extract the hash algorithm used and the hash for this# entry
-def extract_hash(line: str, tfa_event_log_file) -> (str, HashType, ImageType):
+def calc_file_hashes(path: str, hash_types: Set[HashType]) -> Dict[HashType, str]:
+    results: Dict[HashType, str] = {}
+    pending_types = {
+        ht for ht in hash_types if ht not in (HashType.UNKNOWN,) and ht is not None
+    }
 
+    if not pending_types:
+        return results
+
+    if path == "":
+        error_msg = "No path provided"
+        for ht in pending_types:
+            results[ht] = error_msg
+        return results
+
+    if not os.path.exists(path):
+        error_msg = f"No file available at path: {path}"
+        for ht in pending_types:
+            results[ht] = error_msg
+        return results
+
+    uncached = {
+        ht for ht in pending_types if (path, ht) not in file_hash_cache
+    }
+    cached = {
+        ht: file_hash_cache[(path, ht)]
+        for ht in pending_types
+        if (path, ht) in file_hash_cache
+    }
+    results.update(cached)
+
+    if uncached:
+        computed = _hash_file(path, uncached)
+        for ht, digest in computed.items():
+            file_hash_cache[(path, ht)] = digest
+            results[ht] = digest
+
+    return results
+
+
+# Get the hash of the file stored at the given path with the specified hash
+# algorithm
+def calc_file_hash(path: str, hash_type: HashType) -> str:
+    if hash_type == HashType.UNKNOWN:
+        return ""
+
+    return calc_file_hashes(path, {hash_type}).get(hash_type, "")
+
+
+# For an event log entry, extract the available hash algorithms and digests
+def extract_hashes(
+    line: str, tfa_event_log_file
+) -> tuple[Dict[HashType, str], ImageType]:
     # This skips over the PCR index and event type later these lines should be
     # parsed and used to calculate the PCR value
-    while not ALGORITHM_MARKER in line:
+    while (ALGORITHM_MARKER not in line) and (EVENT_SIZE_MARKER not in line):
         line = tfa_event_log_file.readline()
+        if not line:
+            return ({}, ImageType.UNKNOWN)
 
-    hash_type = HashType.UNKNOWN
-    for ht in HashType:
-        if ht.value in line:
-            hash_type = ht
+    event_hashes: Dict[HashType, str] = {}
+    while line:
+        if EVENT_SIZE_MARKER in line:
             break
 
-    # Early return for now if other hash type
-    if hash_type == HashType.UNKNOWN:
-        return ("", hash_type, ImageType.UNKNOWN)
+        hash_type = HashType.UNKNOWN
+        for ht in HashType:
+            if ht.value in line:
+                hash_type = ht
+                break
 
-    # Storing lines which contain the hash characters
-    digest_lines = []
-    line = tfa_event_log_file.readline()
-    if not DIGEST_MARKER in line:
-        return ("", hash_type, ImageType.UNKNOWN)
-
-    while not EVENT_SIZE_MARKER in line:
-        digest_lines.append(line)
         line = tfa_event_log_file.readline()
+        if not line:
+            break
+        if DIGEST_MARKER not in line:
+            continue
+
+        digest_lines = []
+        while True:
+            digest_lines.append(line)
+            line = tfa_event_log_file.readline()
+            if (
+                (not line)
+                or (ALGORITHM_MARKER in line)
+                or (EVENT_SIZE_MARKER in line)
+            ):
+                break
+
+        digest_value = ""
+        for digest_line in digest_lines:
+            sep_ind = digest_line.find(" : ")
+            if sep_ind == -1:
+                continue
+            component = digest_line[sep_ind + 3 :].strip().replace(" ", "")
+            digest_value += component
+
+        digest_value = digest_value.lower()
+        if hash_type != HashType.UNKNOWN and digest_value != "":
+            event_hashes[hash_type] = digest_value
+
+        if not line:
+            break
 
     # This line contains the event type
     line = tfa_event_log_file.readline()
+    if not line:
+        return (event_hashes, ImageType.UNKNOWN)
+
     # This will get to the first char of the name of the image
-    sep_ind = line.find(':') + 2
+    sep_ind = line.find(":") + 2
     event_substr = line[sep_ind:-1]
     image_type = ImageType.UNKNOWN
 
@@ -216,18 +289,9 @@ def extract_hash(line: str, tfa_event_log_file) -> (str, HashType, ImageType):
             image_type = ImageType.BL32
 
     if image_type == ImageType.UNKNOWN:
-        return ("", hash_type, ImageType.UNKNOWN)
+        return (event_hashes, ImageType.UNKNOWN)
 
-    # Know that its one of the images that we want to know the hash of so can
-    # proceed with extracting the hash
-    hash = ""
-    for digest_line in digest_lines:
-        sep_ind = digest_line.find(" : ")
-        # + 3 to skip past the separator
-        component = digest_line[sep_ind + 3:].strip().replace(' ', '')
-        hash += component
-
-    return (hash, hash_type, image_type)
+    return (event_hashes, image_type)
 
 
 # Update image data map with paths to BL33 and BL32 binaries
@@ -238,38 +302,55 @@ with open(out_file_path, "r") as tfa_event_log_file:
     while len(line) > 0:
         # Found at the start of a event log entry
         if PCR_EVENT_MARKER in line:
-            hash, hash_type, image_type = extract_hash(line, tfa_event_log_file)
+            hashes, image_type = extract_hashes(line, tfa_event_log_file)
 
             if image_type != ImageType.UNKNOWN:
                 image_data[image_type].found = True
-                image_data[image_type].hash_type = hash_type
-                image_data[image_type].event_log_hash = hash
-                found_images.append(image_type)
+                if hashes:
+                    image_data[image_type].event_log_hashes = hashes
+                    if image_type not in found_images:
+                        found_images.append(image_type)
 
         line = tfa_event_log_file.readline()
 
 all_match = True
 for image_type in found_images:
-    present, file_path, hash_type, event_log_hash = image_data[image_type].as_tuple()
-    comparison_hash = ""
-    if image_type == ImageType.STARTUP_LOCALITY:
-        if int(event_log_hash) == 0:
-            comparison_hash = event_log_hash
+    data = image_data[image_type]
+    print(f"\n{image_type.name}")
+    required_hash_types = set(data.event_log_hashes.keys())
+    file_hashes = (
+        calc_file_hashes(data.path, required_hash_types)
+        if image_type
+        not in (ImageType.STARTUP_LOCALITY, ImageType.CRITICAL_DATA)
+        else {}
+    )
+    for hash_type in sorted(data.event_log_hashes.keys(), key=lambda ht: ht.value):
+        event_log_hash = data.event_log_hashes[hash_type]
+        comparison_hash = ""
+
+        if image_type == ImageType.STARTUP_LOCALITY:
+            try:
+                if int(event_log_hash) == 0:
+                    comparison_hash = event_log_hash
+                else:
+                    comparison_hash = "0"
+            except ValueError:
+                comparison_hash = event_log_hash
+
+        elif image_type == ImageType.CRITICAL_DATA:
+            hasher = hashlib.new(hash_type.value.lower())
+            hasher.update(COMBINED_NVCTR_BYTES)
+            comparison_hash = hasher.hexdigest()
         else:
-            comparison_hash = "0"
+            comparison_hash = file_hashes.get(hash_type, "")
 
-    elif image_type == ImageType.CRITICAL_DATA:
-        hasher = hashlib.new(hash_type.value.lower())
-        hasher.update(COMBINED_NVCTR_BYTES)
-        comparison_hash = hasher.hexdigest()
-    else:
-        comparison_hash = calc_file_hash(file_path, hash_type)
-
-    print(f"{image_type.name} hash algo: {hash_type.value}")
-    print(f"Event log hash: {event_log_hash}\nComparison hash: {comparison_hash}")
-    if comparison_hash != event_log_hash:
-        print("Mismatched hashes")
-        all_match = False
+        hashes_match = comparison_hash == event_log_hash
+        print(f"  [{hash_type.value}]")
+        print(f"    event log : {event_log_hash}")
+        print(f"    computed  : {comparison_hash}")
+        print(f"    status    : {'MATCH' if hashes_match else 'MISMATCH'}")
+        if not hashes_match:
+            all_match = False
 
 # These two must always be present
 if not image_data[ImageType.BL2].found:

@@ -7,7 +7,7 @@
 # verification script
 #
 
-set mismatched_marker "Mismatched"
+set mismatched_marker "MISMATCH"
 set missing_marker "not found"
 
 set compare_hash_path $env(ci_root)
