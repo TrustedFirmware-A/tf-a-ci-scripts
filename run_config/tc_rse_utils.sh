@@ -102,11 +102,7 @@ update_fip() {
 get_rse_prov_bins() {
 	local prebuild_prefix=$tc_prebuilts/tc$plat_variant/$rse_revision
 
-	# Get pre-built rse rse_encrypted_cm_provisioning_bundle_0 bin
-	url="$prebuild_prefix/rse_encrypted_cm_provisioning_bundle_0.bin" fetch_file
-	archive_file "rse_encrypted_cm_provisioning_bundle_0.bin"
-
-	# Get pre-built rse rse_encrypted_dm_provisioning_bundle bin
-	url="$prebuild_prefix/rse_encrypted_dm_provisioning_bundle.bin" fetch_file
-	archive_file "rse_encrypted_dm_provisioning_bundle.bin"
+	# Get pre-built rse rse_combined_provisioning_message.bin
+	url="$prebuild_prefix/rse_combined_provisioning_message.bin" fetch_file
+	archive_file "rse_combined_provisioning_message.bin"
 }

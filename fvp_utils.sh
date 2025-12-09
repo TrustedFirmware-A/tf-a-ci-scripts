@@ -60,7 +60,7 @@ fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build}
 fvp_rd_1_ae="fvp:fvp_rd_1_ae_${model_version}_${model_build};/opt/model/FVP_RD_1_AE/models/${model_flavour}"
 
 # CSS model list
-fvp_tc4="fvp:fvp_tc4_${model_version}_${model_build};/opt/model/FVP_TC4/models/${model_flavour}"
+fvp_tc4="fvp:fvp_tc4_0.0_10096_linux64;/opt/model/FVP_TC4/models/Linux64_GCC-9.3"
 
 # FVP associate array, run_config are keys and fvp container parameters are the values
 #   Container parameters syntax: <model name>;<model dir>;<model bin>
@@ -292,6 +292,7 @@ gen_fvp_yaml() {
         [rse_rom]="rse_rom.bin"
         [rse_encrypted_cm_provisioning_bundle_0]="rse_encrypted_cm_provisioning_bundle_0.bin"
         [rse_encrypted_dm_provisioning_bundle]="rse_encrypted_dm_provisioning_bundle.bin"
+        [rse_combined_provisioning_message]="rse_combined_provisioning_message.bin"
         [scp_fw]="scp_fw.bin"
         [scp_ram_hyphen]="scp-ram.bin"
         [scp_ram]="scp_ram.bin"
@@ -342,6 +343,7 @@ gen_fvp_yaml() {
         [rse_rom]="$(gen_bin_url rse_rom.bin)"
         [rse_encrypted_cm_provisioning_bundle_0]="$(gen_bin_url rse_encrypted_cm_provisioning_bundle_0.bin)"
         [rse_encrypted_dm_provisioning_bundle]="$(gen_bin_url rse_encrypted_dm_provisioning_bundle.bin)"
+        [rse_combined_provisioning_message]="$(gen_bin_url rse_combined_provisioning_message.bin)"
         [secure_hafnium]="$(gen_bin_url secure_hafnium.bin)"
         [scp_fw]="$(gen_bin_url scp_fw.bin)"
         [scp_ram]="$(gen_bin_url scp_ram.bin)"
@@ -397,6 +399,7 @@ gen_fvp_yaml() {
         ["[= ]rse_rom.bin"]="={RSE_ROM}"
         ["[= ]rse_encrypted_cm_provisioning_bundle_0.bin"]="={RSE_ENCRYPTED_CM_PROVISIONING_BUNDLE_0}"
         ["[= ]rse_encrypted_dm_provisioning_bundle.bin"]="={RSE_ENCRYPTED_DM_PROVISIONING_BUNDLE}"
+        ["[= ]rse_combined_provisioning_message.bin"]="={RSE_COMBINED_PROVISIONING_MESSAGE}"
         ["[= ].*/secure_hafnium.bin"]="={SECURE_HAFNIUM}"
         ["[= ]scp_fw.bin"]="={SCP_FW}"
         ["[= ]scp_ram.bin"]="={SCP_RAM}"
