@@ -450,6 +450,7 @@ gen_gpt_bin() {
     location_uuid=`uuidgen`
     FIP_A_uuid=`uuidgen`
     FIP_B_uuid=`uuidgen`
+    private_metadata_uuid=`uuidgen`
 
     fip_max_size=$2
     partition_alignment=${3:-1}
@@ -481,6 +482,9 @@ gen_gpt_bin() {
     metadata_max_size=512
     metadata_file="metadata.bin"
 
+    # private metadata maximum size is the same as for the normal metadata
+    private_metadata_max_size=512
+
     # generate_fwu_metadata.py --metadata_file <file> \
     #			       --image_data "[(image_type_uuid, location_uuid, [image_uuid1, image_uuid2,...])]"
     python3 $ci_root/generate_fwu_metadata.py --metadata_file $metadata_file \
@@ -501,6 +505,8 @@ gen_gpt_bin() {
     #      | FWU-Metadata         |
     #      ------------------------
     #      | Bkup-FWU-Metadata    |
+    #      ------------------------
+    #      | private_metadata_1   |
     #      ------------------------
     # LBA-1| Secondary GPT Header |
     #      +----------------------+
@@ -523,6 +529,8 @@ gen_gpt_bin() {
     #      ------------------------
     #      | Bkup-FWU-Metadata    |
     #      ------------------------
+    #      | private_metadata_1   |
+    #      ------------------------
     # LBA-1| Secondary GPT Header |
     #      +----------------------+
 
@@ -530,6 +538,7 @@ gen_gpt_bin() {
     gpt_header_size=33 # in sectors
     num_sectors_fip=`expr $fip_max_size / $sector_size`
     num_sectors_metadata=`expr $metadata_max_size / $sector_size`
+    num_sectors_private_metadata=`expr $private_metadata_max_size / $sector_size`
 
     start_sector_1=`expr 1 + $gpt_header_size` # size of MBR is 1 sector
 
@@ -540,7 +549,8 @@ gen_gpt_bin() {
         start_sector_3=`expr $start_sector_2 + $num_sectors_fip`
         start_sector_4=`expr $start_sector_3 + $num_sectors_fip`
         start_sector_5=`expr $start_sector_4 + $num_sectors_metadata`
-        num_sectors_gpt=`expr $start_sector_5 + $num_sectors_metadata + $gpt_header_size`
+        start_sector_6=`expr $start_sector_5 + $num_sectors_metadata`
+        num_sectors_gpt=`expr $start_sector_6 + $num_sectors_private_metadata + $gpt_header_size`
         gpt_size=`expr $num_sectors_gpt \* $sector_size`
 
         # create raw image
@@ -571,13 +581,18 @@ gen_gpt_bin() {
             \
             --new 5:$start_sector_5:+$num_sectors_metadata \
             --change-name 5:Bkup-FWU-Metadata \
-            --typecode 5:$metadata_type_uuid
+            --typecode 5:$metadata_type_uuid \
+            \
+            --new 6:$start_sector_6:+$num_sectors_private_metadata \
+            --change-name 6:private_metadata_1 \
+            --typecode 6:$private_metadata_uuid
 
     else
         start_sector_2=`expr $start_sector_1 + $num_sectors_fip`
         start_sector_3=`expr $start_sector_2 + $num_sectors_fip`
         start_sector_4=`expr $start_sector_3 + $num_sectors_metadata`
-        num_sectors_gpt=`expr $start_sector_4 + $num_sectors_metadata + $gpt_header_size`
+        start_sector_5=`expr $start_sector_4 + $num_sectors_metadata`
+        num_sectors_gpt=`expr $start_sector_5 + $num_sectors_private_metadata + $gpt_header_size`
         gpt_size=`expr $num_sectors_gpt \* $sector_size`
 
         # create raw image
@@ -603,7 +618,11 @@ gen_gpt_bin() {
             \
             --new 4:$start_sector_4:+$num_sectors_metadata \
             --change-name 4:Bkup-FWU-Metadata \
-            --typecode 4:$metadata_type_uuid
+            --typecode 4:$metadata_type_uuid \
+            \
+            --new 5:$start_sector_5:+$num_sectors_private_metadata \
+            --change-name 5:private_metadata_1 \
+            --typecode 5:$private_metadata_uuid
 
     fi
 
