@@ -49,6 +49,7 @@ generate_lava_job() {
 		has_mops="1" \
 		has_cpa2="1" \
 		arch_version="9.4" \
+		has_rng="1" \
 		has_uinj="1" \
 		gen_model_params
 
