@@ -47,7 +47,7 @@ generate_lava_job() {
 		supports_system_trace_filter_regs="1" \
 		accelerator_support_level="3" \
 		has_mops="1" \
-		checked_pointer_arithmetic_support_level="2" \
+		has_cpa2="1" \
 		arch_version="9.4" \
 		bmcov_plugin="1" \
 		bmcov_plugin_path="${coverage_trace_plugin}" \

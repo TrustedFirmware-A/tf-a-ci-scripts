@@ -636,6 +636,13 @@ if [ "$has_uinj" = "1" ]; then
 EOF
 fi
 
+if [ "$has_cpa2" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.checked_pointer_arithmetic_support_level=2
+-C cluster1.checked_pointer_arithmetic_support_level=2
+EOF
+fi
+
 #------------ Cluster1 configuration (if exists) --------------
 if [ "$is_dual_cluster" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
