@@ -7,8 +7,8 @@ import sys
 
 import aiohttp
 
-def format_patch_totals(totals, header="Patches in review:", bullet="*"):
-    lines = [header]
+def format_patch_totals(totals, header="Patches in review: {}", bullet="*"):
+    lines = [header.format(sum(totals.values()))]
     for name, count in sorted(totals.items(), key=lambda it: it[1], reverse=True):
         lines.append(f"{bullet} {name}: {count}")
     return "\n".join(lines)
