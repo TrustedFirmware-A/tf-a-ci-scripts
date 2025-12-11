@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2024, Arm Limited. All rights reserved.
+# Copyright (c) 2024-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Generate FWU metadata Version 1.
@@ -30,7 +30,7 @@ def gen_fwu_metadata(metadata_file, image_data):
     add_field_to_metadata(2, 4)     #fwu metadata version=2
     add_field_to_metadata(0, 4)     #active_index=0
     add_field_to_metadata(0, 4)     #previous_active_index=0
-    add_field_to_metadata(116, 4)   #metadata_size
+    add_field_to_metadata(120, 4)   #metadata_size
     add_field_to_metadata(32, 2)    #desc_offset = 0x20
     add_field_to_metadata(0, 2)     #reserved1
     add_field_to_metadata(252, 1)   #Bank 0 - Accepted=0xFC
