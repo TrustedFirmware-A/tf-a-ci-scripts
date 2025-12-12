@@ -1,0 +1,14 @@
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+# Copied from <tf-a-tests>/plat/arm/fvp/fvp_tests_to_skip.txt:
+# Disable Group0 secure interrupt tests as there is no source of EL3 interrupt
+FF-A Group0 interrupts
+
+# The following 2 tests are failing for RF-A right now.
+# Disable them until the underlying issues are fixed.
+FF-A SMCCC compliance/FF-A callee preserves GP register set per SMCCC
+FF-A Interrupt/Test ESPI Secure interrupt handling

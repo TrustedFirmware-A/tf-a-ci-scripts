@@ -1,0 +1,3 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+PLAT_TESTS_SKIP_LIST=${archive}/rfa_fvp_tests_to_skip.txt

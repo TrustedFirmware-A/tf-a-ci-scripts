@@ -10,6 +10,12 @@ pre_tf_build() {
 	targets="bl1 bl2" set_tf_build_targets
 }
 
+pre_tftf_build() {
+	# Put the exclusion file to a location which is easily accessible by
+	# TFTF's build system.
+	cp "${ci_root}/rfa_utils/rfa_fvp_tests_to_skip.txt" "${archive}"
+}
+
 post_rfa_archive() {
 	build_fip BL33="$archive/tftf.bin" BL32="$archive/secure_hafnium.bin"
 
