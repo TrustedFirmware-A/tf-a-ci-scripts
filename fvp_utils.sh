@@ -682,9 +682,7 @@ corrupt_gpt_bin() {
         "secondary-header")
             # Secondary GPT header is present in LBA-1 last block before the
             # end of the GPT image.
-            # Secondary GPT header is located after the backup FWU metadata,
-            # which is 1 sector in size.
-            seek=$(( $(gdisk -l "$bin" | grep " Bkup-FWU-Metadata$" | awk '{print $2}') + 1 ))
+            seek=$(( $(gdisk -l "$bin" | awk '/^Disk .* sectors,/ {print $3; exit}') - 1 ))
             count=1
             ;;
         *)
