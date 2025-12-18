@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2025-2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# This is a copy of fvp-tftf.rfa with the following modifications to the model
+# parameters:
+# - Architecture version increased to v9.4
+# - FEAT_GCS enabled
+
+pre_tf_build() {
+	# Only build bl1 and bl2 targets for this config
+	targets="bl1 bl2" set_tf_build_targets
+}
+
+pre_tftf_build() {
+	# Put the exclusion file to a location which is easily accessible by
+	# TFTF's build system.
+	cp "${ci_root}/rfa_utils/rfa_fvp_tests_to_skip.txt" "${archive}"
+}
+
+post_rfa_archive() {
+	build_fip BL33="$archive/tftf.bin" BL32="$archive/secure_hafnium.bin"
+
+	find $tf_build_root \( -name "fip.bin" \) -exec cp -t "${archive}" '{}' +
+	fiptool=$(fiptool_path)
+	"$fiptool" update \
+		--soc-fw "$archive/bl31.bin" \
+		--out "$archive/fip.bin" \
+		"$archive/fip.bin"
+}
+
+generate_lava_job_template() {
+	uart="0" timeout="1200" file="tftf.exp" track_expect
+	uart="1" file="hold_uart.exp" track_expect
+
+	payload_type="tftf" gen_yaml_template
+}
+
+generate_lava_job() {
+	local model="base-aemv8a"
+
+	uart="0" file="tftf.exp" track_expect
+
+	model="$model" \
+		arch_version="9.4" \
+		has_branch_target_exception="1" \
+		has_smmuv3_params="1" \
+		gicd_are_fixed_one="1" \
+		gicv3_ext_interrupt_range="1" \
+		gicd_ext_ppi_count="64" \
+		gicd_ext_spi_count="1024" \
+		has_ete="1" \
+		amu_present="1" \
+		has_mpam="1" \
+		mpam_has_bw_ctrl="1" \
+		has_trbe="1" \
+		has_fgt2="1" \
+		has_gcs="1" \
+		has_pmuv3p7="1" \
+		memory_tagging_support_level="2" \
+		has_branch_target_exception="1" \
+		supports_trace_buffer_control_regs="1" \
+		supports_trace_filter_regs="2" \
+		supports_system_trace_filter_regs="1" \
+		gen_model_params
+
+	model="$model" gen_fvp_yaml
+}
