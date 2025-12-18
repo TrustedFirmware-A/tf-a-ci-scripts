@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026 Free Mobile, Vincent Jardin. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+test_setup() {
+	# Parallel builds are broken for this config; so choose serial.
+	echo "Choosing serial build."
+	set_hook_var "make_j" "1"
+}
+
+pre_tf_build() {
+	targets="all mrvl_flash" set_tf_build_targets
+
+	pushd "$workspace"
+
+	if [ ! -d "mv-ddr-marvell" ]; then
+		saveas="mv-ddr-marvell.tar.gz" \
+			url="$tfa_downloads/mv-ddr-marvell/mv-ddr-marvell-7bcb9dc7ea7fa233bf96bd0350a4ec7c205e342e.tar.gz" \
+			fetch_file
+
+		tar -xzf "mv-ddr-marvell.tar.gz"
+		mv mv-ddr-marvell-7bcb9dc7ea7fa233bf96bd0350a4ec7c205e342e mv-ddr-marvell
+	fi
+
+	echo "Set MV_DDR_PATH to $workspace/mv-ddr-marvell"
+	set_hook_var "MV_DDR_PATH" "$workspace/mv-ddr-marvell"
+
+	popd "$workspace"
+}
+
+post_tf_build() {
+	# Run ramoopsies and build verification checks (non-fatal)
+	local verify_script="$tf_root/plat/marvell/armada/a8k/a80x0_nbx/verify_build.sh"
+
+	if [ -x "$verify_script" ]; then
+		echo "Running a80x0_nbx build verification..."
+		CROSS_COMPILE="aarch64-none-elf-" \
+			"$verify_script" "$tf_build_root" || \
+			echo "WARNING: verify_build.sh reported failures (non-fatal)"
+	else
+		echo "WARNING: verify_build.sh not found or not executable"
+	fi
+}

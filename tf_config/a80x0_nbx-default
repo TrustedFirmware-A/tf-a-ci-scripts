@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=a80x0_nbx
+SCP_BL2=/dev/null
+BL33=/dev/null
