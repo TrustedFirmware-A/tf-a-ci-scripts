@@ -887,6 +887,11 @@ make PLAT=rpi3 $(common_flags) ${TBB_OPTIONS} \
 clean_build PLAT=rpi4 $(common_flags) SMC_PCI_SUPPORT=1 all
 clean_build PLAT=rpi5 $(common_flags) SMC_PCI_SUPPORT=1 all
 
+# Raspberry Pi Measured Boot Discrete TPM with Firmware Handoff
+make PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
+    MEASURED_BOOT=1 TRANSFER_LIST=1 DISCRETE_TPM=1 TPM_INTERFACE=FIFO_SPI \
+    MBOOT_TPM_HASH_ALG=sha256 MBEDTLS_DIR=$(pwd)/mbedtls all
+
 # Raspberry Pi Measured Boot Discrete TPM
 make PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
     MEASURED_BOOT=1 DISCRETE_TPM=1 TPM_INTERFACE=FIFO_SPI \
