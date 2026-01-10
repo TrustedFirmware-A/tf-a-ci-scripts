@@ -16,7 +16,7 @@ pre_tf_build() {
 	set_hook_var "cov_checker" "misra"
 
 	set_hook_var "cov_golden_url" \
-		"${cov_golden_url-https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git}"
+		"${cov_golden_url-https://git.trustedfirmware.org/${GERRIT_PROJECT_PREFIX:-}TF-A/trusted-firmware-a.git}"
 
 	set_hook_var "cov_golden_ref" "${cov_golden_ref-integration}"
 

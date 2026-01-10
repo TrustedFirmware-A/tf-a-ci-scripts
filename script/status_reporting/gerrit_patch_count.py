@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import json
+import os
 import sys
 
 import aiohttp
@@ -40,15 +41,17 @@ async def run_local(query: str) -> str:
         print(format_patch_totals(msg))
 
 def add_gerrit_arg(parser):
+    gerrit_project_prefix = os.environ.get("GERRIT_PROJECT_PREFIX", "")
+
     parser.add_argument(
         "-q", "--tforg-gerrit-query",
         default=(
-            "(parentproject:TF-A OR parentproject:TF-RMM OR parentproject:TS OR "
-            "parentproject:hafnium OR parentproject:RF-A OR "
-            "parentproject:arm-firmware-crates OR "
-            "project:^shared/libEventLog OR "
-            "project:^shared/transfer-list-library OR "
-            "project:^ci/hafnium-.%2B OR project:^ci/tf-a-.%2B) "
+            f"(parentproject:{gerrit_project_prefix}TF-A OR parentproject:{gerrit_project_prefix}TF-RMM OR parentproject:{gerrit_project_prefix}TS OR "
+            f"parentproject:{gerrit_project_prefix}hafnium OR parentproject:{gerrit_project_prefix}RF-A OR "
+            f"parentproject:{gerrit_project_prefix}arm-firmware-crates OR "
+            f"project:^{gerrit_project_prefix}shared/libEventLog OR "
+            f"project:^{gerrit_project_prefix}shared/transfer-list-library OR "
+            f"project:^{gerrit_project_prefix}ci/hafnium-.%2B OR project:^{gerrit_project_prefix}ci/tf-a-.%2B) "
             "(branch:integration OR branch:master OR branch:main OR "
             "branch:^topics\\/.*) -is:wip is:open"
         ), help="the query to pass to tforg's Gerrit (as written in the query box)"

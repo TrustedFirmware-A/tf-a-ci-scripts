@@ -96,10 +96,10 @@ MBED_TLS_SOURCES_TAG="mbedtls-3.6.5"
 
 # TF-M variables
 TF_M_TESTS_DIR=tf-m-tests
-TF_M_TESTS_URL_REPO=https://git.trustedfirmware.org/TF-M/tf-m-tests.git
+TF_M_TESTS_URL_REPO=https://git.trustedfirmware.org/${GERRIT_PROJECT_PREFIX:-}TF-M/tf-m-tests.git
 
 TF_M_EXTRAS_DIR=tf-m-extras
-TF_M_EXTRAS_URL_REPO=https://git.trustedfirmware.org/TF-M/tf-m-extras.git
+TF_M_EXTRAS_URL_REPO=https://git.trustedfirmware.org/${GERRIT_PROJECT_PREFIX:-}TF-M/tf-m-extras.git
 
 QCBOR_LIB_DIR=qcbor
 QCBOR_URL_REPO=https://github.com/laurencelundblade/QCBOR.git

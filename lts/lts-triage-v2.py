@@ -73,7 +73,7 @@ def query_gerrit(gerrit_user, ssh_key_path, change_id):
         "-i", ssh_key_path,
         f"{gerrit_user}@review.trustedfirmware.org",
         f"gerrit query --format=JSON change:'{change_id}'",
-        "repo:'TF-A/trusted-firmware-a'"
+        f"repo:'{os.environ.get('GERRIT_PROJECT_PREFIX', '')}TF-A/trusted-firmware-a'"
     ]
 
     try:

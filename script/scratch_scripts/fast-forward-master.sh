@@ -16,7 +16,7 @@ export GIT_SSH_COMMAND="ssh -i $CI_BOT_KEY -o StrictHostKeyChecking=no -o 'Pubke
 # Use a directory which won't clash with a r/o clone made for building.
 clone_dir=trusted-firmware-a-for-update
 
-git clone ssh://$CI_BOT_USERNAME@review.trustedfirmware.org:29418/TF-A/trusted-firmware-a ${clone_dir}
+git clone ssh://$CI_BOT_USERNAME@review.trustedfirmware.org:29418/${GERRIT_PROJECT_PREFIX:-}TF-A/trusted-firmware-a ${clone_dir}
 cd ${clone_dir}
 git checkout master
 git merge --ff-only origin/integration

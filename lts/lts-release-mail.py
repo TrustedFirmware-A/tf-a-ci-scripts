@@ -6,7 +6,7 @@ import re
 import subprocess
 
 
-DEFAULT_URL = "https://review.trustedfirmware.org/TF-A/trusted-firmware-a"
+DEFAULT_URL = f"https://review.trustedfirmware.org/{os.environ.get('GERRIT_PROJECT_PREFIX', '')}TF-A/trusted-firmware-a"
 WORKDIR = "trusted-firmware-a"
 
 SKIP_PATTERNS = [

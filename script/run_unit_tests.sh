@@ -91,7 +91,7 @@ run_coverage() {
 		"sources": [
 		{
 			"type": "git",
-			"URL": "https://review.trustedfirmware.org/TF-A/trusted-firmware-a",
+			"URL": "https://review.trustedfirmware.org/${GERRIT_PROJECT_PREFIX:-}TF-A/trusted-firmware-a",
 			"LOCATION": "trusted-firmware-a"
 		}
 		]

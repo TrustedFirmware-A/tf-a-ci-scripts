@@ -8,10 +8,11 @@
 # by the TF-A LTS project.
 #
 import sys
+import os
 import re
 
 
-TAIL_RE = r"\(https://review.trustedfirmware.org/plugins/gitiles/TF-A/trusted-firmware-a/\+/refs/tags/.+lts.+\) \(\d+-\d+-\d+\)$"
+TAIL_RE = rf"\(https://review.trustedfirmware.org/plugins/gitiles/{os.environ.get('GERRIT_PROJECT_PREFIX', '')}TF-A/trusted-firmware-a/\+/refs/tags/.+lts.+\) \(\d+-\d+-\d+\)$"
 PREFIX_RE = r"^## \[lts-[0-9.]+\]" + TAIL_RE
 NOPREFIX_RE = r"^###? \[[0-9.]+\]" + TAIL_RE
 

@@ -6,11 +6,12 @@
 #
 import argparse
 import datetime
+import os
 import re
 from subprocess import check_call, check_output
 
 
-REMOTE = "ssh://%s@review.trustedfirmware.org:29418/TF-A/trusted-firmware-a"
+REMOTE = f"ssh://%s@review.trustedfirmware.org:29418/{os.environ.get('GERRIT_PROJECT_PREFIX', '')}TF-A/trusted-firmware-a"
 # Remove references having timestamps older than so many days.
 CUTOFF_DAYS = 30
 

@@ -1254,7 +1254,7 @@ if config_valid "$tfut_config"; then
 
 	if ! python3 -m pip show c-picker &> /dev/null; then
 		echo "Installing c-picker"
-		pip install git+https://git.trustedfirmware.org/TS/trusted-services.git@topics/c-picker || {
+		pip install git+https://git.trustedfirmware.org/${GERRIT_PROJECT_PREFIX:-}TS/trusted-services.git@topics/c-picker || {
 			echo "c-picker was not installed!"
 			exit 1
 		}
