@@ -311,13 +311,6 @@ make $(common_flags) PLAT=fvp_ve AARCH32_SP=sp_min ARCH=aarch32 \
     FVP_HW_CONFIG_DTS=fdts/fvp-ve-Cortex-A5x1.dts all
 
 #
-# A5 DesignStart Platform
-#
-make $(common_flags) PLAT=a5ds AARCH32_SP=sp_min ARCH=aarch32 \
-    ARM_ARCH_MAJOR=7 ARM_CORTEX_A5=yes ARM_XLAT_TABLES_LIB_V1=1 \
-    CROSS_COMPILE=arm-none-eabi- FVP_HW_CONFIG_DTS=fdts/a5ds.dts
-
-#
 # Corstone700 Platform
 #
 
