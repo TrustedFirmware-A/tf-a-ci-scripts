@@ -1,0 +1,2 @@
+prompt='Artificially shorten read operation for image_id=1 bytes'
+expect_string+=("i;${prompt}")
