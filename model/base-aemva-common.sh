@@ -660,6 +660,20 @@ if [ "$has_mec" = "1" ]; then
 EOF
 fi
 
+if [ "$has_hdbss" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_hardware_dirty_state_tracking_structure=2
+-C cluster1.has_hardware_dirty_state_tracking_structure=2
+EOF
+fi
+
+if [ "$has_hacdbs" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_hardware_accelerator_for_cleaning_dirty_state=2
+-C cluster1.has_hardware_accelerator_for_cleaning_dirty_state=2
+EOF
+fi
+
 #------------ Cluster1 configuration (if exists) --------------
 if [ "$is_dual_cluster" = "1" ]; then
 	cat <<EOF >>"$model_param_file"

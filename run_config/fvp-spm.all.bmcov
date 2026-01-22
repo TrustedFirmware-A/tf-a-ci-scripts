@@ -74,6 +74,8 @@ generate_lava_job() {
 		has_rng="1" \
 		has_cpa2="1" \
 		has_uinj="1" \
+		has_hdbss="1"\
+		has_hacdbs="1"\
 		gen_model_params
 
 	model="$model" gen_fvp_yaml
