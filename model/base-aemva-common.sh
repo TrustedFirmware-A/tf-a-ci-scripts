@@ -71,6 +71,9 @@ reset_var retain_flash
 reset_var nvcounter_version
 reset_var nvcounter_diag
 
+# Set the architecture version
+reset_var arch_version
+
 # Enable FEAT_MPAM
 reset_var has_mpam
 
@@ -415,73 +418,11 @@ EOF
 fi
 
 # Parameters to select architecture version
-if [ "$arch_version" = "8.2" ]; then
+if [ -n "$arch_version" ]; then
+	arch_version=$(echo "$arch_version" | tr '.' '-')
 	cat <<EOF >>"$model_param_file"
--C cluster0.has_arm_v8-2=1
-EOF
-fi
-
-if [ "$arch_version" = "8.3" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster0.has_arm_v8-3=1
-EOF
-fi
-
-if [ "$arch_version" = "8.4" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster0.has_arm_v8-4=1
-EOF
-fi
-
-if [ "$arch_version" = "8.5" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster0.has_arm_v8-5=1
-EOF
-fi
-
-if [ "$arch_version" = "8.6" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster0.has_arm_v8-6=1
-EOF
-fi
-
-if [ "$arch_version" = "8.7" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster0.has_arm_v8-7=1
-EOF
-fi
-
-if [ "$arch_version" = "8.8" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster0.has_arm_v8-8=1
-EOF
-fi
-
-if [ "$arch_version" = "8.9" ]; then
-       cat <<EOF >>"$model_param_file"
--C cluster0.has_arm_v8-9=1
--C cluster1.has_arm_v8-9=1
-EOF
-fi
-
-if [ "$arch_version" = "9.2" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster0.has_arm_v9-2=1
--C cluster1.has_arm_v9-2=1
-EOF
-fi
-
-if [ "$arch_version" = "9.3" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster0.has_arm_v9-3=1
--C cluster1.has_arm_v9-3=1
-EOF
-fi
-
-if [ "$arch_version" = "9.4" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster0.has_arm_v9-4=1
--C cluster1.has_arm_v9-4=1
+-C cluster0.has_arm_v$arch_version=1
+-C cluster1.has_arm_v$arch_version=1
 EOF
 fi
 
@@ -812,43 +753,6 @@ ${cache_state_modelled+-C cluster1.stage12_tlb_size=1024}
 ${cache_state_modelled+-C cluster1.check_memory_attributes=0}
 
 EOF
-
-# Parameters to select architecture version
-if [ "$arch_version" = "8.3" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster1.has_arm_v8-3=1
-EOF
-fi
-
-if [ "$arch_version" = "8.4" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster1.has_arm_v8-4=1
-EOF
-fi
-
-if [ "$arch_version" = "8.5" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster1.has_arm_v8-5=1
-EOF
-fi
-
-if [ "$arch_version" = "8.6" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster1.has_arm_v8-6=1
-EOF
-fi
-
-if [ "$arch_version" = "8.7" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster1.has_arm_v8-7=1
-EOF
-fi
-
-if [ "$arch_version" = "8.8" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster1.has_arm_v8-8=1
-EOF
-fi
 
 # Parameters for fault injection
 if [ "$fault_inject" = "1" ]; then
