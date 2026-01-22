@@ -7,7 +7,7 @@
 
 set -u
 
-image_base_url="https://people.linaro.org/~arthur.she/images/tf/tf-a/rpi3b/"
+image_base_url="https://downloads.trustedfirmware.org/infra-assets/linaro_artifacts/lava/tf-a/rpi3b/"
 
 rpi_default_image_url="${image_base_url}/2025-10-01-raspios-trixie-arm64-lite.img.xz"
 rpi_default_armstub_url="${image_base_url}/armstub8.bin"
