@@ -457,8 +457,6 @@ make PLAT=rk3568 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
 # Although we do several consecutive builds for the Tegra platform below, we
 # don't need to clean between each one because the Tegra makefiles specify
 # a different build directory per SoC.
-make PLAT=tegra TARGET_SOC=t210 $(common_flags) all
-make PLAT=tegra TARGET_SOC=t186 $(common_flags) all
 make PLAT=tegra TARGET_SOC=t194 $(common_flags) all
 
 # For the Xilinx platform, artificially increase the extents of BL31 memory
