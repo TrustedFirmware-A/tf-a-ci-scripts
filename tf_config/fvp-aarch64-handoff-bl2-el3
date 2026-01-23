@@ -4,3 +4,5 @@ FVP_TRUSTED_SRAM_SIZE=384
 PLAT=fvp
 RESET_TO_BL2=1
 TRANSFER_LIST=1
+ARM_FW_CONFIG_LOAD_ENABLE=1
+FW_CONFIG=plat/arm/board/fvp/fdts/fvp_fw_config.dts
