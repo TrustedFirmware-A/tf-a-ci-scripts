@@ -8,7 +8,11 @@
 # Disable Group0 secure interrupt tests as there is no source of EL3 interrupt
 FF-A Group0 interrupts
 
-# The following 2 tests are failing for RF-A right now.
+# The following tests are failing for RF-A right now.
 # Disable them until the underlying issues are fixed.
 FF-A SMCCC compliance/FF-A callee preserves GP register set per SMCCC
 FF-A Interrupt/Test ESPI Secure interrupt handling
+
+# This test assumes that AMU counters are always enabled, but RF-A traps 
+# accesses to AMU registers (CPTR_EL3.TAM=1).
+CPU extensions/AMUv1 valid counter values
