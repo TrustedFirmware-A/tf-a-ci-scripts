@@ -12,7 +12,7 @@
 set -e
 
 # Download all ZIP files from the chosen Linaro release
-base="http://releases.linaro.org/members/arm/platforms/${1:?}"
+base="https://downloads.trustedfirmware.org/infra-assets/linaro_artifacts/releases/${1:?}"
 
 wget -q "$base/MD5SUMS"
 

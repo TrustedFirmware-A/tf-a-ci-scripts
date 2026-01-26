@@ -46,7 +46,7 @@ actions:
     to: flasher
     images:
       image:
-        url: https://images.validation.linaro.org/people.linaro.org/~arthur.she/images/chromebook/tomato/tomato_tf-a_golden_image.bin.gz
+        url: https://downloads.trustedfirmware.org/infra-assets/linaro_artifacts/lava/chromebook/tomato/tomato_tf-a_golden_image.bin.gz
       bl31:
         url: $bl31_url
 - boot:
