@@ -244,7 +244,8 @@ clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=opteed OPTEE_ALLOW_SMC_LOAD
 
 # Build all CPU's with all errata's with FVP platform.
 clean_build $fvp_common_flags CTX_INCLUDE_AARCH32_REGS=0 HW_ASSISTED_COHERENCY=1 \
-    USE_COHERENT_MEM=0 ENABLE_ERRATA_ALL=1 FVP_TRUSTED_SRAM_SIZE=384
+    USE_COHERENT_MEM=0 ENABLE_ERRATA_ALL=1 FVP_TRUSTED_SRAM_SIZE=384 \
+    ARM_ARCH_MAJOR=8 ARM_ARCH_MINOR=5
 
 #
 # Juno platform
