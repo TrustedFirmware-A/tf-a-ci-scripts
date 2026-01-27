@@ -40,4 +40,8 @@ if [[ -z "${MAKE_JOBS}" ]]; then
     fi
 fi
 
-make ${MAKE_TARGET} -j${MAKE_JOBS} $(cat ${WORKSPACE}/tf-a-ci-scripts/tf_config/$1) DEBUG=${DEBUG}
+# Expand ${tf_root} in the TF-A build fragment since command substitution doesn't expand it
+# as intended.
+TF_A_BUILD_ARGS=$(sed 's|\${tf_root}|'"$tf_root"'|g' "${WORKSPACE}/tf-a-ci-scripts/tf_config/$1")
+
+make ${MAKE_TARGET} -j${MAKE_JOBS} ${TF_A_BUILD_ARGS} DEBUG=${DEBUG}
