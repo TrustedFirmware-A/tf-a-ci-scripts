@@ -18,6 +18,9 @@ cd ${WORKSPACE}/trusted-firmware-a
 rm -rf build/
 make clean DEBUG=${DEBUG}
 
+# Ensure tf_root is set so tf_config entries using ${tf_root} expand correctly.
+tf_root=${tf_root:-$PWD}
+
 # Replace '$(PWD)' with the *current* $PWD.
 MAKE_TARGET=$(echo "${MAKE_TARGET}" | sed "s|\$(PWD)|$PWD|")
 
