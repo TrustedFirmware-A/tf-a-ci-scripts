@@ -16,6 +16,25 @@ echo "****** $TEST_CASE ******" >> "$LOG_TEST_FILENAME"
 echo >> "$LOG_TEST_FILENAME"
 echo "Platforms:" >> "$LOG_TEST_FILENAME"
 
+# Get all the sets of features, without the enclosing quotes.
+available_features=$(make --silent -C ${TF_ROOT} list_features PLAT=fvp | xargs echo)
+
+# Run cargo-doc for feature combinations on FVP platform
+for feats in $available_features
+do
+    echo >> $LOG_FILE
+    echo "############### ${TEST_CASE} - platform: FVP - features: ${feats}" >> "$LOG_FILE"
+    echo >> $LOG_FILE
+    make -C ${TF_ROOT} PLAT=fvp cargo-doc FEATURES=${feats}>> "$LOG_FILE" 2>&1
+
+    if [ "$?" -ne 0 ]; then
+        echo -e "  FVP (${feats})\t: FAIL" >> "$LOG_TEST_FILENAME"
+        EXIT_VALUE=1
+    else
+        echo -e "  FVP (${feats})\t: PASS" >> "$LOG_TEST_FILENAME"
+    fi
+done
+
 available_platforms=$(make --silent -C ${TF_ROOT} list_platforms)
 
 # Run cargo doc for all platforms
