@@ -245,7 +245,8 @@ clean_build $fvp_common_flags CTX_INCLUDE_AARCH32_REGS=0 HW_ASSISTED_COHERENCY=1
 
 # Build all CPU's with all errata's with FVP platform.
 clean_build $fvp_common_flags CTX_INCLUDE_AARCH32_REGS=0 HW_ASSISTED_COHERENCY=1 \
-    USE_COHERENT_MEM=0 ENABLE_ERRATA_ALL=1 FVP_TRUSTED_SRAM_SIZE=384
+    USE_COHERENT_MEM=0 ENABLE_ERRATA_ALL=1 FVP_TRUSTED_SRAM_SIZE=384 \
+    ARM_ARCH_MAJOR=8 ARM_ARCH_MINOR=5
 
 # Sign Realm tokens with EL3 signing service
 clean_build $fvp_common_flags ENABLE_RME=1 RMMD_ENABLE_EL3_TOKEN_SIGN=1
