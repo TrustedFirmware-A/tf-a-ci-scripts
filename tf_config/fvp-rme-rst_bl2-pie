@@ -1,0 +1,10 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+CTX_INCLUDE_AARCH32_REGS=0
+FVP_TRUSTED_SRAM_SIZE=384
+RESET_TO_BL2=1
+ENABLE_RME=1
+ENABLE_PIE=1
+ARM_FW_CONFIG_LOAD_ENABLE=1
+FW_CONFIG=plat/arm/board/fvp/fdts/fvp_fw_config.dts
+FVP_HW_CONFIG_DTS=fdts/fvp-base-gicv3-psci-1t.dts
