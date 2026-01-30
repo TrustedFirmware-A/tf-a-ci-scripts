@@ -76,7 +76,7 @@ clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} SPD=tspd COT=dualroot \
 
 # FEAT_RME with CCA chain of trust.
 clean_build $fvp_common_flags ${ARM_TBB_OPTIONS} USE_ROMLIB=1 \
-	    ENABLE_RME=1 MEASURED_BOOT=1
+	    ENABLE_FEAT_RME=1 ENABLE_RMM=1 MEASURED_BOOT=1
 
 clean_build $fvp_common_flags SPD=trusty
 clean_build $fvp_common_flags SPD=trusty TRUSTY_SPD_WITH_GENERIC_SERVICES=1
@@ -249,17 +249,17 @@ clean_build $fvp_common_flags CTX_INCLUDE_AARCH32_REGS=0 HW_ASSISTED_COHERENCY=1
     ARM_ARCH_MAJOR=8 ARM_ARCH_MINOR=5
 
 # Sign Realm tokens with EL3 signing service
-clean_build $fvp_common_flags ENABLE_RME=1 RMMD_ENABLE_EL3_TOKEN_SIGN=1
+clean_build $fvp_common_flags ENABLE_FEAT_RME=1 ENABLE_RMM=1 RMMD_ENABLE_EL3_TOKEN_SIGN=1
 
 # Build with Live Firmware Activation support
 clean_build $fvp_common_flags LFA_SUPPORT=1
 
 # Build with RMM Live Firmware Activation support
-clean_build $fvp_common_flags ENABLE_RME=1 LFA_SUPPORT=1
+clean_build $fvp_common_flags ENABLE_FEAT_RME=1 ENABLE_RMM=1 LFA_SUPPORT=1
 
 # Build with FIRME support
 clean_build $fvp_common_flags FIRME_SUPPORT=1
-clean_build $fvp_common_flags FIRME_SUPPORT=1 ENABLE_RME=1
+clean_build $fvp_common_flags FIRME_SUPPORT=1 ENABLE_FEAT_RME=1 ENABLE_RMM=1
 
 #
 # Juno platform
@@ -298,8 +298,8 @@ make $(common_flags) PLAT=rdn2 ${ARM_TBB_OPTIONS} SPMC_AT_EL3=1 SPD=spmd \
 # Reference Design Platform RD-V3
 #
 make $(common_flags) PLAT=rdv3 ${ARM_TBB_OPTIONS} COT=cca DEBUG=1 \
-    ENABLE_RME=1 MEASURED_BOOT=1 PLAT_MHU_VERSION=3 RMM=/dev/null \
-    RME_GPT_BITLOCK_BLOCK=0 all
+     ENABLE_FEAT_RME=1 ENABLE_RMM=1 MEASURED_BOOT=1 PLAT_MHU_VERSION=3 \
+     RMM=/dev/null RME_GPT_BITLOCK_BLOCK=0 all
 
 #
 # Neoverse N1 SDP platform
@@ -869,13 +869,13 @@ clean_build PLAT=qemu $(common_flags) ${TBB_OPTIONS} MBOOT_EL_HASH_ALG=sha256 ME
 clean_build PLAT=qemu $(common_flags) TRANSFER_LIST=1
 
 # FEAT_RME
-clean_build PLAT=qemu $(common_flags) ENABLE_RME=1 \
+clean_build PLAT=qemu $(common_flags) ENABLE_FEAT_RME=1 ENABLE_RMM=1 \
         QEMU_USE_GIC_DRIVER=QEMU_GICV3
 
 clean_build PLAT=qemu_sbsa $(common_flags)
 
 # QEMU SBSA with RME support
-clean_build PLAT=qemu_sbsa $(common_flags) ENABLE_RME=1 \
+clean_build PLAT=qemu_sbsa $(common_flags) ENABLE_FEAT_RME=1 ENABLE_RMM=1 \
     RMM=/dev/null RME_GPT_BITLOCK_BLOCK=1
 
 # QEMU with SPM support
