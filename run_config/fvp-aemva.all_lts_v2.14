@@ -39,11 +39,8 @@ generate_lava_job() {
 		has_twed="1" \
 		has_v8_9_debug_extension="1" \
 		memory_tagging_support_level="3" \
-		supports_branch_record_buffer_control_regs="1" \
 		has_branch_target_exception="1" \
-		supports_trace_buffer_control_regs="1" \
 		supports_trace_filter_regs="2" \
-		supports_system_trace_filter_regs="1" \
 		accelerator_support_level="3" \
 		has_mops="1" \
 		checked_pointer_arithmetic_support_level="2" \
