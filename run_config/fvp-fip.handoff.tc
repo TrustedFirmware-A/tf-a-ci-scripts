@@ -6,7 +6,9 @@
 #
 
 post_tf_build() {
-	url="$DOWNLOAD_SERVER_TF_A_URL/handoff/total_compute/u-boot.bin" fetch_file
+	url="$DOWNLOAD_SERVER_TF_A_URL/handoff/total_compute/u-boot-b10fe926533.bin" \
+		saveas="u-boot.bin" \
+		fetch_file
 	archive_file "u-boot.bin"
 
 	if [ $plat_variant -eq 4 ]; then

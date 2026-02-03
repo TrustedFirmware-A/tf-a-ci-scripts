@@ -41,8 +41,10 @@ uboot32_fip_url="$linaro_release/fvp32-latest-busybox-uboot/fip.bin"
 optee_version="4.7.0"
 
 if [[ "$test_config" == *handoff* ]]; then
-	optee_path=$DOWNLOAD_SERVER_TF_A_URL/optee/${optee_version}/handoff
-	uboot_url="${DOWNLOAD_SERVER_TF_A_URL}/handoff/fvp/u-boot.bin"
+	# FIXME: temporary paths to enable synchronization with EDK2, U-Boot, and
+	# OP-TEE following changes to the specification.
+	optee_path="${DOWNLOAD_SERVER_TF_A_URL}/optee/4.9.0-16-gd9659c541/handoff"
+	uboot_url="${DOWNLOAD_SERVER_TF_A_URL}/handoff/fvp/u-boot-89d1016b2a0.bin"
 else
 	optee_path=$DOWNLOAD_SERVER_TF_A_URL/optee/${optee_version}
 	uboot_url="${DOWNLOAD_SERVER_TF_A_URL}/linux_boot/fvp/u-boot.bin"

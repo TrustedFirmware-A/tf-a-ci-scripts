@@ -9,9 +9,10 @@ source [file join [file dirname [info script]] utils.inc]
 source [file join [file dirname [info script]] handle-arguments.inc]
 
 expect {
-        "Hit any key to stop autoboot:  1" {
-                send "\nboot\n"
-        }
+    -re {Hit any key to stop autoboot:} {
+        send "\r"
+        send "boot\r"
+    }
 }
 
 expect {
