@@ -9,6 +9,9 @@
 if upon "$local_ci"; then
 	default_var bmcov_plugin_path "$workspace/artefacts/${bin_mode:?}/coverage_trace.so"
         default_var crypto_plugin_path "$warehouse/SysGen/PVModelLib/$model_version/$model_build/external/plugins/$model_flavour/Crypto.so"
+else
+    # OpenCI enviroment
+    default_var crypto_plugin_path "/opt/model/Base_RevC_AEMvA_pkg/plugins/Linux64_GCC-9.3/Crypto.so"
 fi
 
 default_var is_dual_cluster 1

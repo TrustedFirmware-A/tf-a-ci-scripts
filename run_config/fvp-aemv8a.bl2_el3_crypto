@@ -6,7 +6,7 @@
 #
 
 generate_lava_job() {
-	local model="base-aemv8a-crypto"
+	local model="base-aemv8a"
 
 	# BL2 is placed towards the middle of the Trusted SRAM based on (Total TSRAM / 2 + 0x2000)
 	local bl2_addr=$((0x4002000 + (fvp_tsram_size * 512)))

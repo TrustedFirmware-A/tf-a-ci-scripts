@@ -6,7 +6,7 @@
 #
 
 generate_lava_job() {
-	local model="base-aemv8a-crypto"
+	local model="base-aemv8a"
 
 	model="$model" \
 	arch_version="8.2" \
