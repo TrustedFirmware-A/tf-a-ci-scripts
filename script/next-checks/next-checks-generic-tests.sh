@@ -50,13 +50,19 @@ fi
 for features in "${all_features[@]}"; do
     features=$(echo $features | sed "s/'//g")
     echo "cargo test features: '$features'" >> "$LOG_TEST_FILENAME" 2>&1
-    cargo test --features=$features >> "$LOG_TEST_FILENAME" 2>&1
+
+    command="cargo test --workspace --features=$features"
+    if [ "$REPO_NAME" == "rusted-firmware-a" ]; then
+      command="$command --exclude rf-a-secure-test-framework"
+    fi
+
+    $command >> "$LOG_TEST_FILENAME" 2>&1
 
     if [ "$?" != 0 ]; then
-      echo "cargo test --features='$features': FAILURE"
+      echo "$command: FAILURE"
       ((ERROR_COUNT++))
     else
-      echo "cargo test --features='$features': PASS"
+      echo "$command: PASS"
     fi
 
     echo "-------------------------------------" >> "$LOG_TEST_FILENAME" 2>&1
