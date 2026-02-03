@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019-2025, Arm Limited. All rights reserved.
+# Copyright (c) 2019-2026, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -31,9 +31,9 @@ if {![info exists ::env(skip_early_boot_msgs)]} {
 	# Capture the event log from TF-A if we are running with measured boot
 	# enabled.
 	if {[info exists ::env(measured_boot)] || [info exists ::env(verify_hashes)]} {
-		capture_log $TFA_EVENT_LOG "BL1: Booting BL31|Finished using crypto library"
+		capture_log $TFA_EVENT_LOG "BL(1|2): Booting BL31|Finished using crypto library"
 	} else {
-		expect_string "BL1: Booting BL31"
+		expect_re "BL(1|2): Booting BL31"
 	}
 } else {
 	message "Skipping early boot messages from BL1 and BL2"

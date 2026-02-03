@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2026, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -21,5 +21,7 @@ if [ -z "$skip_early_boot_msgs" ]; then
         failures='Fail.*load.*BL2|BL2.*Fail.*load'
         expect_string+=("i;${prompt};;${failures}")
 
-        expect_string+=("i;BL1: Booting BL31;;${failures}")
+	# When build flag ENABLE_RME=1 or ENABLE_FEAT_RME!=0, then expected
+	# string is "BL2: Booting BL31" else "BL1: Booting BL31"
+        expect_string+=("i;(BL1: Booting BL31|BL2: Booting BL31);;${failures}")
 fi

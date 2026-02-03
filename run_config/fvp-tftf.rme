@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2021-2023, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2026, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -11,10 +11,6 @@ generate_lava_job_template() {
 
 generate_lava_job() {
 	local model="base-aemva"
-
-	# RME systems go BL1->BL2->BL31 so we must set this variable for expect
-	# scripts to work properly and not hang up waiting for BL1->BL31.
-	uart="0" set_expect_variable "skip_early_boot_msgs" "1"
 
 	# Use standard TFTF expect script on primary UART.
 	uart="0" file="tftf.exp" track_expect
