@@ -47,7 +47,7 @@ generate_lava_job() {
 		accelerator_support_level="3" \
 		has_mops="1" \
 		has_cpa2="1" \
-		arch_version="9.4" \
+		arch_version="9.5" \
 		has_rng="1" \
 		has_uinj="1" \
 		has_hdbss="1"\

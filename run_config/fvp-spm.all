@@ -59,7 +59,7 @@ generate_lava_job() {
 		supports_system_trace_filter_regs="1" \
 		accelerator_support_level="3" \
 		has_mops="1" \
-		arch_version="9.4" \
+		arch_version="9.5" \
 		has_smmuv3_params="1" \
 		gicd_are_fixed_one="1" \
 		gicv3_ext_interrupt_range="1" \
