@@ -73,9 +73,25 @@ def main():
     if base_release.startswith("sandbox/"):
         m = re.match(r"sandbox/(.+)-\d+", base_release)
         base_release = m.group(1)
-    comps = base_release.split(".")
-    prev_comps = comps[:-1] + [str(int(comps[-1]) - 1)]
-    prev_release = ".".join(prev_comps)
+
+    try:
+        prev_release = subprocess.check_output(
+            f"git describe --abbrev=0 --tags {base_release}^", shell=True
+        ).decode("utf-8").strip()
+    except subprocess.CalledProcessError:
+        sys.stderr.write(f"Error: Could not determine previous tag for {base_release}\n")
+        sys.exit(1)
+
+    # Check if previous tag belongs to the same branch (e.g. lts-v2.14.*)
+    # base_release format is expected to be lts-vX.Y.Z
+    parts = base_release.split(".")
+    if len(parts) >= 3:
+        branch_prefix = ".".join(parts[:2])
+        if not prev_release.startswith(branch_prefix):
+            sys.stderr.write(
+                f"Previous tag {prev_release} is not in the same branch as {base_release} ({branch_prefix}). Skipping email.\n"
+            )
+            return
 
     subjects = []
     for l in os.popen("git log --oneline --reverse %s..%s" % (prev_release, args.release_tag)):
@@ -85,6 +101,10 @@ def main():
                 skip = True
         if not skip:
             subjects.append(l.rstrip())
+
+    if not subjects:
+        sys.stderr.write("No changes found, skipping email generation\n")
+        return
 
     urls = []
     for s in subjects:
