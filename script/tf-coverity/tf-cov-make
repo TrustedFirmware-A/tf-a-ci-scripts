@@ -792,6 +792,11 @@ stm32mp2_common_flags="ARCH=aarch64 \
 		       CROSS_COMPILE=aarch64-none-elf- \
 		       PLAT=stm32mp2"
 
+# STM32MP21 SDMMC boot
+clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
+    SPD=opteed STM32MP_LPDDR4_TYPE=1 STM32MP21=1 \
+    BUILD_PLAT=build/stm32mp2-mp23-sdmmc/debug
+
 # STM32MP23 SDMMC boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
     SPD=opteed STM32MP_LPDDR4_TYPE=1 STM32MP23=1 \
