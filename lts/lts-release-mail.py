@@ -74,24 +74,23 @@ def main():
         m = re.match(r"sandbox/(.+)-\d+", base_release)
         base_release = m.group(1)
 
-    try:
-        prev_release = subprocess.check_output(
-            f"git describe --abbrev=0 --tags {base_release}^", shell=True
-        ).decode("utf-8").strip()
-    except subprocess.CalledProcessError:
-        sys.stderr.write(f"Error: Could not determine previous tag for {base_release}\n")
+    match = re.match(r"(lts-v\d+\.\d+)\.(\d+)", base_release)
+    if not match:
+        sys.stderr.write(f"Error: Invalid tag format {base_release}\n")
         sys.exit(1)
 
-    # Check if previous tag belongs to the same branch (e.g. lts-v2.14.*)
-    # base_release format is expected to be lts-vX.Y.Z
-    parts = base_release.split(".")
-    if len(parts) >= 3:
-        branch_prefix = ".".join(parts[:2])
-        if not prev_release.startswith(branch_prefix):
-            sys.stderr.write(
-                f"Previous tag {prev_release} is not in the same branch as {base_release} ({branch_prefix}). Skipping email.\n"
-            )
-            return
+    branch_prefix = match.group(1)
+    patch_version = int(match.group(2))
+
+    if patch_version == 0:
+        sys.stderr.write(f"First release of the branch {base_release}. Skipping email.\n")
+        return
+
+    prev_release = f"{branch_prefix}.{patch_version - 1}"
+
+    if subprocess.call(f"git rev-parse --verify {prev_release}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
+        sys.stderr.write(f"Error: Previous release tag {prev_release} not found in repository\n")
+        sys.exit(1)
 
     subjects = []
     for l in os.popen("git log --oneline --reverse %s..%s" % (prev_release, args.release_tag)):
