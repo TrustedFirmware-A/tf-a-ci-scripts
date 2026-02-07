@@ -587,8 +587,8 @@ warehouse="${nfs_volume}/warehouse"
 jenkins_url="${JENKINS_PUBLIC_URL%/*}"
 jenkins_url="${jenkins_url:-https://ci.trustedfirmware.org/}"
 
-model_version="${model_version:-11.28}"
-model_build="${model_build:-23}"
+model_version="${model_version:-11.31}"
+model_build="${model_build:-28}"
 model_flavour="${model_flavour:-Linux64_GCC-9.3}"
 
 # Model snapshots from filer are not normally not accessible from developer

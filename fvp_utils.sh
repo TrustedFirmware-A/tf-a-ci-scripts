@@ -57,12 +57,10 @@ rootfs_url="${DOWNLOAD_SERVER_TF_A_URL}/linux_boot/fvp/rootfs.ext4"
 default_model_dtb="dtb.bin"
 
 # FVP containers and model paths
-fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library/FVP_Base"
-fvp_base_revc_2xaemva="fvp:fvp_base_revc-2xaemva_${model_version}_${model_build}_linux64;/opt/model/Base_RevC_AEMvA_pkg/models/${model_flavour}"
-fvp_rd_1_ae="fvp:fvp_rd_1_ae_${model_version}_${model_build};/opt/model/FVP_RD_1_AE/models/${model_flavour}"
+fvp_base_revc_aemva="fvp:fvp_base_revc_aemva_${model_version}_${model_build}_linux_x86;/opt/model/FVP_Base_RevC_AEMvA_${model_version}_${model_build}/bin"
+fvp_base_revc_aemva_gicv5="fvp:fvp_base_revc_aemva_gicv5_${model_version}_${model_build}_linux_x86;/opt/model/FVP_Base_RevC_AEMvA_GICv5_${model_version}_${model_build}/bin"
 
-# CSS model list
-fvp_tc4="fvp:fvp_tc4_0.0_10096_linux64;/opt/model/FVP_TC4/models/Linux64_GCC-9.3"
+fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library_${model_version}_${model_build}"
 
 # FVP associate array, run_config are keys and fvp container parameters are the values
 #   Container parameters syntax: <model name>;<model dir>;<model bin>
@@ -71,8 +69,9 @@ fvp_tc4="fvp:fvp_tc4_0.0_10096_linux64;/opt/model/FVP_TC4/models/Linux64_GCC-9.3
 declare -A fvp_models
 fvp_models=(
 [base-aemv8a-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
-[base-aemva]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
-[base-aemv8a]="${fvp_base_revc_2xaemva};FVP_Base_RevC-2xAEMvA"
+[base-aemva]="${fvp_base_revc_aemva};FVP_Base_RevC-2xAEMvA"
+[base-aemv8a]="${fvp_base_revc_aemva};FVP_Base_RevC-2xAEMvA"
+[base-aemv8a-gicv5]="${fvp_base_revc_aemva_gicv5};FVP_Base_RevC-2xAEMvA_GICv5"
 [cortex-a32x4]="${fvp_arm_std_library};FVP_Base_Cortex-A32"
 [cortex-a35x4]="${fvp_arm_std_library};FVP_Base_Cortex-A35"
 [cortex-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A53"
@@ -101,8 +100,12 @@ fvp_models=(
 [neoverse_n1]="${fvp_arm_std_library};FVP_Base_Neoverse-N1"
 [neoverse_n2]="${fvp_arm_std_library};FVP_Base_Neoverse-N2"
 [neoverse-v1x4]="${fvp_arm_std_library};FVP_Base_Neoverse-V1"
-[tc4]="${fvp_tc4};FVP_TC4"
-[rd1ae]="${fvp_rd_1_ae};FVP_RD_1_AE"
+[c1-ultra]="${fvp_arm_std_library};FVP_Base_C1-Ultra"
+[c1-pro]="${fvp_arm_std_library};FVP_Base_C1-Pro"
+[c1-premium]="${fvp_arm_std_library};FVP_Base_C1-Premium"
+[c1-nano]="${fvp_arm_std_library};FVP_Base_C1-Nano"
+[c1-pro+ultra]="${fvp_arm_std_library};FVP_Base_C1-Pro+C1-Ultra"
+[tc4]="${fvp_arm_std_library};FVP_RD_LUMEX_1"
 )
 
 
