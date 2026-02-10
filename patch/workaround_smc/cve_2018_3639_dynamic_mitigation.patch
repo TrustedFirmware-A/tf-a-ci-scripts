@@ -1,0 +1,20 @@
+diff --git i/services/arm_arch_svc/arm_arch_svc_setup.c w/services/arm_arch_svc/arm_arch_svc_setup.c
+index be0cbad4a..beea7c462 100644
+--- i/services/arm_arch_svc/arm_arch_svc_setup.c
++++ w/services/arm_arch_svc/arm_arch_svc_setup.c
+@@ -51,15 +51,6 @@ static int32_t smccc_arch_features(u_register_t arg1)
+ 	case SMCCC_ARCH_WORKAROUND_2: {
+ #if WORKAROUND_CVE_2018_3639
+ #if DYNAMIC_WORKAROUND_CVE_2018_3639
+-		/*
+-		 * Firmware doesn't have to carry out dynamic workaround if the
+-		 * PE implements architectural Speculation Store Bypass Safe
+-		 * (SSBS) feature.
+-		 */
+-		if (is_feat_ssbs_present()) {
+-			return SMC_WA_DO_NOT;
+-		}
+-
+ 		switch (check_erratum_applies(ERRATUM(ARCH_WORKAROUND_2))) {
+ 		case ERRATA_APPLIES:
+ 			return SMC_WA_DO;
