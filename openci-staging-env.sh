@@ -11,11 +11,4 @@
 
 nfs_volume="${WORKSPACE:?}/nfs"
 jenkins_url="${JENKINS_PUBLIC_URL}"
-tfa_downloads="${DOWNLOAD_SERVER_URL}/tf-a"
 ci_env="openci_staging"
-
-tfa_branch=${TF_GERRIT_BRANCH##*/}
-if echo $tfa_branch | grep -q "^lts-v"; then
-    # LTS branch, change the download space to the respective one
-    tfa_downloads="${DOWNLOAD_SERVER_URL}/tf-a-$tfa_branch"
-fi

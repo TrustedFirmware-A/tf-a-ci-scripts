@@ -17,7 +17,7 @@ fetch_tf_resource() {
 	if [ ! -f "$archive/scp_rom.bin" ]; then
 		# Pick the appropriate binary based on target platform variant
 		if [ $plat_variant -eq 4 ]; then
-			url="$tfa_downloads/total_compute/tc$plat_variant/scp/tc$plat_variant-bl1.bin" saveas="scp_rom.bin" fetch_file
+			url="$DOWNLOAD_SERVER_TF_A_URL/total_compute/tc$plat_variant/scp/tc$plat_variant-bl1.bin" saveas="scp_rom.bin" fetch_file
 		fi
 
 		archive_file "scp_rom.bin"

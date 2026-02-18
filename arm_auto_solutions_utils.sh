@@ -7,7 +7,7 @@
 
 source "$ci_root/fvp_utils.sh"
 
-arm_automotive_solutions="${rd1ae_prebuilts:-$tfa_downloads/arm_automotive_solutions}"
+arm_automotive_solutions="${rd1ae_prebuilts:-$DOWNLOAD_SERVER_TF_A_URL/arm_automotive_solutions}"
 
 # RD-1 AE AP bl2 0x00 is mapped to 0x70083C00 in RSE memory map
 rd1ae_ap_bl2_flash_load_addr=0x70083C00

@@ -10,7 +10,7 @@ source "$ci_root/run_config/tc_rse_utils.sh"
 post_tf_build() {
     if [ $plat_variant -eq 3 ]; then
         # Use pre-built SCP BL2 binary
-        url="$tfa_downloads/total_compute/tc$plat_variant/scp/$scp_revision/tc$plat_variant-bl2.bin" saveas="scp_ram.bin" fetch_file
+        url="$DOWNLOAD_SERVER_TF_A_URL/total_compute/tc$plat_variant/scp/$scp_revision/tc$plat_variant-bl2.bin" saveas="scp_ram.bin" fetch_file
         archive_file "scp_ram.bin"
         build_fip BL33="$archive/tftf.bin" BL32="$archive/secure_hafnium.bin" SCP_BL2="$archive/scp_ram.bin"
     elif [ $plat_variant -eq 4 ]; then

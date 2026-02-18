@@ -6,7 +6,7 @@
 #
 
 post_tf_build() {
-	url="$tfa_downloads/spm/07-29-2021/spmc_sel2_optee_sel1.bin" fetch_file
+	url="$DOWNLOAD_SERVER_TF_A_URL/spm/07-29-2021/spmc_sel2_optee_sel1.bin" fetch_file
 
 	archive_file "spmc_sel2_optee_sel1.bin"
 	cp "${archive}/spmc_sel2_optee_sel1.bin" "${archive}/build/tfa/fvp/${bin_mode}"

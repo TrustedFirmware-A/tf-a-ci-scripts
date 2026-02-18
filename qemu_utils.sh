@@ -7,15 +7,15 @@
 
 set -u
 
-rootfs_url="$tfa_downloads/linux_boot/busybox.cpio.gz"
-uefi_url="$tfa_downloads/linux_boot/qemu/QEMU_EFI.fd"
+rootfs_url="$DOWNLOAD_SERVER_TF_A_URL/linux_boot/busybox.cpio.gz"
+uefi_url="$DOWNLOAD_SERVER_TF_A_URL/linux_boot/qemu/QEMU_EFI.fd"
 
 # Default QEMU model variables
 default_model_dtb="dtb.bin"
 
 # QEMU Kernel URLs
 declare -A kernel_list=(
-	[qemu-busybox]="$tfa_downloads/linux_boot/Image.gz"
+	[qemu-busybox]="$DOWNLOAD_SERVER_TF_A_URL/linux_boot/Image.gz"
 )
 
 gen_qemu_yaml(){

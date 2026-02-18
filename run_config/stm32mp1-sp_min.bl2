@@ -8,8 +8,8 @@
 
 
 post_tf_build() {
-	url="${tfa_downloads}/stm32mp157c-ev1/u-boot-nodtb.bin" filename="u-boot-nodtb.bin" fetch_and_archive
-	url="${tfa_downloads}/stm32mp157c-ev1/u-boot.dtb"  filename="u-boot.dtb" fetch_and_archive
+	url="${DOWNLOAD_SERVER_TF_A_URL}/stm32mp157c-ev1/u-boot-nodtb.bin" filename="u-boot-nodtb.bin" fetch_and_archive
+	url="${DOWNLOAD_SERVER_TF_A_URL}/stm32mp157c-ev1/u-boot.dtb"  filename="u-boot.dtb" fetch_and_archive
 	build_fip BL33="$archive/u-boot-nodtb.bin" BL33_CFG="$archive/u-boot.dtb"
 }
 
@@ -26,4 +26,3 @@ post_tf_archive() {
 generate_lava_job() {
     payload_type="sp_min_bl2" gen_stm32mp1_yaml
 }
-

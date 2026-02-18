@@ -7,7 +7,7 @@
 
 source "$ci_root/fvp_utils.sh"
 
-tc_prebuilts="${tc_prebuilts:-$tfa_downloads/total_compute}"
+tc_prebuilts="${tc_prebuilts:-$DOWNLOAD_SERVER_TF_A_URL/total_compute}"
 
 kernel_list[tc-kernel]="$tc_prebuilts/Image"
 initrd_list[tc-ramdisk]="$tc_prebuilts/uInitrd-busybox.0x88000000"

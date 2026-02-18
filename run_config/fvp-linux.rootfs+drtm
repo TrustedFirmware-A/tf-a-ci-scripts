@@ -7,8 +7,8 @@
 
 post_tf_build() {
 	# Get the images for the test.
-	edk_url="$tfa_downloads/drtm/FVP_AARCH64_EFI.fd"
-	rootfs_url="$tfa_downloads/drtm/test-disk-acs.img" get_rootfs
+	edk_url="$DOWNLOAD_SERVER_TF_A_URL/drtm/FVP_AARCH64_EFI.fd"
+	rootfs_url="$DOWNLOAD_SERVER_TF_A_URL/drtm/test-disk-acs.img" get_rootfs
 	url="$edk_url" saveas="edk2.bin" fetch_file
 	archive_file "edk2.bin"
 }

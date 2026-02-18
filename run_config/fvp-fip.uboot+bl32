@@ -7,6 +7,6 @@
 
 post_tf_build() {
 	url="$uboot_url" filename="uboot.bin" fetch_and_archive
-	url="$tfa_downloads/optee/tee.bin" filename="bl32.bin" fetch_and_archive
+	url="$DOWNLOAD_SERVER_TF_A_URL/optee/tee.bin" filename="bl32.bin" fetch_and_archive
 	build_fip BL33="$archive/uboot.bin" BL32="$archive/bl32.bin"
 }

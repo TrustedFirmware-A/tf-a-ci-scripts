@@ -10,13 +10,13 @@ set -u
 #arm_fpga Kernel URLs
 declare -A arm_fpga_kernels
 arm_fpga_kernels=(
-[test-kernel-aarch64]="$tfa_downloads/arm-fpga/kernel-image"
+[test-kernel-aarch64]="$DOWNLOAD_SERVER_TF_A_URL/arm-fpga/kernel-image"
 )
 
 #arm_fpga initramfs
 declare -A arm_fpga_initramfs
 arm_fpga_initramfs=(
-[busybox.initrd]="$tfa_downloads/arm-fpga/busybox.initrd"
+[busybox.initrd]="$DOWNLOAD_SERVER_TF_A_URL/arm-fpga/busybox.initrd"
 )
 
 get_kernel() {

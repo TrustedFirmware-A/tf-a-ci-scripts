@@ -13,13 +13,13 @@ scp_bl2_url="$scp_mcp_downloads/juno/platform_variant_BOARD/release/juno-bl2.bin
 
 psci_reset2_scp_bl2_url="$scp_mcp_downloads/juno/psci_reset2/juno-bl2.bin"
 uboot_bl33_url="$linaro_release/juno-latest-oe-uboot/SOFTWARE/bl33-uboot.bin"
-ml_uboot_bl33_url="$tfa_downloads/linux_boot/u-boot-juno.bin"
-uboot_env_url="$tfa_downloads/linux_boot/u-boot-env.bin"
+ml_uboot_bl33_url="$DOWNLOAD_SERVER_TF_A_URL/linux_boot/u-boot-juno.bin"
+uboot_env_url="$DOWNLOAD_SERVER_TF_A_URL/linux_boot/u-boot-env.bin"
 optee_fip_url="$linaro_release/juno-ack-android-uboot/SOFTWARE/fip.bin"
 
-linux_image_url="$tfa_downloads/linux_boot/Image.gz"
+linux_image_url="$DOWNLOAD_SERVER_TF_A_URL/linux_boot/Image.gz"
 # Busybox based initrd
-linux_busybox_initrd_url="$tfa_downloads/linux_boot/initbb.img"
+linux_busybox_initrd_url="$DOWNLOAD_SERVER_TF_A_URL/linux_boot/initbb.img"
 
 juno_recovery_root="$linaro_release/juno-latest-oe-uboot"
 

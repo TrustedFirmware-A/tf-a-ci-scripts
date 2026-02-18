@@ -8,7 +8,7 @@
 source "$ci_root/fvp_utils.sh"
 
 n1sdp_release="N1SDP-2022.06.22"
-n1sdp_prebuilts=${n1sdp_prebuilts:="$tfa_downloads/css/n1sdp/$n1sdp_release"}
+n1sdp_prebuilts=${n1sdp_prebuilts:="$DOWNLOAD_SERVER_TF_A_URL/css/n1sdp/$n1sdp_release"}
 scp_mcp_prebuilts=${scp_mcp_prebuilts:="$n1sdp_prebuilts"}
 
 get_n1sdp_firmware() {

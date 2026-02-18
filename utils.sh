@@ -15,6 +15,7 @@
 set -ETe -o pipefail
 
 : "${DOWNLOAD_SERVER_URL:?}"
+: "${DOWNLOAD_SERVER_TF_A_URL:?}"
 
 # Accept root of CI location from $CI_ROOT or $ci_root, in that order
 ci_root="${ci_root:-$CI_ROOT}"
@@ -619,13 +620,12 @@ tf_m_extras_src_repo_url="${tf_m_extras_src_repo_url:-https://$tforg_gerrit_url/
 tfut_src_repo_url="${tfut_src_repo_url:-$TFUT_SRC_REPO_URL}"
 tfut_src_repo_url="${tfut_src_repo_url:-https://$tforg_gerrit_url/${GERRIT_PROJECT_PREFIX:-}TF-A/tf-a-unit-tests}"
 
-tfa_downloads="${tfa_downloads:-file:///downloads/tf-a}"
-css_downloads="${css_downloads:-$tfa_downloads/css}"
+css_downloads="${css_downloads:-$DOWNLOAD_SERVER_TF_A_URL/css}"
 
 # SCP/MCP release binaries.
-scp_mcp_downloads="${scp_mcp_downloads:-$tfa_downloads/css_scp_2.16.0.6bf96e3b}"
+scp_mcp_downloads="${scp_mcp_downloads:-$DOWNLOAD_SERVER_TF_A_URL/css_scp_2.16.0.6bf96e3b}"
 
-linaro_2001_release="${linaro_2001_release:-$tfa_downloads/linaro/20.01}"
+linaro_2001_release="${linaro_2001_release:-$DOWNLOAD_SERVER_TF_A_URL/linaro/20.01}"
 linaro_release="${linaro_release:-$linaro_2001_release}"
 mbedtls_version="${mbedtls_version:-3.6.5}"
 

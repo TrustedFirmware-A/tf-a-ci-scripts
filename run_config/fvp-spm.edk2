@@ -7,8 +7,8 @@
 
 post_tf_build() {
 	# Fetch EDK2 and pre-built partition files
-	url="$tfa_downloads/spm/fw-handoff/FVP_AARCH64_EFI.fd" fetch_file
-	url="$tfa_downloads/spm/fw-handoff/BL32_AP_MM.fd" fetch_file
+	url="$DOWNLOAD_SERVER_TF_A_URL/spm/fw-handoff/FVP_AARCH64_EFI.fd" fetch_file
+	url="$DOWNLOAD_SERVER_TF_A_URL/spm/fw-handoff/BL32_AP_MM.fd" fetch_file
 
 	archive_file "FVP_AARCH64_EFI.fd"
 	archive_file "BL32_AP_MM.fd"

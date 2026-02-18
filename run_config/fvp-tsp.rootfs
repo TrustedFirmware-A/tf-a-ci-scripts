@@ -7,9 +7,9 @@
 
 post_tf_build() {
 	# Fetch EDK2 and pre-built partition files
-	url="$tfa_downloads/spm-el3/06-15-22/normal_world_multi.dts" saveas="normal_world_multi.dts" fetch_file
-	rootfs_url="$tfa_downloads/spm-el3/06-15-22/boot-fat.uefi.img" saveas="boot-fat.uefi.img" get_rootfs
-	url="$tfa_downloads/spm-el3/06-15-22/FVP_AARCH64_EFI.fd" saveas="FVP_AARCH64_EFI.fd" fetch_file
+	url="$DOWNLOAD_SERVER_TF_A_URL/spm-el3/06-15-22/normal_world_multi.dts" saveas="normal_world_multi.dts" fetch_file
+	rootfs_url="$DOWNLOAD_SERVER_TF_A_URL/spm-el3/06-15-22/boot-fat.uefi.img" saveas="boot-fat.uefi.img" get_rootfs
+	url="$DOWNLOAD_SERVER_TF_A_URL/spm-el3/06-15-22/FVP_AARCH64_EFI.fd" saveas="FVP_AARCH64_EFI.fd" fetch_file
 	archive_file "normal_world_multi.dts"
 	archive_file "FVP_AARCH64_EFI.fd"
 	build_fip BL33="$archive/FVP_AARCH64_EFI.fd" NT_FW_CONFIG="$archive/normal_world_multi.dts"
