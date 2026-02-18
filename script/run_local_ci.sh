@@ -7,6 +7,8 @@
 
 set -e
 
+declare -rx DOWNLOAD_SERVER_URL="${DOWNLOAD_SERVER_URL:-"https://downloads.trustedfirmware.org"}"
+
 in_red() {
 	echo "$(tput setaf 1)${1:?}$(tput sgr0)"
 }

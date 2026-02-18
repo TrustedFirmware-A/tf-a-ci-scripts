@@ -14,6 +14,8 @@
 
 set -ETe -o pipefail
 
+: "${DOWNLOAD_SERVER_URL:?}"
+
 # Accept root of CI location from $CI_ROOT or $ci_root, in that order
 ci_root="${ci_root:-$CI_ROOT}"
 ci_root="${ci_root:?}"
@@ -617,7 +619,6 @@ tf_m_extras_src_repo_url="${tf_m_extras_src_repo_url:-https://$tforg_gerrit_url/
 tfut_src_repo_url="${tfut_src_repo_url:-$TFUT_SRC_REPO_URL}"
 tfut_src_repo_url="${tfut_src_repo_url:-https://$tforg_gerrit_url/${GERRIT_PROJECT_PREFIX:-}TF-A/tf-a-unit-tests}"
 
-tf_downloads="${tf_downloads:-file:///downloads/}"
 tfa_downloads="${tfa_downloads:-file:///downloads/tf-a}"
 css_downloads="${css_downloads:-$tfa_downloads/css}"
 
