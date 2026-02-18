@@ -434,6 +434,7 @@ make PLAT=sc7180 $(common_flags) COREBOOT=1 all
 make PLAT=qcs615 $(common_flags) COREBOOT=1 all
 make PLAT=sc7280_chrome $(common_flags) COREBOOT=1 all
 make PLAT=rb3gen2 $(common_flags) all
+make PLAT=lemans_evk $(common_flags) all
 
 make PLAT=rk3288 CROSS_COMPILE=arm-none-eabi- \
     $(common_flags) ARCH=aarch32 AARCH32_SP=sp_min all
