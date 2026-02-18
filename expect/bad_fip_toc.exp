@@ -1,0 +1,14 @@
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for bad FIP ToC entry (offset/size)
+#
+
+source [file join [file dirname [info script]] handle-arguments.inc]
+
+expect_string "FIP entry bounds invalid"
+expect_string "Failed to load BL2 firmware"
+
+exit_uart 0

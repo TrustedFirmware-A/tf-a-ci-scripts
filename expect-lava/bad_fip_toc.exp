@@ -1,0 +1,10 @@
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Trusted Firmware Test Framework
+#
+
+expect_string+=('i;FIP entry bounds invalid')
+expect_string+=('i;Failed to load BL2 firmware')

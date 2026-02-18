@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+post_tf_build() {
+	build_fip BL33="$archive/tftf.bin"
+}
+
+post_tf_archive() {
+	python3 "$ci_root/script/corrupt_fip_toc.py" --input "$archive/fip.bin" --mode bad_offset_size --target bl2
+}
+
+generate_lava_job_template() {
+	uart="0" timeout=10 file="bad_fip_toc.exp" track_expect
+
+	payload_type="tftf" gen_yaml_template
+}
