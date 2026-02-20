@@ -141,7 +141,7 @@ echo
 # Check to ensure newly added source files are detected for Coverity Scan analysis
 
 # Check to be executed only on trusted-firmware repository.
-if [ "$REPO_UNDER_TEST" = "trusted-firmware" ] || [ "$REPO_UNDER_TEST" = "trusted-firmware-a" ]; then
+if [[ "${GERRIT_PROJECT}" =~ (next/)?TF-A/trusted-firmware-a ]]; then
     echo 'Checking whether the newly added source files are detected for Coverity Scan analysis...'
     echo
     "$CI_ROOT"/script/static-checks/static-checks-detect-newly-added-files.sh
