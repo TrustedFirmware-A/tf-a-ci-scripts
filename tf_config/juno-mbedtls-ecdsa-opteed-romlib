@@ -9,3 +9,4 @@ PLAT=juno
 ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_ecdsa.pem
 SPD=opteed
 TRUSTED_BOARD_BOOT=1
+USE_ROMLIB=1
