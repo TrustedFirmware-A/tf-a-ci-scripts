@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2020, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	poetry -C "$tf_root" install --with doc
+	targets="doc" set_tf_build_targets
+}
+
+post_tf_build() {
+	mv "$tf_root/docs/build" "$archive"
+}

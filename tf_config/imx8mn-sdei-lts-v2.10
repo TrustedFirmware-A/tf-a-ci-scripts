@@ -1,0 +1,3 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=imx8mn
+SDEI_SUPPORT=1

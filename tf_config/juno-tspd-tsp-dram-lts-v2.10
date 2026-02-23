@@ -1,0 +1,4 @@
+ARM_TSP_RAM_LOCATION=dram
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=juno
+SPD=tspd

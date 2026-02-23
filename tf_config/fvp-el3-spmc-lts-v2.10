@@ -1,0 +1,5 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+SPD=spmd
+SPMC_AT_EL3=1
+SPMD_SPM_AT_SEL2=0

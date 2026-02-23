@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+SANITIZE_UB=trap
+ENABLE_ASSERTIONS=0

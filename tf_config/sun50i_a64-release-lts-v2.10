@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=sun50i_a64
+DEBUG=0
+V=0

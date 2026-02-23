@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+DEBUG=1
+PLAT=fvp
+USE_DEBUGFS=1

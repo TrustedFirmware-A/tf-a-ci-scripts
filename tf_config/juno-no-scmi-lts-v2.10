@@ -1,0 +1,3 @@
+CROSS_COMPILE=aarch64-none-elf-
+CSS_USE_SCMI_SDS_DRIVER=0
+PLAT=juno

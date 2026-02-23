@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+SPD=tspd
+TSP_NS_INTR_ASYNC_PREEMPT=1
