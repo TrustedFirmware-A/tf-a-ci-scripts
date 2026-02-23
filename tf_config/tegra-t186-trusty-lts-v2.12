@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=tegra
+SPD=trusty
+TARGET_SOC=t186

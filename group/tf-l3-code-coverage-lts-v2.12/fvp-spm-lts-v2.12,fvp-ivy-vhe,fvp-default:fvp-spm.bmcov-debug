@@ -1,0 +1,10 @@
+#
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_spm_build() {
+	# Hafnium build repo containing Sercure hafnium binary build for vhe
+        out_dir="secure_aem_v8a_fvp_vhe_clang" set_spm_out_dir
+}

@@ -1,0 +1,3 @@
+ARM_ETHOSN_NPU_DRIVER=1
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=juno

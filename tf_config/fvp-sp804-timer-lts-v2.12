@@ -1,0 +1,3 @@
+CROSS_COMPILE=aarch64-none-elf-
+FVP_USE_SP804_TIMER=1
+PLAT=fvp

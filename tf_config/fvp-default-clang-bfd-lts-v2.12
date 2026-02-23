@@ -1,0 +1,3 @@
+CC=clang
+LD=aarch64-none-elf-ld.bfd
+PLAT=fvp

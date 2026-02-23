@@ -1,0 +1,5 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=zynqmp
+SPD=pncd
+SPD_PNCD_NS_IRQ=126
+SPD_PNCD_S_IRQ=15

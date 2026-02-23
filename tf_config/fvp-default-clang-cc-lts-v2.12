@@ -1,0 +1,3 @@
+CC=clang
+PLAT=fvp
+ENABLE_ASSERTIONS=0

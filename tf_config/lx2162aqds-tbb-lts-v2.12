@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+CST_DIR=$(pwd)
+PLAT=lx2162aqds
+TRUSTED_BOARD_BOOT=1
