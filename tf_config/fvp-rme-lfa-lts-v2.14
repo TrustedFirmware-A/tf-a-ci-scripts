@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+ENABLE_RME=1
+LFA_SUPPORT=1
+PLAT=fvp

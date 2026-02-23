@@ -1,0 +1,5 @@
+AARCH32_SP=sp_min
+CROSS_COMPILE=arm-none-eabi-
+FVP_USE_GIC_DRIVER=FVP_GICV2
+ARCH=aarch32
+PLAT=fvp

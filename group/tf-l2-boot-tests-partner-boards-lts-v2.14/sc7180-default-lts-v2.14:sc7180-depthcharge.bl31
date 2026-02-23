@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2019-2023 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+    local ext_lib="libqtisec.a"
+
+    pushd "${workspace}"
+
+    if [ ! -f "${ext_lib}" ]; then
+        echo "Fetch ${ext_lib} for sc7180"
+        saveas="${ext_lib}" \
+            url="https://github.com/coreboot/qc_blobs/raw/master/sc7180/qtiseclib/libqtisec.a" \
+            fetch_file
+        pwd; ls -l
+    fi
+
+    popd "${workspace}"
+}

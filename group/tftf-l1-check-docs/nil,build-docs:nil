@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2020, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2025, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
 pre_tftf_build() {
 	targets="doc" set_tftf_build_targets
+}
+
+post_package() {
+	mv "$tftf_root/docs/build" "$archive"
 }

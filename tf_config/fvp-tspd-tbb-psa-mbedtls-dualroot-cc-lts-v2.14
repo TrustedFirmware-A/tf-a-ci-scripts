@@ -1,0 +1,10 @@
+ARM_ROTPK_LOCATION=devel_rsa
+COT=dualroot
+CROSS_COMPILE=aarch64-none-elf-
+GENERATE_COT=1
+PLAT=fvp
+ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
+SPD=tspd
+TRUSTED_BOARD_BOOT=1
+ENABLE_ASSERTIONS=0
+PSA_CRYPTO=1

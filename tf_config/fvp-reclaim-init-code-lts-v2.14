@@ -1,0 +1,3 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+RECLAIM_INIT_CODE=1

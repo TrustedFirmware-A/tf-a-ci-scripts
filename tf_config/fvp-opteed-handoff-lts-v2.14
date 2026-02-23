@@ -1,0 +1,5 @@
+ARM_TSP_RAM_LOCATION=tdram
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+SPD=opteed
+TRANSFER_LIST=1

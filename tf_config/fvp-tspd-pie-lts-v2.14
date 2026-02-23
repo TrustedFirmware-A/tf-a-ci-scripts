@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+SPD=tspd
+ENABLE_PIE=1

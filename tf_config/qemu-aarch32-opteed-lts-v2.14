@@ -1,0 +1,5 @@
+AARCH32_SP=optee
+ARCH=aarch32
+ARM_ARCH_MAJOR=7
+CROSS_COMPILE=arm-none-eabi-
+PLAT=qemu

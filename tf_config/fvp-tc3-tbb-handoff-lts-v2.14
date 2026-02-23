@@ -1,0 +1,11 @@
+ARM_GPT_SUPPORT=1
+ARM_ROTPK_LOCATION=devel_rsa
+BRANCH_PROTECTION=1
+CROSS_COMPILE=aarch64-none-elf-
+GENERATE_COT=1
+PLAT=tc
+ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
+SCP_BL2=/dev/null
+TARGET_PLATFORM=3
+TRUSTED_BOARD_BOOT=1
+TRANSFER_LIST=1

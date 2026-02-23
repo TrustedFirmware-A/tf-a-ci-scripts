@@ -1,0 +1,5 @@
+AARCH32_SP=sp_min
+ARCH=aarch32
+CROSS_COMPILE=arm-none-eabi-
+PLAT=fvp
+TRANSFER_LIST=1

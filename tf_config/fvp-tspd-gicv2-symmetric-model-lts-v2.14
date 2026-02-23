@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+FVP_USE_GIC_DRIVER=FVP_GICV2
+PLAT=fvp
+SPD=tspd
