@@ -111,6 +111,7 @@ def main():
     parser.add_argument("--lts", required=True, help="LTS branch, ex. lts-v2.8")
     parser.add_argument("--gerrit_user", required=True, help="The user id to perform the Gerrit query")
     parser.add_argument("--ssh_keyfile", required=True, help="The SSH keyfile")
+    parser.add_argument("--base_branch", default="master", help="base branch to compare against (default: master)")
     parser.add_argument("--debug", help="print debug logs", action="store_true")
 
     args = parser.parse_args()
@@ -118,11 +119,12 @@ def main():
     gerrit_user = args.gerrit_user
     ssh_keyfile = args.ssh_keyfile
     global global_debug
+    base_branch = args.base_branch
     global_debug = args.debug
 
-    csv_columns = ["index", "commit id in the integration branch", "committer date", "commit summary",
+    csv_columns = ["index", f"commit id in the {base_branch} branch", "committer date", "commit summary",
                    "score", "Gerrit Change-Id", "patch link for the LTS branch",
-                   "patch link for the integration branch", "To be cherry-picked"]
+                   f"patch link for the {base_branch} branch", "To be cherry-picked"]
     csv_data = []
 
     repo = git.Repo(args.repo)
@@ -139,7 +141,7 @@ def main():
         if len(lts_change_ids) >= REBASE_DEPTH:
             break
 
-    for cmt in repo.iter_commits('integration'):
+    for cmt in repo.iter_commits(base_branch):
         score = 0
 
         # if we find a same Change-Id among the ones we collected from the LTS branch
@@ -173,13 +175,13 @@ def main():
             gerrit_links = query_gerrit(gerrit_user, ssh_keyfile, change_id)
             # Append data to CSV
             csv_data.append({
-                "commit id in the integration branch": cmt.hexsha,
+                f"commit id in the {base_branch} branch": cmt.hexsha,
                 "committer date": cmt.committed_date,
                 "commit summary": cmt.summary,
                 "score": score,
                 "Gerrit Change-Id": change_id,
                 "patch link for the LTS branch": gerrit_links.get(lts_branch, "N/A"),
-                "patch link for the integration branch": gerrit_links.get("integration", "N/A"),
+                f"patch link for the {base_branch} branch": gerrit_links.get(base_branch, "N/A"),
                 "To be cherry-picked": "N" if gerrit_links.get(lts_branch) else "Y"
             })
             at_least_one_match = True
