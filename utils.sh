@@ -622,6 +622,10 @@ tfut_src_repo_url="${tfut_src_repo_url:-https://$tforg_gerrit_url/${GERRIT_PROJE
 
 css_downloads="${css_downloads:-$DOWNLOAD_SERVER_TF_A_URL/css}"
 
+# DRTM artifacts live under $DOWNLOAD_SERVER_TF_A_URL/drtm/<revision>/
+drtm_test_disk_rev="${drtm_test_disk_rev:-f32ffe5}"
+drtm_test_dir="${drtm_test_dir:-$DOWNLOAD_SERVER_TF_A_URL/drtm${drtm_test_disk_rev:+/$drtm_test_disk_rev}}"
+
 # SCP/MCP release binaries.
 scp_mcp_downloads="${scp_mcp_downloads:-$DOWNLOAD_SERVER_TF_A_URL/css_scp_2.16.0.6bf96e3b}"
 
