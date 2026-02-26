@@ -795,11 +795,13 @@ stm32mp2_common_flags="ARCH=aarch64 \
 # STM32MP21 SDMMC boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
     SPD=opteed STM32MP_LPDDR4_TYPE=1 STM32MP21=1 \
+    DTB_FILE_NAME=stm32mp215f-dk.dtb \
     BUILD_PLAT=build/stm32mp2-mp23-sdmmc/debug
 
 # STM32MP23 SDMMC boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
     SPD=opteed STM32MP_LPDDR4_TYPE=1 STM32MP23=1 \
+    DTB_FILE_NAME=stm32mp235f-dk.dtb \
     BUILD_PLAT=build/stm32mp2-mp23-sdmmc/debug
 
 # STM32MP25 SDMMC boot
