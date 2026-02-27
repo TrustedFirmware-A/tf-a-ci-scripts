@@ -101,9 +101,6 @@ reset_var has_ecv
 # Enable FEAT_S1PIE
 reset_var has_s1pie
 
-# Enable FEAT_S2PIE
-reset_var has_s2pie
-
 # Enable FEAT_S1POE
 reset_var has_s1poe
 
@@ -544,13 +541,6 @@ if [ "$has_s1pie" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_permission_indirection_s1=2
 -C cluster1.has_permission_indirection_s1=2
-EOF
-fi
-
-if [ "$has_s2pie" = "1" ]; then
-	cat <<EOF >>"$model_param_file"
--C cluster0.has_permission_indirection_s2=2
--C cluster1.has_permission_indirection_s2=2
 EOF
 fi
 
