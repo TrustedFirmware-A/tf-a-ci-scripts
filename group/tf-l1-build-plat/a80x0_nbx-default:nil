@@ -18,7 +18,7 @@ pre_tf_build() {
 
 	if [ ! -d "mv-ddr-marvell" ]; then
 		saveas="mv-ddr-marvell.tar.gz" \
-			url="$tfa_downloads/mv-ddr-marvell/mv-ddr-marvell-7bcb9dc7ea7fa233bf96bd0350a4ec7c205e342e.tar.gz" \
+			url="$DOWNLOAD_SERVER_TF_A_URL/mv-ddr-marvell/mv-ddr-marvell-7bcb9dc7ea7fa233bf96bd0350a4ec7c205e342e.tar.gz" \
 			fetch_file
 
 		tar -xzf "mv-ddr-marvell.tar.gz"
