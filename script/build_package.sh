@@ -1615,7 +1615,7 @@ for mode in $modes; do
 			fi
 
 			archive="$build_archive"
-			rmm_build_root="$rmm_root/build"
+			rmm_build_root="$archive/build/rmm"
 
 			echo "Building Trusted Firmware RMM ($mode) ..." |& log_separator
 
