@@ -1,0 +1,54 @@
+diff --git a/bl31/aarch64/runtime_exceptions.S b/bl31/aarch64/runtime_exceptions.S
+index 04659da62..56416215b 100644
+--- a/bl31/aarch64/runtime_exceptions.S
++++ b/bl31/aarch64/runtime_exceptions.S
+@@ -696,6 +696,14 @@ subtract_elr_el3:
+ 	sub	x28, x28, #4
+ skip_smc_check:
+ 	msr	elr_el3, x28
++	mrs	x30, spsr_el3
++	/* Clear PSTATE.A bit so that tftf can take SError */
++	bic	x30, x30, # (1 << 8)
++	msr	spsr_el3, x30
++	/* Route IRQ to be routed to tftf again */
++	mrs	x30, scr_el3
++	bic	x30, x30, SCR_IRQ_BIT
++	msr	scr_el3, x30
+ 	ldp	x28, x29, [sp, #CTX_GPREGS_OFFSET + CTX_GPREG_X28]
+ 	ldr	x30, [sp, #CTX_GPREGS_OFFSET + CTX_GPREG_LR]
+ 	exception_return
+diff --git a/services/arm_arch_svc/arm_arch_svc_setup.c b/services/arm_arch_svc/arm_arch_svc_setup.c
+index 57d211ed7..7df40e2c2 100644
+--- a/services/arm_arch_svc/arm_arch_svc_setup.c
++++ b/services/arm_arch_svc/arm_arch_svc_setup.c
+@@ -14,9 +14,30 @@
+ #include <services/arm_arch_svc.h>
+ #include <smccc_helpers.h>
+ #include <plat/common/platform.h>
++#include <context.h>
++#include <lib/el3_runtime/context_mgmt.h>
++
++static void modify_scr_el3_irq(void)
++{
++	u_register_t scr_el3;
++	cpu_context_t *ctx = cm_get_context(NON_SECURE);
++	el3_state_t *el3_ctx = get_el3state_ctx(ctx);
++	scr_el3 = read_ctx_reg(el3_ctx, CTX_SCR_EL3);
++	scr_el3 |= SCR_IRQ_BIT;
++	write_ctx_reg(el3_ctx, CTX_SCR_EL3, scr_el3);
++}
+ 
+ static int32_t smccc_version(void)
+ {
++	/*
++	 * This function is called tftf as part of testing SError reflection
++	 * from EL3 to lower EL.
++	 * Temporarily target tftf IRQ to EL3, trigger IRQ in tftf while SError
++	 * is pending which will cause lower EL IRQ handler in EL3, on finding
++	 * a pending SError EL3 will reflect back to tftf also in ret path make
++	 * sure SCR_EL3.IRQ is cleared so that IRQ is now handled in lower EL
++	 */
++	modify_scr_el3_irq();
+ 	return MAKE_SMCCC_VERSION(SMCCC_MAJOR_VERSION, SMCCC_MINOR_VERSION);
+ }
+ 

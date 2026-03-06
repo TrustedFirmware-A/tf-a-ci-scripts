@@ -1,0 +1,48 @@
+From 080e004b7ba917bd88d9f9c51d077e32a959d8fa Mon Sep 17 00:00:00 2001
+From: Zelalem <zelalem.aweke@arm.com>
+Date: Fri, 6 Dec 2019 10:29:13 -0600
+Subject: [PATCH] Add UBSAN test patch
+
+Change-Id: Ib2c78d9da0f214957dcad0d1d9a89089c10c9b48
+---
+ bl31/bl31_main.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/bl31/bl31_main.c b/bl31/bl31_main.c
+index 92a2027dd..46cbed65e 100644
+--- a/bl31/bl31_main.c
++++ b/bl31/bl31_main.c
+@@ -85,6 +85,19 @@ void bl31_setup(u_register_t arg0, u_register_t arg1, u_register_t arg2,
+ #endif /* CTX_INCLUDE_PAUTH_REGS */
+ }
+ 
++/*
++* UBSAN test function. This is used to test whether CI handles
++* undefined behaviour errors correctly.
++*/
++#include <limits.h>
++
++static int ubsan_test_add_overflow(void)
++{
++        static int32_t val = INT_MAX;
++        val += 0x1;
++        return val;
++}
++
+ /*******************************************************************************
+  * BL31 is responsible for setting up the runtime services for the primary cpu
+  * before passing control to the bootloader or an Operating System. This
+@@ -147,6 +160,10 @@ void bl31_main(void)
+ 	 * from BL31
+ 	 */
+ 	bl31_plat_runtime_setup();
++
++	/* Run UBSAN Test */
++        INFO("BL31: Running UBSAN test\n");
++        ubsan_test_add_overflow();
+ }
+ 
+ /*******************************************************************************
+-- 
+2.17.1
+

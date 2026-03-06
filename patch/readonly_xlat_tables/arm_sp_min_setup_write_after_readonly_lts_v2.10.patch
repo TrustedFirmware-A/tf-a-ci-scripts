@@ -1,0 +1,17 @@
+--- a/plat/arm/common/sp_min/arm_sp_min_setup.c
++++ b/plat/arm/common/sp_min/arm_sp_min_setup.c
+@@ -171,6 +171,14 @@ void arm_sp_min_plat_runtime_setup(void)
+
+ #if PLAT_RO_XLAT_TABLES
+ 	arm_xlat_make_tables_readonly();
++	int rc = xlat_change_mem_attributes(BL_CODE_BASE,
++					    BL_CODE_END - BL_CODE_BASE,
++					    MT_RW_DATA);
++	if (rc == 0) {
++		ERROR("Memory attributes were successfully changed after xlat tables were made read-only.\n");
++	}
++	ERROR("We should not have returned from xlat_change_mem_attributes().\n");
++	panic();
+ #endif
+ }
+

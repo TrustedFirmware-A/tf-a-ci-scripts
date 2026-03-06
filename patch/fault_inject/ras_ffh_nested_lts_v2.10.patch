@@ -1,0 +1,56 @@
+diff --git a/bl31/aarch64/runtime_exceptions.S b/bl31/aarch64/runtime_exceptions.S
+index 165058da9..cce9a9029 100644
+--- a/bl31/aarch64/runtime_exceptions.S
++++ b/bl31/aarch64/runtime_exceptions.S
+@@ -228,6 +228,9 @@ vector_entry sync_exception_aarch64
+ 	 */
+ 	save_x30
+ 	apply_at_speculative_wa
++	mrs	x30, scr_el3
++	orr	x30, x30, SCR_EA_BIT
++	msr	scr_el3, x30
+ 	sync_and_handle_pending_serror
+ 	unmask_async_ea
+ 	handle_sync_exception
+diff --git a/services/arm_arch_svc/arm_arch_svc_setup.c b/services/arm_arch_svc/arm_arch_svc_setup.c
+index 57d211ed7..36da3cc1e 100644
+--- a/services/arm_arch_svc/arm_arch_svc_setup.c
++++ b/services/arm_arch_svc/arm_arch_svc_setup.c
+@@ -14,9 +14,37 @@
+ #include <services/arm_arch_svc.h>
+ #include <smccc_helpers.h>
+ #include <plat/common/platform.h>
++#include <context.h>
++#include <lib/el3_runtime/context_mgmt.h>
++
++static void target_ea_to_lower_el(void)
++{
++	u_register_t scr_el3;
++	cpu_context_t *ctx = cm_get_context(NON_SECURE);
++	el3_state_t *el3_ctx = get_el3state_ctx(ctx);
++	scr_el3 = read_ctx_reg(el3_ctx, CTX_SCR_EL3);
++	scr_el3 &= ~SCR_EA_BIT;
++	write_ctx_reg(el3_ctx, CTX_SCR_EL3, scr_el3);
++}
+ 
+ static int32_t smccc_version(void)
+ {
++	/*
++	 * This patch is used in RAS FFH case.
++	 * In RAS FFH case lower EL EAs are routed to EL3 but to do reflection
++	 * of SError tests we need SError to be pended in tftf when SMC call is
++	 * made. Taking an SError depends on PSTATE.A bit of EL but if SCR_EL3.EA
++	 * is set, the SError is immediately taken. So to allow SError to be
++	 * pended in tftf we need to clear SCR_EL3.EA along with PSTATE.A masked
++	 * (which is done in tftf as part of test).
++	 * Since tftf cannot modify SCR_EL3 register, this hack is used in
++	 * SMCCC_VERSION path which tftf calls before running actual test.
++	 *
++	 * We can't directly modify SCR_EL3 and preserve it in context switch that
++	 * is why the context value is modified. The value of SCR_EL3 is modified
++	 * again while exiting EL3 in reflection path.
++	 */
++	target_ea_to_lower_el();
+ 	return MAKE_SMCCC_VERSION(SMCCC_MAJOR_VERSION, SMCCC_MINOR_VERSION);
+ }
+ 

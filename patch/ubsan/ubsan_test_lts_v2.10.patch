@@ -1,0 +1,35 @@
+diff --git a/bl31/bl31_main.c b/bl31/bl31_main.c
+index cae55f314..481050a43 100644
+--- a/bl31/bl31_main.c
++++ b/bl31/bl31_main.c
+@@ -108,6 +108,19 @@ void bl31_setup(u_register_t arg0, u_register_t arg1, u_register_t arg2,
+ #endif /* CTX_INCLUDE_PAUTH_REGS */
+ }
+ 
++/*
++ * UBSAN test function. This is used to test whether CI handles undefined
++ * behaviour errors correctly.
++ */
++#include <limits.h>
++
++static int ubsan_test_add_overflow(void)
++{
++	static int32_t val = INT_MAX;
++	val += 0x1;
++	return val;
++}
++
+ /*******************************************************************************
+  * BL31 is responsible for setting up the runtime services for the primary cpu
+  * before passing control to the bootloader or an Operating System. This
+@@ -216,6 +229,10 @@ void bl31_main(void)
+ 	PMF_CAPTURE_TIMESTAMP(bl_svc, BL31_EXIT, PMF_CACHE_MAINT);
+ 	console_flush();
+ #endif
++
++	/* Run UBSAN Test */
++	INFO("BL31: Running UBSAN test\n");
++	ubsan_test_add_overflow();
+ }
+ 
+ /*******************************************************************************

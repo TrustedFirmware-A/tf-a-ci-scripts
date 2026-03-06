@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	# Apply patch to run tftf at NS-EL1 exception level
+	apply_tf_patch "unused_el2/run_tftf_at_el1_lts_v2.10"
+}

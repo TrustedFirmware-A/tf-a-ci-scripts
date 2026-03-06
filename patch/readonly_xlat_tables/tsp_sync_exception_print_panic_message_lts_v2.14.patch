@@ -1,0 +1,13 @@
+diff --git a/bl32/tsp/aarch64/tsp_exceptions.S b/bl32/tsp/aarch64/tsp_exceptions.S
+index 4c6a56a59..6388b51fe 100644
+--- a/bl32/tsp/aarch64/tsp_exceptions.S
++++ b/bl32/tsp/aarch64/tsp_exceptions.S
+@@ -102,7 +102,7 @@ end_vector_entry serror_sp_el0
+ 	 * -----------------------------------------------------
+ 	 */
+ vector_entry sync_exception_sp_elx
+-	b	plat_panic_handler
++	b	el3_panic
+ end_vector_entry sync_exception_sp_elx
+ 
+ vector_entry irq_sp_elx

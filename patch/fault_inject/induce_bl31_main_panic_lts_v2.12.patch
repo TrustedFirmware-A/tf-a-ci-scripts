@@ -1,0 +1,13 @@
+diff --git a/bl31/bl31_main.c b/bl31/bl31_main.c
+index 8c5ba6f2e..b1ef0b005 100644
+--- a/bl31/bl31_main.c
++++ b/bl31/bl31_main.c
+@@ -224,6 +224,8 @@ void bl31_main(void)
+ 
+ 	console_flush();
+ 	console_switch_state(CONSOLE_FLAG_RUNTIME);
++
++	panic();
+ }
+ 
+ /*******************************************************************************

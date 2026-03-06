@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	# Apply patch to enable tftf Serror to handle RAS error which got triggered by
+	# syncronization barriers.
+	apply_tf_patch "fault_inject/ras_kfh_reflection_lts_v2.14.patch"
+}

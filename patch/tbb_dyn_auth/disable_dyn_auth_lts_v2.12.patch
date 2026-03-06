@@ -1,0 +1,28 @@
+diff --git a/common/bl_common.c b/common/bl_common.c
+index 03ebb3a64..524fc4720 100644
+--- a/common/bl_common.c
++++ b/common/bl_common.c
+@@ -29,7 +29,7 @@ static int disable_auth;
+  *****************************************************************************/
+ void dyn_disable_auth(void)
+ {
+-	INFO("Disabling authentication of images dynamically\n");
++	NOTICE("Disabling authentication of images dynamically\n");
+ 	disable_auth = 1;
+ }
+ # endif /* DYN_DISABLE_AUTH */
+diff --git a/plat/arm/board/fvp/fdts/fvp_tb_fw_config.dts b/plat/arm/board/fvp/fdts/fvp_tb_fw_config.dts
+index 576eded93..ec49225e8 100644
+--- a/plat/arm/board/fvp/fdts/fvp_tb_fw_config.dts
++++ b/plat/arm/board/fvp/fdts/fvp_tb_fw_config.dts
+@@ -11,7 +11,7 @@
+ 		compatible = "arm,tb_fw";
+ 
+ 		/* Disable authentication for development */
+-		disable_auth = <0x0>;
++		disable_auth = <0x1>;
+ 
+ 		/*
+ 		 * The following two entries are placeholders for Mbed TLS
+--
+2.20.1

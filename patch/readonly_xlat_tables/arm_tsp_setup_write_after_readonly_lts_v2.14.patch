@@ -1,0 +1,16 @@
+--- a/plat/arm/common/tsp/arm_tsp_setup.c
++++ b/plat/arm/common/tsp/arm_tsp_setup.c
+@@ -82,5 +82,13 @@ void tsp_plat_arch_setup(void)
+
+ #if PLAT_RO_XLAT_TABLES
+ 	arm_xlat_make_tables_readonly();
++	int rc = xlat_change_mem_attributes(BL_CODE_BASE,
++					    BL_CODE_END - BL_CODE_BASE,
++					    MT_RW_DATA);
++	if (rc == 0) {
++		ERROR("Memory attributes were successfully changed after xlat tables were made read-only.\n");
++	}
++	ERROR("We should not have returned from xlat_change_mem_attributes().\n");
++	panic();
+ #endif
+ }

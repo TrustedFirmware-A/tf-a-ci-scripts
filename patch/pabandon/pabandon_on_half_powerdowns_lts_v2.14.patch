@@ -1,0 +1,40 @@
+diff --git a/lib/psci/psci_common.c b/lib/psci/psci_common.c
+index dc7dd2f8b..dbf0f40f5 100644
+--- a/lib/psci/psci_common.c
++++ b/lib/psci/psci_common.c
+@@ -1327,6 +1327,10 @@ void __dead2 psci_pwrdown_cpu_end_terminal(void)
+ 	panic();
+ }
+ 
++#include <c1_ultra.h>
++#include <c1_pro.h>
++static bool should_abandon[PLATFORM_CORE_COUNT];
++
+ /*******************************************************************************
+  * Finish a non-terminal power down sequence, ending with a wfi. In case of
+  * wakeup will unwind any CPU specific actions and return.
+@@ -1337,11 +1341,23 @@ void psci_pwrdown_cpu_end_wakeup(unsigned int power_level)
+ 	/* ensure write buffer empty */
+ 	dsbsy();
+ 
++	long pos = plat_my_core_pos();
++	bool abandon = should_abandon[pos];
++	/* abandon every other time */
++	should_abandon[pos] = !should_abandon[pos];
++	long midr = EXTRACT_PARTNUM(read_midr());
++
+ 	/*
+ 	 * Turn the core off. Usually, will be terminal. In some circumstances
+ 	 * the powerdown will be denied and we'll need to unwind.
+ 	 */
+-	wfi();
++	/* only abandon for cores that support it */
++	if (!(abandon &&
++	     (midr == EXTRACT_PARTNUM(C1_PRO_MIDR)
++	      || midr == EXTRACT_PARTNUM(C1_ULTRA_MIDR))))
++	{
++		wfi();
++	}
+ 
+ 	/*
+ 	 * Waking up does not require hardware-assisted coherency, but that is

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	# Apply a patch which attempts to write to the translation tables (by
+	# changing the memory attributes of a region) immediately after the
+	# translation tables have been made read-only, triggering a data abort.
+	apply_tf_patch "readonly_xlat_tables/arm_sp_min_setup_write_after_readonly_lts_v2.10.patch"
+	# Apply patch which allows a 'Panic at PC:...' message to be printed
+	# when the data abort happens.
+	apply_tf_patch "readonly_xlat_tables/sp_min_data_abort_print_panic_message_lts_v2.10.patch"
+}
+
+generate_lava_job() {
+	local model="base-aemv8a"
+
+	uart="0" timeout="60" file="timeout_spmin_roxlattables.exp" track_expect
+	uart="1" timeout="60" file="crash_panic.exp" set_primary="1" track_expect
+
+	model="$model" aarch32="1" bmcov_plugin="1" \
+		bmcov_plugin_path="${coverage_trace_plugin}" \
+		gen_model_params
+	model="$model" gen_fvp_yaml
+}
