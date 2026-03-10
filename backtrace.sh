@@ -22,34 +22,17 @@ dump_stack() {(
 	done
 )}
 
-# Dump the process tree.
+# Dump the formatted call stack.
 #
-# This function takes no arguments, and prints the process tree of the current
-# process. This can be useful for, for example, determining the arguments that
-# the script has been called with.
-dump_process_tree() {
-	ps --forest --no-headers --format command
-}
-
-# Dump the complete program state.
-#
-# This function takes no arguments, and combines the output of the `dump_stack`
-# and `dump_process_tree` functions.
+# This function takes no arguments, and prefixes the output of `dump_stack()`
+# with a section header for inclusion in error backtraces.
 dump() {(
 	set +x
 
-	echo "Process tree:"
-	echo
-
-	dump_process_tree | while IFS= read -r line; do
-		echo "    ${line}"
-	done
-
-	echo
 	echo "Call stack:"
 	echo
 
-	dump_stack | while read -r line; do
+	dump_stack | while IFS= read -r line; do
 		echo "    ${line}"
 	done
 )}
