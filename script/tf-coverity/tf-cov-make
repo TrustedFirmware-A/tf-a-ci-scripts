@@ -603,8 +603,8 @@ clean_build PLAT=stingray $(common_flags) BOARD_CFG=bcm958742t-ns3 \
 # Platforms from Marvell
 # Source files from mv-ddr-marvell repository are necessary
 # to build below four platforms
-wget ${DOWNLOAD_SERVER_URL}/tf-a/mv-ddr-marvell/mv-ddr-marvell-5d41a995637de1dbc93f193db6ef0c8954cab316.tar.gz 2> /dev/null
-tar -xzf mv-ddr-marvell-5d41a995637de1dbc93f193db6ef0c8954cab316.tar.gz 2> /dev/null
+wget ${DOWNLOAD_SERVER_URL}/tf-a/mv-ddr-marvell/mv-ddr-marvell-7bcb9dc7ea7fa233bf96bd0350a4ec7c205e342e.tar.gz 2> /dev/null
+tar -xzf mv-ddr-marvell-7bcb9dc7ea7fa233bf96bd0350a4ec7c205e342e.tar.gz 2> /dev/null
 mv mv-ddr-marvell drivers/marvell/mv_ddr
 
 # These platforms from Marvell have dependency on GCC-6.2.1 toolchain
