@@ -535,7 +535,7 @@ clean_build PLAT=lx2162aqds $(common_flags) BOOT_MODE=flexspi_nor \
 #X509 Based CoT
 clean_build PLAT=lx2162aqds $(common_flags) BOOT_MODE=flexspi_nor \
     $nxp_sb_flags GENERATE_COT=1 \
-    MBEDTLS_DIR=$(pwd)/mbedtls
+    NXP_TBBR_USE_X509=1
 
 #BOOT_MODE=emmc and Stack protector
 clean_build PLAT=lx2162aqds $(common_flags) BOOT_MODE=emmc \
