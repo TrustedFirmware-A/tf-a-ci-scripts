@@ -95,8 +95,8 @@ MBED_TLS_URL_REPO=https://github.com/ARMmbed/mbedtls.git
 MBED_TLS_SOURCES_TAG="mbedtls-3.6.5"
 
 # TF-M variables
-TF_M_TESTS_PATH=${WORKSPACE}/TF-M/tf-m-tests
-TF_M_EXTRAS_PATH=${WORKSPACE}/TF-M/tf-m-extras
+export TF_M_TESTS_PATH=${WORKSPACE}/TF-M/tf-m-tests
+export TF_M_EXTRAS_PATH=${WORKSPACE}/TF-M/tf-m-extras
 
 QCBOR_LIB_DIR=qcbor
 QCBOR_URL_REPO=https://github.com/laurencelundblade/QCBOR.git
