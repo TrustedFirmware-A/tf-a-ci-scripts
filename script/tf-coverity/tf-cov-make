@@ -605,8 +605,10 @@ clean_build PLAT=stingray $(common_flags) BOARD_CFG=bcm958742t-ns3 \
 # Source files from mv-ddr-marvell repository are necessary
 # to build below four platforms
 wget ${DOWNLOAD_SERVER_URL}/tf-a/mv-ddr-marvell/mv-ddr-marvell-7bcb9dc7ea7fa233bf96bd0350a4ec7c205e342e.tar.gz 2> /dev/null
-tar -xzf mv-ddr-marvell-7bcb9dc7ea7fa233bf96bd0350a4ec7c205e342e.tar.gz 2> /dev/null
-mv mv-ddr-marvell drivers/marvell/mv_ddr
+mkdir -p drivers/marvell/mv_ddr
+tar -xzf mv-ddr-marvell-7bcb9dc7ea7fa233bf96bd0350a4ec7c205e342e.tar.gz \
+    --strip-components=1 \
+    -C drivers/marvell/mv_ddr 2> /dev/null
 
 clean_build PLAT=a80x0 DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
     MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash

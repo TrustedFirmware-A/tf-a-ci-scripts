@@ -4,6 +4,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
+source "$ci_root/marvell_utils.sh"
+
 pre_tf_build() {
 	targets="all mrvl_flash mrvl_uart" set_tf_build_targets
 
@@ -20,16 +22,7 @@ pre_tf_build() {
 	echo "Set WTP to $workspace/A3700-utils-marvell"
 	set_hook_var "WTP" "$workspace/A3700-utils-marvell"
 
-	if [ ! -d "mv-ddr-marvell" ]; then
-		saveas="mv-ddr-marvell.tar.gz" \
-			url="$DOWNLOAD_SERVER_TF_A_URL/mv-ddr-marvell/mv-ddr-marvell-5d41a995637de1dbc93f193db6ef0c8954cab316.tar.gz" \
-			fetch_file
-
-		tar -xzf "mv-ddr-marvell.tar.gz"
-	fi
-
-	echo "Set MV_DDR_PATH to $workspace/mv-ddr-marvell"
-	set_hook_var "MV_DDR_PATH" "$workspace/mv-ddr-marvell"
+	fetch_mv_ddr_files
 
 	if [ ! -d "cryptopp" ]; then
 		saveas="cryptopp.zip" \
