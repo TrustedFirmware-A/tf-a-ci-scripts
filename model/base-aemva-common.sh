@@ -248,12 +248,17 @@ if [ "$retain_flash" = "1" ]; then
 EOF
 fi
 
-# Enable RME at the system level
-if [ "$has_rme" = "1" ]; then
+# Enable the selected RME layout
+if [[ "${has_rme:-0}" != "0" ]]; then
 	cat <<EOF >>"$model_param_file"
 -C bp.refcounter.non_arch_start_at_default=1
--C bp.has_rme=1
 EOF
+
+	if [[ "${has_rme}" != "trusted-sram" ]]; then
+		cat <<-EOF >>"${model_param_file}"
+			-C bp.has_rme=1
+		EOF
+	fi
 fi
 
 # MTE is enabled
@@ -390,7 +395,7 @@ EOF
 #   programming interface.
 # * pci.pci_smmuv3.mmu.SMMU_ROOT_IDR0=3: ROOT_IMPL=1/BGPTM=1.
 # * pci.pci_smmuv3.mmu.SMMU_ROOT_IIDR=0x43B: JEP106 Arm implementer code.
-	if [ "$has_rme" = "1" ]; then
+	if [[ "${has_rme:-0}" != "0" ]]; then
 		cat <<EOF >>"$model_param_file"
 -C pci.pci_smmuv3.mmu.SMMU_IDR0=0x4046123b
 -C pci.pci_smmuv3.mmu.SMMU_IDR5=0xFFFF0475
@@ -460,7 +465,7 @@ EOF
 fi
 
 # FEAT_RME is enabled for the PE, plus additional arch options
-if [ "$has_rme" = "1" ]; then
+if [[ "${has_rme:-0}" != "0" ]]; then
         cat <<EOF >>"$model_param_file"
 -C cluster0.rme_support_level=2
 -C cluster0.gicv3.cpuintf-mmap-access-level=2
@@ -793,7 +798,7 @@ EOF
 fi
 
 # FEAT_RME is enabled for the PE, plus additional arch options
-if [ "$has_rme" = "1" ]; then
+if [[ "${has_rme:-0}" != "0" ]]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster1.rme_support_level=2
 -C cluster1.gicv3.cpuintf-mmap-access-level=2
