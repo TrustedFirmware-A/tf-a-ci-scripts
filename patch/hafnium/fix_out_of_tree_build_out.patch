@@ -1,0 +1,21 @@
+diff --git a/Makefile b/Makefile
+--- a/Makefile
++++ b/Makefile
+@@ -65,7 +65,7 @@
+ CHECKPATCH_IGNORE := "src/arch/aarch64/hypervisor/debug_el1.c\|src/arch/aarch64/hypervisor/perfmon.c\|src/arch/aarch64/hypervisor/feature_id.c"
+ 
+ OUT ?= out/$(PROJECT)
+-OUT_DIR = out/$(PROJECT)
++OUT_DIR = $(OUT)
+ 
+ .PHONY: all
+ all: $(OUT_DIR)/build.ninja
+@@ -88,7 +88,7 @@
+ 
+ .PHONY: clobber
+ clobber:
+-	rm -rf $(OUT)
++	rm -rf $(OUT_DIR)
+ 
+ # see .clang-format.
+ .PHONY: format

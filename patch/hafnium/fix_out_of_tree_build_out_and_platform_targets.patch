@@ -1,0 +1,41 @@
+diff --git a/Makefile b/Makefile
+--- a/Makefile
++++ b/Makefile
+@@ -10,6 +10,11 @@
+ TOOLCHAIN_LIB := $(shell clang --print-resource-dir)
+ 
+ ENABLE_ASSERTIONS ?= 1
++
++PLATFORM ?= default
++LIST_SEPARATOR := ,
++PLATFORM_LIST := $(subst $(LIST_SEPARATOR), ,$(PLATFORM))
++PLATFORM_TARGETS := $(foreach PLAT,$(PLATFORM_LIST),$(PLAT)_clang/hafnium.bin)
+ 
+ GN_ARGS := project="$(PROJECT)"
+ GN_ARGS += toolchain_lib="$(TOOLCHAIN_LIB)"
+@@ -63,11 +68,15 @@
+ CHECKPATCH_IGNORE := "src/arch/aarch64/hypervisor/debug_el1.c\|src/arch/aarch64/hypervisor/perfmon.c\|src/arch/aarch64/hypervisor/feature_id.c"
+ 
+ OUT ?= out/$(PROJECT)
+-OUT_DIR = out/$(PROJECT)
++OUT_DIR = $(OUT)
+ 
+ .PHONY: all
+ all: $(OUT_DIR)/build.ninja
++ifneq ($(PLATFORM),default)
++	@$(NINJA) -C $(OUT_DIR) $(PLATFORM_TARGETS)
++else
+ 	@$(NINJA) -C $(OUT_DIR)
++endif
+ 
+ $(OUT_DIR)/build.ninja:
+ 	@$(GN) --export-compile-commands gen --args='$(GN_ARGS)' $(OUT_DIR)
+@@ -78,7 +87,7 @@
+ 
+ .PHONY: clobber
+ clobber:
+-	rm -rf $(OUT)
++	rm -rf $(OUT_DIR)
+ 
+ # see .clang-format.
+ .PHONY: format

@@ -43,12 +43,25 @@ cc_config="${CC_ENABLE:-}"
 export archive="$artefacts"
 build_log="$artefacts/build.log"
 
+tf_a_host_tool_path() {
+	local tool="${1:?}"
+	local build_tool="${tf_build_root}/$(get_tf_opt PLAT)/${bin_mode}/tools/$tool/$tool"
+	local source_tool="${tf_root}/tools/${tool}/${tool}"
+
+	# Older TF-A releases still build host tools in-tree.
+	if [[ -f "${build_tool}" ]]; then
+		echo "${build_tool}"
+	else
+		echo "${source_tool}"
+	fi
+}
+
 fiptool_path() {
-	echo $tf_build_root/$(get_tf_opt PLAT)/${bin_mode}/tools/fiptool/fiptool
+	tf_a_host_tool_path fiptool
 }
 
 cert_create_path() {
-	echo $tf_build_root/$(get_tf_opt PLAT)/${bin_mode}/tools/cert_create/cert_create
+	tf_a_host_tool_path cert_create
 }
 
 # Validate $bin_mode
@@ -750,6 +763,12 @@ build_spm() {
 
 	cd "$spm_root"
 
+	# Reference-project builds without a selected Hafnium `PLATFORM` still use
+	# the repository's bundled prebuilt toolchain.
+	if [ "${PROJECT-}" = "reference" ] && [ -z "${PLATFORM-}" ]; then
+		export PATH="$PWD/prebuilts/linux-x64/clang/bin:$PWD/prebuilts/linux-x64/dtc:$PATH"
+	fi
+
 	# Log build command line. It is left unfolded on purpose to assist
 	# copying to clipboard.
 	cat <<EOF | log_separator
@@ -1101,6 +1120,89 @@ apply_tf_patch() {
 	popd
 }
 
+apply_spm_patch() {
+	root="$spm_root"
+	new_root="$archive/spm_mirror"
+
+	# paralell builds are only used locally. Don't do for CI since this will
+	# have a speed penalty. Also skip if this was already done as a single
+	# job may apply many patches.
+	if upon "$local_ci"; then
+		# collect diff on first run for either a fresh or dirty build
+		if [[ ! -d $new_root ]] || [[ ! -e "$spm_patch_record" ]]; then
+			diff=$(mktempfile)
+
+			# get anything still uncommitted (including submodules)
+			pushd  $spm_root
+			git diff --submodule=diff HEAD > $diff
+			popd
+		fi
+
+		if [[ ! -d $new_root ]]; then
+			# git will hard link when cloning locally, no need for --depth=1
+			git clone "$root" $new_root --shallow-submodules --recurse-submodules
+		fi
+
+		spm_root=$new_root # next apply_spm_patch will run in the same hook
+		set_hook_var "spm_root" "$spm_root" # for anyone outside the hook
+
+		if [[ ! -e "$spm_patch_record" ]]; then
+			# apply uncommited changes so they are picked up in the build
+			pushd  $spm_root
+			if upon "$dont_clean"; then
+				# tree is dirty, refresh
+				git stash
+			fi
+			git apply $diff &> /dev/null || true
+			popd
+			set +x
+
+		fi
+	fi
+
+	pushd "$spm_root"
+	patch_record="$spm_patch_record" apply_patch "$1"
+	popd
+}
+
+spm_needs_out_dir_compat() {
+	local makefile="${spm_root}/Makefile"
+
+	if [[ -f "${makefile}" ]]; then
+		return 1
+	fi
+
+	grep -Fqx 'OUT_DIR = out/$(PROJECT)' "${makefile}"
+}
+
+spm_needs_platform_build_compat() {
+	local makefile="${spm_root}/Makefile"
+
+	if [[ -f "${makefile}" ]]; then
+		return 1
+	fi
+
+	! grep -Fqx 'PLATFORM ?= default' "${makefile}"
+}
+
+ensure_spm_out_dir_compat() {
+	if ! spm_needs_out_dir_compat; then
+		return 0
+	fi
+
+	echo "Applying legacy Hafnium OUT compatibility..."
+	apply_spm_patch "hafnium/fix_out_of_tree_build_out.patch"
+}
+
+ensure_spm_platform_build_compat() {
+	if ! spm_needs_platform_build_compat; then
+		return 0
+	fi
+
+	echo "Applying legacy Hafnium PLATFORM compatibility..."
+	apply_spm_patch "hafnium/fix_out_of_tree_build_out_and_platform_targets.patch"
+}
+
 mkdir -p "$workspace"
 mkdir -p "$archive"
 set_package_var "TEST_CONFIG" "$test_config"
@@ -1129,6 +1231,7 @@ tfut_config_file="$ci_root/tfut_config/$tfut_config"
 
 # File that keeps track of applied patches
 tf_patch_record="$workspace/tf_patches"
+spm_patch_record="$workspace/spm_patches"
 rfa_patch_record="$workspace/rfa_patches"
 
 # Split run config into TF and TFUT components
@@ -1442,12 +1545,20 @@ for mode in $modes; do
 			source "$plat_utils"
 		fi
 
+		archive="$build_archive"
+
+		# we rely on the patch record to know when to setup a clone.
+		# Remove it to signal we're building again.
+		rm -rf "$spm_patch_record"
+
 		# Call pre-build hook
 		call_hook pre_spm_build
 
+		ensure_spm_platform_build_compat
+		ensure_spm_out_dir_compat
+
 		# SPM build generates two sets of binaries, one for normal and other
 		# for Secure world. We need both set of binaries for CI.
-		archive="$build_archive"
 		spm_build_root="$archive/build/spm"
 
 		spm_secure_build_root="$spm_build_root/$spm_secure_out_dir"
