@@ -1,0 +1,10 @@
+#
+# Copyright (c) 2023 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tftf_build() {
+    setup_llvm_toolchain
+    targets="tftf ivy realm cactus cactus_mm ns_bl1u" set_tftf_build_targets
+}
