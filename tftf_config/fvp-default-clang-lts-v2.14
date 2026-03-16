@@ -1,0 +1,5 @@
+ARCH=aarch64
+ARM_ARCH_MINOR=7
+CC=clang
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp

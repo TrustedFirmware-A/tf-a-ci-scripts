@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+SPMC_AT_EL3=1
+PLAT=fvp
+TESTS=el3-spmc

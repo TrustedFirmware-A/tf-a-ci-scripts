@@ -1,0 +1,5 @@
+ARM_ARCH_FEATURE=memtag
+ARM_ARCH_MINOR=5
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+TESTS=cpu-extensions
