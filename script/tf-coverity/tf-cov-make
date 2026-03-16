@@ -608,25 +608,24 @@ wget ${DOWNLOAD_SERVER_URL}/tf-a/mv-ddr-marvell/mv-ddr-marvell-7bcb9dc7ea7fa233b
 tar -xzf mv-ddr-marvell-7bcb9dc7ea7fa233bf96bd0350a4ec7c205e342e.tar.gz 2> /dev/null
 mv mv-ddr-marvell drivers/marvell/mv_ddr
 
-# These platforms from Marvell have dependency on GCC-6.2.1 toolchain
-make PLAT=a80x0 DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr \
-    CROSS_COMPILE="$(set_cross_compile_gcc_linaro_toolchain)" all mrvl_flash
-make PLAT=a80x0_mcbin DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr \
-    CROSS_COMPILE="$(set_cross_compile_gcc_linaro_toolchain)" all mrvl_flash
-make PLAT=a80x0_nbx DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr \
-    CROSS_COMPILE=aarch64-none-elf- all mrvl_flash
-make PLAT=a70x0 DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr \
-    CROSS_COMPILE="$(set_cross_compile_gcc_linaro_toolchain)" all mrvl_flash
-make PLAT=a70x0_amc DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr \
-    CROSS_COMPILE="$(set_cross_compile_gcc_linaro_toolchain)" all mrvl_flash
-make PLAT=a70x0_mochabin DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr \
-    CROSS_COMPILE="$(set_cross_compile_gcc_linaro_toolchain)" all mrvl_flash
-make PLAT=a80x0_puzzle DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr \
-    CROSS_COMPILE="$(set_cross_compile_gcc_linaro_toolchain)" all mrvl_flash
-make PLAT=t9130 DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr \
-    CROSS_COMPILE="$(set_cross_compile_gcc_linaro_toolchain)" all mrvl_flash
-make PLAT=t9130_cex7_eval DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr \
-    CROSS_COMPILE="$(set_cross_compile_gcc_linaro_toolchain)" all mrvl_flash
+clean_build PLAT=a80x0 DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
+    MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
+clean_build $(common_flags) PLAT=a80x0_mcbin DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
+    MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
+clean_build $(common_flags) make PLAT=a80x0_nbx DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
+    MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
+clean_build $(common_flags) PLAT=a70x0 DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
+    MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
+clean_build $(common_flags) PLAT=a70x0_amc DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
+    MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
+clean_build $(common_flags) PLAT=a70x0_mochabin DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
+    MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
+clean_build $(common_flags) PLAT=a80x0_puzzle DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
+    MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
+clean_build $(common_flags) PLAT=t9130 DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
+    MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
+clean_build $(common_flags) PLAT=t9130_cex7_eval DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
+    MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
 
 # Removing the source files
 rm -rf drivers/marvell/mv_ddr 2> /dev/null
