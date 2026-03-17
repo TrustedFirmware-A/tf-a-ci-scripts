@@ -9,6 +9,11 @@ echo '----------------------------------------------'
 echo '-- Running static checks on the source code --'
 echo '----------------------------------------------'
 
+LOG_TEST_FILENAME="${LOG_TEST_FILENAME:-"static-checks.log"}"
+LOG_TEST_FILENAME="$(realpath -m "${LOG_TEST_FILENAME}")"
+
+export LOG_TEST_FILENAME
+
 # Find the absolute path of the scripts' top directory
 
 cd "$(dirname "$0")/../.."
@@ -22,8 +27,6 @@ git fetch --update-shallow origin ${GERRIT_BRANCH} ${GERRIT_REFSPEC}
 export merge_base=$(git merge-base \
     $(head -n1 .git/FETCH_HEAD | cut -f1) \
     $(tail -n1 .git/FETCH_HEAD | cut -f1))
-
-export LOG_TEST_FILENAME=$(pwd)/static-checks.log
 
 echo
 echo "###### Static checks ######"

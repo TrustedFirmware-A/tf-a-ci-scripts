@@ -9,7 +9,10 @@ echo '----------------------------------------------'
 echo '-- Running Rust formatting and lint checks  --'
 echo '----------------------------------------------'
 
-export LOG_TEST_FILENAME=$(pwd)/next-checks.log
+LOG_TEST_FILENAME="${LOG_TEST_FILENAME:-"next-checks.log"}"
+LOG_TEST_FILENAME="$(realpath -m "${LOG_TEST_FILENAME}")"
+
+export LOG_TEST_FILENAME
 export RUSTUP_HOME=/usr/local/rustup
 
 # For local runs, we require GERRIT_BRANCH to be set to get the merge-base/diff

@@ -11,7 +11,10 @@ echo '----------------------------------------------'
 echo '--           Running Cargo tests            --'
 echo '----------------------------------------------'
 
-export LOG_TEST_FILENAME=$(pwd)/next-generic-checks.log
+LOG_TEST_FILENAME="${LOG_TEST_FILENAME:-"next-generic-checks.log"}"
+LOG_TEST_FILENAME="$(realpath -m "${LOG_TEST_FILENAME}")"
+
+export LOG_TEST_FILENAME
 export RUSTUP_HOME=/usr/local/rustup
 
 REPO_SPACE=$1
