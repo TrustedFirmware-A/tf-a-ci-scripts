@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#
+
+source [file join [file dirname [info script]] utils.inc]
+source [file join [file dirname [info script]] handle-arguments.inc]
+
+expect {
+        "Hit any key to stop autoboot:  1" {
+                send "\nboot\n"
+        }
+}
+
+expect {
+        "buildroot login:" {
+                send "root\n"
+        }
+}
+
+expect_string "#" "Linux Booted successfully"
