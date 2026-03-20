@@ -1168,7 +1168,7 @@ apply_spm_patch() {
 spm_needs_out_dir_compat() {
 	local makefile="${spm_root}/Makefile"
 
-	if [[ -f "${makefile}" ]]; then
+	if [[ ! -f "${makefile}" ]]; then
 		return 1
 	fi
 
@@ -1178,7 +1178,7 @@ spm_needs_out_dir_compat() {
 spm_needs_platform_build_compat() {
 	local makefile="${spm_root}/Makefile"
 
-	if [[ -f "${makefile}" ]]; then
+	if [[ ! -f "${makefile}" ]]; then
 		return 1
 	fi
 
