@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2021-2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+fetch_tf_resource() {
+	image="kernel" type="fvp-busybox-uboot" get_boot_image
+}
+
+generate_lava_job_template() {
+	uart="0" file="linux-bl33.exp" track_expect
+
+	payload_type="linux" gen_yaml_template
+}
