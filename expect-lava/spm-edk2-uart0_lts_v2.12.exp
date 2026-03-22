@@ -1,0 +1,17 @@
+#
+# Copyright (c) 2021 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Trusted Firmware + EDK2 UART0
+#
+# Refer to `handle-arguments.inc` for the list of parameters.
+#
+
+# Trusted Firmware boot section
+source $ci_root/expect-lava/trusted-firmware.inc
+
+# EDK2 section
+expect_string+=('i;UEFI firmware')
+
+expect_string+=('i;UEFI Interactive Shell')
