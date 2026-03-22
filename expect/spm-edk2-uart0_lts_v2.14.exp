@@ -1,0 +1,43 @@
+#
+# Copyright (c) 2019-2025 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Expect script for Trusted Firmware + EDK2 UART0
+#
+# Refer to `handle-arguments.inc` for the list of parameters.
+#
+
+source [file join [file dirname [info script]] handle-arguments.inc]
+
+# Trusted Firmware boot section
+source [file join [file dirname [info script]] trusted-firmware.inc]
+
+expect_string "UEFI Interactive Shell" "EDK2 shell starting"
+
+expect {
+	"any other key to continue." {
+		send "\r"
+	}
+}
+
+expect {
+	"Shell>" {
+		send "fs0:\r"
+	}
+}
+
+expect {
+	-re "\r\nfs0:" {
+		send "HelloWorld.efi\r"
+		message "Loading UEFI application"
+	}
+}
+
+expect {
+	"HelloWorld.efi" {
+		message "UEFI application loaded"
+	}
+}
+
+exit_uart 0
