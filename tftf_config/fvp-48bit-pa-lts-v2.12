@@ -1,0 +1,5 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp
+PA_SIZE=48
+TESTS=spm
+PLAT_TESTS_SKIP_LIST=${ci_root}/tftf_config/fvp-48bit-pa-tests_to_skip.txt

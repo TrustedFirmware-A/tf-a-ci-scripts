@@ -1,0 +1,12 @@
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+# Copied from <tf-a-tests>/plat/arm/fvp/fvp_tests_to_skip.txt:
+FF-A Group0 interrupts
+
+# Older TFTF LTS branches lack the Secure-access SMMUv3TestEngine fix
+# required by FVP 11.31 and later.
+SMMUv3 tests
