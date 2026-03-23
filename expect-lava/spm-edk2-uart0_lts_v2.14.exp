@@ -18,4 +18,4 @@ expect_string+=('i;any other key to continue.')
 
 expect_string+=('i;Shell>;;;fs0:\r')
 
-expect_string+=('i;\r\nfs0:;UEFI application loaded;;HelloWorld.efi\r')
+expect_string+=('i;UEFI Hello World!;;;HelloWorld.efi\r')
