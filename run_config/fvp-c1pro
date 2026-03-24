@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	local model="c1-pro"
+
+	uart="0"
+
+	model="$model" gen_model_params
+	model="$model" gen_fvp_yaml
+}
