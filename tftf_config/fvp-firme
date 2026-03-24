@@ -1,0 +1,4 @@
+CROSS_COMPILE=aarch64-none-elf-
+FVP_HW_CONFIG_DTS=fdts/fvp-base-gicv3-psci-1t.dts
+PLAT=fvp
+TESTS=firme-service
