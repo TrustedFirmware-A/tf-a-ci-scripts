@@ -42,7 +42,7 @@ for i in range(int(args.numtests)):
 	configfile.write(cline)
 	configfile.close()
 	groupfile = "fvp-aarch64-sdei," + tftfconfilename + ":fvp-tftf-fip.tftf-aemv8a-tftf.fuzz"
-	groupfilepath = "../group/tf-l3-fuzzing/" + groupfile
+	groupfilepath = "../group/tf-a-l3-fuzz-tests-tftf-base-fvp/" + groupfile
 	gfile = open(groupfilepath, "w")
 	gline = "#\n"
 	gline += "# Copyright (c) 2025, Arm Limited. All rights reserved.\n"
@@ -52,7 +52,7 @@ for i in range(int(args.numtests)):
 	gfile.write(gline)
 	gfile.close()
 	gitadd += "./tftf_config/" + tftfconfilename + " "
-	gitadd += "./group/tf-l3-fuzzing/" + groupfile + " "
+	gitadd += "./group/tf-a-l3-fuzz-tests-tftf-base-fvp/" + groupfile + " "
 gaddcom = open("../gitadd", "w")
 gaddcom.write(gitadd)
 gaddcom.close()

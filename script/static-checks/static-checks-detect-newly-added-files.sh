@@ -37,7 +37,7 @@ function file_updation_report( )
   echo -e "1. Kindly ensure these newly added source files are covered by : \n\
    a. Coverity scan analysis by adding them to \"tf-cov-make\" build script with \
 the appropriate build configurations. \n\
-   b. Built as part of one of the platform configurations present in \"tf-l1-build-plat\" \
+   b. Built as part of one of the platform configurations present in \"tf-a-l1-build-tests-platforms\" \
 test group." | tee -a "$LOG_FILE"
 
   echo  | tee -a "$LOG_FILE"
