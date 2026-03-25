@@ -614,7 +614,7 @@ clean_build PLAT=a80x0 DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
     MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
 clean_build $(common_flags) PLAT=a80x0_mcbin DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
     MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
-clean_build $(common_flags) make PLAT=a80x0_nbx DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
+clean_build $(common_flags) PLAT=a80x0_nbx DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
     MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
 clean_build $(common_flags) PLAT=a70x0 DEBUG=1 SCP_BL2=/dev/null BL33=/dev/null \
     MV_DDR_PATH=$PWD/drivers/marvell/mv_ddr all mrvl_flash
