@@ -300,19 +300,19 @@ if [ -z "${test_groups}" ]; then
     # default the rest to nil if not present
     tftf_config="${tftf_config:-nil}"
     spm_config="${spm_config:-nil}"
+    rmm_config="${rmm_config:-nil}"
+    rfa_config="${rfa_config:-nil}"
+    tfut_config="${tfut_config:-nil}"
     run_config="${run_config:-nil}"
 
     # construct the 'long form' so it takes into account all possible configurations
-    if echo ${test_group} | grep -q '^spm-'; then
-	tg=$(printf "%s/%s,%s,%s:%s" "${test_group}" "${spm_config}" "${tf_config}" "${tftf_config}" "${run_config}")
-    elif echo ${test_group} | grep -q '^rmm-'; then
-	tg=$(printf "%s/%s,%s,%s,%s:%s" "${test_group}" "${rmm_config}" "${tf_config}" "${tftf_config}" "${spm_config}" "${run_config}")
-    else
-	tg=$(printf "%s/%s,%s,%s:%s" "${test_group}" "${tf_config}" "${tftf_config}" "${spm_config}" "${run_config}")
-    fi
+    tg=$(printf "%s/%s,%s,%s,%s,%s,%s:%s" \
+        "${test_group}" "${tf_config}" "${tftf_config}" "${spm_config}" \
+        "${rmm_config}" "${rfa_config}" "${tfut_config}" "${run_config}")
 
     # trim any ',nil:' from it
-    tg="${tg/,nil:/:}" tg="${tg/,nil:/:}"; tg="${tg/,nil:/:}"; tg="${tg/,nil:/:}"
+    tg="${tg/,nil:/:}" tg="${tg/,nil:/:}"; tg="${tg/,nil:/:}"
+    tg="${tg/,nil:/:}" tg="${tg/,nil:/:}"; tg="${tg/,nil:/:}"
 
     # finally exported
     export test_groups="${tg}"
