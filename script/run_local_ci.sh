@@ -324,7 +324,7 @@ fi
 if [ "$test_groups" = "?" -o "$test_groups" = "??" ]; then
 	zenity_opts=(
 	--file-selection
-	--filename="$ci_root/group/README"
+	--filename="$ci_root/group/README.md"
 	--multiple
 	--title "Choose test config"
 	)
