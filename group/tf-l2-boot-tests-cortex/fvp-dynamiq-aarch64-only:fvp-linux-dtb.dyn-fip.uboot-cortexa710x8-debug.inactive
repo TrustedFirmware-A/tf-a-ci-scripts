@@ -1,0 +1,6 @@
+#
+# Copyright (c) 2021 Arm Limited. All rights reserved.
+#
+
+# Inactive: external Cortex-A710 model instability is causing CI failures.
+# Re-enable once the model issue is fixed.

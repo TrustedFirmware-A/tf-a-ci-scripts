@@ -3,3 +3,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
+
+# Inactive: external Cortex-A710 model instability is causing CI failures.
+# Re-enable once the model issue is fixed.
