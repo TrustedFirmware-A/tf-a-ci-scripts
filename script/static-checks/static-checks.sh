@@ -20,10 +20,6 @@ cd "$(dirname "$0")/../.."
 export CI_ROOT=$(pwd)
 cd -
 
-git fetch --unshallow --update-shallow origin
-git fetch --unshallow --update-shallow origin ${GERRIT_BRANCH} ${GERRIT_REFSPEC} || \
-git fetch --update-shallow origin ${GERRIT_BRANCH} ${GERRIT_REFSPEC}
-
 export merge_base=$(git merge-base \
     $(head -n1 .git/FETCH_HEAD | cut -f1) \
     $(tail -n1 .git/FETCH_HEAD | cut -f1))
