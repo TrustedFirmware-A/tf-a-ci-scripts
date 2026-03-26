@@ -20,9 +20,11 @@ cd "$(dirname "$0")/../.."
 export CI_ROOT=$(pwd)
 cd -
 
-export merge_base=$(git merge-base \
-    $(head -n1 .git/FETCH_HEAD | cut -f1) \
-    $(tail -n1 .git/FETCH_HEAD | cut -f1))
+merge_base=$(git merge-base \
+    "refs/remotes/origin/${GERRIT_BRANCH:?}" \
+    "refs/remotes/origin/${GERRIT_REFSPEC:?}")
+
+export merge_base
 
 echo
 echo "###### Static checks ######"
