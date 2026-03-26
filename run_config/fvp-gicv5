@@ -6,7 +6,7 @@
 #
 
 generate_lava_job() {
-	local model="base-aemv8a-gicv5"
+	local model="base-aemva-gicv5"
 
 	# save the gic_config that the run will happen with
 	archive_file "${tf_root}/plat/arm/board/fvp/gicv5_config.yaml"

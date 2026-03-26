@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2021-2025, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+post_tf_build() {
+	# Build FIP without any BL33 image (it is preloaded)
+	build_fip
+}
+
+generate_lava_job() {
+	local model="base-aemva"
+
+	model="$model" \
+		kernel_addr="0x80080000" \
+		initrd_addr="0x84000000" \
+		gen_model_params
+
+	model="$model" gen_fvp_yaml
+}

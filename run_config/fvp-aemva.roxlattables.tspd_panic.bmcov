@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	# Apply a patch which attempts to write to the translation tables (by
+	# changing the memory attributes of a region) immediately after the
+	# translation tables have been made read-only, triggering a synchronous
+	# exception.
+	apply_tf_patch "readonly_xlat_tables/arm_tsp_setup_write_after_readonly.patch"
+	# Apply patch which allows a 'Panic at PC:...' message to be printed
+	# when the synchronous exception happens.
+	apply_tf_patch "readonly_xlat_tables/tsp_sync_exception_print_panic_message.patch"
+}
+
+generate_lava_job() {
+	local model="base-aemva"
+
+	uart="0" timeout="60" file="timeout.exp" track_expect
+	uart="1" timeout="60" file="crash_panic.exp" set_primary="1" track_expect
+	uart="2" timeout="60" file="readonly_el1_xlat_tables.exp" track_expect
+
+	model="$model" bmcov_plugin="1" \
+		bmcov_plugin_path="${coverage_trace_plugin}" \
+		gen_model_params
+	model="$model" gen_fvp_yaml
+}

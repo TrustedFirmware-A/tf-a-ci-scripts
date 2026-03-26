@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	local model="base-aemva"
+
+	uart="0" timeout="60" file="timeout_test.exp" track_expect
+	uart="1" timeout="60" file="crash_test.exp" set_primary="1" track_expect
+
+	model="$model" gen_model_params
+	model="$model" gen_fvp_yaml
+}

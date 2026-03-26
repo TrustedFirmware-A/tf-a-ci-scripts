@@ -9,7 +9,7 @@ generate_lava_job_template() {
 	payload_type="linux" gen_yaml_template
 }
 generate_lava_job() {
-	local model="base-aemv8a"
+	local model="base-aemva"
 
 	uart="0" file="rfa.exp" track_expect
 	# Track the rest of the UARTs to aid in debugging.

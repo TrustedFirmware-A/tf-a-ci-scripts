@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+post_tf_build() {
+	url="$linaro_2001_release/fvp-latest-busybox-uboot/bl33-uboot.bin" \
+		filename="uboot.bin" fetch_and_archive
+}
+
+generate_lava_job() {
+	local model="base-aemva"
+
+	model="$model" \
+		preload_bl33_bin="uboot.bin" \
+		preload_bl33="1" \
+		reset_to_bl31="1" \
+		gen_model_params
+
+	model="$model" gen_fvp_yaml
+}

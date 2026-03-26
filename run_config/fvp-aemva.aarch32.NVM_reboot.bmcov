@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+post_tf_archive() {
+	echo "Creating flash files which serve as Non-volatile Memory across reboots"
+	rm -f "$archive/flash0"
+	rm -f "$archive/flash1"
+	touch "$archive/flash0"
+	touch "$archive/flash1"
+
+	set_run_env "run_tftf_reboot_tests" "1"
+	# Contents of Non Volatile Memory are written to this file
+	set_run_env "NVM_file" "flash0"
+}
+
+generate_lava_job() {
+	local model="base-aemva"
+
+	uart0_log=$(echo uart-0-$(date "+%H:%M:%S").log)
+	uart1_log=$(echo uart-1-$(date "+%H:%M:%S").log)
+	set_run_env "uart0_file" "$uart0_log"
+	set_run_env "uart1_file" "$uart1_log"
+
+	model="$model" \
+		aarch32="1" \
+		cluster_0_num_cores="1" \
+		cluster_1_num_cores="1" \
+		flashloader0_fwrite="flash0" \
+		flashloader1_fwrite="flash1" \
+		retain_flash="1" \
+		secure_memory="0" \
+		uart0_out="$uart0_log" \
+		uart1_out="$uart1_log" \
+		bmcov_plugin="1" \
+		bmcov_plugin_path="${coverage_trace_plugin}" \
+		gen_model_params
+
+	model="$model" gen_fvp_yaml
+}

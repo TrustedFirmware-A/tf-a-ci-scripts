@@ -10,7 +10,7 @@ generate_lava_job_template() {
 }
 
 generate_lava_job() {
-	local model="base-aemv8a"
+	local model="base-aemva"
 
 	# RME systems go BL1->BL2->BL31 so we must set this variable for expect
 	# scripts to work properly and not hang up waiting for BL1->BL31.

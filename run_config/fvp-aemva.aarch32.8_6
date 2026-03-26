@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2020-2022, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	model="base-aemva" aarch32="1" arch_version="8.6" gen_model_params
+	model="base-aemva" gen_fvp_yaml
+}

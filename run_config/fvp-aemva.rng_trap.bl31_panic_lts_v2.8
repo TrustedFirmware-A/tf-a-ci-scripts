@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2022, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	local model="base-aemva"
+
+	uart="0" timeout="60" file="timeout.exp" track_expect
+	uart="1" timeout="60" file="crash_rng_trap_unhandled_exception_at_el3_lts_v2.8.exp" \
+		set_primary="1" track_expect
+
+	# Due to a bug in the model, the FEAT_RNG_TRAP feature is not available
+	# in models that implement versions lower than 8.8, even though this is
+	# a v8.5 feature. Therefore, version 8.8 will be used while the FVP
+	# team fixes this problem. Once ready, the parameter arch_version will
+	# be changed to 8.5.
+	model="$model" arch_version="8.8" has_rng_trap="1" gen_model_params
+	model="$model" gen_fvp_yaml
+}

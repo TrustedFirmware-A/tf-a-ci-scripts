@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	local model="base-aemva"
+
+	# Version 1 of the non-volatile counter may be incremented in a
+	# monotonic fashion (unlike version 0, which is fixed).
+	model="$model" nvcounter_diag="4" nvcounter_version="r1" bmcov_plugin="1" \
+		bmcov_plugin_path="${coverage_trace_plugin}" \
+		gen_model_params
+	model="$model" gen_fvp_yaml
+}

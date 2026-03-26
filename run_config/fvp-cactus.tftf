@@ -14,7 +14,7 @@ generate_lava_job_template() {
 }
 
 generate_lava_job() {
-	local model="base-aemv8a"
+	local model="base-aemva"
 
 	uart="0" file="tftf_cactus.exp" track_expect
 	uart="1" file="hold_uart.exp" track_expect

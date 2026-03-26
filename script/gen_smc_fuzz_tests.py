@@ -41,7 +41,7 @@ for i in range(int(args.numtests)):
 	cline += "SMC_FUZZ_SEEDS=" + rnum
 	configfile.write(cline)
 	configfile.close()
-	groupfile = "fvp-aarch64-sdei," + tftfconfilename + ":fvp-tftf-fip.tftf-aemv8a-tftf.fuzz"
+	groupfile = "fvp-aarch64-sdei," + tftfconfilename + ":fvp-tftf-fip.tftf-aemva-tftf.fuzz"
 	groupfilepath = "../group/tf-a-l3-fuzz-tests-tftf-base-fvp/" + groupfile
 	gfile = open(groupfilepath, "w")
 	gline = "#\n"
