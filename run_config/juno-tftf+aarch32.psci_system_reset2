@@ -17,5 +17,5 @@ post_tf_build() {
 
 post_fetch_tf_resource() {
 	gen_recovery_image32 "$archive/bl1.bin" "$archive/fip.bin"
-	payload_type="tftf" gen_juno_yaml
+	payload_type="tftf_reset2" gen_juno_yaml
 }

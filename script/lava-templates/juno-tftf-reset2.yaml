@@ -1,0 +1,207 @@
+job_name: "tf-a-juno-psci-system-reset2"
+device_type: "juno"
+
+visibility: "public"
+priority: '${LAVA_PRIORITY:-medium}'
+
+tags: [
+  ${juno_revision:+"'${juno_revision}'"}
+]
+
+timeouts:
+  job:
+    minutes: 10
+
+  actions:
+    lava-test-interactive:
+      minutes: 2
+
+  connections:
+    lava-test-interactive:
+      minutes: 2
+
+actions:
+  - deploy:
+      timeout:
+        minutes: 5
+
+      to: "vemsd"
+
+      recovery_image:
+        url: '${recovery_img_url}'
+        compression: "zip"
+
+  - boot:
+      timeout:
+        minutes: 2
+
+      method: "minimal"
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-boot-banner"
+          prompts: ["Booting trusted firmware test framework"]
+
+          script:
+            - name: "tftf-boot-banner"
+              command:
+
+              failures:
+                - message: "Panic:"
+                  exception: "TestError"
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-warm-reset-case"
+          prompts: ["> Executing 'PSCI reset2 - warm reset'"]
+
+          script:
+            - name: "tftf-warm-reset-case"
+              command:
+
+              failures:
+                - message: "Exiting tests."
+                  exception: "TestError"
+
+                - message: "Panic:"
+                  exception: "TestError"
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-resume-after-warm-reset"
+          prompts: ["Resuming interrupted test session"]
+
+          script:
+            - name: "tftf-resume-after-warm-reset"
+              command:
+
+              failures:
+                - message: "System didn't shutdown properly"
+                  exception: "TestError"
+
+                - message: "> Executing 'PSCI reset2 - warm reset and mem_protect'"
+                  exception: "TestError"
+
+                - message: "Exiting tests."
+                  exception: "TestError"
+
+                - message: "Panic:"
+                  exception: "TestError"
+
+  #
+  # Warm reset is not supported on Juno. The SCP for this test has been
+  # modified to trigger a cold reset - expect a modified sentinel.
+  #
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-warm-reset-sentinel-modified"
+          prompts: ["Sentinel address modified"]
+
+          script:
+            - name: "tftf-warm-reset-sentinel-modified"
+              command:
+
+              failures:
+                - message: "System didn't shutdown properly"
+                  exception: "TestError"
+
+                - message: "> Executing 'PSCI reset2 - warm reset and mem_protect'"
+                  exception: "TestError"
+
+                - message: "Exiting tests."
+                  exception: "TestError"
+
+                - message: "Panic:"
+                  exception: "TestError"
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-mem-protect-case"
+          prompts: ["> Executing 'PSCI reset2 - warm reset and mem_protect'"]
+
+          script:
+            - name: "tftf-mem-protect-case"
+              command:
+
+              failures:
+                - message: "Exiting tests."
+                  exception: "TestError"
+
+                - message: "Panic:"
+                  exception: "TestError"
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-resume-after-mem-protect"
+          prompts: ["Resuming interrupted test session"]
+
+          script:
+            - name: "tftf-resume-after-mem-protect"
+              command:
+
+              failures:
+                - message: "System didn't shutdown properly"
+                  exception: "TestError"
+
+                - message: "Exiting tests."
+                  exception: "TestError"
+
+                - message: "Panic:"
+                  exception: "TestError"
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-mem-protect-sentinel"
+          prompts: ["Sentinel address modified"]
+
+          script:
+            - name: "tftf-mem-protect-sentinel"
+              command:
+
+              failures:
+                - message: "System didn't shutdown properly"
+                  exception: "TestError"
+
+                - message: "Exiting tests."
+                  exception: "TestError"
+
+                - message: "Panic:"
+                  exception: "TestError"
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-exit"
+          prompts: ["Exiting tests."]
+
+          script:
+            - name: "tftf-exit"
+              command:
+
+              failures:
+                - message: "Panic:"
+                  exception: "TestError"
