@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# shellcheck disable=SC2154
+
+post_tf_build() {
+	url="${scp_bl2_url}" filename="scp_bl2.bin" fetch_and_archive
+	build_fip BL33="${archive}/tftf.bin" SCP_BL2="${archive}/scp_bl2.bin"
+}
+
+post_fetch_tf_resource() {
+	gen_recovery_image "${archive}/bl1.bin" "${archive}/fip.bin"
+	payload_type="tftf_power_cycle" gen_juno_yaml
+}

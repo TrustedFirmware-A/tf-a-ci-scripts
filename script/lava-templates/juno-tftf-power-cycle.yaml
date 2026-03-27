@@ -1,0 +1,165 @@
+job_name: "tf-a-juno-psci-system-off"
+device_type: "juno"
+
+visibility: "public"
+priority: '${LAVA_PRIORITY:-medium}'
+
+tags: [
+  ${juno_revision:+"'${juno_revision}'"}
+]
+
+timeouts:
+  job:
+    minutes: 10
+
+  actions:
+    lava-test-interactive:
+      minutes: 2
+
+  connections:
+    lava-test-interactive:
+      minutes: 2
+
+actions:
+  - deploy:
+      timeout:
+        minutes: 5
+
+      to: "vemsd"
+
+      recovery_image:
+        url: '${recovery_img_url}'
+        compression: "zip"
+
+  - boot:
+      timeout:
+        minutes: 2
+
+      method: "minimal"
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-boot-banner"
+          prompts: ["Booting trusted firmware test framework"]
+
+          script:
+            - name: "tftf-boot-banner"
+              command:
+
+              failures:
+                - message: "Panic:"
+                  exception: "TestError"
+
+$(for ((reboot_idx = 0; reboot_idx < ${reboot_count:?}; reboot_idx++)); do cat <<REBOOT
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-power-cycle-${reboot_idx}"
+          prompts: ["Board powered down, use REBOOT to restart."]
+
+          script:
+            - name: "tftf-power-down-${reboot_idx}"
+              command:
+
+              failures:
+                - message: "Exiting tests."
+                  exception: "TestError"
+
+                - message: "Panic:"
+                  exception: "TestError"
+
+            - command: "reboot"
+              wait_for_prompt: false
+
+              successes:
+                - message: "Resuming interrupted test session"
+
+              failures:
+                - message: "Exiting tests."
+                  exception: "TestError"
+
+                - message: "Panic:"
+                  exception: "TestError"
+REBOOT
+done)
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-tests-passed"
+          prompts: ["Tests Passed  : [1-9][0-9]*"]
+
+          script:
+            - name: "tftf-tests-passed"
+              command:
+
+              failures:
+                - message: "Tests Passed  : 0"
+                  exception: "TestError"
+
+                - message: "Panic:"
+                  exception: "TestError"
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-tests-failed-zero"
+          prompts: ["Tests Failed  : 0"]
+
+          script:
+            - name: "tftf-tests-failed-zero"
+              command:
+
+              failures:
+                - message: "Unhandled exception on "
+                  exception: "TestError"
+
+                - message: "Tests Failed  : [^0]"
+                  exception: "TestError"
+
+                - message: "Panic:"
+                  exception: "TestError"
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-tests-crashed-zero"
+          prompts: ["Tests Crashed : 0"]
+
+          script:
+            - name: "tftf-tests-crashed-zero"
+              command:
+
+              failures:
+                - message: "Tests Crashed : [^0]"
+                  exception: "TestError"
+
+                - message: "Panic:"
+                  exception: "TestError"
+
+  - test:
+      timeout:
+        minutes: 2
+
+      interactive:
+        - name: "tftf-exit"
+          prompts: ["Exiting tests."]
+
+          script:
+            - name: "tftf-exit"
+              command:
+
+              failures:
+                - message: "Panic:"
+                  exception: "TestError"

@@ -99,6 +99,13 @@ gen_juno_yaml() {
 	{
 		local template_file="${ci_root}/script/lava-templates/juno-${payload_type//_/-}.yaml"
 		local recovery_img_url="${recovery_img_url:-$(get_juno_recovery_image_url "${mode:?}")}"
+		local -i reboot_count
+
+		if [[ "${payload_type}" == "tftf_power_cycle" ]]; then
+			case "$(get_tftf_opt TESTS)" in
+				manual-shutdown) reboot_count=2 ;;
+			esac
+		fi
 
 		expand_template "${template_file}"
 	} > "${yaml_file}"
