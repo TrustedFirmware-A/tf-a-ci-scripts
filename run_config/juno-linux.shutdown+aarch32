@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+# shellcheck disable=SC2154
+
+post_tf_build() {
+	local bl32
+
+	# Building a FIP for this config requires AArch32 BL32, but we don't build
+	# one until after TF-A is built. For now, provide a dummy file; we'll
+	# update the FIP with a real BL32 later.
+	bl32="$(mktempfile)"
+
+	url="${scp_bl2_url}" filename="scp_bl2.bin" fetch_and_archive
+	url="${uboot32_fip_url}" image="nt-fw.bin" output_name="uboot.bin" \
+		get_boot_image_from_fip
+
+	build_fip BL32="${bl32}" BL33="${archive}/uboot.bin" \
+		SCP_BL2="${archive}/scp_bl2.bin"
+}
+
+post_fetch_tf_resource() {
+	gen_recovery_image32 "${archive}/bl1.bin" "${archive}/fip.bin"
+	payload_type="linux_shutdown" gen_juno_yaml
+}

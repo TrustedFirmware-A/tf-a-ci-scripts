@@ -1,0 +1,53 @@
+job_name: "tf-a-juno-linux-shutdown"
+device_type: "juno"
+
+visibility: "public"
+priority: '${LAVA_PRIORITY:-medium}'
+
+tags: [
+  ${juno_revision:+"'${juno_revision}'"}
+]
+
+timeouts:
+  job:
+    minutes: 10
+
+  actions:
+    lava-test-interactive:
+      minutes: 1
+
+  connections:
+    lava-test-interactive:
+      seconds: 60
+
+actions:
+  - deploy:
+      timeout:
+        minutes: 5
+
+      to: "vemsd"
+
+      recovery_image:
+        url: '${recovery_img_url}'
+        compression: "zip"
+
+  - boot:
+      timeout:
+        minutes: 2
+
+      method: "minimal"
+      prompts: [".* # "]
+
+  - test:
+      interactive:
+        - name: "shutdown"
+          prompts: [".* # "]
+
+          script:
+            - name: "halt"
+              command: "halt -f"
+
+              successes:
+                - message: "reboot: System halted"
+
+              wait_for_prompt: false
