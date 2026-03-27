@@ -474,9 +474,9 @@ expand_template() {
 # Fetch and extract the latest supported version of the LLVM toolchain from
 # a compressed archive file to a target directory, if it is required.
 setup_llvm_toolchain() {
-	link="${1:-$llvm_archive}"
-	archive="${2:-"$workspace/llvm.tar.xz"}"
-	target_dir="${3:-$llvm_dir}"
+	local link="${1:-"${llvm_archive}"}"
+	local archive="${2:-"${workspace}/llvm.tar.xz"}"
+	local target_dir="${3:-"${llvm_dir}"}"
 
 	if upon "$retain_paths"; then
 		return
@@ -492,9 +492,9 @@ setup_llvm_toolchain() {
 # Fetch and extract the latest supported version of the GCC toolchain from
 # a compressed archive file to a target directory, if it is required.
 setup_gcc_toolchain() {
-	link="${1:-$gcc_archive}"
-	archive="${2:-"$workspace/gcc.tar.xz"}"
-	target_dir="${3:-$gcc_dir}"
+	local link="${1:-"${gcc_archive}"}"
+	local archive="${2:-"${workspace}/gcc.tar.xz"}"
+	local target_dir="${3:-"${gcc_dir}"}"
 
 	if upon "$local_ci"; then
 		url="$link" saveas="$archive" fetch_file
