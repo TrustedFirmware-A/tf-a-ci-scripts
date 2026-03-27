@@ -1,8 +1,9 @@
 device_type: juno
 job_name: tf-juno
 
-$tags
-$juno_revision
+tags: [
+  ${juno_revision:+"'${juno_revision}'"}
+]
 
 timeouts:
   # Global timeout value for the whole job.

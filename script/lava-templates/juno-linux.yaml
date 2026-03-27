@@ -2,10 +2,11 @@ device_type: juno
 job_name: tf-juno
 
 context:
-  bootloader_prompt: $bootloader_prompt
+  bootloader_prompt: '${bootloader_prompt:-"VExpress64#"}'
 
-$tags
-$juno_revision
+tags: [
+  ${juno_revision:+"'${juno_revision}'"}
+]
 
 timeouts:
   # Global timeout value for the whole job.
@@ -33,7 +34,7 @@ actions:
     to: nfs
     os: debian
     nfsrootfs:
-      url: $nfs_rootfs
+      url: '${nfs_rootfs:-"${juno_rootfs_url}"}'
       compression: gz
 
 - boot:
@@ -50,4 +51,4 @@ actions:
       login_prompt: 'login:'
       username: root
     prompts:
-    - $linux_prompt
+    - '${linux_prompt:-"root@(.*):~#"}'

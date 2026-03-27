@@ -30,6 +30,16 @@ juno32_recovery_root_oe="$linaro_release/juno32-latest-oe-uboot"
 juno_rootfs_url="${juno_rootfs_url:-$linaro_release/linaro-image-minimal-genericarmv8-20170127-888.rootfs.tar.gz}"
 juno32_rootfs_url="${juno32_rootfs_url:-$linaro_release/linaro-image-alip-genericarmv7a-20150710-336.rootfs.tar.gz}"
 
+get_juno_recovery_image_url() {
+	local mode="${1:?}"
+
+	if upon "${jenkins_run}"; then
+		echo "${jenkins_url}/job/${JOB_NAME}/${BUILD_NUMBER}/artifact/artefacts/${mode}/juno_recovery.zip"
+	else
+		echo "file://${workspace}/artefacts/${mode}/juno_recovery.zip"
+	fi
+}
+
 get_ml_uboot_bin() {
 	url="$ml_uboot_bl33_url" saveas="uboot.bin" fetch_file
 	archive_file "uboot.bin"
@@ -86,8 +96,12 @@ gen_juno_yaml() {
 	local job_file="$workspace/job.yaml"
 	local payload_type="${payload_type:?}"
 
-	bin_mode="$mode" juno_revision="$juno_revision" \
-		"$ci_root/script/gen_juno_${payload_type}_yaml.sh" > "$yaml_file"
+	{
+		local template_file="${ci_root}/script/lava-templates/juno-${payload_type//_/-}.yaml"
+		local recovery_img_url="${recovery_img_url:-$(get_juno_recovery_image_url "${mode:?}")}"
+
+		expand_template "${template_file}"
+	} > "${yaml_file}"
 
 	cp "$yaml_file" "$job_file"
 	archive_file "$yaml_file"
