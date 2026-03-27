@@ -711,6 +711,9 @@ clean_build PLAT=rcar_gen5 $(common_flags) BL32=Makefile \
 # Renesas RZ/A3M-EK
 clean_build PLAT=rza3m_ek_nor $(common_flags) all
 
+# Renesas RZ/A3M-EK with DDR 1333MHz
+clean_build PLAT=rza3m_ek_nor $(common_flags) DDR_PLL4=1333 all
+
 # Renesas HiHope RZ/G2M development kit
 clean_build PLAT=rzg $(common_flags) \
     MBEDTLS_DIR=$(pwd)/mbedtls LSI=G2M \
