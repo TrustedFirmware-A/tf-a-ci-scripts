@@ -74,8 +74,8 @@ If a test configuration has a `.inactive` suffix, it is skipped entirely. Use th
 - `build-tests`: build-generation tests
 - `docs-tests`: documentation-generation tests
 - `unit-tests`: tests driven by a unit-test harness such as TFUT
-- `integration-tests`: tests driven by an integration harness such as TFTF
-- `functional-tests`: end-to-end behavior tests that exercise a runtime scenario without an integration harness
+- `functional-tests`: tests that validate the externally visible behavior of the project under test, often through a functional test harness such as TFTF
+- `integration-tests`: tests that validate the project's interaction with a counterparty runtime, operating system, platform stack, or other external component
 - `analysis-tests`: static analysis and similar source-quality tests
 - `coverage-tests`: coverage-instrumented tests
 - `fuzz-tests`: fuzz tests involving a fuzz-testing harness
@@ -91,7 +91,7 @@ Choose a group name in this order:
 
     The project axis names the component whose own outputs or behavior the configuration validates.
 
-    TFTF-driven integration tests that exercise TF-A therefore use `tf-a` as the project and `tftf` as the driver. Configurations that build TFTF alone or generate TFTF documentation use `tftf` as the project.
+    TFTF-driven functional tests that exercise TF-A therefore use `tf-a` as the project and `tftf` as the driver. Configurations that build TFTF alone or generate TFTF documentation use `tftf` as the project.
 
 2.  Choose the level from the test's role in the CI.
 
@@ -125,16 +125,16 @@ Choose a group name in this order:
 - `tf-a-l1-docs-tests`
 - `tftf-l1-docs-tests`
 - `tf-a-l1-unit-tests-tfut`
-- `tf-a-l2-integration-tests-tftf-base-fvp`
-- `tf-a-l2-integration-tests-tftf-rmm-base-fvp`
-- `tf-a-l2-integration-tests-tftf-spm-base-fvp`
-- `tf-a-l2-functional-tests-platforms`
-- `tf-a-l2-functional-tests-linux-lumex-1`
-- `tf-a-l2-functional-tests-linux-n1sdp`
-- `tf-a-l2-functional-tests-spm-base-fvp`
-- `tf-a-l2-functional-tests-spm-mm-base-fvp`
-- `tf-a-l2-integration-tests-tftf-lumex-1`
-- `tf-a-l3-integration-tests-tftf-ras-base-fvp`
+- `tf-a-l2-functional-tests-tftf-base-fvp`
+- `tf-a-l2-functional-tests-tftf-rmm-base-fvp`
+- `tf-a-l2-functional-tests-tftf-spm-base-fvp`
+- `tf-a-l2-integration-tests-platforms`
+- `tf-a-l2-integration-tests-linux-lumex-1`
+- `tf-a-l2-integration-tests-linux-n1sdp`
+- `tf-a-l2-integration-tests-spm-base-fvp`
+- `tf-a-l2-integration-tests-spm-mm-base-fvp`
+- `tf-a-l2-functional-tests-tftf-lumex-1`
+- `tf-a-l3-functional-tests-tftf-ras-base-fvp`
 - `tf-a-l3-coverage-tests-tftf-base-fvp`
 - `tf-a-l3-fuzz-tests-tftf-base-fvp`
-- `rf-a-l2-functional-tests-base-fvp`
+- `rf-a-l2-integration-tests-base-fvp`
