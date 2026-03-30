@@ -50,18 +50,20 @@ If a test configuration has a `.inactive` suffix, it is skipped entirely. Use th
 ### Group Name Grammar
 
 ``` text
-<project>-<level>-<class>[-<driver>][-<theme>]
+<project>[-<release-line>]-<level>-<class>[-<driver>][-<campaign>][-<target>]
 ```
 
 ### Axes
 
 | Axis | Meaning | Examples |
 |----|----|----|
-| `project` | Project under test, including the release line when a release branch is under test | `tf-a`, `tf-a-lts-v2.14`, `tftf`, `tftf-lts-v2.14`, `rf-a` |
+| `project` | Project under test | `tf-a`, `tftf`, `rf-a` |
+| `release-line` | Optional release line qualifier | `lts-v2.14`, `lts-v2.8` |
 | `level` | Approximate test duration or intensity | `l1`, `l2`, `l3` |
-| `class` | Test kind | `build-tests`, `docs-tests`, `integration-tests` |
-| `driver` | Optional harness axis that runs or evaluates the suite | `tftf`, `tfut` |
-| `theme` | Optional invariant scenario identity for the group, such as platform, counterparty, objective, or a meaningful combination of those | `base-fvp`, `linux-lumex-1`, `platforms`, `spm-mm-base-fvp` |
+| `class` | Broad class of validation | `build`, `docs`, `unit`, `functional`, `integration`, `analysis`, `coverage`, `fuzz`, `instrumentation` |
+| `driver` | Optional harness axis that runs or evaluates the suite | `tftf`, `tfut`, `linux`, `depthcharge` |
+| `campaign` | Optional invariant scenario identity for the group | `reboot`, `psci-system-reset2`, `scan-build`, `tbb`, `undef-injection` |
+| `target` | Optional target platform | `arm-fvp`, `arm-fvp-ve`, `mediatek-mt8195`, `qemu` |
 
 ### Level Meaning
 
@@ -71,15 +73,15 @@ If a test configuration has a `.inactive` suffix, it is skipped entirely. Use th
 
 ### Class Meaning
 
-- `build-tests`: build-generation tests
-- `docs-tests`: documentation-generation tests
-- `unit-tests`: tests driven by a unit-test harness such as TFUT
-- `functional-tests`: tests that validate the externally visible behavior of the project under test, often through a functional test harness such as TFTF
-- `integration-tests`: tests that validate the project's interaction with a counterparty runtime, operating system, platform stack, or other external component
-- `analysis-tests`: static analysis and similar source-quality tests
-- `coverage-tests`: coverage-instrumented tests
-- `fuzz-tests`: fuzz tests involving a fuzz-testing harness
-- `instrumentation-tests`: performance-instrumented tests
+- `build`: build-generation tests
+- `docs`: documentation-generation tests
+- `unit`: tests driven by a unit-test harness such as TFUT
+- `functional`: tests that validate the externally visible behavior of the project under test, often through TFTF
+- `integration`: tests that validate the project's interaction with another runtime, operating system, platform stack, or other external component
+- `analysis`: static analysis and similar source-quality tests
+- `coverage`: coverage-instrumented tests
+- `fuzz`: fuzz tests involving a fuzz-testing harness
+- `instrumentation`: performance-instrumented tests
 
 ## Placement Rubric
 
@@ -87,13 +89,13 @@ Choose a group name in this order:
 
 1.  Choose the project under test.
 
-    Include the release line in the project when the configuration targets a release branch (like an LTS).
-
     The project axis names the component whose own outputs or behavior the configuration validates.
 
     TFTF-driven functional tests that exercise TF-A therefore use `tf-a` as the project and `tftf` as the driver. Configurations that build TFTF alone or generate TFTF documentation use `tftf` as the project.
 
-2.  Choose the level from the test's role in the CI.
+2.  Choose the project release line (e.g. an LTS version) under test, if relevant.
+
+3.  Choose the level from the test's role in the CI.
 
     Build tests, documentation tests, and unit tests use `l1`.
 
@@ -101,40 +103,48 @@ Choose a group name in this order:
 
     Use `l3` only for campaign-style suites such as coverage, fuzzing, instrumentation, long-running resilience exploration, or similar bug-hunting and measurement work.
 
-3.  Choose the class from the existing test classes, or add a new one if the test kind is not already covered.
+4.  Choose the class from the existing test classes, or add a new one if the test kind is not already covered.
 
-4.  Add a `driver` only if a harness runs or evaluates the suite and that harness is part of the suite identity.
+5.  Decide whether the suite identity includes a driver.
 
-5.  Add a `theme` to capture the group's invariant scenario identity, which may include a target platform, a counterparty component, a technical objective, or a meaningful combination of those elements.
+    Add a `driver` only if a harness or runtime component runs or evaluates the suite and that harness or runtime is part of the suite identity.
+
+6.  Choose the campaign, if the group shares a stable scenario name beyond the driver and target.
+
+    Add a `campaign` only if the group has an invariant scenario identity beyond the driver and target.
+
+7.  If the group targets a platform, specify an appropriate target name, ideally composed of the platform vendor and name, and optionally variant.
 
 ## Group Design Rules
 
 - All test configurations in a group must agree on the project, level, and class.
-- If a group name includes a driver or a theme, every test configuration in the group must agree on that axis as well.
+- If a group name includes a driver, campaign, or target, every test configuration in the group must agree on that axis as well.
+- A platform-targeted group must contain configurations for exactly one platform.
 - The project axis follows the component being validated by the group, rather than every component named by its fragments.
-- Platform identity belongs in the theme when the platform is part of the group's scenario identity.
-- A group may vary build and run fragments only when doing so instantiates the same test suite across legitimate variants of the named theme or level.
+- A group may vary build and run fragments only when doing so instantiates the same test suite across legitimate variants of the named driver, campaign, target, or level.
 - If two subsets differ by more than one meaningful axis, split them into different groups.
 
 ## Examples
 
-- `tf-a-l1-build-tests-base-fvp`
-- `tf-a-lts-v2.14-l1-build-tests-base-fvp`
-- `tftf-l1-build-tests`
-- `tftf-lts-v2.14-l1-build-tests`
-- `tf-a-l1-docs-tests`
-- `tftf-l1-docs-tests`
-- `tf-a-l1-unit-tests-tfut`
-- `tf-a-l2-functional-tests-tftf-base-fvp`
-- `tf-a-l2-functional-tests-tftf-rmm-base-fvp`
-- `tf-a-l2-functional-tests-tftf-spm-base-fvp`
-- `tf-a-l2-integration-tests-platforms`
-- `tf-a-l2-integration-tests-linux-lumex-1`
-- `tf-a-l2-integration-tests-linux-n1sdp`
-- `tf-a-l2-integration-tests-spm-base-fvp`
-- `tf-a-l2-integration-tests-spm-mm-base-fvp`
-- `tf-a-l2-functional-tests-tftf-lumex-1`
-- `tf-a-l3-functional-tests-tftf-ras-base-fvp`
-- `tf-a-l3-coverage-tests-tftf-base-fvp`
-- `tf-a-l3-fuzz-tests-tftf-base-fvp`
-- `rf-a-l2-integration-tests-base-fvp`
+- `tf-a-l1-build-arm-fvp`
+- `tf-a-l1-build-arm-fvp-ve`
+- `tf-a-l1-build-tbb-arm-juno`
+- `tf-a-lts-v2.14-l1-build-arm-fvp`
+- `tftf-l1-build-nvidia-tegra-194`
+- `tftf-lts-v2.14-l1-build-arm-fvp`
+- `tf-a-l1-docs`
+- `tftf-l1-docs`
+- `tf-a-l1-unit-tfut`
+- `tf-a-l2-functional-tftf-arm-fvp`
+- `tf-a-l2-functional-tftf-rmm-arm-fvp`
+- `tf-a-l2-functional-tftf-spm-arm-fvp`
+- `tf-a-l2-integration-linux-arm-fvp`
+- `tf-a-l2-integration-linux-arm-tc`
+- `tf-a-l2-integration-linux-arm-n1sdp`
+- `tf-a-l2-integration-spm-arm-fvp`
+- `tf-a-l2-integration-spm-mm-arm-fvp`
+- `tf-a-l2-functional-tftf-arm-tc`
+- `tf-a-l3-functional-tftf-ras-arm-fvp`
+- `tf-a-l3-coverage-tftf-arm-fvp`
+- `tf-a-l3-fuzz-tftf-arm-fvp`
+- `rf-a-l2-integration-arm-fvp`
