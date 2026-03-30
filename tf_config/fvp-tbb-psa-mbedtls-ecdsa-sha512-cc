@@ -1,0 +1,11 @@
+ARM_ROTPK_LOCATION=devel_ecdsa
+CROSS_COMPILE=aarch64-none-elf-
+GENERATE_COT=1
+HASH_ALG=sha512
+KEY_ALG=ecdsa
+PLAT=fvp
+ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_ecdsa.pem
+TRUSTED_BOARD_BOOT=1
+ENABLE_ASSERTIONS=0
+PSA_CRYPTO=1
+FVP_TRUSTED_SRAM_SIZE=384
