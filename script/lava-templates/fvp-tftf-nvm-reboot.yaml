@@ -1,0 +1,502 @@
+job_name: 'tf-a-fvp-tftf-nvm-reboot'
+device_type: 'fvp'
+
+visibility: 'public'
+priority: '${LAVA_PRIORITY:-medium}'
+
+timeouts:
+  job:
+    minutes: 10
+
+actions:
+  - deploy:
+      to: 'fvp'
+
+      images:
+$(for artefact in "${artefacts[@]:?}"; do
+	cat <<-YAML
+        ${artefact:?}:
+          url: '${artefact_urls[${artefact}]:?}'
+	YAML
+
+	[[ "${artefact:?}" =~ ^(busybox|rootfs)$ ]] && cat <<-YAML
+          compression: gz
+	YAML
+done)
+
+  - boot:
+      method: 'fvp'
+
+      docker:
+        name: '${docker_name}'
+        local: true
+
+      image: '${model_dir}/${model_bin}'
+      version_string: 'Fast Models [^\n]+'
+      console_string: 'terminal_\w+: Listening for serial connection on port (?P<PORT>5000)'
+
+      feedbacks:
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5001))'
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5002))'
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5003))'
+
+      arguments:
+$(for boot_argument in "${boot_arguments[@]:?}"; do
+	cat <<-YAML
+        - $(echo "${boot_argument}" | jq -R .)
+	YAML
+done)
+
+  - test:
+      interactive:
+        - name: 'boot-banner-0'
+          prompts: ['Booting trusted firmware test framework']
+
+          script:
+            - name: 'wait-boot-banner-0'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'new-session-0'
+          prompts: ['Starting a new test session']
+
+          script:
+            - name: 'wait-new-session-0'
+              command:
+
+              failures:
+                - message: 'Resuming interrupted test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'resume-after-system-reset'
+          prompts: ['Resuming interrupted test session']
+
+          script:
+            - name: 'wait-resume-after-system-reset'
+              command:
+
+              failures:
+                - message: 'Starting a new test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'resume-after-psci-stat-reset'
+          prompts: ['Resuming interrupted test session']
+
+          script:
+            - name: 'wait-resume-after-psci-stat-reset'
+              command:
+
+              failures:
+                - message: 'Starting a new test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'psci-stat-shutdown-start'
+          prompts: ["> Executing 'for stats after system shutdown'"]
+
+          script:
+            - name: 'wait-psci-stat-shutdown-start'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+                - message: 'Exiting tests\.'
+                  exception: 'TestError'
+
+  - test:
+      connection-namespace: '5001'
+
+      interactive:
+        - name: 'power-down-after-psci-stat-shutdown'
+          prompts: ['Connection closed by foreign host\.']
+
+          script:
+            - name: 'wait-power-down-after-psci-stat-shutdown'
+              command:
+
+  - boot:
+      method: 'fvp'
+      docker:
+        name: '${docker_name}'
+        local: true
+
+      image: '${model_dir}/${model_bin}'
+      version_string: 'Fast Models [^\n]+'
+      console_string: 'terminal_\w+: Listening for serial connection on port (?P<PORT>5000)'
+
+      feedbacks:
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5001))'
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5002))'
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5003))'
+
+      arguments:
+$(for boot_argument in "${boot_arguments[@]:?}"; do
+	cat <<-YAML
+        - $(echo "${boot_argument}" | sed 's/{FIP}/{FLASH0}/' | jq -R .)
+	YAML
+done)
+
+  - test:
+      interactive:
+        - name: 'boot-banner-1'
+          prompts: ['Booting trusted firmware test framework']
+
+          script:
+            - name: 'wait-boot-banner-1'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'resume-after-psci-stat-shutdown'
+          prompts: ['Resuming interrupted test session']
+
+          script:
+            - name: 'wait-resume-after-psci-stat-shutdown'
+              command:
+
+              failures:
+                - message: 'Starting a new test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'system-off-start'
+          prompts: ["> Executing 'System Off'"]
+
+          script:
+            - name: 'wait-system-off-start'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+                - message: 'Exiting tests\.'
+                  exception: 'TestError'
+
+  - test:
+      connection-namespace: '5001'
+
+      interactive:
+        - name: 'power-down-after-system-off'
+          prompts: ['Connection closed by foreign host\.']
+
+          script:
+            - name: 'wait-power-down-after-system-off'
+              command:
+
+  - boot:
+      method: 'fvp'
+      docker:
+        name: '${docker_name}'
+        local: true
+
+      image: '${model_dir}/${model_bin}'
+      version_string: 'Fast Models [^\n]+'
+      console_string: 'terminal_\w+: Listening for serial connection on port (?P<PORT>5000)'
+
+      feedbacks:
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5001))'
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5002))'
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5003))'
+
+      arguments:
+$(for boot_argument in "${boot_arguments[@]:?}"; do
+	cat <<-YAML
+        - $(echo "${boot_argument}" | sed 's/{FIP}/{FLASH0}/' | jq -R .)
+	YAML
+done)
+
+  - test:
+      interactive:
+        - name: 'boot-banner-2'
+          prompts: ['Booting trusted firmware test framework']
+
+          script:
+            - name: 'wait-boot-banner-2'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'resume-after-system-off'
+          prompts: ['Resuming interrupted test session']
+
+          script:
+            - name: 'wait-resume-after-system-off'
+              command:
+
+              failures:
+                - message: 'Starting a new test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'system-off-secondary-cpu-start'
+          prompts: ["> Executing 'System Off Secondary CPU'"]
+
+          script:
+            - name: 'wait-system-off-secondary-cpu-start'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+                - message: 'Exiting tests\.'
+                  exception: 'TestError'
+
+  - test:
+      connection-namespace: '5001'
+
+      interactive:
+        - name: 'power-down-after-system-off-secondary-cpu'
+          prompts: ['Connection closed by foreign host\.']
+
+          script:
+            - name: 'wait-power-down-after-system-off-secondary-cpu'
+              command:
+
+  - boot:
+      method: 'fvp'
+      docker:
+        name: '${docker_name}'
+        local: true
+
+      image: '${model_dir}/${model_bin}'
+      version_string: 'Fast Models [^\n]+'
+      console_string: 'terminal_\w+: Listening for serial connection on port (?P<PORT>5000)'
+
+      feedbacks:
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5001))'
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5002))'
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5003))'
+
+      arguments:
+$(for boot_argument in "${boot_arguments[@]:?}"; do
+	cat <<-YAML
+        - $(echo "${boot_argument}" | sed 's/{FIP}/{FLASH0}/' | jq -R .)
+	YAML
+done)
+
+  - test:
+      interactive:
+        - name: 'boot-banner-3'
+          prompts: ['Booting trusted firmware test framework']
+
+          script:
+            - name: 'wait-boot-banner-3'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'resume-after-system-off-secondary-cpu'
+          prompts: ['Resuming interrupted test session']
+
+          script:
+            - name: 'wait-resume-after-system-off-secondary-cpu'
+              command:
+
+              failures:
+                - message: 'Starting a new test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'mem-protect-start'
+          prompts: ["> Executing 'PSCI mem_protect'"]
+
+          script:
+            - name: 'wait-mem-protect-start'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+                - message: 'Exiting tests\.'
+                  exception: 'TestError'
+
+  - test:
+      timeout:
+        seconds: 240
+
+      connection_timeout:
+        seconds: 240
+
+      interactive:
+        - name: 'resume-after-mem-protect'
+          prompts: ['Resuming interrupted test session']
+
+          script:
+            - name: 'wait-resume-after-mem-protect'
+              command:
+
+              failures:
+                - message: 'Starting a new test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'reset2-warm-start'
+          prompts: ["> Executing 'PSCI reset2 - warm reset'"]
+
+          script:
+            - name: 'wait-reset2-warm-start'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+                - message: 'Exiting tests\.'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'resume-after-reset2-warm'
+
+          prompts:
+            - 'Resuming interrupted test session'
+            - 'PSCI RESET2 is not supported -1'
+
+          script:
+            - name: 'wait-resume-after-reset2-warm'
+              command:
+
+              failures:
+                - message: 'Starting a new test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'reset2-invalid-start'
+          prompts: ["> Executing 'PSCI reset2 - invalid reset options'"]
+
+          script:
+            - name: 'wait-reset2-invalid-start'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+                - message: 'Exiting tests\.'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'reset2-mem-protect-start'
+          prompts: ["> Executing 'PSCI reset2 - warm reset and mem_protect'"]
+
+          script:
+            - name: 'wait-reset2-mem-protect-start'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+                - message: 'Exiting tests\.'
+                  exception: 'TestError'
+
+  - test:
+      timeout:
+        seconds: 240
+
+      connection_timeout:
+        seconds: 240
+
+      interactive:
+        - name: 'resume-after-reset2-mem-protect'
+
+          prompts:
+            - 'Resuming interrupted test session'
+            - 'PSCI RESET2 is not supported -1'
+
+          script:
+            - name: 'wait-resume-after-reset2-mem-protect'
+              command:
+
+              failures:
+                - message: 'Starting a new test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'tests-failed-zero'
+          prompts: ['Tests Failed  : 0']
+
+          script:
+            - name: 'wait-tests-failed-zero'
+              command:
+
+              failures:
+                - message: 'Tests Failed  : [^0]'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'tests-exit'
+          prompts: ['Exiting tests\.']
+
+          script:
+            - name: 'wait-tests-exit'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'

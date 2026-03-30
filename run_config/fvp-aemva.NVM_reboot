@@ -15,6 +15,11 @@ post_tf_archive() {
 	set_run_env "run_tftf_reboot_tests" "1"
 	# Contents of Non Volatile Memory are written to this file
 	set_run_env "NVM_file" "flash0"
+	set_run_env "skip_lava_expect" "1"
+}
+
+generate_lava_job_template() {
+	payload_type="tftf-nvm-reboot" gen_yaml_template
 }
 
 generate_lava_job() {
