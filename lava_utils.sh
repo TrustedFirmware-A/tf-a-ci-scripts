@@ -31,7 +31,9 @@ gen_lava_job_def() {
 	# Generate the LAVA job definition, minus the test expectations
 	expand_template "${yaml_template_file}" > "${yaml_file}"
 
-	gen_yaml_expect >> "$yaml_file"
+	if not_upon "${skip_lava_expect:-}"; then
+		gen_yaml_expect >> "${yaml_file}"
+	fi
 
 	# create job.yaml
 	cp "$yaml_file" "$yaml_job_file"
