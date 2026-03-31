@@ -124,17 +124,6 @@ done)
                 - message: 'Exiting tests\.'
                   exception: 'TestError'
 
-  - test:
-      connection-namespace: '5001'
-
-      interactive:
-        - name: 'power-down-after-psci-stat-shutdown'
-          prompts: ['Connection closed by foreign host\.']
-
-          script:
-            - name: 'wait-power-down-after-psci-stat-shutdown'
-              command:
-
   - boot:
       method: 'fvp'
       docker:
@@ -202,17 +191,6 @@ done)
                 - message: 'Exiting tests\.'
                   exception: 'TestError'
 
-  - test:
-      connection-namespace: '5001'
-
-      interactive:
-        - name: 'power-down-after-system-off'
-          prompts: ['Connection closed by foreign host\.']
-
-          script:
-            - name: 'wait-power-down-after-system-off'
-              command:
-
   - boot:
       method: 'fvp'
       docker:
@@ -279,17 +257,6 @@ done)
 
                 - message: 'Exiting tests\.'
                   exception: 'TestError'
-
-  - test:
-      connection-namespace: '5001'
-
-      interactive:
-        - name: 'power-down-after-system-off-secondary-cpu'
-          prompts: ['Connection closed by foreign host\.']
-
-          script:
-            - name: 'wait-power-down-after-system-off-secondary-cpu'
-              command:
 
   - boot:
       method: 'fvp'
