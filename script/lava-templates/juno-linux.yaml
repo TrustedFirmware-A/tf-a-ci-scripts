@@ -32,7 +32,7 @@ actions:
 - deploy:
     namespace: target
     to: nfs
-    os: debian
+    os: '${os:-debian}'
     nfsrootfs:
       url: '${nfs_rootfs:-"${juno_rootfs_url}"}'
       compression: gz
