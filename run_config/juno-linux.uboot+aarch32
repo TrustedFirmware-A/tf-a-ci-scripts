@@ -19,6 +19,6 @@ post_tf_build() {
 
 post_fetch_tf_resource() {
 	gen_recovery_image32 "$archive/bl1.bin" "$archive/fip.bin"
-	bootloader_prompt="juno32#" linux_prompt="/\\s#" payload_type="linux" \
-		gen_juno_yaml
+	bootloader_prompt="juno32#" linux_prompt="/\\s#" payload_type="linux" os="oe" \
+		nfs_rootfs="$juno32_rootfs_url" gen_juno_yaml
 }
