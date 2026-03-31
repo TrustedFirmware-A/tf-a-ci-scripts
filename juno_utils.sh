@@ -27,8 +27,8 @@ uboot32_fip_url="$linaro_release/juno32-latest-oe-uboot/SOFTWARE/fip.bin"
 juno32_recovery_root="$linaro_release/juno32-latest-busybox-uboot"
 juno32_recovery_root_oe="$linaro_release/juno32-latest-oe-uboot"
 
-juno_rootfs_url="${juno_rootfs_url:-$linaro_release/linaro-image-minimal-genericarmv8-20170127-888.rootfs.tar.gz}"
-juno32_rootfs_url="${juno32_rootfs_url:-$linaro_release/linaro-image-alip-genericarmv7a-20150710-336.rootfs.tar.gz}"
+juno_rootfs_url="https://downloads.trustedfirmware.org/infra-assets/linaro_artifacts/releases/openembedded/aarch64/17.01/linaro-image-minimal-genericarmv8-20170127-888.rootfs.tar.gz"
+juno32_rootfs_url="https://downloads.trustedfirmware.org/infra-assets/linaro_artifacts/releases/openembedded/aarch32/17.01/linaro-image-minimal-genericarmv7a-20170127-460.rootfs.tar.gz"
 
 get_juno_recovery_image_url() {
 	local mode="${1:?}"
