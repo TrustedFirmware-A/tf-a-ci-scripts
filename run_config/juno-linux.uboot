@@ -14,5 +14,5 @@ post_tf_build() {
 post_fetch_tf_resource() {
 	get_linux_image
 	gen_recovery_image "$archive/bl1.bin" "$archive/fip.bin" "$archive/Image" "$archive/ramdisk.img" "$archive/blank.img"
-	payload_type="linux" gen_juno_yaml
+	payload_type="linux" nfs_rootfs="$juno_rootfs_url" gen_juno_yaml
 }

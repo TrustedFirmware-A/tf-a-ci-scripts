@@ -34,7 +34,7 @@ actions:
     to: nfs
     os: '${os:-debian}'
     nfsrootfs:
-      url: '${nfs_rootfs:-"${juno_rootfs_url}"}'
+      url: '${nfs_rootfs:?}'
       compression: gz
 
 - boot:
