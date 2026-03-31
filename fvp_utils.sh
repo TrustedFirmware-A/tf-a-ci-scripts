@@ -34,8 +34,7 @@ fwu_fip_addr="${fwu_fip_addr:-0x08400000}"
 backup_fip_addr="${backup_fip_addr:-0x09000000}"
 romlib_addr="${romlib_addr:-0x03ff2000}"
 
-uefi_downloads="${uefi_downloads:-http://files.oss.arm.com/downloads/uefi}"
-uefi_ci_bin_url="${uefi_ci_bin_url:-$uefi_downloads/Artifacts/Linux/github/fvp/static/DEBUG_GCC5/FVP_AARCH64_EFI.fd}"
+uefi_ci_bin_url="${DOWNLOAD_SERVER_TF_A_URL}/drtm/FVP_AARCH64_EFI.fd"
 
 uboot32_fip_url="$linaro_release/fvp32-latest-busybox-uboot/fip.bin"
 optee_version="4.7.0"
