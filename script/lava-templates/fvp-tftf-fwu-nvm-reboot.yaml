@@ -1,0 +1,138 @@
+job_name: 'tf-a-fvp-tftf-fwu-nvm-reboot'
+device_type: 'fvp'
+
+visibility: 'public'
+priority: '${LAVA_PRIORITY:-medium}'
+
+timeouts:
+  job:
+    minutes: 10
+
+actions:
+  - deploy:
+      to: 'fvp'
+
+      images:
+$(for artefact in "${artefacts[@]:?}"; do
+	cat <<-YAML
+        ${artefact:?}:
+          url: '${artefact_urls[${artefact}]:?}'
+	YAML
+
+	[[ "${artefact:?}" =~ ^(busybox|rootfs)$ ]] && cat <<-YAML
+          compression: gz
+	YAML
+done)
+
+  - boot:
+      method: 'fvp'
+
+      docker:
+        name: '${docker_name}'
+        local: true
+
+      image: '${model_dir}/${model_bin}'
+      version_string: 'Fast Models [^\n]+'
+      console_string: 'terminal_\w+: Listening for serial connection on port (?P<PORT>5000)'
+
+      feedbacks:
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5001))'
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5002))'
+        - 'terminal_\w+: Listening for serial connection on port (?P<NAME>(?P<PORT>5003))'
+
+      arguments:
+$(for boot_argument in "${boot_arguments[@]:?}"; do
+	cat <<-YAML
+        - $(echo "${boot_argument}" | jq -R .)
+	YAML
+done)
+
+  - test:
+      interactive:
+        - name: 'boot-banner'
+          prompts: ['Booting trusted firmware test framework']
+
+          script:
+            - name: 'wait-boot-banner'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'new-session'
+          prompts: ['Starting a new test session']
+
+          script:
+            - name: 'wait-new-session'
+              command:
+
+              failures:
+                - message: 'Resuming interrupted test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'resume-after-fwu-toc-invalid'
+          prompts: ['Resuming interrupted test session']
+
+          script:
+            - name: 'wait-resume-after-fwu-toc-invalid'
+              command:
+
+              failures:
+                - message: 'Starting a new test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'resume-after-fwu-auth-failure'
+          prompts: ['Resuming interrupted test session']
+
+          script:
+            - name: 'wait-resume-after-fwu-auth-failure'
+              command:
+
+              failures:
+                - message: 'Starting a new test session'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'tests-failed-zero'
+          prompts: ['Tests Failed  : 0']
+
+          script:
+            - name: 'wait-tests-failed-zero'
+              command:
+
+              failures:
+                - message: 'Tests Failed  : [^0]'
+                  exception: 'TestError'
+
+                - message: 'Panic:'
+                  exception: 'TestError'
+
+  - test:
+      interactive:
+        - name: 'tests-exit'
+          prompts: ['Exiting tests\.']
+
+          script:
+            - name: 'wait-tests-exit'
+              command:
+
+              failures:
+                - message: 'Panic:'
+                  exception: 'TestError'

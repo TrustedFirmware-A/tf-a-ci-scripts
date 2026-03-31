@@ -19,7 +19,13 @@ post_tf_archive() {
 }
 
 generate_lava_job_template() {
-	payload_type="tftf-nvm-reboot" gen_yaml_template
+	local payload_type="tftf-nvm-reboot"
+
+	if [[ "$(get_tftf_opt TESTS)" == "fwu" ]]; then
+		payload_type="tftf-fwu-nvm-reboot"
+	fi
+
+	payload_type="${payload_type}" gen_yaml_template
 }
 
 generate_lava_job() {
