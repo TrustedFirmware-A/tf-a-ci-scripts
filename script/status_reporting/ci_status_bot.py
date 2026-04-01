@@ -14,7 +14,7 @@ class BuildStatus:
     name: str
     build_number: str
     url: str
-    passed: bool
+    passed: str
     sub_builds: list["BuildStatus"]
 
 # Constants to produce the report with
@@ -70,7 +70,11 @@ class Build:
 
     async def process(self):
         req = await get_json(self.session, get_build_api(self.url))
-        self.passed = req["result"].lower() == "success"
+        passed = req.get("result")
+        if passed:
+            self.passed = passed.lower()
+        else:
+            self.passed = "running"
 
         self.name = self.pretty_job_name
         # The full display name is "{job_name} {build_number}"
@@ -81,7 +85,7 @@ class Build:
             self.name = req["actions"][0]["parameters"][1]["value"]
 
         # parent job passed => children passed. Skip
-        if not self.passed:
+        if self.passed != "success":
             # the main jobs list sub builds nicely
             self.sub_builds = [
                 # the gateways get an alias to differentiate them
@@ -123,7 +127,13 @@ async def get_daily_jobs(session, job_names: list[str]) -> list[BuildStatus]:
     )
 
 def build_status_to_markdown(status: BuildStatus, level: int = 0) -> str:
-    message = (f"{' ' * level * 2}* {'✅' if status.passed else '❌'} "
+    if status.passed == "success":
+        emoji = "✅"
+    elif status.passed == "running":
+        emoji = "❗"
+    else:
+        emoji = "❌"
+    message = (f"{' ' * level * 2}* {emoji} "
                f"**{status.name}** [#{status.build_number}]({status.url})\n")
     if not status.passed:
         for sub_status in status.sub_builds:
@@ -132,7 +142,7 @@ def build_status_to_markdown(status: BuildStatus, level: int = 0) -> str:
 
 def print_build_status(status: BuildStatus, level: int = 0) -> str:
     """Return markdown for failing jobs only."""
-    if status.passed:
+    if status.passed == "success":
         return ""
 
     message = (f"{' ' * level * 2}* ❌ **{status.name}** "
@@ -142,7 +152,7 @@ def print_build_status(status: BuildStatus, level: int = 0) -> str:
     return message
 
 def format_daily_status(statuses: list[BuildStatus]) -> str:
-    header = ("🟢" if all(job.passed for job in statuses) else "🔴") + " Daily Status"
+    header = ("🟢" if all(job.passed == "success" for job in statuses) else "🔴") + " Daily Status"
 
     details = "".join(print_build_status(status) for status in statuses).rstrip()
     if details:
