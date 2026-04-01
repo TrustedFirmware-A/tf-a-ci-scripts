@@ -58,13 +58,13 @@ async def send_daily_status(webhook_url: str, tforg_query: str, jobs: list[str])
         webhook = discord.Webhook.from_url(webhook_url, session=session)
 
         # run concurrently to reduce latency between the messages
-        daily_statuses, patch_totals = await asyncio.gather(
-            ci_status_bot.get_daily_jobs(session, jobs),
-            gerrit_patch_count.get_patch_counts(session, tforg_query),
-        )
-        status_msg = ci_status_bot.format_daily_status(daily_statuses)
-
         try:
+            daily_statuses, patch_totals = await asyncio.gather(
+                ci_status_bot.get_daily_jobs(session, jobs),
+                gerrit_patch_count.get_patch_counts(session, tforg_query),
+            )
+            status_msg = ci_status_bot.format_daily_status(daily_statuses)
+
             await send_truncated_msg(webhook, status_msg)
             await send_msg(
                 webhook,

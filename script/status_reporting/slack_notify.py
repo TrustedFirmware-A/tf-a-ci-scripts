@@ -73,19 +73,19 @@ async def send_daily_status(
         client = WebClient(token=token)
 
         # run concurrently to reduce latency between the messages
-        daily_jobs, patch_totals = await asyncio.gather(
-            ci_status_bot.get_daily_jobs(session, jobs),
-            gerrit_patch_count.get_patch_counts(session, tforg_query),
-        )
-
-        combined_message = "\n\n".join(
-            [
-                format_daily_status_msg(daily_jobs),
-                gerrit_patch_count.format_patch_totals(patch_totals, bullet="-"),
-            ]
-        )
-
         try:
+            daily_jobs, patch_totals = await asyncio.gather(
+                ci_status_bot.get_daily_jobs(session, jobs),
+                gerrit_patch_count.get_patch_counts(session, tforg_query),
+            )
+
+            combined_message = "\n\n".join(
+                [
+                    format_daily_status_msg(daily_jobs),
+                    gerrit_patch_count.format_patch_totals(patch_totals, bullet="-"),
+                ]
+            )
+
             await send_msg(client, channel, combined_message)
         except SlackApiError as err:
             await send_msg(client, channel, f"Error. Reason: {err}")
