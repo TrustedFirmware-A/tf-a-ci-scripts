@@ -1,0 +1,96 @@
+[project]
+name = "tf-a-toolbox"
+description = "Miscellaneous utilities for testing and maintaining Trusted Firmware-A."
+readme = "README.md"
+
+version = "0.1.0"
+requires-python = ">=3.14"
+
+authors = [
+    { name = "Chris Kay", email = "chris.kay@arm.com" }
+]
+
+[project.optional-dependencies]
+cli = [
+    "click>=8.3.3,<9",
+    "rich>=15.0.0,<16",
+    "typer>=0.24.2,<0.25",
+]
+
+[project.scripts]
+tf-a-toolbox = "tf_a_toolbox.cli:app"
+
+[dependency-groups]
+dev = [
+    { include-group = "docs" },
+    { include-group = "test" },
+]
+
+docs = [
+    "mkdocs-api-autonav>=0.4.0,<0.5",
+    "mkdocs-click>=0.9.0,<0.10",
+    "mkdocs-material>=9.7.6,<10",
+]
+
+test = [
+    "pyright>=1.1.409,<1.2",
+    "pytest>=9.0.3,<10",
+    "ruff>=0.15.11,<0.16",
+    "ty>=0.0.32,<0.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.10.0,<0.11"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 80
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "COM812", # missing-trailing-comma - ruff owns trailing commas
+    "COM819", # prohibited-trailing-comma - ruff owns trailing commas
+    "D206", # docstring-tab-indentation - ruff owns docstring indentation
+    "D300", # triple-single-quotes - ruff owns docstring quotes
+    "E111", # indentation-with-invalid-multiple - ruff owns indentation
+    "E114", # indentation-with-invalid-multiple-comment - ruff owns comment indentation
+    "E117", # over-indented - ruff owns comment indentation
+    "ISC001", # single-line-implicit-string-concatenation - ruff may merge string literals
+    "ISC002", # multi-line-implicit-string-concatenation - ruff may wrap string literals
+    "Q000", # bad-quotes-inline-string - ruff owns inline quote style
+    "Q001", # bad-quotes-multiline-string - ruff owns multiline quote style
+    "Q002", # bad-quotes-docstring - ruff owns docstring quotes
+    "Q003", # avoidable-escaped-quote - ruff removes needless escapes
+    "W191", # tab-indentation - ruff owns tab/space indentation
+]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.isort]
+lines-between-types = 1
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "D100", # undocumented-public-module - tests do not need module docstrings
+    "D103", # undocumented-public-function - tests do not need function docstrings
+    "INP001", # implicit-namespace-package - tests do not need packages
+    "S101", # assert - asserts are the standard pytest assertion style
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.pyright]
+typeCheckingMode = "strict"
+
+[tool.pytest]
+addopts = ["--doctest-modules"]
+
+[tool.ty.rules]
+all = "error"
