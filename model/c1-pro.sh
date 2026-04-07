@@ -11,4 +11,5 @@ cat <<EOF >>"${model_param_file}"
 
 -C pctl.use_in_cluster_ppu=true
 -C cluster0.core_power_on_by_default=false
+-C cluster0.NUM_CMES=1
 EOF
