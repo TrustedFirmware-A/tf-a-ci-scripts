@@ -833,7 +833,13 @@ clean_build PLAT=k3 $(common_flags) all
 clean_build PLAT=k3 TARGET_BOARD=j784s4 $(common_flags) all
 clean_build PLAT=k3 TARGET_BOARD=lite $(common_flags) all
 clean_build PLAT=k3 TARGET_BOARD=generic $(common_flags) all
-make PLAT=k3low TARGET_BOARD=am62lx $(common_flags) all
+
+# AM62Lx bl1 only
+clean_build $(common_flags release) \
+    PLAT=k3low TARGET_BOARD=am62lx-evm $(common_flags) bl1
+
+# AM62Lx bl31 only
+clean_build PLAT=k3low TARGET_BOARD=am62lx-evm $(common_flags) bl31
 
 clean_build PLAT=qemu $(common_flags) ${TBB_OPTIONS}
 # Use GICV3 driver
