@@ -44,19 +44,25 @@ async def send_msg(client: WebClient, channel: str, msg: str) -> None:
 
 
 def format_daily_status_msg(results):
-    status_emoji = (
-        ":green_circle:"
-        if all(job.status == ci_status_bot.BuildResult.SUCCESS for job in results)
-        else ":red_circle:"
-    )
-
-    if results:
-        top_status = results[0]
-        job_name = top_status.name
-        build_link = f"<{top_status.url}|#{top_status.build_number}>"
-    else:
+    if not results:
+        status_emoji = ":warning:"
+        headline_suffix = " _(no job results)_"
         job_name = "Daily Status"
         build_link = ""
+    else:
+        top_status = results[0]
+        if top_status.status == ci_status_bot.BuildResult.SUCCESS:
+            status_emoji = ":green_circle:"
+            headline_suffix = ""
+        elif top_status.status == ci_status_bot.BuildResult.RUNNING:
+            status_emoji = ":large_yellow_circle:"
+            headline_suffix = " _(still running)_"
+        else:
+            status_emoji = ":red_circle:"
+            headline_suffix = ""
+
+        job_name = top_status.name
+        build_link = f"<{top_status.url}|#{top_status.build_number}>"
 
     more_info = (
         "_More details: "
@@ -64,7 +70,8 @@ def format_daily_status_msg(results):
         "#tf-a-open-ci-status> on Discord._"
     )
 
-    headline = f"{status_emoji} *{job_name}* {build_link}".strip()
+    headline = f"{status_emoji} *{job_name}* {build_link}{headline_suffix}".strip()
+
     return "\n".join([headline, more_info])
 
 
