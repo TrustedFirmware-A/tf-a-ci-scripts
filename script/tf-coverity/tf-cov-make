@@ -829,10 +829,10 @@ clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_USB_PROGRAMMER=1 \
     BUILD_PLAT=build/stm32mp2-mp25-usb/debug
 
 # Platforms from TI
-make PLAT=k3 $(common_flags) all
-make PLAT=k3 TARGET_BOARD=j784s4 $(common_flags) all
-make PLAT=k3 TARGET_BOARD=lite $(common_flags) all
-make PLAT=k3 TARGET_BOARD=generic $(common_flags) all
+clean_build PLAT=k3 $(common_flags) all
+clean_build PLAT=k3 TARGET_BOARD=j784s4 $(common_flags) all
+clean_build PLAT=k3 TARGET_BOARD=lite $(common_flags) all
+clean_build PLAT=k3 TARGET_BOARD=generic $(common_flags) all
 make PLAT=k3low TARGET_BOARD=am62lx $(common_flags) all
 
 clean_build PLAT=qemu $(common_flags) ${TBB_OPTIONS}
