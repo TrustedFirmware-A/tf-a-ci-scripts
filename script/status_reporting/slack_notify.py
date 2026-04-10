@@ -45,7 +45,9 @@ async def send_msg(client: WebClient, channel: str, msg: str) -> None:
 
 def format_daily_status_msg(results):
     status_emoji = (
-        ":green_circle:" if all(job.passed for job in results) else ":red_circle:"
+        ":green_circle:"
+        if all(job.status == ci_status_bot.BuildResult.SUCCESS for job in results)
+        else ":red_circle:"
     )
 
     if results:

@@ -5,8 +5,30 @@ import asyncio
 import re
 import sys
 from dataclasses import dataclass
+from enum import Enum
 
 import aiohttp
+
+
+class BuildResult(str, Enum):
+    SUCCESS = "success"
+    RUNNING = "running"
+    FAILURE = "failure"
+    ABORTED = "aborted"
+    UNSTABLE = "unstable"
+    NOT_BUILT = "not_built"
+    UNKNOWN = "unknown"
+
+    @classmethod
+    def from_jenkins_result(cls, result: str | None) -> "BuildResult":
+        if result is None:
+            return cls.RUNNING
+
+        normalized = result.lower()
+        try:
+            return cls(normalized)
+        except ValueError:
+            return cls.UNKNOWN
 
 
 @dataclass
@@ -14,7 +36,7 @@ class BuildStatus:
     name: str
     build_number: str
     url: str
-    passed: str
+    status: BuildResult
     sub_builds: list["BuildStatus"]
 
 # Constants to produce the report with
@@ -70,11 +92,7 @@ class Build:
 
     async def process(self):
         req = await get_json(self.session, get_build_api(self.url))
-        passed = req.get("result")
-        if passed:
-            self.passed = passed.lower()
-        else:
-            self.passed = "running"
+        self.status = BuildResult.from_jenkins_result(req.get("result"))
 
         self.name = self.pretty_job_name
         # The full display name is "{job_name} {build_number}"
@@ -85,7 +103,7 @@ class Build:
             self.name = req["actions"][0]["parameters"][1]["value"]
 
         # parent job passed => children passed. Skip
-        if self.passed != "success":
+        if self.status != BuildResult.SUCCESS:
             # the main jobs list sub builds nicely
             self.sub_builds = [
                 # the gateways get an alias to differentiate them
@@ -111,7 +129,7 @@ class Build:
             name=self.name,
             build_number=self.build_number,
             url=self.url,
-            passed=self.passed,
+            status=self.status,
             sub_builds=[build.to_status() for build in self.sub_builds],
         )
 
@@ -127,22 +145,22 @@ async def get_daily_jobs(session, job_names: list[str]) -> list[BuildStatus]:
     )
 
 def build_status_to_markdown(status: BuildStatus, level: int = 0) -> str:
-    if status.passed == "success":
+    if status.status == BuildResult.SUCCESS:
         emoji = "✅"
-    elif status.passed == "running":
+    elif status.status == BuildResult.RUNNING:
         emoji = "❗"
     else:
         emoji = "❌"
     message = (f"{' ' * level * 2}* {emoji} "
                f"**{status.name}** [#{status.build_number}]({status.url})\n")
-    if not status.passed:
+    if status.status != BuildResult.SUCCESS:
         for sub_status in status.sub_builds:
             message += build_status_to_markdown(sub_status, level + 1)
     return message
 
 def print_build_status(status: BuildStatus, level: int = 0) -> str:
     """Return markdown for failing jobs only."""
-    if status.passed == "success":
+    if status.status == BuildResult.SUCCESS:
         return ""
 
     message = (f"{' ' * level * 2}* ❌ **{status.name}** "
@@ -152,7 +170,7 @@ def print_build_status(status: BuildStatus, level: int = 0) -> str:
     return message
 
 def format_daily_status(statuses: list[BuildStatus]) -> str:
-    header = ("🟢" if all(job.passed == "success" for job in statuses) else "🔴") + " Daily Status"
+    header = ("🟢" if all(job.status == BuildResult.SUCCESS for job in statuses) else "🔴") + " Daily Status"
 
     details = "".join(print_build_status(status) for status in statuses).rstrip()
     if details:
