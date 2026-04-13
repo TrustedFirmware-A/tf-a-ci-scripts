@@ -675,6 +675,12 @@ clean_build PLAT=rcar $(common_flags) BL32=Makefile \
     MACHINE=ulcb  PMIC_LEVEL_MODE=0 RCAR_DRAM_LPDDR4_MEMCONF=0 \
     RCAR_GEN3_ULCB=1 SPD=opteed TRUSTED_BOARD_BOOT=1
 
+# Renesas R-Car M3L Automotive SoC
+clean_build PLAT=rcar $(common_flags) BL32=Makefile \
+    BL33=Makefile MBEDTLS_DIR=$(pwd)/mbedtls LSI=M3L \
+    MACHINE=geist RCAR_AVS_SETTING_ENABLE=0 RCAR_DRAM_LPDDR4_MEMCONF=0 \
+    SPD=opteed TRUSTED_BOARD_BOOT=1
+
 # Renesas R-Car E3 Automotive SoC
 clean_build PLAT=rcar $(common_flags) BL32=Makefile \
     BL33=Makefile MBEDTLS_DIR=$(pwd)/mbedtls LSI=E3 \
