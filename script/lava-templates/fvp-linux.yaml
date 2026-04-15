@@ -19,6 +19,8 @@ timeouts:
     seconds: 10
   job:
     minutes: 35
+  queue:
+    minutes: 30
   action:
     minutes: 30
   actions:

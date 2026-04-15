@@ -12,6 +12,8 @@ timeouts:
   # Global timeout value for the whole job.
   job:
     minutes: 30
+  queue:
+    minutes: 30
   # Unless explicitly overridden, no single action should take more than
   # 10 minutes to complete.
   action:

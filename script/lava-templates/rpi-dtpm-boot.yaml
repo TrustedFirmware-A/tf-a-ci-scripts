@@ -4,6 +4,8 @@ job_name: RPi TF-A test
 timeouts:
   job:
     minutes: 30
+  queue:
+    minutes: 30
   action:
     minutes: 25
   connection:

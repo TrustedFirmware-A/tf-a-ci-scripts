@@ -3,6 +3,8 @@ job_name: tf-n1sdp
 timeouts:
   job:
     minutes: 30
+  queue:
+    minutes: 30
 
 priority: ${LAVA_PRIORITY:-medium}
 visibility: public

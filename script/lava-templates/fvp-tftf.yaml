@@ -17,6 +17,8 @@ job_name: ${test_config}
 timeouts:
   job:
     minutes: 30
+  queue:
+    minutes: 30
   action:
     minutes: 20
   actions:

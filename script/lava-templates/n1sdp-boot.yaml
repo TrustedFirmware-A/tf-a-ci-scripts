@@ -3,6 +3,8 @@ job_name: tf-n1sdp TF-A boot test
 timeouts:
   job:
     minutes: 15
+  queue:
+    minutes: 30
   action:
     minutes: 10
   connection:

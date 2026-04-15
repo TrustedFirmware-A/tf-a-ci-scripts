@@ -11,6 +11,8 @@ tags: [
 timeouts:
   job:
     minutes: 10
+  queue:
+    minutes: 30
 
   actions:
     lava-test-interactive:

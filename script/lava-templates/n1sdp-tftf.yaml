@@ -4,6 +4,8 @@ timeouts:
   # Global timeout value for the whole job.
   job:
     minutes: 30
+  queue:
+    minutes: 30
   actions:
     lava-test-monitor:
       seconds: 120

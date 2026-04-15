@@ -3,6 +3,8 @@ job_name: stm32mp15x-eval $job_name test - $build_mode
 timeouts:
   job:
     minutes: 35
+  queue:
+    minutes: 30
   action:
     minutes: 15
   connection:
