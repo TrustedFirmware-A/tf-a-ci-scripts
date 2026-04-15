@@ -13,7 +13,7 @@ timeouts:
   job:
     minutes: 30
   queue:
-    minutes: 30
+    minutes: 60
   # Unless explicitly overwritten, no single action should take more than
   # 10 minutes to complete.
   action:

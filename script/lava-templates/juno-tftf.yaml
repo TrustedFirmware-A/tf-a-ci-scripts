@@ -10,7 +10,7 @@ timeouts:
   job:
     minutes: 45
   queue:
-    minutes: 30
+    minutes: 60
   actions:
 #    lava-test-monitor:
 #      seconds: 120
