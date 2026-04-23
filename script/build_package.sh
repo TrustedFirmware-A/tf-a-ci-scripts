@@ -370,7 +370,7 @@ build_fip() {
 		archive_file $build_args_path
 	fi
 
-	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" BUILD_BASE=$tf_build_root V=1 "$@" \
+	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" BUILD_BASE=$tf_build_root "$@" \
 		${fip_targets:-fip} 2>&1 | tee -a "$build_log" || fail_build
 	) 2>&1 | tee -a "$build_log" || fail_build
 }
@@ -393,7 +393,7 @@ build_tf_extra() {
 		set +a
 	fi
 
-	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" V=1 BUILD_BASE=$tf_build_root "$@" \
+	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" BUILD_BASE=$tf_build_root "$@" \
 		${tf_extra_rules} 2>&1 | tee -a "$build_log" || fail_build
 	)
 }
@@ -639,7 +639,7 @@ build_tf() {
 	cat <<EOF | log_separator
 
 Build command line:
-	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 BUILD_BASE=$tf_build_root $build_targets
+	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG BUILD_BASE=$tf_build_root $build_targets
 
 CC version:
 $(${CC-${CROSS_COMPILE}gcc} -v 2>&1)
@@ -652,7 +652,7 @@ EOF
 	# Build TF. Since build output is being directed to the build log, have
 	# descriptor 3 point to the current terminal for build wrappers to vent.
 	$tf_build_wrapper poetry run make $make_j_opts $(cat "$config_file") \
-		DEBUG="$DEBUG" V=1 BUILD_BASE="$tf_build_root" SPIN_ON_BL1_EXIT="$connect_debugger" \
+		DEBUG="$DEBUG" BUILD_BASE="$tf_build_root" SPIN_ON_BL1_EXIT="$connect_debugger" \
 		$build_targets 3>&1 2>&1 | tee -a "$build_log" || fail_build
 
 	# the memory command is slow and we only want it for keeping a record
@@ -725,11 +725,11 @@ build_tftf() {
 	cat <<EOF | log_separator
 
 Build command line:
-	make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG V=1 BUILD_BASE="$tftf_build_root" $build_targets
+	make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG BUILD_BASE="$tftf_build_root" $build_targets
 
 EOF
 
-	make $make_j_opts $(cat "$config_file") DEBUG="$DEBUG" V=1 BUILD_BASE="$tftf_build_root" \
+	make $make_j_opts $(cat "$config_file") DEBUG="$DEBUG" BUILD_BASE="$tftf_build_root" \
 		$build_targets 2>&1 | tee -a "$build_log" || fail_build
 	)
 }
@@ -873,7 +873,7 @@ build_tfut() {
 
 Build command line:
 cmake $(echo "$cmake_config") -G"Unix Makefiles" --debug-output -DCMAKE_VERBOSE_MAKEFILE -DCOVERAGE="$COVERAGE" -DUNIT_TEST_PROJECT_PATH="$tf_root" ..
-        make $(echo "$config" | tr '\n' ' ') DEBUG=$DEBUG V=1 $build_targets
+        make $(echo "$config" | tr '\n' ' ') DEBUG=$DEBUG $build_targets
 
 EOF
 	cmake $(echo "$cmake_config") -G"Unix Makefiles" --debug-output \
