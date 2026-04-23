@@ -624,13 +624,6 @@ build_tf() {
 		set +a
 	fi
 
-	if is_arm_jenkins_env || upon "$local_ci"; then
-		path_list=(
-			"$llvm_dir/bin"
-		)
-		extend_path "PATH" "path_list"
-	fi
-
 	pushd "$tf_root"
 
 	if [ -f "$tf_patch_record" ]; then

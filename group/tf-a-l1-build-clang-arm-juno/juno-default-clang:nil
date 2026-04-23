@@ -6,6 +6,3 @@
 #
 
 
-pre_tf_build() {
-    setup_llvm_toolchain
-}

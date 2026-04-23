@@ -471,38 +471,6 @@ expand_template() {
 	EOF"
 }
 
-# Fetch and extract the latest supported version of the LLVM toolchain from
-# a compressed archive file to a target directory, if it is required.
-setup_llvm_toolchain() {
-	local link="${1:-"${llvm_archive}"}"
-	local archive="${2:-"${workspace}/llvm.tar.xz"}"
-	local target_dir="${3:-"${llvm_dir}"}"
-
-	if upon "$retain_paths"; then
-		return
-	fi
-
-	if upon "$local_ci"; then
-		url="$link" saveas="$archive" fetch_file
-		mkdir -p $target_dir
-		extract_tarball $archive $target_dir --strip-components=1 -k
-	fi
-}
-
-# Fetch and extract the latest supported version of the GCC toolchain from
-# a compressed archive file to a target directory, if it is required.
-setup_gcc_toolchain() {
-	local link="${1:-"${gcc_archive}"}"
-	local archive="${2:-"${workspace}/gcc.tar.xz"}"
-	local target_dir="${3:-"${gcc_dir}"}"
-
-	if upon "$local_ci"; then
-		url="$link" saveas="$archive" fetch_file
-		mkdir -p $target_dir
-		extract_tarball $archive $target_dir --strip-components=1 -k
-	fi
-}
-
 # Extract files from compressed archive to target directory. Supports .zip,
 # .tar.gz, and tar.xf format
 extract_tarball() {
@@ -625,12 +593,6 @@ mbedtls_version="${mbedtls_version:-3.6.6}"
 # mbedTLS archive public hosting available at github.com
 mbedtls_archive="${mbedtls_archive:-https://github.com/Mbed-TLS/mbedtls/archive/mbedtls-${mbedtls_version}.tar.gz}"
 
-# FIXME: workaround to allow all on-prem host machines to access the latest LLVM
-# LLVM archive public hosting available at github.com
-llvm_version="${llvm_version:-14.0.0}"
-llvm_dir="$workspace/llvm-$llvm_version"
-llvm_archive="${llvm_archive:-https://github.com/llvm/llvm-project/releases/download/llvmorg-$llvm_version/clang+llvm-$llvm_version-x86_64-linux-gnu-ubuntu-18.04.tar.xz}"
-
 coverity_path="${coverity_path:-${nfs_volume}/tools/coverity/static-analysis/2020.12}"
 coverity_default_checkers=(
 "--all"
@@ -644,17 +606,7 @@ coverity_default_checkers=(
 
 docker_registry="${docker_registry:-}"
 
-#GCC archive public hosting available at arm_website.
-gcc_version="15.2.rel1"
-gcc_archive="${gcc_archive:-https://developer.arm.com/-/media/Files/downloads/gnu/$gcc_version/binrel/arm-gnu-toolchain-$gcc_version-x86_64-aarch64-none-elf.tar.xz}"
-
-if [ -n "$gcc_space" ]; then
-    gcc_dir="$gcc_space/gcc-$gcc_version"
-fi
-
 path_list=(
-		"${gcc_dir:+${gcc_dir}/bin}"
-		"${llvm_dir}/bin"
 		"$coverity_path/bin"
 )
 
@@ -668,13 +620,6 @@ if upon "$retain_paths"; then
 	op="append" extend_path "PATH" "path_list"
 	op="append" extend_path "LD_LIBRARY_PATH" "ld_library_path_list"
 else
-	# Otherwise, prepend CI paths so that they take effect before local ones
-	# Check if the gcc_dir directory does NOT exist.
-	# If it doesn't, execute setup_gcc_toolchain to download and set up the
-	# GCC toolchain.
-	if [ ! -d "$gcc_dir" ]; then
-		setup_gcc_toolchain
-	fi
 	extend_path "PATH" "path_list"
 	extend_path "LD_LIBRARY_PATH" "ld_library_path_list"
 fi

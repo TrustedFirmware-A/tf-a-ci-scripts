@@ -5,6 +5,3 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-pre_tf_build() {
-    setup_llvm_toolchain
-}
