@@ -6,10 +6,6 @@ pipeline {
         }
     }
 
-    environment {
-        UV_CACHE_DIR = "${WORKSPACE}/.uv-cache"
-    }
-
     options {
         timeout(time: 15, unit: 'MINUTES')
     }
