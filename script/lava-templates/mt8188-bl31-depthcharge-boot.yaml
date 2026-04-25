@@ -1,0 +1,37 @@
+device_type: mt8188-geralt
+job_name: MT8188 Geralt Chromebook BL31 depthcharge boot test - $build_mode
+timeouts:
+  job:
+    minutes: 30
+  action:
+    minutes: 15
+  connection:
+    minutes: 5
+priority: medium
+visibility: public
+actions:
+- deploy:
+    timeout:
+      minutes: 5
+    to: flasher
+    images:
+      image:
+        url: https://downloads.trustedfirmware.org/infra-assets/linaro_artifacts/lava/chromebook/geralt/geralt_tf-a-ci_golden_image_v2.bin
+      bl31:
+        url: $bl31_url
+- boot:
+    timeout:
+      minutes: 5
+    method: minimal
+- test:
+    timeout:
+      minutes: 15
+    interactive:
+    - name: int_1
+      prompts: ["Starting depthcharge on Geralt"]
+      script:
+      - command:
+    - name: int_2
+      prompts: ["This is a TF-A test build. Halting"]
+      script:
+      - command:
