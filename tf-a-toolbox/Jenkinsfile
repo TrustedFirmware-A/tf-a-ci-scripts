@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            yamlFile '.jenkins/pod.yaml'
+            yamlFile 'tf-a-toolbox/.jenkins/pod.yaml'
             defaultContainer 'uv'
         }
     }
@@ -17,15 +17,17 @@ pipeline {
     stages {
         stage('Validate') {
             steps {
-                sh 'uv sync --locked --dev --extra cli'
+                dir('tf-a-toolbox') {
+                    sh 'uv sync --locked --dev --extra cli'
 
-                sh 'uv run ruff format --check .'
-                sh 'uv run ruff check .'
+                    sh 'uv run ruff format --check .'
+                    sh 'uv run ruff check .'
 
-                sh 'uv run ty check'
-                sh 'uv run pyright'
+                    sh 'uv run ty check'
+                    sh 'uv run pyright'
 
-                sh 'uv run pytest'
+                    sh 'uv run pytest'
+                }
             }
         }
     }
