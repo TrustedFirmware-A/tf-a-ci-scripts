@@ -15,4 +15,4 @@ spec:
       resources:
         limits:
           cpu: '1'
-          memory: '128Mi'
+          memory: '512Mi'
