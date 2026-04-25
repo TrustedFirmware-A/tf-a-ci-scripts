@@ -27,4 +27,31 @@ pipeline {
             }
         }
     }
+
+    post {
+        always {
+            script {
+                if (!env.GERRIT_CHANGE_NUMBER) {
+                    return
+                }
+
+                container('jnlp') {
+                    withCredentials([sshUserPrivateKey(
+                        credentialsId: 'TFA_CI_BOT_USER_SSH_KEY',
+                        usernameVariable: 'USER',
+                        keyFileVariable: 'KEY',
+                    )]) {
+                        def score = (currentBuild.currentResult == 'SUCCESS') ? 1 : -1
+
+                        withEnv(["GERRIT_REVIEW_SCORE=${score}"]) {
+                            sh '''
+                                ssh -p 29418 -i "${KEY}" "${USER}@review.trustedfirmware.org" -o StrictHostKeyChecking=no \
+                                    gerrit review --label "Verified-Toolbox=${GERRIT_REVIEW_SCORE}" "${GERRIT_PATCHSET_REVISION}"
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
