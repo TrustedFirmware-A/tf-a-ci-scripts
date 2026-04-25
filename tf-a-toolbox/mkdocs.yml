@@ -65,6 +65,7 @@ plugins:
             - url: 'https://docs.python.org/3/objects.inv'
               domains: ['py', 'std']
 
+            - 'https://click.palletsprojects.com/en/stable/objects.inv'
             - 'https://rich.readthedocs.io/en/stable/objects.inv'
             - 'https://typer.tiangolo.com/objects.inv'
 
