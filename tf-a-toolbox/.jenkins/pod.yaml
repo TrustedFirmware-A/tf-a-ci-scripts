@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+
+spec:
+  containers:
+    - name: 'uv'
+
+      image: 'ghcr.io/astral-sh/uv:python3.14-bookworm'
+      imagePullPolicy: IfNotPresent
+
+      tty: true
+      command:
+        - 'cat'
+
+      resources:
+        limits:
+          cpu: '1'
+          memory: '128Mi'

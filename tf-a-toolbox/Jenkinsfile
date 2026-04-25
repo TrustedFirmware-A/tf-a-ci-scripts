@@ -1,0 +1,32 @@
+pipeline {
+    agent {
+        kubernetes {
+            yamlFile '.jenkins/pod.yaml'
+            defaultContainer 'uv'
+        }
+    }
+
+    environment {
+        UV_CACHE_DIR = "${WORKSPACE}/.uv-cache"
+    }
+
+    options {
+        timeout(time: 15, unit: 'MINUTES')
+    }
+
+    stages {
+        stage('Validate') {
+            steps {
+                sh 'uv sync --locked --dev --extra cli'
+
+                sh 'uv run ruff format --check .'
+                sh 'uv run ruff check .'
+
+                sh 'uv run ty check'
+                sh 'uv run pyright'
+
+                sh 'uv run pytest'
+            }
+        }
+    }
+}
