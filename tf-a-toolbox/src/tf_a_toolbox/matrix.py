@@ -55,7 +55,7 @@ class StorePathError(Exception):
 
     def __init__(self, path: Path) -> None:
         """Build a [`StorePathError`][] from its associated path."""
-        super().__init__(path)
+        super().__init__(f"failed to access test store path: {path}")
 
         self.path = path
 
@@ -68,7 +68,7 @@ class GroupPathError(Exception):
 
     def __init__(self, path: Path) -> None:
         """Build a [`GroupPathError`][] from its associated path."""
-        super().__init__(path)
+        super().__init__(f"failed to access test group path: {path}")
 
         self.path = path
 
@@ -81,7 +81,7 @@ class ConfigPathError(Exception):
 
     def __init__(self, path: Path) -> None:
         """Build a [`ConfigPathError`][] from its associated path."""
-        super().__init__(path)
+        super().__init__(f"failed to access test configuration path: {path}")
 
         self.path = path
 
