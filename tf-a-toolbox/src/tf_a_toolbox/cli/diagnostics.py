@@ -18,7 +18,12 @@ from rich.text import Text
 
 from tf_a_toolbox.cli.consoles import stderr
 from tf_a_toolbox.cli.styles import Style
-from tf_a_toolbox.matrix import ConfigPathError, GroupPathError, StorePathError
+from tf_a_toolbox.matrix import (
+    ConfigPathError,
+    GroupPathError,
+    InvalidConfigError,
+    StorePathError,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -138,13 +143,13 @@ class Diagnostic:
 
     @staticmethod
     def from_matrix_error(
-        error: StorePathError | GroupPathError | ConfigPathError,
+        error: StorePathError | GroupPathError | ConfigPathError | InvalidConfigError,
         severity: Severity = Severity.ERROR,
     ) -> Diagnostic:
         """Build a diagnostic from a matrix-related error.
 
-        This method maps a common set of matrix-related failures to a
-        diagnostic tailored to the particular failure.
+        This method maps a matrix-related failure to a diagnostic tailored to
+        the particular failure.
 
         Args:
             error: Matrix error to describe.
@@ -152,6 +157,31 @@ class Diagnostic:
 
         Returns:
             A diagnostic describing the matrix failure.
+        """
+        if not isinstance(error, InvalidConfigError):
+            return Diagnostic.from_matrix_traversal_error(error, severity)
+
+        summary = Text("invalid test configuration: ")
+        summary.append(str(error.path), style=Style.PATH)
+
+        return Diagnostic(summary, severity=severity)
+
+    @staticmethod
+    def from_matrix_traversal_error(
+        error: StorePathError | GroupPathError | ConfigPathError,
+        severity: Severity = Severity.ERROR,
+    ) -> Diagnostic:
+        """Build a diagnostic from a matrix traversal error.
+
+        This method maps a matrix path traversal failure to a diagnostic
+        tailored to the particular failure.
+
+        Args:
+            error: Matrix traversal error to describe.
+            severity: The severity of the diagnostic.
+
+        Returns:
+            A diagnostic describing the matrix traversal failure.
         """
         match error:
             case StorePathError():

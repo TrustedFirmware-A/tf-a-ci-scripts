@@ -36,9 +36,10 @@ Examples:
 import os
 import stat
 
-from dataclasses import dataclass, field
+from abc import ABC
+from dataclasses import astuple, dataclass, field, fields
 from enum import Enum, unique
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from tf_a_toolbox import paths
 
@@ -47,43 +48,57 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-class StorePathError(Exception):
-    """A traversal failure involving a test store path."""
+class MatrixError(Exception, ABC):
+    """Base class for test matrix errors."""
+
+
+class MatrixPathError(MatrixError, ABC):
+    """Base class for file system-related matrix errors."""
 
     path: Path
-    """Test store path responsible for the failure."""
+    """Path responsible for the failure."""
 
-    def __init__(self, path: Path) -> None:
-        """Build a [`StorePathError`][] from its associated path."""
-        super().__init__(f"failed to access test store path: {path}")
+    def __init__(self, path: Path, message: str) -> None:
+        """Build an error from its associated path."""
+        super().__init__(message)
 
         self.path = path
 
 
-class GroupPathError(Exception):
-    """A traversal failure involving a test group path."""
-
-    path: Path
-    """Test group path responsible for the failure."""
+class StorePathError(MatrixPathError):
+    """An error involving a test store path."""
 
     def __init__(self, path: Path) -> None:
-        """Build a [`GroupPathError`][] from its associated path."""
-        super().__init__(f"failed to access test group path: {path}")
-
-        self.path = path
+        """Build an error from its associated test store path."""
+        super().__init__(path, f"failed to access test store path: {path}")
 
 
-class ConfigPathError(Exception):
-    """A traversal failure involving a test configuration path."""
-
-    path: Path
-    """Test configuration path responsible for the failure."""
+class GroupPathError(MatrixPathError):
+    """An error involving a test group path."""
 
     def __init__(self, path: Path) -> None:
-        """Build a [`ConfigPathError`][] from its associated path."""
-        super().__init__(f"failed to access test configuration path: {path}")
+        """Build an error from its associated test group path."""
+        super().__init__(path, f"failed to access test group path: {path}")
 
-        self.path = path
+
+class ConfigError(MatrixPathError, ABC):
+    """Base class for test configuration-related errors."""
+
+
+class ConfigPathError(ConfigError):
+    """An error involving a test configuration path."""
+
+    def __init__(self, path: Path) -> None:
+        """Build an error from its associated test configuration path."""
+        super().__init__(path, f"failed to access test configuration path: {path}")
+
+
+class InvalidConfigError(ConfigError):
+    """An error caused by an invalid test configuration."""
+
+    def __init__(self, path: Path) -> None:
+        """Build an error from its associated test configuration path."""
+        super().__init__(path, f"invalid test configuration: {path}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -255,11 +270,11 @@ class GroupView:
     group: Group
     """Test group represented by this view."""
 
-    configs: tuple[Config, ...]
-    """Configurations materialized into this view."""
+    configs: tuple[ConfigEntry, ...]
+    """Test configuration entries included in this view."""
 
-    errors: tuple[ConfigPathError, ...] = ()
-    """Configuration traversal errors captured while materializing."""
+    errors: tuple[ConfigPathError | InvalidConfigError, ...] = ()
+    """Configuration errors captured while materializing."""
 
 
 @unique
@@ -286,6 +301,254 @@ class ConfigState(Enum):
 
 
 @dataclass(frozen=True, slots=True)
+class ConfigFragmentTuple(ABC):  # noqa: B024
+    """An ordered fragment selection from a test configuration.
+
+    Fragment tuples model the positional build or run fragments encoded in a
+    test configuration file name, where any missing fragments are represented
+    as `nil` in the string form, and as [`None`][] in Python.
+    """
+
+    @classmethod
+    def parse(cls, string: str) -> Self | None:
+        """Parse a fragment tuple from its matrix name encoding.
+
+        This method takes a comma-separated fragment tuple encoded on one side
+        of a test configuration file name, where each comma position maps to a
+        fixed field on the concrete fragment tuple type.
+
+        The literal `nil` is interpreted as an absent fragment, and any missing
+        trailing positions are treated as `nil`. Empty fields are not valid
+        fragments; use `nil` to encode an absent fragment.
+
+        If the string cannot be decomposed into the concrete tuple shape for
+        any reason, this method instead returns [`None`][].
+
+        Examples:
+            >>> build = ConfigBuildFragmentTuple.parse("fvp-default")
+            >>> build.tf_a
+            'fvp-default'
+            >>> build.tfut is None
+            True
+
+            >>> ConfigRunFragmentTuple.parse("nil,tfut")
+            ConfigRunFragmentTuple(primary=None, tfut='tfut')
+
+            >>> ConfigBuildFragmentTuple.parse("nil") is None
+            True
+        """
+        parts = string.split(",")
+        nfields = len(fields(cls))
+
+        if len(parts) > nfields:
+            return None
+
+        values = [None if part == "nil" else part for part in parts]
+        values.extend([None] * (nfields - len(values)))
+
+        try:
+            return cls(*values)
+        except ValueError:
+            return None
+
+    def __post_init__(self) -> None:
+        """Validate that every selected fragment is non-empty.
+
+        Raises:
+            ValueError: If any fragment field is an empty string.
+        """
+        if any(fragment == "" for fragment in astuple(self)):
+            message = "fragment tuple fields must not be empty"
+            raise ValueError(message)
+
+    def __str__(self) -> str:
+        """Return the string representation of this fragment tuple.
+
+        The returned string is the comma-separated form used in test
+        configuration file names. Every positional field is emitted.
+
+        Any absent fragment (i.e. any field whose value is [`None`][]) is
+        encoded as the special `nil` fragment.
+
+        Examples:
+            >>> str(ConfigBuildFragmentTuple(tf_a="fvp-default", tfut="tfut"))
+            'fvp-default,nil,nil,nil,nil,tfut'
+
+            >>> str(ConfigRunFragmentTuple())
+            'nil,nil'
+        """
+        return ",".join("nil" if fragment is None else fragment for fragment in astuple(self))
+
+
+@dataclass(frozen=True, slots=True)
+class ConfigBuildFragmentTuple(ConfigFragmentTuple):
+    """A build-side fragment selection for a test matrix entry.
+
+    A build fragment tuple records the positional build fragments encoded in a
+    test configuration file name. Unlike a run fragment tuple, it must select
+    at least one concrete build fragment.
+
+    Raises:
+        ValueError: When constructing a build fragment tuple where any field is
+            an empty string, or where every field is [`None`][].
+    """
+
+    tf_a: str | None = None
+    """Fragment selecting the TF-A build configuration."""
+
+    tftf: str | None = None
+    """Fragment selecting the TFTF build configuration."""
+
+    hafnium: str | None = None
+    """Fragment selecting the Hafnium (SPM) build configuration."""
+
+    rmm: str | None = None
+    """Fragment selecting the TF-RMM build configuration."""
+
+    rf_a: str | None = None
+    """Fragment selecting the RF-A build configuration."""
+
+    tfut: str | None = None
+    """Fragment selecting the TFUT build configuration."""
+
+    def __post_init__(self) -> None:
+        """Validate that the build fragment tuple is not empty.
+
+        Raises:
+            ValueError: If any fragment field is an empty string, or if every
+                build fragment field is [`None`][].
+        """
+        super().__post_init__()
+
+        if any(fragment is not None for fragment in astuple(self)):
+            return
+
+        message = "build fragment tuples must include at least one fragment"
+        raise ValueError(message)
+
+
+@dataclass(frozen=True, slots=True)
+class ConfigRunFragmentTuple(ConfigFragmentTuple):
+    """A run-side fragment selection for a test matrix entry.
+
+    A run fragment tuple records the positional run fragments encoded in a test
+    configuration file name. A run fragment tuple is permitted to be empty to
+    indicate that no fragments are involved in the test.
+    """
+
+    primary: str | None = None
+    """Fragment selecting the primary run configuration."""
+
+    tfut: str | None = None
+    """Fragment selecting the TFUT run configuration."""
+
+
+@dataclass(frozen=True, slots=True)
+class ConfigFragmentTuples:
+    """A complete fragment selection for a test matrix entry.
+
+    A test configuration file name encodes both build-side and run-side
+    fragment tuples. This type groups those two positional selections into the
+    complete fragment identity for one test matrix entry.
+    """
+
+    build: ConfigBuildFragmentTuple
+    """Fragments selecting build configurations to be used by the test."""
+
+    run: ConfigRunFragmentTuple
+    """Fragments selecting run configurations to be used by the test."""
+
+    @classmethod
+    def parse(cls, string: str) -> Self | None:
+        """Parse a complete fragment selection from its matrix name encoding.
+
+        This method takes the fragment portion of a test configuration name,
+        containing the build-side and run-side fragment tuples separated by a
+        colon (`:`), and parses it into its constituent tuples.
+
+        If the string cannot be decomposed into valid build and run fragment
+        tuples, this method returns [`None`][].
+
+        Examples:
+            >>> fragments = ConfigFragmentTuples.parse("fvp-default:nil")
+            >>> str(fragments)
+            'fvp-default,nil,nil,nil,nil,nil:nil,nil'
+
+            >>> ConfigFragmentTuples.parse("fvp-default:nil.inactive") is None
+            True
+        """
+        if string.endswith(".inactive"):
+            return None
+
+        try:
+            left, right = string.split(":")
+        except ValueError:
+            return None
+
+        build = ConfigBuildFragmentTuple.parse(left)
+        run = ConfigRunFragmentTuple.parse(right)
+
+        if (build is None) or (run is None):
+            return None
+
+        return cls(build, run)
+
+    def __str__(self) -> str:
+        """Return the matrix name encoding of this fragment selection.
+
+        The returned string joins the build-side and run-side fragment tuple
+        encodings with a colon (`:`), matching the fragment portion of a test
+        configuration file name.
+
+        Examples:
+            >>> fragments = ConfigFragmentTuples(
+            ...     build=ConfigBuildFragmentTuple(tf_a="fvp-default"),
+            ...     run=ConfigRunFragmentTuple(),
+            ... )
+            >>>
+            >>> str(fragments)
+            'fvp-default,nil,nil,nil,nil,nil:nil,nil'
+        """
+        return f"{self.build}:{self.run}"
+
+
+@dataclass(frozen=True, slots=True)
+class ConfigDescriptor:
+    """A generated test descriptor for a test matrix entry.
+
+    A test descriptor combines a generation number, a test group name, and a
+    complete fragment selection used to generate a `.test` file.
+    """
+
+    number: int
+    """Zero-based descriptor number assigned during test generation."""
+
+    group: str
+    """Test group represented by the descriptor."""
+
+    fragments: ConfigFragmentTuples
+    """Test configuration fragments represented by the descriptor."""
+
+    def __str__(self) -> str:
+        """Return the file name encoding of this descriptor.
+
+        The string returned by this method is the file name encoding expected
+        by the CI: a zero-padded generation number, the group name, and the
+        fragment selection joined with `%`, followed by the `.test` suffix.
+
+        Examples:
+            >>> fragments = ConfigFragmentTuples(
+            ...     build=ConfigBuildFragmentTuple(tf_a="fvp-default"),
+            ...     run=ConfigRunFragmentTuple(),
+            ... )
+            >>>
+            >>> str(ConfigDescriptor(3, "tf-a-l1-build-arm-fvp", fragments))
+            '0003%tf-a-l1-build-arm-fvp%fvp-default,nil,nil,nil,nil,nil:nil,nil.test'
+        """
+        return f"{self.number:04d}%{self.group}%{self.fragments}.test"
+
+
+@dataclass(frozen=True, slots=True)
 class Config:
     """A test configuration within a test group."""
 
@@ -293,34 +556,113 @@ class Config:
     """File system path to the configuration file."""
 
     @property
-    def state(self) -> ConfigState:
-        """Enablement state of this configuration.
+    def name(self) -> str:
+        """Configuration file name, stripped of any `.inactive` suffix."""
+        return self.path.name.removesuffix(".inactive")
 
-        A configuration whose file name ends with `.inactive` is considered to
-        be inactive; inactive configurations are skipped during the test
-        descriptor generation process.
+    @property
+    def info(self) -> ConfigInfo:
+        """Validated matrix information for this test configuration.
+
+        This information is derived from the configuration file name after
+        stripping the `.inactive` suffix, if present. It does not inspect the
+        configuration file contents.
+
+        Raises:
+            InvalidConfigError: If this configuration's file name cannot be
+                decomposed into a valid fragment selection.
 
         Examples:
-            >>> store = Store()  # canonical repository store
-            >>> group = store.group("tf-a-l1-build-arm-fvp")
+            >>> from pathlib import Path
             >>>
-            >>> config = group.config("fvp-default:nil")
-            >>> (config.path.name, str(config.state))
-            ('fvp-default:nil', 'active')
-            >>>
-            >>> config = group.config("fvp-default:nil.inactive")
-            >>> (config.path.name, str(config.state))
-            ('fvp-default:nil.inactive', 'inactive')
+            >>> info = Config(Path("fvp-default:nil.inactive")).info
+            >>> info.state
+            <ConfigState.INACTIVE: 'inactive'>
+            >>> str(info.fragments)
+            'fvp-default,nil,nil,nil,nil,nil:nil,nil'
+
+            >>> try:
+            ...     Config(Path("invalid")).info
+            ... except InvalidConfigError as error:
+            ...     print(error.path)
+            invalid
         """
-        return ConfigState.INACTIVE if self.path.name.endswith(".inactive") else ConfigState.ACTIVE
+        fragments = ConfigFragmentTuples.parse(self.name)
+        if fragments is None:
+            raise InvalidConfigError(self.path)
+
+        state = ConfigState.INACTIVE if self.path.name.endswith(".inactive") else ConfigState.ACTIVE
+
+        return ConfigInfo(fragments, state)
+
+
+@dataclass(frozen=True, slots=True)
+class ConfigInfo:
+    """Validated matrix information for one test configuration.
+
+    This type represents the path-independent part of a test matrix entry,
+    which includes the complete fragment selection encoded by its file name,
+    and the entry's enablement state.
+
+    Examples:
+        >>> fragments = ConfigFragmentTuples(
+        ...     build=ConfigBuildFragmentTuple(tf_a="fvp-default"),
+        ...     run=ConfigRunFragmentTuple(),
+        ... )
+        >>>
+        >>> info = ConfigInfo(fragments, ConfigState.ACTIVE)
+        >>> info.state
+        <ConfigState.ACTIVE: 'active'>
+        >>> str(info.fragments)
+        'fvp-default,nil,nil,nil,nil,nil:nil,nil'
+    """
+
+    fragments: ConfigFragmentTuples
+    """Validated fragments selected by the test configuration."""
+
+    state: ConfigState
+    """Enablement state for the test configuration."""
+
+
+@dataclass(frozen=True, slots=True)
+class ConfigEntry:
+    """A file system-backed record of a validated test matrix entry.
+
+    A test configuration entry binds a path to a test configuration with the
+    test matrix information derived from that configuration.
+
+    Examples:
+        >>> from pathlib import Path
+        >>>
+        >>> fragments = ConfigFragmentTuples(
+        ...     build=ConfigBuildFragmentTuple(tf_a="fvp-default"),
+        ...     run=ConfigRunFragmentTuple(),
+        ... )
+        >>>
+        >>> entry = ConfigEntry(
+        ...     Path("fvp-default:nil"),
+        ...     ConfigInfo(fragments, ConfigState.ACTIVE),
+        ... )
+        >>>
+        >>> entry.path.name
+        'fvp-default:nil'
+        >>> entry.info.state
+        <ConfigState.ACTIVE: 'active'>
+    """
+
+    path: Path
+    """Path to the test configuration file."""
+
+    info: ConfigInfo
+    """Validated matrix information for the test configuration."""
 
 
 @dataclass(frozen=True, slots=True)
 class GroupQuery:
     """A query applicable to a test group."""
 
-    predicate: Callable[[Config], bool] | None = field(default=None, repr=False, compare=False)
-    """Optional predicate deciding whether to keep each configuration."""
+    predicate: Callable[[ConfigInfo], bool] | None = field(default=None, repr=False, compare=False)
+    """Optional predicate deciding whether to keep each configuration info."""
 
     def execute(self, group: Group) -> GroupView:
         """Execute the query on the specified test group.
@@ -328,21 +670,37 @@ class GroupQuery:
         Raises:
             GroupPathError: If the test group path could not be traversed. The
                 cause chain records the underlying reason.
+
+        Examples:
+            >>> store = Store()  # canonical repository store
+            >>> group = store.group("tf-a-l1-build-arm-fvp")
+            >>>
+            >>> query = GroupQuery(lambda info: info.fragments.build.tf_a == "fvp-default")
+            >>> view = query.execute(group)
+            >>>
+            >>> [entry.path.name for entry in view.configs]
+            ['fvp-default:nil']
         """
-        configs: list[Config] = []
-        errors: list[ConfigPathError] = []
+        configs: list[ConfigEntry] = []
+        errors: list[ConfigPathError | InvalidConfigError] = []
 
         for item in group.configs():
             if isinstance(item, ConfigPathError):
                 errors.append(item)
                 continue
 
-            if (self.predicate is None) or self.predicate(item):
-                configs.append(item)
+            try:
+                entry = ConfigEntry(item.path, item.info)
+            except InvalidConfigError as error:
+                errors.append(error)
+                continue
+
+            if (self.predicate is None) or self.predicate(entry.info):
+                configs.append(entry)
 
         return GroupView(
             group=group,
-            configs=tuple(sorted(configs, key=lambda config: (config.path.name, config.path))),
+            configs=tuple(sorted(configs, key=lambda entry: entry.path)),
             errors=tuple(sorted(errors, key=lambda error: error.path)),
         )
 
@@ -363,6 +721,19 @@ class StoreQuery:
         Raises:
             StorePathError: If the test store path could not be traversed. The
                 cause chain records the underlying reason.
+
+        Examples:
+            >>> store = Store()  # canonical repository store
+            >>>
+            >>> view = StoreQuery(
+            ...     predicate=lambda group: group.path.name == "tf-a-l1-build-arm-fvp",
+            ...     groups=GroupQuery(lambda info: info.fragments.build.tf_a == "fvp-default"),
+            ... ).execute(store)
+            >>>
+            >>> [group.group.path.name for group in view.groups]
+            ['tf-a-l1-build-arm-fvp']
+            >>> [entry.path.name for entry in view.groups[0].configs]
+            ['fvp-default:nil']
         """
         groups: list[GroupView] = []
         errors: list[GroupPathError] = []
@@ -382,6 +753,6 @@ class StoreQuery:
 
         return StoreView(
             store=store,
-            groups=tuple(sorted(groups, key=lambda view: (view.group.path.name, view.group.path))),
+            groups=tuple(sorted(groups, key=lambda view: view.group.path)),
             errors=tuple(sorted(errors, key=lambda error: error.path)),
         )

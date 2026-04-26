@@ -39,7 +39,7 @@ class MatrixExitCode(IntEnum):
     """The command could not inspect the requested test store path."""
 
     @staticmethod
-    def from_matrix_error(
+    def from_matrix_traversal_error(
         error: StorePathError | GroupPathError | ConfigPathError,
     ) -> int:
         """Return the exit code for a matrix traversal error."""
@@ -183,7 +183,7 @@ def groups(
         matrix = query.execute(store)
     except StorePathError as error:
         diagnostic = Diagnostic.from_matrix_error(error, Severity.ERROR)
-        exit_code = MatrixExitCode.from_matrix_error(error)
+        exit_code = MatrixExitCode.from_matrix_traversal_error(error)
 
         raise FatalError(diagnostic, exit_code) from error
 
@@ -197,7 +197,7 @@ def groups(
             diagnostic.report(stderr)
 
     for group in matrix.groups:
-        active = any(config.state is ConfigState.ACTIVE for config in group.configs)
+        active = any(entry.info.state is ConfigState.ACTIVE for entry in group.configs)
         if not state.accepts(ConfigState.ACTIVE if active else ConfigState.INACTIVE):
             continue
 
@@ -257,7 +257,7 @@ def configs(
         matrix = query.execute(store)
     except StorePathError as error:
         diagnostic = Diagnostic.from_matrix_error(error, Severity.ERROR)
-        exit_code = MatrixExitCode.from_matrix_error(error)
+        exit_code = MatrixExitCode.from_matrix_traversal_error(error)
 
         raise FatalError(diagnostic, exit_code) from error
 
@@ -271,23 +271,23 @@ def configs(
             diagnostic.report(stderr)
 
     for group in matrix.groups:
-        configs = [config for config in group.configs if state.accepts(config.state)]
-        if not configs:
+        entries = [entry for entry in group.configs if state.accepts(entry.info.state)]
+        if not entries:
             continue
 
         if layout is Layout.GROUPED:
-            active = any(config.state is ConfigState.ACTIVE for config in group.configs)
+            active = any(entry.info.state is ConfigState.ACTIVE for entry in group.configs)
             style = MatrixStyle.GROUP_ACTIVE if active else MatrixStyle.GROUP_INACTIVE
             text = Text(group.group.path.name, style)
 
             stdout.print(text, soft_wrap=True)
 
-        for config in configs:
-            active = config.state is ConfigState.ACTIVE
+        for entry in entries:
+            active = entry.info.state is ConfigState.ACTIVE
             style = MatrixStyle.CONFIG_ACTIVE if active else MatrixStyle.CONFIG_INACTIVE
 
             text = Text()
             text.append(f"{group.group.path.name}/", style=MatrixStyle.CONFIG_GROUP)
-            text.append(config.path.name, style)
+            text.append(entry.path.name, style)
 
             stdout.print(text, soft_wrap=True)
