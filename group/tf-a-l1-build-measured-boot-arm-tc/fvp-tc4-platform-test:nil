@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	local qcbor_release_archive="qcbor-v1_2.tar.gz"
+	local qcbor_folder="qcbor"
+	pushd "$workspace"
+	if [ ! -d "qcbor" ]; then
+		saveas="${qcbor_release_archive}" \
+			url="https://github.com/laurencelundblade/QCBOR/archive/refs/tags/v1.2.tar.gz" \
+			fetch_file
+		mkdir -p $qcbor_folder
+		tar -xzf "${qcbor_release_archive}" --directory=$qcbor_folder --strip-component=1
+	fi
+	echo "Set QCBOR_DIR to $workspace/qcbor"
+	set_hook_var "QCBOR_DIR" "$workspace/qcbor"
+	popd "$workspace"
+}
