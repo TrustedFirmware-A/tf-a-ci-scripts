@@ -15,7 +15,7 @@ generate_lava_job() {
 	# be changed to 8.5.
 	arch_version="8.8"  \
 	has_rng_trap="1" \
-	has_rng="1" \
+	has_rng="0" \
 	gen_model_params
 	model="$model" gen_fvp_yaml
 }

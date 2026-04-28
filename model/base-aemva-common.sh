@@ -572,14 +572,14 @@ fi
 # FEAT_RNG is enabled
 if [ "$has_rng" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
--C cluster0.has_rndr=1
+-C cluster0.has_rndr=2
 EOF
 fi
 
 # FEAT_RNG_TRAP is enabled
 if [ "$has_rng_trap" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
--C cluster0.has_rndr_trap=1
+-C cluster0.has_rndr_trap=2
 EOF
 fi
 
@@ -883,14 +883,14 @@ fi
 # FEAT_RNG is enabled
 if [ "$has_rng" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
--C cluster1.has_rndr=1
+-C cluster1.has_rndr=2
 EOF
 fi
 
 # FEAT_RNG_TRAP is enabled
 if [ "$has_rng_trap" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
--C cluster1.has_rndr_trap=1
+-C cluster1.has_rndr_trap=2
 EOF
 fi
 
