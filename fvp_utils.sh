@@ -43,6 +43,7 @@ optee_version="4.9.0"
 # script/release/update-optee.sh.
 if [[ "$test_config" == *handoff* ]]; then
 	if [[ "$test_config" == *-lts-v2.14* ]]; then
+		optee_version="4.7.0"
 		# These configs predate the later handoff binary refresh on `master`.
 		optee_path="${DOWNLOAD_SERVER_TF_A_URL}/optee/${optee_version}/handoff"
 		uboot_url="${DOWNLOAD_SERVER_TF_A_URL}/handoff/fvp/u-boot.bin"
