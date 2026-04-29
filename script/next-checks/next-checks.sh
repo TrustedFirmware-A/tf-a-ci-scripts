@@ -15,17 +15,11 @@ LOG_TEST_FILENAME="$(realpath -m "${LOG_TEST_FILENAME}")"
 export LOG_TEST_FILENAME
 export RUSTUP_HOME=/usr/local/rustup
 
-# For local runs, we require GERRIT_BRANCH to be set to get the merge-base/diff
-# between the checked out commit and the tip of $GERRIT_BRANCH - for running
-# next tests, usually this will be main
-export GERRIT_BRANCH=${GERRIT_BRANCH:="main"}
+merge_base=$(git merge-base \
+    "refs/remotes/origin/${GERRIT_BRANCH:?}" \
+    "refs/remotes/origin/${GERRIT_REFSPEC:?}")
 
-git fetch --unshallow --update-shallow origin
-git fetch --unshallow --update-shallow origin ${GERRIT_BRANCH} ${GERRIT_REFSPEC}
-
-export merge_base=$(git merge-base \
-    $(head -n1 .git/FETCH_HEAD | cut -f1) \
-    $(tail -n1 .git/FETCH_HEAD | cut -f1))
+export merge_base
 
 # Find the absolute path of the scripts' top directory
 cd "$(dirname "$0")/../.."
