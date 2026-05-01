@@ -266,6 +266,7 @@ if [ "$all_optional_cpu_features" = "1" ]; then
 	has_hdbss=1
 	has_hacdbs=1
 	has_spev1p5=1
+	has_pfar=1
 
 	# Enabled by default in v9.6
 	has_srmask=1
