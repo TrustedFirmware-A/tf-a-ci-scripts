@@ -174,6 +174,9 @@ reset_var has_mec
 # Enable FEAT_SRMASK
 reset_var has_srmask
 
+# Enable FEAT_SPEv1p5
+reset_var has_spev1p5
+
 # Layout of MPIDR. 0=AFF0 is CPUID, 1=AFF1 is CPUID
 reset_var mpidr_layout
 
@@ -262,6 +265,7 @@ if [ "$all_optional_cpu_features" = "1" ]; then
 	has_uinj=1
 	has_hdbss=1
 	has_hacdbs=1
+	has_spev1p5=1
 
 	# Enabled by default in v9.6
 	has_srmask=1
@@ -792,6 +796,13 @@ if [ "$has_srmask" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_srmask=1
 -C cluster1.has_srmask=1
+EOF
+fi
+
+if [ "$has_spev1p5" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_v9_6_spe_extension=2
+-C cluster1.has_v9_6_spe_extension=2
 EOF
 fi
 
