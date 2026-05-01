@@ -1,7 +1,14 @@
-/terminal_0/ { ports[0] = $NF }
-/terminal_1/ { ports[1] = $NF }
-/terminal_2/ { ports[2] = $NF }
-/terminal_3/ { ports[3] = $NF }
+{
+	for (i = 0; i < num_uarts; i++) {
+		pattern = "terminal_" i ": Listening for serial connection on port [0-9]+"
+
+		if (match($0, pattern)) {
+			port = substr($0, RSTART, RLENGTH)
+			sub(/^.* port /, "", port)
+			ports[i] = port
+		}
+	}
+}
 
 END {
 	for (i = 0; i < num_uarts; i++) {
