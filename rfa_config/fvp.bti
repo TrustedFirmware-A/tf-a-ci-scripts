@@ -1,3 +1,3 @@
 PLAT=fvp
-CARGO="cargo +nightly"
+CARGO="cargo +nightly-2026-05-03"
 BTI_EL3=1
