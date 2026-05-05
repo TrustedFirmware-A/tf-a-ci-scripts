@@ -10,7 +10,7 @@ generate_lava_job() {
 
 	model="$model" \
 		bmcov_plugin="1" \
-		uart0_shutdown_tag="WARNING: Image id=1 size out of bounds" \
+		uart0_shutdown_tag="BL1-FWU: Image size out of bounds" \
 		bmcov_plugin_path="${coverage_trace_plugin}" \
 		gen_model_params
 

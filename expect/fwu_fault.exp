@@ -1,4 +1,4 @@
 source [file join [file dirname [info script]] handle-arguments.inc]
 
-expect_string "WARNING: Image id=1 size out of bounds"
+expect_string "BL1-FWU: Image size out of bounds"
 
