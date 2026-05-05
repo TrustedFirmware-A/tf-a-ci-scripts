@@ -73,7 +73,7 @@ async def process_job(session, job_name: str) -> BuildStatus:
     req = await get_json(session, get_job_url(job_name))
 
     name = req["displayName"]
-    number = req["lastCompletedBuild"]["number"]
+    number = req["lastBuild"]["number"]
 
     build = Build(session, name, name, number)
     await build.process()
