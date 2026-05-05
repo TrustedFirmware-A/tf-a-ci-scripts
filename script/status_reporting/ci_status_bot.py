@@ -100,7 +100,9 @@ class Build:
             self.name = req["fullDisplayName"].split(" ")[0]
         # and builds should show up with their configuration name
         elif self.name == "tf-a-builder":
-            self.name = req["actions"][0]["parameters"][1]["value"]
+            for param in req["actions"][2]["parameters"]:
+                if param["name"] == "TEST_CONFIG":
+                    self.name = param["value"]
 
         # parent job passed => children passed. Skip
         if self.status != BuildResult.SUCCESS:
@@ -136,8 +138,18 @@ class Build:
     # extracts (child_name, child_number) from the console output of a build
     async def get_builds_from_console_log(self) -> str:
         log = await get_text(self.session, get_build_console(self.url))
+        # pattern for the pipeline
+        # NOTE: this takes a shortcut in that it will only return failed jobs.
+        # If it didn't, we need to check every job (~300) which is painfully
+        # slow. This is brittle and if any job gets converted this will not
+        # work. Ideally this is replaced by properly parsing the gateway
+        # metadata rather than the console.
+        res = re.findall(r"Build (tf-a[-\w+]+) #(\d+) completed: FAILURE", log)
+        # pattern for the old gateway style jobs
+        if res == []:
+            res = re.findall(r"(tf-a[-\w+]+) #(\d+) started", log)
 
-        return re.findall(r"(tf-a[-\w+]+) #(\d+) started", log)
+        return res
 
 async def get_daily_jobs(session, job_names: list[str]) -> list[BuildStatus]:
     return await asyncio.gather(
