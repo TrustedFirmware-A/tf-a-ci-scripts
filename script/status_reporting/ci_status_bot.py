@@ -144,7 +144,7 @@ class Build:
         # slow. This is brittle and if any job gets converted this will not
         # work. Ideally this is replaced by properly parsing the gateway
         # metadata rather than the console.
-        res = re.findall(r"Build (tf-a[-\w+]+) #(\d+) completed: FAILURE", log)
+        res = re.findall(r"Build (tf-a[-\w+]+) #(\d+) completed: (?:FAILURE|UNSTABLE)", log)
         # pattern for the old gateway style jobs
         if res == []:
             res = re.findall(r"(tf-a[-\w+]+) #(\d+) started", log)
