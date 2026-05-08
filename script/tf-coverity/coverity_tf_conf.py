@@ -140,4 +140,7 @@ exclude_paths = [
     ("plat/marvell/armada/a3k/common/plat_pm.c", "Temporarily excluded"),
     ("plat/marvell/armada/common/marvell_cci.c", "Temporarily excluded"),
     ("plat/marvell/armada/common/marvell_gicv3.c", "Temporarily excluded"),
+
+    # Ignore files that need the QTISECLIB. Revert if library can be built
+    ("drivers/qti/accesscontrol/xpu.c", "Needs QTISECLIB"),
 ]
