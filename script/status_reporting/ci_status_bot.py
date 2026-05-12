@@ -182,8 +182,16 @@ def print_build_status(status: BuildStatus, level: int = 0) -> str:
     return message
 
 def format_daily_status(statuses: list[BuildStatus]) -> str:
-    header = ("🟢" if all(job.status == BuildResult.SUCCESS for job in statuses) else "🔴") + " Daily Status"
+    if all(job.status == BuildResult.SUCCESS for job in statuses):
+        header = "🟢"
+    elif any(job.status == BuildResult.RUNNING for job in statuses):
+        header = "🟡 (still running)"
+    elif any(job.status == BuildResult.ABORTED for job in statuses):
+        header = "🟡 (aborted)"
+    else:
+        header = "🔴"
 
+    header = "Daily status: " + header
     details = "".join(print_build_status(status) for status in statuses).rstrip()
     if details:
         return f"{header}\n{details}\n"
