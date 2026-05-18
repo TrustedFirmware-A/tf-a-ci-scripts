@@ -537,6 +537,20 @@ nxp_sb_fuse_flags="${nxp_sb_flags} FUSE_PROG=1"
 make PLAT=lx2160aqds $(common_flags) all
 make PLAT=lx2160ardb $(common_flags) all
 
+# GigaDevice GD55LB02GF FlexSPI NOR vendor support: check
+# drivers/nxp/flexspi/nor/flash_vendor_gigadevice.c, which is only
+# linked under FLASH_TYPE=GD55LB02GF
+clean_build PLAT=lx2160ardb $(common_flags) BOOT_MODE=flexspi_nor \
+    FLASH_TYPE=GD55LB02GF all
+
+# Optional io_storage backend for FlexSPI NOR:
+# - check drivers/io/io_xspi_nor.c IO_XSPI_NOR
+# - check diagnostics path in drivers/nxp/flexspi/nor/xspi_nor_diag.c and
+#   the probe helpers of drivers/nxp/flexspi/nor/fspi.c
+#   (both gated by NXP_XSPI_DIAG)
+clean_build PLAT=lx2160ardb $(common_flags) BOOT_MODE=flexspi_nor \
+    FLASH_TYPE=GD55LB02GF IO_XSPI_NOR=1 NXP_XSPI_DIAG=1 all
+
 #CSF Based CoT:
 clean_build PLAT=lx2162aqds $(common_flags) BOOT_MODE=flexspi_nor \
     $nxp_sb_fuse_flags DDR_PHY_BIN_PATH=$(pwd)
