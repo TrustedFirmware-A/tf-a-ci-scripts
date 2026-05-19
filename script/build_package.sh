@@ -10,7 +10,7 @@
 
 set -e
 
-ci_root="$(readlink -f "$(dirname "$0")/..")"
+export ci_root="$(readlink -f "$(dirname "$0")/..")"
 source "$ci_root/utils.sh"
 
 if [ ! -d "$workspace" ]; then
