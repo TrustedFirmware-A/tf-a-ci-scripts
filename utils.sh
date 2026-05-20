@@ -661,16 +661,12 @@ path_list=(
 ld_library_path_list=(
 )
 
-license_path_list=${license_path_list-(
-)}
-
 # Setup various paths
 if upon "$retain_paths"; then
 	# If explicitly requested, retain local paths; apppend CI paths to the
 	# existing ones.
 	op="append" extend_path "PATH" "path_list"
 	op="append" extend_path "LD_LIBRARY_PATH" "ld_library_path_list"
-	op="append" extend_path "LM_LICENSE_FILE" "license_path_list"
 else
 	# Otherwise, prepend CI paths so that they take effect before local ones
 	# Check if the gcc_dir directory does NOT exist.
@@ -681,7 +677,6 @@ else
 	fi
 	extend_path "PATH" "path_list"
 	extend_path "LD_LIBRARY_PATH" "ld_library_path_list"
-	extend_path "LM_LICENSE_FILE" "license_path_list"
 fi
 
 export LD_LIBRARY_PATH

@@ -28,11 +28,3 @@ spm_driver_linux_arm_gerrit_repo="ssh://$arm_gerrit_url:29418/trusted-firmware/s
 # Arm Coverity server.
 export coverity_host="${coverity_host:-coverity.cambridge.arm.com}"
 export coverity_port="${coverity_port:-8443}"
-
-# License servers for the FVP models.
-license_path_list=(
-    "7010@cam-lic05.cambridge.arm.com"
-    "7010@cam-lic07.cambridge.arm.com"
-    "7010@cam-lic03.cambridge.arm.com"
-    "7010@cam-lic04.cambridge.arm.com"
-)
