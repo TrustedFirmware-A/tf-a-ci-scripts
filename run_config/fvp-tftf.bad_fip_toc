@@ -11,6 +11,10 @@ post_tf_build() {
 
 post_tf_archive() {
 	python3 "$ci_root/script/corrupt_fip_toc.py" --input "$archive/fip.bin" --mode bad_offset_size --target bl2
+
+	if upon "$local_ci"; then
+		rm -f "$archive/bl2.bin"
+	fi
 }
 
 generate_lava_job_template() {
