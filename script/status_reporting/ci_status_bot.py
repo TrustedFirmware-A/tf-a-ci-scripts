@@ -39,6 +39,16 @@ class BuildStatus:
     status: BuildResult
     sub_builds: list["BuildStatus"]
 
+
+def get_jenkins_parameter(actions: list[dict], name: str) -> str | None:
+    for action in actions:
+        for param in action.get("parameters", []):
+            if param.get("name") == name:
+                return param.get("value")
+
+    return None
+
+
 # Constants to produce the report with
 openci_url = "https://ci.trustedfirmware.org/"
 
@@ -100,9 +110,10 @@ class Build:
             self.name = req["fullDisplayName"].split(" ")[0]
         # and builds should show up with their configuration name
         elif self.name == "tf-a-builder":
-            for param in req["actions"][2]["parameters"]:
-                if param["name"] == "TEST_CONFIG":
-                    self.name = param["value"]
+            self.name = (
+                get_jenkins_parameter(req.get("actions", []), "TEST_CONFIG")
+                or self.name
+            )
 
         # parent job passed => children passed. Skip
         if self.status != BuildResult.SUCCESS:
