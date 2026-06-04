@@ -13,6 +13,6 @@ fi
 
 failures='Kernel panic'
 expect_string+=("i;Linux version;;${failures}")
-failures='CPU[0-9]+: failed to come online'
+failures='SMP: Total of (?!${num_cpus} processors activated)[0-9]+ processors activated@CPU[0-9]+: failed to come online'
 expect_string+=("i;SMP: Total of ${num_cpus} processors activated;;${failures}")
 expect_string+=('i;Freeing unused kernel memory')
