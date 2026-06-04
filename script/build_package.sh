@@ -370,8 +370,12 @@ build_fip() {
 		archive_file $build_args_path
 	fi
 
-	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" BUILD_BASE=$tf_build_root "$@" \
-		${fip_targets:-fip} 2>&1 | tee -a "$build_log" || fail_build
+	# Export the build root vars so they are visible when make eventually
+	# expands the configuration.
+	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") \
+		tftf_build_root="$tftf_build_root" tf_build_root="$tf_build_root" \
+		DEBUG="$DEBUG" BUILD_BASE=$tf_build_root "$@" ${fip_targets:-fip} \
+		2>&1 | tee -a "$build_log" || fail_build
 	) 2>&1 | tee -a "$build_log" || fail_build
 }
 
@@ -393,8 +397,10 @@ build_tf_extra() {
 		set +a
 	fi
 
-	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") DEBUG="$DEBUG" BUILD_BASE=$tf_build_root "$@" \
-		${tf_extra_rules} 2>&1 | tee -a "$build_log" || fail_build
+	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") \
+		tftf_build_root="$tftf_build_root" tf_build_root="$tf_build_root" \
+		DEBUG="$DEBUG" BUILD_BASE=$tf_build_root "$@" ${tf_extra_rules} \
+		2>&1 | tee -a "$build_log" || fail_build
 	)
 }
 
@@ -639,7 +645,7 @@ build_tf() {
 	cat <<EOF | log_separator
 
 Build command line:
-	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG BUILD_BASE=$tf_build_root $build_targets
+	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') tftf_build_root=$tftf_build_root tf_build_root=$tf_build_root DEBUG=$DEBUG BUILD_BASE=$tf_build_root $build_targets
 
 CC version:
 $(${CC-${CROSS_COMPILE}gcc} -v 2>&1)
@@ -652,6 +658,7 @@ EOF
 	# Build TF. Since build output is being directed to the build log, have
 	# descriptor 3 point to the current terminal for build wrappers to vent.
 	$tf_build_wrapper poetry run make $make_j_opts $(cat "$config_file") \
+		tftf_build_root="$tftf_build_root" tf_build_root="$tf_build_root" \
 		DEBUG="$DEBUG" BUILD_BASE="$tf_build_root" SPIN_ON_BL1_EXIT="$connect_debugger" \
 		$build_targets 3>&1 2>&1 | tee -a "$build_log" || fail_build
 
@@ -1470,11 +1477,18 @@ else
         export cmake_gen=""
 fi
 
+package_archive="$archive"
 modes="${bin_mode:-debug release}"
 for mode in $modes; do
 	echo "===== Building package in mode: $mode ====="
 	# Build with a temporary archive
-	build_archive="$archive/$mode"
+	build_archive="$package_archive/$mode"
+	archive="$build_archive"
+	build_root="$workspace/build/$mode"
+	tftf_build_root="$build_root/tftf"
+	spm_build_root="$build_root/spm"
+	rmm_build_root="$build_root/rmm"
+	tf_build_root="$build_root/tfa"
 	mkdir -p "$build_archive"
 
 	if [ "$mode" = "debug" ]; then
@@ -1515,9 +1529,7 @@ for mode in $modes; do
 			source "$plat_utils"
 		fi
 
-		archive="$build_archive"
-		tftf_build_root="$archive/build/tftf"
-		mkdir -p ${tftf_build_root}
+		mkdir -p "${tftf_build_root}"
 
 		echo "Building Trusted Firmware TF ($mode) ..." |& log_separator
 
@@ -1545,8 +1557,6 @@ for mode in $modes; do
 			source "$plat_utils"
 		fi
 
-		archive="$build_archive"
-
 		# we rely on the patch record to know when to setup a clone.
 		# Remove it to signal we're building again.
 		rm -rf "$spm_patch_record"
@@ -1559,8 +1569,6 @@ for mode in $modes; do
 
 		# SPM build generates two sets of binaries, one for normal and other
 		# for Secure world. We need both set of binaries for CI.
-		spm_build_root="$archive/build/spm"
-
 		spm_secure_build_root="$spm_build_root/$spm_secure_out_dir"
 		spm_ns_build_root="$spm_build_root/$spm_non_secure_out_dir"
 
@@ -1614,9 +1622,6 @@ for mode in $modes; do
 					source "$plat_utils"
 			fi
 
-			archive="$build_archive"
-			rmm_build_root="$archive/build/rmm"
-
 			echo "Building Trusted Firmware RMM ($mode) ..." |& log_separator
 
 			#call_hook pre_rmm_build
@@ -1654,8 +1659,6 @@ for mode in $modes; do
 		fvp_tsram_size="$(get_tf_opt FVP_TRUSTED_SRAM_SIZE)"
 		fvp_tsram_size="${fvp_tsram_size:-384}"
 
-		archive="$build_archive"
-		tf_build_root="$archive/build/tfa"
 		echo "Building Trusted Firmware ($mode) ..." |& log_separator
 		# we rely on the patch record to know when to setup a clone.
 		# Remove it to signal we're building again.
@@ -1698,8 +1701,6 @@ for mode in $modes; do
 		if [ -f "$plat_utils" ]; then
 		    source "$plat_utils"
 		fi
-
-		archive="$build_archive"
 
 		tf_build_root="$tf_root/build"
 		rfa_build_root="$rfa_root/target"
@@ -1759,7 +1760,6 @@ for mode in $modes; do
 		(
 		echo "##########"
 
-		archive="$build_archive"
 		tfut_build_root="$tfut_root/build"
 
 		echo "Building Trusted Firmware UT ($mode) ..." |& log_separator
@@ -1783,6 +1783,7 @@ for mode in $modes; do
 	echo
 	echo
 done
+archive="$package_archive"
 
 if config_valid "$tfut_config"; then
 	deactivate

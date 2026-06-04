@@ -13,4 +13,3 @@ ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem
 RME_GPT_BITLOCK_BLOCK=0
 RMM=/dev/null
 TRUSTED_BOARD_BOOT=1
-

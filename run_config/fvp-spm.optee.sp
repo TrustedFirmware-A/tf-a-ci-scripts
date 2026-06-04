@@ -9,9 +9,9 @@ post_tf_build() {
 	url="$DOWNLOAD_SERVER_TF_A_URL/spm/07-29-2021/spmc_sel2_optee_sel1.bin" fetch_file
 
 	archive_file "spmc_sel2_optee_sel1.bin"
-	cp "${archive}/spmc_sel2_optee_sel1.bin" "${archive}/build/tfa/fvp/${bin_mode}"
+	cp "${archive}/spmc_sel2_optee_sel1.bin" "${tf_build_root}/fvp/${bin_mode}"
 
-	cat <<-EOF >"${archive}/build/tfa/fvp/${bin_mode}/optee_sp_layout.json"
+	cat <<-EOF >"${tf_build_root}/fvp/${bin_mode}/optee_sp_layout.json"
 		{
 			"op-tee" : {
 				"image": "spmc_sel2_optee_sel1.bin",
