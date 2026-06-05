@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+source "$ci_root/marvell_utils.sh"
+
+test_setup() {
+	# Parallel builds are broken for this config; so choose serial.
+	echo "Choosing serial build."
+	set_hook_var "make_j" "1"
+}
+
+pre_tf_build() {
+	targets="all mrvl_flash" set_tf_build_targets
+
+	fetch_mv_ddr_files
+}
