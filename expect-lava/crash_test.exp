@@ -7,7 +7,7 @@
 #
 
 expect_string+=('i;Unhandled External Abort received')
-expect_string+=('i;Unhandled Exception from lower EL')
+expect_string+=('i;Unhandled Exception from EL2')
 source $ci_root/expect-lava/exception_gp_regs.inc
 expect_string+=("i;x30")
 source $ci_root/expect-lava/exception_sys_regs.inc
