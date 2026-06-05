@@ -1,3 +1,3 @@
-PLAT=a80x0-puzzle
+PLAT=a80x0_puzzle
 SCP_BL2=/dev/null
 BL33=/dev/null
