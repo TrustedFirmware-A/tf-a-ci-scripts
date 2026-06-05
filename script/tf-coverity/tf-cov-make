@@ -495,6 +495,7 @@ clean_build PLAT=sun50i_h6 $(common_flags) SUNXI_PSCI_USE_NATIVE=0 all
 clean_build PLAT=sun50i_h6 $(common_flags) SUNXI_PSCI_USE_SCPI=0 all
 clean_build PLAT=sun50i_h616 $(common_flags) all
 clean_build PLAT=sun50i_r329 $(common_flags) all
+clean_build PLAT=sun50i_a133 $(common_flags) all
 
 # Platforms from i.MX
 make AARCH32_SP=optee ARCH=aarch32 ARM_ARCH_MAJOR=7 ARM_CORTEX_A7=yes \
