@@ -18,6 +18,7 @@ context:
   arch: aarch64
   machine: ${machine:-virt}
   cpu: ${cpu:-max}
+  no_kvm: true
   extra_options:
 $(for boot_argument in "${boot_arguments[@]:?}"; do
 	cat <<-YAML
