@@ -259,6 +259,7 @@ clean_build $fvp_common_flags ENABLE_FEAT_RME=1 ENABLE_RMM=1 LFA_SUPPORT=1 ENABL
 
 # Build with FIRME support
 clean_build $fvp_common_flags FIRME_SUPPORT=1
+clean_build $fvp_common_flags FIRME_SUPPORT=1 FIRME_SUPPORT_IDE_KM=1
 clean_build $fvp_common_flags FIRME_SUPPORT=1 ENABLE_FEAT_RME=1 ENABLE_RMM=1
 
 #

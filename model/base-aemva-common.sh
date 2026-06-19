@@ -186,6 +186,9 @@ reset_var has_brbe
 
 reset_var has_trbe
 
+# Enable IDE at PCIe RootPort
+reset_var has_ide_at_rp
+
 # shorthand to enable all optional CPU features
 reset_var all_optional_cpu_features
 
@@ -413,6 +416,14 @@ ${cache_state_modelled+-C cluster0.stage12_tlb_size=1024}
 ${cache_state_modelled+-C cluster0.check_memory_attributes=0}
 
 EOF
+
+if [ "$has_ide_at_rp" = "1" ]; then
+		cat <<EOF >>"$model_param_file"
+-C pci.pcie_rc.rootport0.ide_supported=1
+-C pci.pcie_rc.rootport1.ide_supported=1
+-C pci.pcie_rc.rootport2.ide_supported=1
+EOF
+fi
 
 if [ "$has_smmuv3_params" = "1" ]; then
 		cat <<EOF >>"$model_param_file"
