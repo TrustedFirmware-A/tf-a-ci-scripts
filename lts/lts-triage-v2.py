@@ -63,6 +63,36 @@ def process_ps(ps):
 
     return score
 
+def cpu_name_from_path(path):
+    # Reduce a CPU source path to its CPU identifier, e.g.
+    # "lib/cpus/aarch64/cortex_a710.S" -> "cortex_a710"
+    return os.path.splitext(os.path.basename(path))[0]
+
+def get_supported_cpus(repo, branch):
+    # The CPU files that exist under lib/cpus/aarch[32|64] of the given
+    # branch. Different LTS branches ship different sets of these files, so
+    # this is computed against the target LTS branch.
+    cpu_tok = re.compile(CPU_PATH_TOKEN)
+    listing = repo.git.ls_tree("-r", "--name-only", branch,
+                               "lib/cpus/aarch32", "lib/cpus/aarch64")
+    supported = set()
+    for path in listing.splitlines():
+        path = path.strip()
+        if path and cpu_tok.search(path) is not None:
+            supported.add(cpu_name_from_path(path))
+    return supported
+
+def affected_cpus(ps):
+    # The CPU files a patch modifies under lib/cpus/aarch[32|64]. Empty if the
+    # patch does not touch any file in those directories (e.g. a generic or
+    # message-only fix).
+    cpu_tok = re.compile(CPU_PATH_TOKEN)
+    affected = set()
+    for pf in ps:
+        if cpu_tok.search(pf.path) is not None:
+            affected.add(cpu_name_from_path(pf.path))
+    return affected
+
 def query_gerrit(gerrit_user, ssh_key_path, change_id):
     ssh_command = [
         "ssh",
@@ -129,6 +159,12 @@ def main():
 
     repo = git.Repo(args.repo)
 
+    # The CPU files that exist under lib/cpus/aarch[32|64] of the target LTS
+    # branch. A patch that only modifies CPU files missing from this set gets
+    # an "N" in the "To be cherry-picked" column.
+    supported_cpus = get_supported_cpus(repo, lts_branch)
+    debug_print(f"## {lts_branch} supports {len(supported_cpus)} CPUs:", sorted(supported_cpus))
+
     # collect the LTS hashes in a list
     lts_change_ids = set()  # Set to store Gerrit Change-Ids from the LTS branch
 
@@ -172,6 +208,16 @@ def main():
         print(ln)
 
         if score > 0:
+            # A patch that only modifies files under lib/cpus/aarch[32|64]
+            # that don't exist in the target LTS branch gets an "N" in the
+            # "To be cherry-picked" column. It is still listed in the report so
+            # that the decision is visible. Patches that touch no file in those
+            # directories (generic / message-only fix) are not affected.
+            cpus = affected_cpus(ps)
+            unsupported_only = bool(cpus) and not (cpus & supported_cpus)
+            if unsupported_only:
+                debug_print(f"## CPU files not in {lts_branch}:", sorted(cpus))
+
             gerrit_links = query_gerrit(gerrit_user, ssh_keyfile, change_id)
             # Append data to CSV
             csv_data.append({
@@ -182,7 +228,7 @@ def main():
                 "Gerrit Change-Id": change_id,
                 "patch link for the LTS branch": gerrit_links.get(lts_branch, "N/A"),
                 f"patch link for the {base_branch} branch": gerrit_links.get(base_branch, "N/A"),
-                "To be cherry-picked": "N" if gerrit_links.get(lts_branch) else "Y"
+                "To be cherry-picked": "N" if (gerrit_links.get(lts_branch) or unsupported_only) else "Y"
             })
             at_least_one_match = True
 
