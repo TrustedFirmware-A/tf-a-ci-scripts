@@ -254,8 +254,8 @@ clean_build $fvp_common_flags ENABLE_FEAT_RME=1 ENABLE_RMM=1 RMMD_ENABLE_EL3_TOK
 # Build with Live Firmware Activation support
 clean_build $fvp_common_flags LFA_SUPPORT=1
 
-# Build with RMM Live Firmware Activation support
-clean_build $fvp_common_flags ENABLE_FEAT_RME=1 ENABLE_RMM=1 LFA_SUPPORT=1
+# Build with RMM and BL31 Live Firmware Activation support
+clean_build $fvp_common_flags ENABLE_FEAT_RME=1 ENABLE_RMM=1 LFA_SUPPORT=1 ENABLE_LFA_BL31=1
 
 # Build with FIRME support
 clean_build $fvp_common_flags FIRME_SUPPORT=1
