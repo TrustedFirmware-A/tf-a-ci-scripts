@@ -165,6 +165,9 @@ reset_var has_uinj
 # Enable FEAT_MEC
 reset_var has_mec
 
+# Enable FEAT_SRMASK
+reset_var has_srmask
+
 # Layout of MPIDR. 0=AFF0 is CPUID, 1=AFF1 is CPUID
 reset_var mpidr_layout
 
@@ -245,6 +248,9 @@ if [ "$all_optional_cpu_features" = "1" ]; then
 	has_uinj=1
 	has_hdbss=1
 	has_hacdbs=1
+
+	# Enabled by default in v9.6
+	has_srmask=1
 fi
 
 #------------ Common configuration --------------
@@ -740,6 +746,13 @@ if [ "$has_hacdbs" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster0.has_hardware_accelerator_for_cleaning_dirty_state=2
 -C cluster1.has_hardware_accelerator_for_cleaning_dirty_state=2
+EOF
+fi
+
+if [ "$has_srmask" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_srmask=1
+-C cluster1.has_srmask=1
 EOF
 fi
 
