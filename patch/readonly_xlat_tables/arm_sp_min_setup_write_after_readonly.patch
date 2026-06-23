@@ -1,8 +1,8 @@
 --- a/plat/arm/common/sp_min/arm_sp_min_setup.c
 +++ b/plat/arm/common/sp_min/arm_sp_min_setup.c
-@@ -171,6 +171,14 @@ void arm_sp_min_plat_runtime_setup(void)
+@@ -195,6 +195,14 @@ void arm_sp_min_plat_runtime_setup(void)
 
- #if PLAT_RO_XLAT_TABLES
+ #ifdef PLAT_RO_XLAT_TABLES
  	arm_xlat_make_tables_readonly();
 +	int rc = xlat_change_mem_attributes(BL_CODE_BASE,
 +					    BL_CODE_END - BL_CODE_BASE,
