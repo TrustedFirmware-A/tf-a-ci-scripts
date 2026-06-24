@@ -7,19 +7,11 @@
 
 #
 # Run Coverity on a source tree.
-# Then:
-# - either produce a tarball ready to be submitted to Coverity Scan Online
-#   [online mode]
-# - or locally analyze and create a text report and HTML pages of the analysis
-#   [offline mode]
+# Then produce a tarball ready to be submitted to Coverity Scan Online.
 #
 # The following arguments must be passed to this script:
 # 1. The command to use to build the software (this can be a script).
-# 2. The mode: "online" or "offline".
-# 3. The name of the output file to produce.
-#    In the online mode, this should be a tarball name.
-#    In the offline mode, this should be a text file name.
-# 4. In the offline mode, the path to the source tree to analyze.
+# 2. The name of the tarball to produce.
 #
 # Assumptions:
 # The following tools are loaded in the PATH:
@@ -33,8 +25,6 @@ set -e
 
 function do_check_tools()
 {
-    local mode="$1"
-
     echo
     echo "Checking all required tools are available..."
     echo
@@ -43,9 +33,6 @@ function do_check_tools()
     # This also serves as a check that the tools are available.
     cov-configure --ident
     cov-build --ident
-    if [[ "$mode" == "offline" ]]; then
-	cov-analyze --ident
-    fi
 
     # Check that the AArch64 cross-toolchain is available.
     aarch64-none-elf-gcc --version
@@ -107,50 +94,6 @@ function do_build()
 }
 
 
-function do_analyze()
-{
-    local out="$1"
-    local src_tree="$2"
-    local profile="$3"
-    out="${profile}_${out}"
-
-    echo
-    echo "Starting the local analysis..."
-    echo "  (Profile: $profile)"
-    echo
-    echo "The results will be saved into '$out'."
-    echo
-
-    results_dir=$(pwd)
-    cd "$src_tree"
-
-    # Analyze the instrumented binaries.
-    # Get the analysis settings from the right profile file.
-    cov-analyze							\
-	$(cat $(dirname "$0")/coverity_profile_${profile})	\
-	${analysis_settings[@]}					\
-	--dir "$results_dir/cov-int"				\
-	--verbose 0						\
-	--redirect stdout,"$results_dir/$out"
-
-    # Generate HTML pages
-    cov-format-errors						\
-	--html-output "$results_dir/results/html/${profile}"	\
-	--filesort						\
-	--dir "$results_dir/cov-int"
-
-    # Generate text report
-    mkdir -p "$results_dir/results/text"
-    cov-format-errors					\
-	--emacs-style					\
-	--filesort					\
-	--dir "$results_dir/cov-int"			\
-	> "$results_dir/results/text/${profile}"
-    cd -
-    echo "Analysis complete."
-}
-
-
 function create_results_tarball()
 {
     local tarball_name="$1"
@@ -172,8 +115,7 @@ shift
 
 case $PHASE in
     check_tools)
-	ANALYSIS_MODE="$1"
-	do_check_tools "$ANALYSIS_MODE"
+	do_check_tools
     ;;
 
     configure)
@@ -182,13 +124,6 @@ case $PHASE in
 
     build)
 	do_build "$1"
-    ;;
-
-    analyze)
-	OUTPUT_FILE="$1"
-	SOURCE_TREE="$2"
-	ANALYSIS_PROFILE="$3"
-	do_analyze "$OUTPUT_FILE" "$SOURCE_TREE" "$ANALYSIS_PROFILE"
     ;;
 
     package)

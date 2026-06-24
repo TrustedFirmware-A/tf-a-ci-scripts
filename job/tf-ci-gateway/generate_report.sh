@@ -22,13 +22,6 @@ function unmangle_job_name() {
 
 # Generate test report
 if [ "$CI_ROOT" ]; then
-	# Gather Coverity scan summary if it was performed as part of this job
-	if [ "$(find -maxdepth 1 -name '*coverity*.test' -type f | wc -l)" != 0 ]; then
-		if ! "$CI_ROOT/script/coverity_summary.py" "$BUILD_URL" > coverity.data; then
-			rm -f coverity.data
-		fi
-	fi
-
 	# set proper jobs names for test generation report script
 	triggered_job=$(unmangle_job_name "${TRIGGERED_JOB_NAMES}")
 	worker_job="${worker_job:-${triggered_job}}"
@@ -53,8 +46,7 @@ if [ "$CI_ROOT" ]; then
 		--build-job "${lava_job}" \
 		--meta-data clone.data \
 		--meta-data override.data \
-		--meta-data inject.data \
-		--meta-data html:coverity.data
+		--meta-data inject.data
 
     # Only call to merge reports if the test groups are for code coverage
     if [[ $TEST_GROUPS == *"coverage"* ]] ||

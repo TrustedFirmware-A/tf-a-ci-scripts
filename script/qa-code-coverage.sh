@@ -14,7 +14,6 @@ source "$CI_ROOT/utils.sh"
 # OUTDIR, PROJECT, FALLBACK_PLUGIN_URL, FALLBACK_FILES, PLUGIN_BINARY
 ################################################################################
 # Defining constants
-GERRIT_URL=${GERRIT_URL:-https://gerrit.oss.arm.com}
 QA_REPO_USER=jenkins_auto
 QA_REPO_INTERNAL=${QA_REPO_INTERNAL:-https://${QA_REPO_USER}:${QA_REPO_TOKEN}@git.gitlab.arm.com/tooling/qa-tools-internal.git}
 QA_REPO_PUBLIC=${QA_REPO_PUBLIC:-https://git.gitlab.arm.com/tooling/qa-tools.git}

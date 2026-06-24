@@ -45,7 +45,7 @@ NF == 3 {
 		integration[category] += 1;
 	} else if (/tftf/) {
 		component[category] += 1;
-	} else if (/coverity/ || /misra/ || /scan_build/) {
+	} else if (/scan_build/) {
 		static[category] += 1;
 	} else if (/:nil/ || /norun/) {
 		build[category] += 1;

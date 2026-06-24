@@ -587,21 +587,9 @@ mbedtls_version="${mbedtls_version:-3.6.6}"
 # mbedTLS archive public hosting available at github.com
 mbedtls_archive="${mbedtls_archive:-https://github.com/Mbed-TLS/mbedtls/archive/mbedtls-${mbedtls_version}.tar.gz}"
 
-coverity_path="${coverity_path:-${nfs_volume}/tools/coverity/static-analysis/2020.12}"
-coverity_default_checkers=(
-"--all"
-"--checker-option DEADCODE:no_dead_default:true"
-"--enable AUDIT.SPECULATIVE_EXECUTION_DATA_LEAK"
-"--enable ENUM_AS_BOOLEAN"
-"--enable-constraint-fpp"
-"--ticker-mode none"
-"--hfa"
-)
-
 docker_registry="${docker_registry:-}"
 
 path_list=(
-		"$coverity_path/bin"
 )
 
 ld_library_path_list=(

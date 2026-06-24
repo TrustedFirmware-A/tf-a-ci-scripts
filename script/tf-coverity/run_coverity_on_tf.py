@@ -165,7 +165,7 @@ def parse_cmd_line(argv, prog_name):
         description="Run Coverity on Trusted Firmware",
         epilog="""
         Please ensure the AArch64 & AArch32 cross-toolchains are loaded in your
-        PATH. Ditto for the Coverity tools. If you don't have the latter then
+        PATH. Ditto for the Coverity build tool. If you don't have the latter then
         you can use the --get-coverity-tool to download them for you.
         """)
     parser.add_argument("--tf", default=None,
@@ -174,25 +174,14 @@ def parse_cmd_line(argv, prog_name):
     parser.add_argument("--get-coverity-tool", default=False,
                         help="Download the Coverity build tool and exit",
                         action="store_true")
-    parser.add_argument("--mode", choices=["offline", "online"], default="online",
-                        help="Choose between online or offline mode for the analysis")
     parser.add_argument("--output", "-o",
                         help="Name of the output file containing the results of the analysis")
     parser.add_argument("--build-cmd", "-b",
                         help="Command used to build TF through Coverity")
-    parser.add_argument("--analysis-profile", "-p",
-                        action="append", nargs=1,
-                        help="Analysis profile for a local analysis")
     args = parser.parse_args(argv)
 
-    # Set a default name for the output file if none is provided.
-    # If running in offline mode, this will be a text file;
-    # If running in online mode, this will be a tarball name.
     if not args.output:
-        if args.mode == "offline":
-            args.output = "arm-tf-coverity-report.txt"
-        else:
-            args.output = "arm-tf-coverity-results.tgz"
+        args.output = "arm-tf-coverity-results.tgz"
 
     return args
 
@@ -204,13 +193,7 @@ if __name__ == "__main__":
     # If the user asked to download the Coverity build tool then just do that
     # and exit.
     if args.get_coverity_tool:
-        # If running locally, use the commercial version of Coverity from the
-        # EUHPC cluster.
-        if args.mode == "offline":
-            print("To load the Coverity tools, use the following command:")
-            print("export PATH=/arm/tools/coverity/static-analysis/8.7.1/bin/:$PATH")
-        else:
-            get_coverity_tool()
+        get_coverity_tool()
         sys.exit(0)
 
     if args.tf is None:
@@ -229,7 +212,7 @@ if __name__ == "__main__":
 
     run_coverity_script = os.path.join(tf_coverity_dir, "run_coverity.sh")
 
-    ret = subprocess.call([run_coverity_script, "check_tools", args.mode])
+    ret = subprocess.call([run_coverity_script, "check_tools"])
     if ret != 0:
         sys.exit(1)
 
@@ -241,25 +224,15 @@ if __name__ == "__main__":
     if ret != 0:
         sys.exit(1)
 
-    if args.mode == "online":
-        ret = subprocess.call([run_coverity_script, "package", args.output])
-    else:
-        for profile in args.analysis_profile:
-            ret = subprocess.call([run_coverity_script, "analyze",
-                                   args.output,
-                                   args.tf,
-                                   profile[0]])
-            if ret != 0:
-                    break
+    ret = subprocess.call([run_coverity_script, "package", args.output])
     if ret != 0:
         print("An error occured (%d)." % ret, file=sys.stderr)
         sys.exit(ret)
 
     print("-----------------------------------------------------------------")
     print("Results can be found in file '%s'" % args.output)
-    if args.mode == "online":
-        print("This tarball can be uploaded at Coverity Scan Online:" )
-        print("https://scan.coverity.com/projects/arm-software-arm-trusted-firmware/builds/new?tab=upload")
+    print("This tarball can be uploaded at Coverity Scan Online:" )
+    print("https://scan.coverity.com/projects/arm-software-arm-trusted-firmware/builds/new?tab=upload")
     print("-----------------------------------------------------------------")
 
     print_coverage("cov-int", args.tf, coverity_tf_conf.exclude_paths, "tf_coverage.log")
