@@ -108,7 +108,7 @@ EOF
 
 # OpenCI uses LAVA to launch models, the latter requiring (uart) unbuffered output,
 # otherwise these may get full and models hang.
-if ! is_arm_jenkins_env && not_upon "$local_ci"; then
+if not_upon "$local_ci"; then
 	cat <<EOF >>"$model_param_file"
 -C bp.pl011_uart0.unbuffered_output=1
 -C bp.pl011_uart1.unbuffered_output=1
@@ -130,12 +130,7 @@ fi
 # Don't use it for other OpenCI runs, as it may lead to race condition
 # with LAVA's capturing of FVP output.
 if echo "$RUN_CONFIG" | grep -Eiqw 'tftf|spm|rfa'; then
-    is_arm_env=0
-    if is_arm_jenkins_env; then
-        is_arm_env=1
-    fi
-
-    if [ "$is_arm_env" == "0" -a "$COVERAGE_ON" == "1" ] || upon "$local_ci"; then
+    if [ "$COVERAGE_ON" == "1" ] || upon "$local_ci"; then
 	cat <<EOF >>"$model_param_file"
 -C bp.pl011_uart0.shutdown_on_eot=1
 EOF

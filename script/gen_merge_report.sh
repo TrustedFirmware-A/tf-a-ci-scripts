@@ -9,15 +9,9 @@ set +x
 REPORT_JSON=$1
 REPORT_HTML=$2
 
-if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
-  ARTIFACT_PATH='artifact/html/qa-code-coverage'
-  INFO_PATH='coverage.info'
-  JSON_PATH='intermediate_layer.json'
-else
-  ARTIFACT_PATH='artifact'
-  INFO_PATH='trace_report/coverage.info'
-  JSON_PATH='config_file.json'
-fi
+ARTIFACT_PATH='artifact'
+INFO_PATH='trace_report/coverage.info'
+JSON_PATH='config_file.json'
 
 ###############################################################################
 # Create json file for input to the merge.sh for Code Coverage
@@ -41,7 +35,7 @@ import json
 import os
 import re
 
-server = os.getenv("JENKINS_PUBLIC_URL", "https://jenkins.oss.arm.com/")
+server = os.environ["JENKINS_PUBLIC_URL"].rstrip("/") + "/"
 merge_json = {} # json object
 _files = []
 with open("$REPORT_JSON") as json_file:

@@ -33,7 +33,7 @@ generate_lava_job() {
 	uart="0" file="tftf.exp" track_expect
 	uart="1" file="spm-optee-sp-uart1.exp" track_expect
 
-	if ! is_arm_jenkins_env && not_upon "$local_ci"; then
+	if not_upon "$local_ci"; then
 		bmcov_plugin_path="${coverage_trace_plugin}"
 		bmcov_plugin="1"
 	fi

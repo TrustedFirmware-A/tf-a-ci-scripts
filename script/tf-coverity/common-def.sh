@@ -47,17 +47,6 @@ common_flags() {
     echo " --jobs=${jobs} $debug -s "
 }
 
-# Check if execution environment is ARM's jenkins (Jenkins running under ARM
-# infrastructure)
-is_arm_jenkins_env() {
-    if [ "$JENKINS_HOME" ]; then
-	if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
-	    return 0;
-	fi
-    fi
-    return 1
-}
-
 # Use "$1" as a boolean
 upon() {
 	case "$1" in
@@ -70,8 +59,9 @@ upon() {
 set_armclang_toolchain() {
     local armclang_path="/home/buildslave/tools/armclang-6.23/bin"
 
-    # if under arm enviroment, overide cross-compilation path
-    is_arm_jenkins_env || upon "$local_ci" && armclang_path="/arm/warehouse/Distributions/FA/ARMCompiler/6.23/37/standalone-linux-x86_64-rel/bin"
+    if upon "$local_ci"; then
+        armclang_path="/arm/warehouse/Distributions/FA/ARMCompiler/6.23/37/standalone-linux-x86_64-rel/bin"
+    fi
 
     echo "${armclang_path}/armclang"
 }

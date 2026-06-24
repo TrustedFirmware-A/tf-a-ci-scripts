@@ -24,7 +24,7 @@ generate_lava_job() {
 	uart="2" file="hold_uart.exp" track_expect
 	uart="3" file="hold_uart.exp" track_expect
 
-	if ! is_arm_jenkins_env && not_upon "$local_ci"; then
+	if not_upon "$local_ci"; then
 		bmcov_plugin_path="${coverage_trace_plugin}"
 		bmcov_plugin="1"
 	fi

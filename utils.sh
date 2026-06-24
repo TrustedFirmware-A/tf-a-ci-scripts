@@ -514,12 +514,6 @@ is_jenkins_env () {
 }
 
 
-# Check if execution is under ARM's jenkins
-is_arm_jenkins_env() {
-    local arm_domain="oss.arm.com"
-    return $(is_jenkins_env "$arm_domain")
-}
-
 # Check if a config is valid
 config_valid() {
 	local config="${1?}"

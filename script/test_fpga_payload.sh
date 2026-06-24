@@ -344,9 +344,5 @@ if upon "$jenkins_run"; then
 	echo
 fi
 
-if upon "$jenkins_run" && upon "$artefacts_receiver" && [ -d "$workspace/run" ]; then
-	source "$CI_ROOT/script/send_artefacts.sh" "run"
-fi
-
 exit "$result"
 # vim: set tw=80 sw=8 noet:

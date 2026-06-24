@@ -33,7 +33,7 @@ generate_lava_job() {
 	# -Flash0, Flash1
 	# -uart0, uart1, uart2, uart3
 
-	if ! is_arm_jenkins_env && not_upon "$local_ci"; then
+	if not_upon "$local_ci"; then
 		bmcov_plugin_path="${coverage_trace_plugin}"
 		bmcov_plugin="1"
 	fi

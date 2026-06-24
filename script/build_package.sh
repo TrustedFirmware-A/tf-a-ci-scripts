@@ -1432,11 +1432,6 @@ if upon "$local_ci"; then
 	fi
 fi
 
-# Install python build dependencies
-if is_arm_jenkins_env; then
-	source "$ci_root/script/install_python_deps.sh"
-fi
-
 # Install c-picker dependency
 if config_valid "$tfut_config"; then
 	echo "started building"
@@ -1785,10 +1780,6 @@ fi
 call_hook pre_package
 
 call_hook post_package
-
-if upon "$jenkins_run" && upon "$artefacts_receiver" && [ -d "artefacts" ]; then
-	source "$CI_ROOT/script/send_artefacts.sh" "artefacts"
-fi
 
 echo
 echo "Done"

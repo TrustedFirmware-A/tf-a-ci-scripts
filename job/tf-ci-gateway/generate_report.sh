@@ -30,14 +30,9 @@ if [ "$CI_ROOT" ]; then
 	fi
 
 	# set proper jobs names for test generation report script
-	if echo "$JENKINS_PUBLIC_URL" | grep -q "oss.arm.com"; then
-		worker_job="${worker_job:-tf-worker}"
-		lava_job="${lava_job:-tf-build-for-lava}"
-	else
-		triggered_job=$(unmangle_job_name "${TRIGGERED_JOB_NAMES}")
-		worker_job="${worker_job:-${triggered_job}}"
-		lava_job="${lava_job:-${triggered_job}}"
-	fi
+	triggered_job=$(unmangle_job_name "${TRIGGERED_JOB_NAMES}")
+	worker_job="${worker_job:-${triggered_job}}"
+	lava_job="${lava_job:-${triggered_job}}"
 
 	# Generate UI for test results, only if this is a visualization job.
 	while getopts ":t" option; do

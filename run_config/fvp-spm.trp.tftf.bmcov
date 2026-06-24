@@ -17,7 +17,7 @@ post_tf_build() {
 generate_lava_job() {
 	local model="base-aemva"
 
-	if ! is_arm_jenkins_env && not_upon "$local_ci"; then
+	if not_upon "$local_ci"; then
 		bmcov_plugin_path="${coverage_trace_plugin}"
 		bmcov_plugin="1"
 	fi

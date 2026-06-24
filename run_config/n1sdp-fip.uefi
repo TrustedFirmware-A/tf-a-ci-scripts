@@ -14,12 +14,7 @@ post_tf_build() {
 }
 
 generate_lava_job(){
-        if [ "${ci_env}" = "armci" ]; then
-            payload_type="linux"
-        else
-            # Run simple boot test on OpenCI
-            payload_type="boot"
-        fi
+        payload_type="boot"
         target="n1sdp" payload_type="${payload_type}" gen_yaml_template
         gen_n1sdp_yaml
 }
