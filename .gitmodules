@@ -1,0 +1,3 @@
+[submodule "contrib/qa-tools"]
+	path = contrib/qa-tools
+	url = https://git.gitlab.arm.com/tooling/qa-tools.git
