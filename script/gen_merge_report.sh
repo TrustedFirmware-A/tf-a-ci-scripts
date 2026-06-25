@@ -297,13 +297,6 @@ index=""
 ls -al
 include_only_patterns=""
 case "$TEST_GROUPS" in
-    scp*)
-            project="scp"
-            jenkins_archive_folder=reports
-            individual_report_folder=html/qa-code-coverage/lcov/index.html
-            run_config_files=("scp-configuration.json")
-            run_config_patterns=(".*")
-            ;;
     tfut*)
             project="tfut"
             jenkins_archive_folder=merge/outdir

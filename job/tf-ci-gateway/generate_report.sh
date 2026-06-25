@@ -49,8 +49,7 @@ if [ "$CI_ROOT" ]; then
 		--meta-data inject.data
 
     # Only call to merge reports if the test groups are for code coverage
-    if [[ $TEST_GROUPS == *"coverage"* ]] ||
-       [[ $TEST_GROUPS == "scp-boot-tests-coverage" ]]; then
+    if [[ $TEST_GROUPS == *"coverage"* ]]; then
   	   source $CI_ROOT/script/gen_merge_report.sh "${WORKSPACE}/report.json" \
   		   "${WORKSPACE}/report.html"
       echo "Finished merging reports..."

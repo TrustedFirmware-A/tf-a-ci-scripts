@@ -139,26 +139,7 @@ EOM
   fi
   done
 
-  if [ "$PROJECT" = "SCP" ]; then
-      read -r -d '' scm_sources << EOM
-              [
-                  {
-                  "type": "git",
-                  "URL":  "$CC_SCP_URL",
-                  "COMMIT": "$CC_SCP_COMMIT",
-                  "REFSPEC": "$CC_SCP_REFSPEC",
-                  "LOCATION": "scp"
-                  },
-                  {
-                  "type": "git",
-                  "URL":  "$CC_CMSIS_URL",
-                  "COMMIT": "$CC_CMSIS_COMMIT",
-                  "REFSPEC": "$CC_CMSIS_REFSPEC",
-                  "LOCATION": "scp/contrib/cmsis/git"
-                  }
-              ]
-EOM
-elif [ "$PROJECT" = "TF-A" ]; then
+  if [ "$PROJECT" = "TF-A" ]; then
       read -r -d '' scm_sources << EOM
               [
                   {
