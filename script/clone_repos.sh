@@ -228,13 +228,6 @@ if not_upon "$no_tftf"; then
 		clone_and_sync
 fi
 
-# Clone code coverage repository if code coverage is enabled
-if not_upon "$no_cc"; then
-	pushd "$ci_scratch"
-	git clone -q $cc_src_repo_url cc_plugin -b $cc_src_repo_tag 2> /dev/null
-	popd
-fi
-
 SPM_REFSPEC="${spm_refspec:-$SPM_REFSPEC}"
 if not_upon "$no_spm"; then
 	# Clone SPM repository

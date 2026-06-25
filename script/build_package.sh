@@ -22,7 +22,6 @@ export tf_root="${tf_root:-$workspace/trusted_firmware}"
 export rfa_root="${rfa_root:-$workspace/rusted-firmware-a}"
 export tftf_root="${tftf_root:-$workspace/trusted_firmware_tf}"
 export tfut_root="${tfut_root:-$workspace/tfut}"
-cc_root="${cc_root:-$ccpathspec}"
 spm_root="${spm_root:-$workspace/spm}"
 rmm_root="${rmm_root:-$workspace/tf-rmm}"
 
@@ -38,7 +37,6 @@ test_config="${TEST_CONFIG:?}"
 test_group="${TEST_GROUP:?}"
 build_configs="${BUILD_CONFIG:?}"
 run_config="${RUN_CONFIG:?}"
-cc_config="${CC_ENABLE:-}"
 
 export archive="$artefacts"
 build_log="$artefacts/build.log"
@@ -734,20 +732,6 @@ EOF
 	)
 }
 
-build_cc() {
-# Building code coverage plugin
-	ARM_DIR=/arm
-	pvlibversion=$(/arm/devsys-tools/abs/detag "SysGen:PVModelLib:$model_version::trunk")
-	PVLIB_HOME=$warehouse/SysGen/PVModelLib/$model_version/${pvlibversion}/external
-	if [ -n "$(find "$ARM_DIR" -maxdepth 0 -type d -empty 2>/dev/null)" ]; then
-    		echo "Error: Arm warehouse not mounted. Please mount the Arm warehouse to your /arm local folder"
-    		exit -1
-	fi  # Error if arm warehouse not found
-	cd "$ccpathspec/scripts/tools/code_coverage/fastmodel_baremetal/bmcov"
-
-	make -C model-plugin PVLIB_HOME=$PVLIB_HOME 2>&1 | tee -a "$build_log"
-}
-
 build_spm() {
 	(
 	env_file="$workspace/spm.env"
@@ -1326,15 +1310,6 @@ if [ "$tftf_config" ] && assert_can_git_clone "tftf_root"; then
 	show_head "$tftf_root"
 fi
 
-if [ -n "$cc_config" ] ; then
-	if [ "$cc_config" -eq 1 ] && assert_can_git_clone "cc_root"; then
-		# Copy code coverage repository
-		echo "Cloning Code Coverage..."
-		git clone -q $cc_src_repo_url cc_plugin --depth 1 -b $cc_src_repo_tag > /dev/null
-		show_head "$cc_root"
-	fi
-fi
-
 if [ "$spm_config" ] ; then
 	if assert_can_git_clone "spm_root"; then
 		# If the SPM repository has already been checked out, use
@@ -1491,11 +1466,6 @@ for mode in $modes; do
 
 	# Perform builds in a subshell so as not to pollute the current and
 	# subsequent builds' environment
-
-	if config_valid "$cc_config"; then
-	 # Build code coverage plugin
-		build_cc
-	fi
 
 	# TFTF build
 	if config_valid "$tftf_config"; then
