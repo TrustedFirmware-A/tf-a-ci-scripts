@@ -39,10 +39,7 @@ ERROR_COUNT=0
 # Run cargo test
 
 if [ "$REPO_NAME" == "rusted-firmware-a" ]; then
-  # These tests are platform independent. However, we are specifying a platform:
-  #     The fvp platform is expected to cover all platform independent features that can be tested
-  #     with cargo test.
-  IFS=" " read -a all_features <<< "$(make PLAT=fvp --silent list_features)"
+  IFS=" " read -a all_features <<< "$(make --silent list_test_features)"
 else
   IFS=" " read -a all_features <<< ${TEST_FEATURES}
   if [ ${#all_features[@]} = 0 ]; then
