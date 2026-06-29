@@ -154,6 +154,9 @@ reset_var has_aes
 # Enable FEAT_RAS
 reset_var has_ras
 
+# Enable FEAT_PFAR support
+reset_var has_pfar
+
 reset_var crypto_plugin
 
 # Enable FEAT_UINJ
@@ -188,6 +191,15 @@ reset_var has_trbe
 
 # Enable IDE at PCIe RootPort
 reset_var has_ide_at_rp
+
+# Enable FEAT_SCTLR2
+reset_var has_sctlr2
+
+# Enable FEAT_HCX
+reset_var has_hcx
+
+# Enable FEAT_PAuth_LR
+reset_var has_pauth_lr
 
 # shorthand to enable all optional CPU features
 reset_var all_optional_cpu_features
@@ -256,6 +268,10 @@ ${has_sme2+-C cluster0.sve.has_sme2=1}
 ${has_sme_fa64+-C cluster0.sve.has_sme_fa64=1}
 ${sme_only+-C cluster0.sve.sme_only=1}
 ${has_ras+-C cluster0.has_ras=${has_ras}}
+${has_pfar+-C cluster0.has_ras_pfar=2}
+${has_sctlr2+-C cluster0.has_sctlr2=2}
+${has_hcx+-C cluster0.has_hcrx_el2=2}
+${has_pauth_lr+-C cluster0.enhanced_pac2_level=4}
 
 ${has_ete+-C cluster1.has_ete=1}
 ${has_sve+-C cluster1.has_sve=1}
@@ -266,6 +282,10 @@ ${has_sme2+-C cluster1.sve.has_sme2=1}
 ${has_sme_fa64+-C cluster1.sve.has_sme_fa64=1}
 ${sme_only+-C cluster1.sve.sme_only=1}
 ${has_ras+-C cluster1.has_ras=${has_ras}}
+${has_pfar+-C cluster1.has_ras_pfar=2}
+${has_sctlr2+-C cluster1.has_sctlr2=2}
+${has_hcx+-C cluster1.has_hcrx_el2=2}
+${has_pauth_lr+-C cluster1.enhanced_pac2_level=4}
 
 ${bmcov_plugin+--plugin=$bmcov_plugin_path}
 ${crypto_plugin+--plugin=$crypto_plugin_path}
