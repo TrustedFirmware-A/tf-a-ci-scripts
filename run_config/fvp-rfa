@@ -18,13 +18,22 @@ generate_lava_job() {
 	uart="3" file="hold_uart.exp" track_expect
 
 	model="$model" \
+		has_brbe="1" \
 		has_ete="1" \
-		amu_present="1" \
+		amu_present="1" amu_version="2" \
 		has_mpam="1" \
 		mpam_has_bw_ctrl="1" \
 		has_trbe="1" \
 		has_fgt2="1" \
+		has_fpmr="1" \
+		has_hcx="1" \
+		has_pauth_lr="1" \
+		has_pfar="1" \
 		has_pmuv3p7="1" \
+		has_s1pie="1" \
+		has_s1poe="1" \
+		has_s2poe="1" \
+		has_sctlr2="1" \
 		has_smmuv3_params="1" \
 		memory_tagging_support_level="2" \
 		has_branch_target_exception="1" \

@@ -53,7 +53,12 @@ generate_lava_job() {
 		mpam_has_bw_ctrl="1" \
 		has_trbe="1" \
 		has_fgt2="1" \
+		has_fpmr="1" \
+		has_hcx="1" \
+		has_pauth_lr="1" \
+		has_pfar="1" \
 		has_pmuv3p7="1" \
+		has_sctlr2="1" \
 		memory_tagging_support_level="2" \
 		has_branch_target_exception="1" \
 		supports_trace_buffer_control_regs="1" \
