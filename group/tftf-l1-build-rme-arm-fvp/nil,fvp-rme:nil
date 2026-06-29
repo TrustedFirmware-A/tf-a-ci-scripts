@@ -5,8 +5,3 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-pre_tftf_build() {
-	# Clone mbedTLS submodule
-	cd "$tftf_root"
-	git submodule update --init
-}

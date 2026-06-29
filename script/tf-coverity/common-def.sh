@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2024 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -66,14 +66,6 @@ set_armclang_toolchain() {
     echo "${armclang_path}/armclang"
 }
 
-# mbed TLS variables
-MBED_TLS_DIR=mbedtls
-MBED_TLS_URL_REPO=https://github.com/ARMmbed/mbedtls.git
-
-# mbed TLS source tag to checkout when building Trusted Firmware with
-# cryptography support (e.g. for Trusted Board Boot feature).
-MBED_TLS_SOURCES_TAG="mbedtls-3.6.6"
-
 # TF-M variables
 export TF_M_TESTS_PATH=${WORKSPACE}/TF-M/tf-m-tests
 export TF_M_EXTRAS_PATH=${WORKSPACE}/TF-M/tf-m-extras
@@ -83,5 +75,5 @@ QCBOR_URL_REPO=https://github.com/laurencelundblade/QCBOR.git
 
 ARMCLANG_PATH="$(set_armclang_toolchain)"
 
-TBB_OPTIONS="TRUSTED_BOARD_BOOT=1 GENERATE_COT=1 MBEDTLS_DIR=$(pwd)/mbedtls"
+TBB_OPTIONS="TRUSTED_BOARD_BOOT=1 GENERATE_COT=1"
 ARM_TBB_OPTIONS="$TBB_OPTIONS ARM_ROTPK_LOCATION=devel_rsa"

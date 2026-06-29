@@ -586,24 +586,6 @@ build_tf() {
 
 	source "$config_file" || fail_build
 
-	# If this is an LTS configuration and it is a TBBR build,
-	# extract the Mbed-TLS library from archive.
-	# TODO: drop this once all LTS branches have been backported to use Mbed-TLS as a submodule.
-	if [ "$test_config" == *lts* ] ||
-	   [ "$(get_tf_opt TRUSTED_BOARD_BOOT)" = 1 ] ||
-	   [ "$(get_tf_opt MEASURED_BOOT)" = 1 ] ||
-	   [ "$(get_tf_opt DRTM_SUPPORT)" = 1 ]; then
-		mbedtls_dir="$workspace/mbedtls"
-		if [ ! -d "$mbedtls_dir" ]; then
-			mbedtls_ar="$workspace/mbedtls.tar.gz"
-
-			url="$mbedtls_archive" saveas="$mbedtls_ar" fetch_file
-			mkdir "$mbedtls_dir"
-			extract_tarball $mbedtls_ar $mbedtls_dir --strip-components=1
-		fi
-
-		emit_env "MBEDTLS_DIR" "$mbedtls_dir"
-	fi
 	if [ "$(get_tf_opt PLATFORM_TEST)" = "tfm-testsuite" ] &&
 	   not_upon "${TF_M_TESTS_PATH}"; then
 		emit_env "TF_M_TESTS_PATH" "$WORKSPACE/tf-m-tests"

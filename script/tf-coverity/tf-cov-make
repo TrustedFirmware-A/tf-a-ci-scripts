@@ -32,13 +32,6 @@ fi
 containing_dir="$(readlink -f "$(dirname "$0")/")"
 . $containing_dir/common-def.sh
 
-# Get mbed TLS library code to build Trusted Firmware with Trusted Board Boot
-# support. The version of mbed TLS to use here must be the same as when
-# building TF in the usual context.
-if [ ! -d "$MBED_TLS_DIR" ]; then
-    git clone -q --depth 1 -b "$MBED_TLS_SOURCES_TAG" "$MBED_TLS_URL_REPO" "$MBED_TLS_DIR"
-fi
-
 if [ ! -d "$QCBOR_LIB_DIR" ]; then
     git clone "$QCBOR_URL_REPO" "$QCBOR_LIB_DIR"
     cd "$QCBOR_LIB_DIR"
@@ -283,7 +276,7 @@ clean_build $juno_common_flags TRNG_SUPPORT=1
 clean_build $juno_common_flags BL32=1 NS_TIMER_SWITCH=1 \
 	CSS_NON_SECURE_UART=1 CSS_USE_SCMI_SDS_DRIVER=1 USE_COHERENT_MEM=0\
 	SPD=spmd  SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1 CTX_INCLUDE_EL2_REGS=0 \
-	TRANSFER_LIST=1 HOB_LIST=1 MEASURED_BOOT=1 MBEDTLS_DIR=$(pwd)/mbedtls
+	TRANSFER_LIST=1 HOB_LIST=1 MEASURED_BOOT=1
 
 #
 # Reference Design Platform RD-N2
@@ -672,71 +665,71 @@ make PLAT=g12a $(common_flags) all
 # Renesas R-Car D3 Automotive SoC
 clean_build PLAT=rcar $(common_flags) BL32=Makefile \
     BL33=Makefile LIFEC_DBSC_PROTECT_ENABLE=0 LSI=D3 \
-    MBEDTLS_DIR=$(pwd)/mbedtls PMIC_ROHM_BD9571=0 \
+    PMIC_ROHM_BD9571=0 \
     RCAR_AVS_SETTING_ENABLE=0 SPD=none RCAR_LOSSY_ENABLE=0 \
     RCAR_SA0_SIZE=0 RCAR_SYSTEM_SUSPEND=0 TRUSTED_BOARD_BOOT=1
 
 # Renesas R-Car H3 Automotive SoC
 clean_build PLAT=rcar $(common_flags) BL32=Makefile \
-    BL33=Makefile MBEDTLS_DIR=$(pwd)/mbedtls LSI=H3 \
+    BL33=Makefile LSI=H3 \
     MACHINE=ulcb  PMIC_LEVEL_MODE=0 RCAR_DRAM_LPDDR4_MEMCONF=0 \
     RCAR_DRAM_SPLIT=1 RCAR_GEN3_ULCB=1 SPD=opteed \
     TRUSTED_BOARD_BOOT=1
 
 # Renesas R-Car H3N Automotive SoC
 clean_build PLAT=rcar $(common_flags) BL32=Makefile \
-    BL33=Makefile MBEDTLS_DIR=$(pwd)/mbedtls LSI=H3N \
+    BL33=Makefile LSI=H3N \
     SPD=opteed TRUSTED_BOARD_BOOT=1
 
 # Renesas R-Car M3 Automotive SoC
 clean_build PLAT=rcar $(common_flags) BL32=Makefile \
-    BL33=Makefile MBEDTLS_DIR=$(pwd)/mbedtls LSI=M3 \
+    BL33=Makefile LSI=M3 \
     MACHINE=ulcb  PMIC_LEVEL_MODE=0 RCAR_DRAM_LPDDR4_MEMCONF=0 \
     RCAR_DRAM_SPLIT=2 RCAR_GEN3_ULCB=1 SPD=opteed \
     TRUSTED_BOARD_BOOT=1
 
 # Renesas R-Car M3N Automotive SoC
 clean_build PLAT=rcar $(common_flags) BL32=Makefile \
-    BL33=Makefile MBEDTLS_DIR=$(pwd)/mbedtls LSI=M3N \
+    BL33=Makefile LSI=M3N \
     MACHINE=ulcb  PMIC_LEVEL_MODE=0 RCAR_DRAM_LPDDR4_MEMCONF=0 \
     RCAR_GEN3_ULCB=1 SPD=opteed TRUSTED_BOARD_BOOT=1
 
 # Renesas R-Car M3L Automotive SoC
 clean_build PLAT=rcar $(common_flags) BL32=Makefile \
-    BL33=Makefile MBEDTLS_DIR=$(pwd)/mbedtls LSI=M3L \
+    BL33=Makefile LSI=M3L \
     MACHINE=geist RCAR_AVS_SETTING_ENABLE=0 RCAR_DRAM_LPDDR4_MEMCONF=0 \
     SPD=opteed TRUSTED_BOARD_BOOT=1
 
 # Renesas R-Car E3 Automotive SoC
 clean_build PLAT=rcar $(common_flags) BL32=Makefile \
-    BL33=Makefile MBEDTLS_DIR=$(pwd)/mbedtls LSI=E3 \
+    BL33=Makefile LSI=E3 \
     RCAR_AVS_SETTING_ENABLE=0 RCAR_DRAM_DDR3L_MEMCONF=0 \
     RCAR_SA0_SIZE=0 SPD=opteed TRUSTED_BOARD_BOOT=1
 
 # Renesas R-Car V3M Automotive SoC
 clean_build PLAT=rcar $(common_flags) BL32=Makefile \
-    MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=V3M MACHINE=eagle \
+    BL33=Makefile LSI=V3M MACHINE=eagle \
     PMIC_ROHM_BD9571=0 RCAR_DRAM_SPLIT=0 RCAR_SYSTEM_SUSPEND=0 \
     AVS_SETTING_ENABLE=0 SPD=none TRUSTED_BOARD_BOOT=1
 
 # Renesas R-Car S4 Automotive SoC
 clean_build PLAT=rcar_gen4 $(common_flags) BL32=Makefile \
-    MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=S4 \
+    BL33=Makefile LSI=S4 \
     SPD=none CTX_INCLUDE_AARCH32_REGS=0 PTP_NONSECURE_ACCESS=1
 
 # Renesas R-Car V4H Automotive SoC
 clean_build PLAT=rcar_gen4 $(common_flags) BL32=Makefile \
-    MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=V4H \
+    BL33=Makefile LSI=V4H \
     SPD=none CTX_INCLUDE_AARCH32_REGS=0 PTP_NONSECURE_ACCESS=1
 
 # Renesas R-Car V4M Automotive SoC
 clean_build PLAT=rcar_gen4 $(common_flags) BL32=Makefile \
-    MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=V4M \
+    BL33=Makefile LSI=V4M \
     SPD=none CTX_INCLUDE_AARCH32_REGS=0 PTP_NONSECURE_ACCESS=1
 
 # Renesas R-Car X5H Automotive SoC
 clean_build PLAT=rcar_gen5 $(common_flags) BL32=Makefile \
-    MBEDTLS_DIR=$(pwd)/mbedtls BL33=Makefile LSI=X5H
+    BL33=Makefile LSI=X5H
 
 # Renesas RZ/A3M-EK
 clean_build PLAT=rza3m_ek_nor $(common_flags) all
@@ -746,7 +739,7 @@ clean_build PLAT=rza3m_ek_nor $(common_flags) DDR_PLL4=1333 all
 
 # Renesas HiHope RZ/G2M development kit
 clean_build PLAT=rzg $(common_flags) \
-    MBEDTLS_DIR=$(pwd)/mbedtls LSI=G2M \
+    LSI=G2M \
     RCAR_DRAM_SPLIT=2 RCAR_LOSSY_ENABLE=1 SPD=none
 
 # Platforms from ST
@@ -806,7 +799,7 @@ clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_USB_PROGRAMMER=1 \
 # STM32MP1 TBBR
 clean_build $(common_flags release) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
     BUILD_PLAT=build/stm32mp1-sdmmc-tbbr/debug \
-    MBEDTLS_DIR=$(pwd)/mbedtls TRUSTED_BOARD_BOOT=1 \
+    TRUSTED_BOARD_BOOT=1 \
     AARCH32_SP=sp_min bl2 bl32
 
 stm32mp13_common_flags="${stm32mp1_common_flags} \
@@ -826,12 +819,12 @@ clean_build $(common_flags) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
 
 # STM32MP13 TBBR
 clean_build $(common_flags release) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
-    MBEDTLS_DIR=$(pwd)/mbedtls TRUSTED_BOARD_BOOT=1 \
+    TRUSTED_BOARD_BOOT=1 \
     BUILD_PLAT=build/stm32mp1-mp13-sdmmc-tbbr/debug bl2
 
 # STM32MP13 TBBR DECRYPTION AES GCM
 clean_build $(common_flags release) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
-    MBEDTLS_DIR=$(pwd)/mbedtls TRUSTED_BOARD_BOOT=1 \
+    TRUSTED_BOARD_BOOT=1 \
     DECRYPTION_SUPPORT=aes_gcm ENCRYPT_BL32=1 \
     BUILD_PLAT=build/stm32mp1-mp13-sdmmc-tbbr-dec/debug bl2
 
@@ -932,7 +925,7 @@ clean_build PLAT=synquacer $(common_flags) \
 
 # Support for BL2 and TBBR
 clean_build PLAT=synquacer $(common_flags) \
-    MBEDTLS_DIR=$(pwd)/mbedtls TRUSTED_BOARD_BOOT=1 \
+    TRUSTED_BOARD_BOOT=1 \
     SQ_USE_SCMI_DRIVER=1 SPD=opteed all
 
 make PLAT=poplar $(common_flags) all
@@ -946,12 +939,12 @@ clean_build PLAT=rpi5 $(common_flags) SMC_PCI_SUPPORT=1 all
 # Raspberry Pi Measured Boot Discrete TPM with Firmware Handoff
 make PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
     MEASURED_BOOT=1 TRANSFER_LIST=1 DISCRETE_TPM=1 TPM_INTERFACE=FIFO_SPI \
-    MBOOT_TPM_HASH_ALG=sha256 MBEDTLS_DIR=$(pwd)/mbedtls all
+    MBOOT_TPM_HASH_ALG=sha256 all
 
 # Raspberry Pi Measured Boot Discrete TPM
 make PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
     MEASURED_BOOT=1 DISCRETE_TPM=1 TPM_INTERFACE=FIFO_SPI \
-    MBOOT_TPM_HASH_ALG=sha256 MBEDTLS_DIR=$(pwd)/mbedtls all
+    MBOOT_TPM_HASH_ALG=sha256 all
 
 # Raspberry Pi SPD support
 clean_build PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
