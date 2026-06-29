@@ -579,8 +579,11 @@ build_tf() {
 
 	source "$config_file" || fail_build
 
-	# If it is a TBBR build, extract the MBED TLS library from archive
-	if [ "$(get_tf_opt TRUSTED_BOARD_BOOT)" = 1 ] ||
+	# If this is an LTS configuration and it is a TBBR build,
+	# extract the Mbed-TLS library from archive.
+	# TODO: drop this once all LTS branches have been backported to use Mbed-TLS as a submodule.
+	if [ "$test_config" == *lts* ] ||
+	   [ "$(get_tf_opt TRUSTED_BOARD_BOOT)" = 1 ] ||
 	   [ "$(get_tf_opt MEASURED_BOOT)" = 1 ] ||
 	   [ "$(get_tf_opt DRTM_SUPPORT)" = 1 ]; then
 		mbedtls_dir="$workspace/mbedtls"
