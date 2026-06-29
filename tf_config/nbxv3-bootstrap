@@ -1,0 +1,3 @@
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=nbxv3
+NBXV3_BL2_BOOTSTRAP=1
