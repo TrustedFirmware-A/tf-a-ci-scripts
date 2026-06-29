@@ -550,6 +550,16 @@ clean_build PLAT=lx2160ardb $(common_flags) BOOT_MODE=flexspi_nor \
 clean_build PLAT=lx2160ardb $(common_flags) BOOT_MODE=flexspi_nor \
     FLASH_TYPE=GD55LB02GF IO_XSPI_NOR=1 NXP_XSPI_DIAG=1 all
 
+# Nodebox v3 (nbxv3): LX2160A-based COM-HPC like board.
+
+# Default (NBXV3_BL2_BOOTSTRAP=0): production XIP BL2 with
+# .text/.rodata in the FlexSPI NOR AHB window.
+make PLAT=nbxv3 $(common_flags) all
+
+# NBXV3_BL2_BOOTSTRAP=1: OCRAM-resident BL2 used by the JTAG
+# semihosting recovery path; alternate linker layout.
+clean_build PLAT=nbxv3 $(common_flags) NBXV3_BL2_BOOTSTRAP=1 all
+
 #CSF Based CoT:
 clean_build PLAT=lx2162aqds $(common_flags) BOOT_MODE=flexspi_nor \
     $nxp_sb_fuse_flags DDR_PHY_BIN_PATH=$(pwd)
