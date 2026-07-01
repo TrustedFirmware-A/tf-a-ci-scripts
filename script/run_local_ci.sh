@@ -339,7 +339,6 @@ if [ "$test_groups" = "?" -o "$test_groups" = "??" ]; then
 fi
 
 test_groups="${test_groups:?}"
-local_count=0
 
 if [ -z "$tf_root" ]; then
 	in_red "NOTE: NOT using local work tree for TF-A"
@@ -347,7 +346,6 @@ else
 	tf_root="$(readlink -f $tf_root)"
 	tf_refspec=
 	in_green "Using local work tree for TF-A"
-	let "++local_count"
 fi
 
 if [ -z "$tftf_root" ]; then
@@ -357,7 +355,6 @@ else
 	tftf_root="$(readlink -f $tftf_root)"
 	tftf_refspec=
 	in_green "Using local work tree for TFTF"
-	let "++local_count"
 fi
 
 if [ -n "$cc_enable" ]; then
@@ -386,7 +383,6 @@ else
 	spm_root="$(readlink -f $spm_root)"
 	spm_refspec=
 	in_green "Using local work tree for SPM"
-	let "++local_count"
 fi
 
 if [ -z "$rmm_root" ]; then
@@ -395,7 +391,6 @@ else
 	rmm_root="$(readlink -f $rmm_root)"
 	rmm_refspec=
 	in_green "Using local work tree for RMM"
-	let "++local_count"
 fi
 
 if [ -z "$rfa_root" ]; then
@@ -404,7 +399,6 @@ else
 	rfa_root="$(readlink -f $rfa_root)"
 	rfa_refspec=
 	in_green "Using local work tree for RF-A"
-	let "++local_count"
 fi
 
 if [ -z "$tfm_tests_root" ]; then
@@ -413,7 +407,6 @@ else
 	tfm_tests_root="$(readlink -f $tfm_tests_root)"
 	tfm_tests_refspec=
 	in_green "Using local work tree for TF-M-TESTS"
-	let "++local_count"
 fi
 
 if [ -z "$tfm_extras_root" ]; then
@@ -422,7 +415,6 @@ else
 	tfm_extras_root="$(readlink -f $tfm_extras_root)"
 	tfm_extras_refspec=
 	in_green "Using local work tree for TF-M-EXTRAS"
-	let "++local_count"
 fi
 
 # User preferences
