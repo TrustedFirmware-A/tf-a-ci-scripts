@@ -19,8 +19,6 @@ source "$ci_root/utils.sh"
 
 clone_log="$workspace/clone_repos.log"
 clone_data="$workspace/clone.data"
-override_data="$workspace/override.data"
-inject_data="$workspace/inject.data"
 
 # File containing parameters for sub jobs
 param_file="$workspace/env.param"
@@ -39,46 +37,15 @@ meta_data() {
 	echo "$1" >> "$clone_data"
 }
 
-# Path into the project filer where various pieces of scripts that override
-# some CI environment variables are stored.
-ci_overrides="$project_filer/ci-overrides"
-
-display_override() {
-	echo
-	echo -n "Override: "
-	# Print the relative path of the override file.
-	echo "$1" | sed "s#$ci_overrides/\?##"
-}
-
 strip_var() {
 	local var="$1"
 	local val="$(echo "${!var}" | sed 's#^\s*\|\s*$##g')"
 	eval "$var=\"$val\""
 }
 
-prefix_tab() {
-	sed 's/^/\t/g' < "${1:?}"
-}
-
 prefix_arrow() {
 	sed 's/^/  > /g' < "${1:?}"
 }
-
-test_source() {
-	local file="${1:?}"
-	if ! bash -c "source $file" &>/dev/null; then
-		return 1
-	fi
-
-	source "$file"
-	return 0
-}
-
-# Whether we've overridden some CI environment variables.
-has_overrides=0
-
-# Whether we've injected environment via. Jenkins
-has_env_inject=0
 
 clone_and_sync() {
 	local stat
@@ -185,25 +152,6 @@ emit_param "CI_SCRATCH" "$ci_scratch"
 # space (although they both will have the same value!)
 emit_env "SCRATCH_OWNER" "$scratch_owner"
 emit_env "SCRATCH_OWNER_SPACE" "$ci_scratch"
-
-strip_var CI_ENVIRONMENT
-if [ "$CI_ENVIRONMENT" ]; then
-	{
-	echo
-	echo "Injected environment:"
-	prefix_tab <(echo "$CI_ENVIRONMENT")
-	echo
-	} >> "$inject_data"
-
-	cat "$inject_data"
-
-	tmp_env=$(mktempfile)
-	echo "$CI_ENVIRONMENT" > "$tmp_env"
-	source "$tmp_env"
-	cat "$tmp_env" >> "$env_file"
-
-	has_env_inject=1
-fi
 
 TF_REFSPEC="${tf_refspec:-$TF_REFSPEC}"
 if not_upon "$no_tf"; then
