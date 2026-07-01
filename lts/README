@@ -1,68 +1,5 @@
 This directory contains code related to long-term support management of TF-A.
 
-lts-triage.py
-=============
-
-Purpose of this script is to check a patch and determine if that patch qualifies
-as a candidate for one of the LTS branches.
-
-Currently it focuses on cpu errata while it contains basic support for security
-patches. It computes a crude score:
-
-1 point if subject line matches tokens for cpu errata or security
-1 point for "report_errata ERRATA" in a lib/cpus/aarch{32,64}/*.S file
-1 point for "- ``ERRATA_" in docs/design/cpu-specific-build-macros.rst file
-
-Note that the script only looks at commits which are not merge commits.
-
-The script expects two branches: 'integration' and 'to_check'. 'integration' is
-the actual integration branch of the TF-A project while 'to_check' points to the
-tip of latest patch in the patchset that was submitted.
-
-The script needs to work out how many commits are in the current patchset which
-will be the ones it needs to triage. In order to do that the script looks at two
-parameters which are currently fixed in code. We can turn them into args if needed.
-First is REBASE_DEPTH which is the number of commits in integration branch to look
-for the common commit between patchset and integration branch. Second parameter is
-MAX_PATCHSET_DEPTH which is the maximum number of commits we expect in the patchset
-submitted.
-
-At the end, if any commit has non-zero score, the script will create a file named at
-the path provided by --email_path argument.
-
-Running it:
------------
-
-To run it, provide it a path to a TF-A git repo. Here's help output for convenience:
-
-$ python lts-triage.py -h
-usage: lts-triage.py [-h] --repo REPO --email_path EMAIL_PATH [--debug]
-
-check patches for LTS candidacy
-
-options:
-  -h, --help            show this help message and exit
-  --repo REPO           path to tf-a git repo
-  --email_path EMAIL_PATH
-                        path including the filename for email file
-  --debug               print debug logs
-
-Below is an example output. On left is commit hash of each of the commits
-observed by this script and on right is score assigned to it.
-
-$ python lts/lts-triage.py --repo ../trusted-firmware-a/ --email_path ./email.txt
-feat(errata_framework): wrappers to propagate Aarch32 errata info:    0
-feat(errata_framework): add a way to automatically report errata:    0
-feat(errata_framework): add a concise way to implement Aarch64 errata:    0
-refactor(cpus): convert print_errata_status to C:    0
-refactor(cpus): rename errata_report.h to errata.h:    0
-refactor(cpus): move cpu_ops field defines to a header:    0
-chore(fvp): add the aarch32 cortex A57 to the build:    0
-chore(cpus): remove redundant asserts:    0
-refactor(cpus): shorten errata flag defines:    0
-## stopping because found sha1 common between the two branches:  1678bbb57249b6edd4cdebc3cbc33b04df8fa098
-
-=============
 lts-triage-v2.py
 =============
 
@@ -76,7 +13,7 @@ patches. It computes a crude score:
 1 point for "report_errata ERRATA" in a lib/cpus/aarch{32,64}/*.S file
 1 point for "- ``ERRATA_" in docs/design/cpu-specific-build-macros.rst file
 
-Those match tokens were moved to config.py
+Those match tokens were moved to lts/config.py.
 Note that the script only looks at commits which are not merge commits.
 
 The script expects two branches: 'integration' and the lts branch, for example 'lts-v2.8'.
@@ -101,9 +38,9 @@ Running it:
 In order to perform "gerrit query", we need a Gerrit account and the corresponding SSH keyfile.
 Here's help output for convenience:
 
-$ python lts-triage.py -h
-usage: lts-triage.py [-h] --repo REPO --csv_path CSV_PATH --lts LTS --gerrit_user GERRIT_USER
-       --ssh_keyfile SSH_KEYFILE [--debug]
+$ python lts-triage-v2.py -h
+usage: lts-triage-v2.py [-h] --repo REPO --csv_path CSV_PATH --lts LTS --gerrit_user GERRIT_USER
+       --ssh_keyfile SSH_KEYFILE [--base_branch BASE_BRANCH] [--debug]
 
 check patches for LTS candidacy
 
@@ -116,6 +53,8 @@ options:
                         The Gerrit account to perform the query
   --ssh_keyfile SSH_KEYFILE
                         The SSH keyfile
+  --base_branch BASE_BRANCH
+                        base branch to compare against (default: master)
   --debug               print debug logs
 
 Below is an example output. On left is commit hash of each of the commits

@@ -105,7 +105,7 @@ REBASE_DEPTH = 20
 ## TODO: for security we should look for CVE numbed regex match and if found flag it
 def main():
     at_least_one_match = False
-    parser = argparse.ArgumentParser(prog="lts-triage.py", description="check patches for LTS candidacy")
+    parser = argparse.ArgumentParser(prog="lts-triage-v2.py", description="check patches for LTS candidacy")
     parser.add_argument("--repo", required=True, help="path to tf-a git repo")
     parser.add_argument("--csv_path", required=True, help="path including the filename for CSV file")
     parser.add_argument("--lts", required=True, help="LTS branch, ex. lts-v2.8")
