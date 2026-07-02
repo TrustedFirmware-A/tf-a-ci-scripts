@@ -25,11 +25,6 @@ emit_param() {
 	echo "$1=$2" >> "$param_file"
 }
 
-# Emit a parameter for code coverage metadata
-code_cov_emit_param() {
-	emit_param "CC_$(echo ${1^^} | tr '-' _)_$2" "$3"
-}
-
 strip_var() {
 	local var="$1"
 	local val="$(echo "${!var}" | sed 's#^\s*\|\s*$##g')"
@@ -66,7 +61,6 @@ clone_and_sync() {
 	fi
 	echo "$ref_repo $url $name $branch"
 	git clone -q $ref_repo "$url" "$name"
-	code_cov_emit_param "${name}" "URL" "${url}"
 	stat="on branch master"
 
 	pushd "$name"
@@ -84,9 +78,6 @@ clone_and_sync() {
 			git branch -f "$refspec" FETCH_HEAD
 		fi
 	fi
-
-	code_cov_emit_param "${name}" "REFSPEC" "${refspec}"
-	code_cov_emit_param "${name}" "COMMIT"  "$(git show --quiet --format=%H)"
 
 	# Calculate elapsed seconds
 	s_after="$(date +%s)"
