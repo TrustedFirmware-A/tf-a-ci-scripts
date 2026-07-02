@@ -178,21 +178,6 @@ get_dtb() {
 
 get_rootfs() {
 	local tmpdir
-	local fs_base="$(echo $(basename $rootfs_url) | sed 's/\.gz$//')"
-	local cached="$project_filer/ci-files/$fs_base"
-
-	if upon "$jenkins_run" && [ -f "$cached" ]; then
-		# Job workspace is limited in size, and the root file system is
-		# quite large. This means, parallel runs of root file system
-		# tests could fail. So, for Jenkins runs, copy and use the root
-		# file system image from the $CI_SCRATCH location
-		local private="$CI_SCRATCH/$JOB_NAME-$BUILD_NUMBER"
-		mkdir -p "$private"
-		rm -f "$private/rootfs.bin"
-		url="$cached" saveas="$private/rootfs.bin" fetch_file
-		ln -s "$private/rootfs.bin" "$archive/rootfs.bin"
-		return
-	fi
 
 	tmpdir="$(mktempdir)"
 	pushd "$tmpdir"
