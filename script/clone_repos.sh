@@ -37,10 +37,8 @@ prefix_arrow() {
 
 clone_and_sync() {
 	local stat
-	local topic
 	local refspec="${!ref}"
 	local s_before s_after s_diff
-	local ret
 
 	strip_var refspec
 	strip_var url
