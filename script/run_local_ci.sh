@@ -350,7 +350,6 @@ fi
 
 if [ -z "$tftf_root" ]; then
 	in_red "NOTE: NOT using local work tree for TFTF"
-	tforg_user="${tforg_user:?}"
 else
 	tftf_root="$(readlink -f $tftf_root)"
 	tftf_refspec=
