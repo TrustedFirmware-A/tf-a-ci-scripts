@@ -17,14 +17,6 @@ set -e
 ci_root="$(readlink -f "$(dirname "$0")/..")"
 source "$ci_root/utils.sh"
 
-# File containing parameters for sub jobs
-param_file="$workspace/env.param"
-
-# Emit a parameter to sub jobs
-emit_param() {
-	echo "$1=$2" >> "$param_file"
-}
-
 strip_var() {
 	local var="$1"
 	local val="$(echo "${!var}" | sed 's#^\s*\|\s*$##g')"
@@ -103,9 +95,6 @@ if [ -d "$ci_scratch" ]; then
 fi
 mkdir -p "$ci_scratch"
 
-# Set CI_SCRATCH so that it'll be injected when sub-jobs are triggered.
-emit_param "CI_SCRATCH" "$ci_scratch"
-
 TF_REFSPEC="${tf_refspec:-$TF_REFSPEC}"
 if not_upon "$no_tf"; then
 	# Clone Trusted Firmware repository
@@ -167,6 +156,5 @@ fi
 
 # Copy environment file to ci_scratch for sub-jobs' access
 cp "$env_file" "$ci_scratch"
-cp "$param_file" "$ci_scratch"
 
 # vim: set tw=80 sw=8 noet:
