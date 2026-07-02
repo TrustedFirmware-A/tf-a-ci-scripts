@@ -117,15 +117,6 @@ mkdir -p "$ci_scratch"
 # Set CI_SCRATCH so that it'll be injected when sub-jobs are triggered.
 emit_param "CI_SCRATCH" "$ci_scratch"
 
-# However, on Jenkins v2, injected environment variables won't override current
-# job's parameters. This means that the current job (the scratch owner, the job
-# that's executing this script) would always observe CI_SCRATCH as empty, and
-# therefore won't be able to remove it. Therefore, use a different variable
-# other than CI_SCRATCH parameter for the current job to refer to the scratch
-# space (although they both will have the same value!)
-emit_env "SCRATCH_OWNER" "$scratch_owner"
-emit_env "SCRATCH_OWNER_SPACE" "$ci_scratch"
-
 TF_REFSPEC="${tf_refspec:-$TF_REFSPEC}"
 if not_upon "$no_tf"; then
 	# Clone Trusted Firmware repository
@@ -179,6 +170,10 @@ RMM_REFSPEC="${rmm_refspec:-$RMM_REFSPEC}"
 if not_upon "$no_rmm"; then
 	url="$rmm_src_repo_url" name="tf-rmm" ref="RMM_REFSPEC" \
 		loc="RMM_PATH" clone_and_sync
+fi
+
+if [[ ! -f "${env_file}" ]]; then
+	touch "${env_file}"
 fi
 
 # Copy environment file to ci_scratch for sub-jobs' access
