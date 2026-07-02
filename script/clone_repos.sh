@@ -40,8 +40,6 @@ clone_and_sync() {
 	local topic
 	local refspec="${!ref}"
 	local s_before s_after s_diff
-	local reference_dir="$project_filer/ref-repos/${name?}"
-	local ref_repo
 	local ret
 
 	strip_var refspec
@@ -56,11 +54,8 @@ clone_and_sync() {
 
 	# Clone repository to the directory same as its name; HEAD stays at
 	# master.
-	if [ -d "$reference_dir" ]; then
-		ref_repo="--reference $reference_dir"
-	fi
-	echo "$ref_repo $url $name $branch"
-	git clone -q $ref_repo "$url" "$name"
+	echo "$url $name $branch"
+	git clone -q "$url" "$name"
 	stat="on branch master"
 
 	pushd "$name"
