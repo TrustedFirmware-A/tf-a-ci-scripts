@@ -17,8 +17,6 @@ set -e
 ci_root="$(readlink -f "$(dirname "$0")/..")"
 source "$ci_root/utils.sh"
 
-clone_data="$workspace/clone.data"
-
 # File containing parameters for sub jobs
 param_file="$workspace/env.param"
 
@@ -30,10 +28,6 @@ emit_param() {
 # Emit a parameter for code coverage metadata
 code_cov_emit_param() {
 	emit_param "CC_$(echo ${1^^} | tr '-' _)_$2" "$3"
-}
-
-meta_data() {
-	echo "$1" >> "$clone_data"
 }
 
 strip_var() {
@@ -92,12 +86,6 @@ clone_and_sync() {
 	fi
 
 	code_cov_emit_param "${name}" "REFSPEC" "${refspec}"
-	# Generate meta data. Eliminate any quoting in commit subject as it
-	# might cause problems when reporting back to Gerrit.
-	meta_data "$name: $stat"
-	meta_data "	$(git show --quiet --format=%H): $(git show --quiet --format=%s | sed "s/[\"']/ /g")"
-	meta_data "	Commit date: $(git show --quiet --format=%cd)"
-	meta_data
 	code_cov_emit_param "${name}" "COMMIT"  "$(git show --quiet --format=%H)"
 
 	# Calculate elapsed seconds
@@ -210,10 +198,5 @@ fi
 # Copy environment file to ci_scratch for sub-jobs' access
 cp "$env_file" "$ci_scratch"
 cp "$param_file" "$ci_scratch"
-
-# Copy clone data so that it's available for sub-jobs' HTML reporting
-if [ -f "$clone_data" ]; then
-	cp "$clone_data" "$ci_scratch"
-fi
 
 # vim: set tw=80 sw=8 noet:
