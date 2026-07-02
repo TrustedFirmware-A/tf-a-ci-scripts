@@ -542,11 +542,6 @@ model_version="${model_version:-11.31}"
 model_build="${model_build:-28}"
 model_flavour="${model_flavour:-Linux64_GCC-9.3}"
 
-# Model snapshots from filer are not normally not accessible from developer
-# systems. Ignore failures from picking real path for local runs.
-pinned_cortex="$(readlink -f ${pinned_cortex:-$project_filer/models/cortex})" || true
-pinned_css="$(readlink -f ${pinned_css:-$project_filer/models/css})" || true
-
 tforg_gerrit_url="review.trustedfirmware.org"
 
 # Repository URLs. We're using anonymous HTTP as they appear to be faster rather
