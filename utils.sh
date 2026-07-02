@@ -35,10 +35,6 @@ else
   fi
 fi
 
-# Storage area to host toolchains, rootfs, tools, models, binaries, etc...
-nfs_volume="${nfs_volume:-$NFS_VOLUME}"
-nfs_volume="${nfs_volume:?}"
-
 # Override workspace for local runs
 workspace="${workspace:-$WORKSPACE}"
 workspace="${workspace:?}"
@@ -532,9 +528,6 @@ else
 fi
 
 # Project scratch location for Trusted Firmware CI
-project_filer="${nfs_volume}/projectscratch/ssg/trusted-fw"
-project_scratch="${PROJECT_SCRATCH:-$project_filer/ci-workspace}"
-warehouse="${nfs_volume}/warehouse"
 jenkins_url="${JENKINS_PUBLIC_URL%/*}"
 jenkins_url="${jenkins_url:-https://ci.trustedfirmware.org/}"
 

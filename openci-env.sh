@@ -9,6 +9,5 @@
 # Environmental settings for the OpenCI infrastructure.
 #
 
-nfs_volume="${WORKSPACE:?}/nfs"
 jenkins_url="${JENKINS_PUBLIC_URL}"
 ci_env="openci"
