@@ -95,16 +95,7 @@ clone_and_sync() {
 env_file="$workspace/env"
 rm -f "$env_file"
 
-# Workspace on external filer where all repositories gets cloned so that they're
-# accessible to all Jenkins slaves.
-if upon "$local_ci"; then
-	ci_scratch="$workspace/filer"
-else
-	scratch_owner="${JOB_NAME:?}-${BUILD_NUMBER:?}"
-	ci_scratch="$project_scratch/$scratch_owner"
-	tforg_key="$CI_BOT_KEY"
-	tforg_user="$CI_BOT_USERNAME"
-fi
+ci_scratch="$workspace/filer"
 
 if [ -d "$ci_scratch" ]; then
 	# This could be because of jobs of same name running from
