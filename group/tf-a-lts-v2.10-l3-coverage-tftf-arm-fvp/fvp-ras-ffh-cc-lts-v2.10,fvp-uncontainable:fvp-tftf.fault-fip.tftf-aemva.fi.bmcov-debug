@@ -3,3 +3,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
+
+post_fetch_tf_resource() {
+	uart="1" set_expect_variable "tftf_fault_msg" "Injected Uncontainable Error"
+}
