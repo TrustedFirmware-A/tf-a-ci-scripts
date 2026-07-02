@@ -17,7 +17,6 @@ set -e
 ci_root="$(readlink -f "$(dirname "$0")/..")"
 source "$ci_root/utils.sh"
 
-clone_log="$workspace/clone_repos.log"
 clone_data="$workspace/clone.data"
 
 # File containing parameters for sub jobs
@@ -72,7 +71,7 @@ clone_and_sync() {
 		ref_repo="--reference $reference_dir"
 	fi
 	echo "$ref_repo $url $name $branch"
-	git clone -q $ref_repo "$url" "$name" &>"$clone_log"
+	git clone -q $ref_repo "$url" "$name"
 	code_cov_emit_param "${name}" "URL" "${url}"
 	stat="on branch master"
 
@@ -80,8 +79,8 @@ clone_and_sync() {
 
 	if [ "$refspec" ] && [ "$refspec" != "master" ]; then
 		# If a specific revision is specified, always use that.
-		git fetch -q origin "$refspec" &>"$clone_log"
-		git checkout -q FETCH_HEAD &>"$clone_log"
+		git fetch -q origin "$refspec"
+		git checkout -q FETCH_HEAD
 		stat="refspec $refspec"
 
 		# If it's not a commit hash, have the refspec replicated on the
