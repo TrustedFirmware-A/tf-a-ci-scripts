@@ -115,6 +115,23 @@ if [ "$REPO_NAME" != "rusted-firmware-a" ]; then
   echo "-------------------------------------" >> "$LOG_TEST_FILENAME" 2>&1
 fi
 
+# Type-check fuzzers (if present)
+
+if [ -d fuzz ]; then
+  echo "fuzz targets:" >> "$LOG_TEST_FILENAME" 2>&1
+
+  cargo +nightly-2026-05-03 fuzz check >> "$LOG_TEST_FILENAME" 2>&1
+
+  if [ "$?" != 0 ]; then
+    echo "cargo fuzz check: FAILURE"
+    ((ERROR_COUNT++))
+  else
+    echo "cargo fuzz check: PASS"
+  fi
+
+  echo "-------------------------------------" >> "$LOG_TEST_FILENAME" 2>&1
+fi
+
 cd -
 if [ "$ERROR_COUNT" != 0 ]; then
   echo "Some cargo checks have failed."
