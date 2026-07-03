@@ -7,8 +7,9 @@
 #
 
 #
-# Rewrite LCOV source-file records to be relative to the project under test, so
-# that the gateway job can generate correct coverage visualizations.
+# Rewrite LCOV source-file records to be relative to the project under test and
+# remove branch coverage records, so that the gateway job can generate correct
+# aggregate coverage visualizations.
 #
 
 set -euo pipefail
@@ -39,6 +40,10 @@ prefix="SF:${root}/"
 temp="$(mktemp "${info}.XXXXXX")"
 
 while IFS= read -r line || [[ -n "${line}" ]]; do
+    if [[ "${line}" == BRDA:* || "${line}" == BRF:* || "${line}" == BRH:* ]]; then
+        continue
+    fi
+
     if [[ "${line:0:${#prefix}}" == "${prefix}" ]]; then
         line="SF:${line:${#prefix}}"
     fi
