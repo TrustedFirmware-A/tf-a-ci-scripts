@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	local model="base-aemva"
+
+	# TODO cache_state_modelled=1 causes this test to crash, investigate
+	# what is causing the crashes and try to fix it.
+	model="$model" \
+		lfa_image_bin="bl31.bin" \
+		lfa_image_addr="0xFB000000" \
+		cache_state_modelled="0" \
+		gen_model_params
+	model="$model" gen_fvp_yaml
+}

@@ -384,6 +384,8 @@ ${cluster_0_num_cores+-C cluster0.NUM_CORES=$cluster_0_num_cores}
 
 ${el3_payload_bin+--data cluster0.cpu0=$el3_payload_bin@${el3_payload_addr:?}}
 
+${lfa_image_bin+--data cluster0.cpu0=$lfa_image_bin@${lfa_image_addr}}
+
 ${aarch64_only+-C cluster0.max_32bit_el=-1}
 
 ${aarch32+-C cluster0.cpu0.CONFIG64=0}
