@@ -1,0 +1,3 @@
+CROSS_COMPILE=aarch64-none-elf-
+ENABLE_FEAT_RNG_TRAP=1
+PLAT=qemu

@@ -894,6 +894,9 @@ clean_build PLAT=qemu $(common_flags) ${TBB_OPTIONS} MBOOT_EL_HASH_ALG=sha256 ME
 # Transfer List
 clean_build PLAT=qemu $(common_flags) TRANSFER_LIST=1
 
+# FEAT_RNG_TRAP: plat_handle_rng_trap()
+clean_build PLAT=qemu $(common_flags) ENABLE_FEAT_RNG_TRAP=1
+
 # FEAT_RME
 clean_build PLAT=qemu $(common_flags) ENABLE_FEAT_RME=1 ENABLE_RMM=1 \
         QEMU_USE_GIC_DRIVER=QEMU_GICV3
