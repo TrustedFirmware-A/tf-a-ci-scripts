@@ -502,11 +502,18 @@ update_fip_hw_config() {
 	# in configs:
 	#            1. Where BL2 isn't present
 	#            2. Where we boot to Linux directly as BL33
+	#
+	# lts-v2.8 still relies on BL2_AT_EL3.
+	# The change that distinguishes "BL2 as the TF-A entry point"
+	# from "BL2 running at EL3" has not been backported to this branch yet.
+	# Until that backport is available, keep BL2_AT_EL3 in this check so the
+	# DTB is loaded by the model instead of being updated in the FIP.
 	case "1" in
 		"$(get_tf_opt RESET_TO_BL31)" | \
 		"$(get_tf_opt ARM_LINUX_KERNEL_AS_BL33)" | \
 		"$(get_tf_opt RESET_TO_SP_MIN)" | \
-		"$(get_tf_opt RESET_TO_BL2)")
+		"$(get_tf_opt RESET_TO_BL2)" | \
+		"$(get_tf_opt BL2_AT_EL3)")
 			return 0;;
 	esac
 
