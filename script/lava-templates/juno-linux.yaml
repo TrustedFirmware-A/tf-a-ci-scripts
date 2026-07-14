@@ -4,10 +4,6 @@ job_name: tf-juno
 context:
   bootloader_prompt: '${bootloader_prompt:-"VExpress64#"}'
 
-tags: [
-  ${juno_revision:+"'${juno_revision}'"}
-]
-
 timeouts:
   # Global timeout value for the whole job.
   job:

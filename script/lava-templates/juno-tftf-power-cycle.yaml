@@ -4,10 +4,6 @@ device_type: "juno"
 visibility: "public"
 priority: '${LAVA_PRIORITY:-medium}'
 
-tags: [
-  ${juno_revision:+"'${juno_revision}'"}
-]
-
 timeouts:
   job:
     minutes: 10
