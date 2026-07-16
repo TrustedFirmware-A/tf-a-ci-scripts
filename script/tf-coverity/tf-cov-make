@@ -940,6 +940,16 @@ make PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
     MEASURED_BOOT=1 DISCRETE_TPM=1 TPM_INTERFACE=FIFO_SPI \
     MBOOT_TPM_HASH_ALG=sha256 MBEDTLS_DIR=$(pwd)/mbedtls all
 
+# Raspberry Pi SPD support
+make PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
+    TRANSFER_LIST=1 MEASURED_BOOT=1 MBOOT_TPM_HASH_ALG=sha256 \
+    BL32=/dev/null SPD=spmd CTX_INCLUDE_EL2_REGS=0 \
+    SPMD_SPM_AT_SEL2=0 SPMC_OPTEE=1 fip all
+make PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
+    TRANSFER_LIST=1 MEASURED_BOOT=1 MBOOT_TPM_HASH_ALG=sha256 \
+    BL32=/dev/null SPD=opteed CTX_INCLUDE_EL2_REGS=0 \
+    SPMD_SPM_AT_SEL2=0 SPMC_OPTEE=1 fip all
+
 # A113D (AXG) platform.
 clean_build PLAT=axg $(common_flags) SPD=opteed
 clean_build PLAT=axg $(common_flags) AML_USE_ATOS=1
