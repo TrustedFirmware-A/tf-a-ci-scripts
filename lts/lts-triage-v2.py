@@ -63,6 +63,19 @@ def process_ps(ps):
 
     return score
 
+def find_message_tokens(message):
+    # Capture all unique message-token matches in order of appearance.
+    matches = []
+    seen = set()
+    for match in re.finditer(MESSAGE_TOKENS, message, re.IGNORECASE):
+        token = match.group(0)
+        key = token.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        matches.append(token)
+    return matches
+
 def cpu_name_from_path(path):
     # Reduce a CPU source path to its CPU identifier, e.g.
     # "lib/cpus/aarch64/cortex_a710.S" -> "cortex_a710"
@@ -154,7 +167,7 @@ def main():
 
     csv_columns = ["index", f"commit id in the {base_branch} branch", "committer date", "commit summary",
                    "score", "Gerrit Change-Id", "patch link for the LTS branch",
-                   f"patch link for the {base_branch} branch", "To be cherry-picked"]
+                   f"patch link for the {base_branch} branch", "To be cherry-picked", "Tokens"]
     csv_data = []
 
     repo = git.Repo(args.repo)
@@ -193,8 +206,8 @@ def main():
         if len(cmt.parents) > 1:
             continue
 
-        tok = re.compile(MESSAGE_TOKENS, re.IGNORECASE)
-        if tok.search(cmt.message) is not None:
+        matched_tokens = find_message_tokens(cmt.message)
+        if matched_tokens:
             debug_print("## commit message match")
             score = score + 1
 
@@ -228,7 +241,8 @@ def main():
                 "Gerrit Change-Id": change_id,
                 "patch link for the LTS branch": gerrit_links.get(lts_branch, "N/A"),
                 f"patch link for the {base_branch} branch": gerrit_links.get(base_branch, "N/A"),
-                "To be cherry-picked": "N" if (gerrit_links.get(lts_branch) or unsupported_only) else "Y"
+                "To be cherry-picked": "N" if (gerrit_links.get(lts_branch) or unsupported_only) else "Y",
+                "Tokens": ", ".join(matched_tokens)
             })
             at_least_one_match = True
 
