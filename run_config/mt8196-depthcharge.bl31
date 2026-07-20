@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+generate_lava_job() {
+	payload_type="bl31_depthcharge_boot" gen_mt8196_yaml
+}

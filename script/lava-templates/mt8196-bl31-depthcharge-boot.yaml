@@ -1,0 +1,38 @@
+device_type: mt8196-rauru-navi
+job_name: MT8196 Rauru Chromebook BL31 depthcharge boot test - $build_mode
+timeouts:
+  job:
+    minutes: 30
+  action:
+    minutes: 15
+  connection:
+    minutes: 5
+priority: medium
+visibility: public
+actions:
+- deploy:
+    timeout:
+      minutes: 5
+    to: flasher
+    images:
+      image:
+        url: https://downloads.trustedfirmware.org/infra-assets/linaro_artifacts/lava/chromebook/navi/navi_tf-a-ci_golden_image.bin.gz
+        compression: gz
+      bl31:
+        url: $bl31_url
+- boot:
+    timeout:
+      minutes: 5
+    method: minimal
+- test:
+    timeout:
+      minutes: 15
+    interactive:
+    - name: int_1
+      prompts: ["Starting depthcharge on Navi"]
+      script:
+      - command:
+    - name: int_2
+      prompts: ["This is a TF-A test build. Halting"]
+      script:
+      - command:
