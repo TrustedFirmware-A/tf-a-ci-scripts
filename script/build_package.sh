@@ -371,8 +371,9 @@ build_fip() {
 	# Export the build root vars so they are visible when make eventually
 	# expands the configuration.
 	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") \
+		DEBUG="$DEBUG" "$@" ${fip_targets:-fip} \
+		BUILD_BASE=$tf_build_root \
 		tftf_build_root="$tftf_build_root" tf_build_root="$tf_build_root" \
-		DEBUG="$DEBUG" BUILD_BASE=$tf_build_root "$@" ${fip_targets:-fip} \
 		2>&1 | tee -a "$build_log" || fail_build
 	) 2>&1 | tee -a "$build_log" || fail_build
 }
@@ -396,8 +397,9 @@ build_tf_extra() {
 	fi
 
 	make -C "$tf_root" $make_j_opts $(cat "$tf_config_file") \
+		DEBUG="$DEBUG" "$@" ${tf_extra_rules} \
+		BUILD_BASE=$tf_build_root \
 		tftf_build_root="$tftf_build_root" tf_build_root="$tf_build_root" \
-		DEBUG="$DEBUG" BUILD_BASE=$tf_build_root "$@" ${tf_extra_rules} \
 		2>&1 | tee -a "$build_log" || fail_build
 	)
 }
@@ -628,7 +630,7 @@ build_tf() {
 	cat <<EOF | log_separator
 
 Build command line:
-	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') tftf_build_root=$tftf_build_root tf_build_root=$tf_build_root DEBUG=$DEBUG BUILD_BASE=$tf_build_root $build_targets
+	$tf_build_wrapper make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG $build_targets BUILD_BASE=$tf_build_root tftf_build_root=$tftf_build_root tf_build_root=$tf_build_root
 
 CC version:
 $(${CC-${CROSS_COMPILE}gcc} -v 2>&1)
@@ -641,9 +643,10 @@ EOF
 	# Build TF. Since build output is being directed to the build log, have
 	# descriptor 3 point to the current terminal for build wrappers to vent.
 	$tf_build_wrapper poetry run make $make_j_opts $(cat "$config_file") \
+		DEBUG="$DEBUG" $build_targets \
+		BUILD_BASE="$tf_build_root" SPIN_ON_BL1_EXIT="$connect_debugger" \
 		tftf_build_root="$tftf_build_root" tf_build_root="$tf_build_root" \
-		DEBUG="$DEBUG" BUILD_BASE="$tf_build_root" SPIN_ON_BL1_EXIT="$connect_debugger" \
-		$build_targets 3>&1 2>&1 | tee -a "$build_log" || fail_build
+		3>&1 2>&1 | tee -a "$build_log" || fail_build
 
 	# the memory command is slow and we only want it for keeping a record
 	if upon "$dont_print_memory"; then
@@ -691,8 +694,7 @@ EOF
 
 	# Build RF-A. Since build output is being directed to the build log, have
 	# descriptor 3 point to the current terminal for build wrappers to vent.
-	eval make $make_j_opts $(cat "$config_file") \
-	    DEBUG="$DEBUG" \
+	eval make $make_j_opts $(cat "$config_file") DEBUG="$DEBUG" \
 		$build_targets 3>&1 &>>"$build_log" || fail_build
 	)
 }
@@ -715,12 +717,12 @@ build_tftf() {
 	cat <<EOF | log_separator
 
 Build command line:
-	make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG BUILD_BASE="$tftf_build_root" $build_targets
+	make $make_j_opts $(cat "$config_file" | tr '\n' ' ') DEBUG=$DEBUG $build_targets BUILD_BASE="$tftf_build_root"
 
 EOF
 
-	make $make_j_opts $(cat "$config_file") DEBUG="$DEBUG" BUILD_BASE="$tftf_build_root" \
-		$build_targets 2>&1 | tee -a "$build_log" || fail_build
+	make $make_j_opts $(cat "$config_file") DEBUG="$DEBUG" $build_targets \
+		BUILD_BASE="$tftf_build_root" 2>&1 | tee -a "$build_log" || fail_build
 	)
 }
 
