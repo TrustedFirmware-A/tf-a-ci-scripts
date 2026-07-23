@@ -198,6 +198,8 @@ reset_var has_brbe
 
 reset_var has_trbe
 
+reset_var has_trbe_exc
+
 # Enable IDE at PCIe RootPort
 reset_var has_ide_at_rp
 
@@ -235,6 +237,7 @@ if [ "$all_optional_cpu_features" = "1" ]; then
 	has_d128=1
 	has_brbe=1
 	has_trbe=1
+	has_trbe_exc=1
 	has_fgt2=1
 	has_csv2_2=1
 	has_s1pie=1
@@ -576,6 +579,13 @@ if [ "$has_trbe" = "1" ]; then
 EOF
 fi
 
+# FEAT_TRBE_EXC is enabled
+if [ "$has_trbe_exc" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.trbe_implemented_version=2
+EOF
+fi
+
 # FEAT_PACQARMA3 is enabled
 if [ "$has_pacqarma3" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
@@ -892,6 +902,13 @@ fi
 if [ "$has_trbe" = "1" ]; then
 	cat <<EOF >>"$model_param_file"
 -C cluster1.has_trbe=1
+EOF
+fi
+
+# FEAT_TRBE_EXC is enabled
+if [ "$has_trbe_exc" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster1.trbe_implemented_version=2
 EOF
 fi
 
