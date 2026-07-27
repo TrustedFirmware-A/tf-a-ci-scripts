@@ -875,6 +875,13 @@ clean_build $(common_flags release) \
 # AM62Lx bl31 only
 clean_build PLAT=k3low TARGET_BOARD=am62lx-evm $(common_flags) bl31
 
+# AM62L3 BeagleBadge bl1 only
+clean_build $(common_flags release) \
+    PLAT=k3low TARGET_BOARD=am62l3-beaglebadge $(common_flags) bl1
+
+# AM62L3 BeagleBadge bl31 only
+clean_build PLAT=k3low TARGET_BOARD=am62l3-beaglebadge $(common_flags) bl31
+
 clean_build PLAT=qemu $(common_flags) ${TBB_OPTIONS}
 # Use GICV3 driver
 clean_build PLAT=qemu $(common_flags) QEMU_USE_GIC_DRIVER=QEMU_GICV3 \
