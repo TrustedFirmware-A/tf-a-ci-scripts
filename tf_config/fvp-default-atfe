@@ -1,0 +1,3 @@
+CC=${ATFE_PATH}/clang
+CROSS_COMPILE=aarch64-none-elf-
+PLAT=fvp

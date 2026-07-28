@@ -185,6 +185,13 @@ RMM + tests) and ignores supplemental repositories that will not be built
 normally. Local toolchains (gcc and clang) and models are also required as per
 TF-A's setup guide.
 
+### Building locally with ATfE
+
+Download Arm Toolchain for Embedded (ATfE) from the
+[Arm toolchain releases](https://github.com/arm/arm-toolchain/releases/tag/release-22.1.0-ATfE)
+and extract the Linux archive for your host architecture. Set `ATFE_PATH` to
+its `bin` directory.
+
 ### Matching test groups by glob
 
 All tests belong to a group and match globs nicely. To expand those you can use
