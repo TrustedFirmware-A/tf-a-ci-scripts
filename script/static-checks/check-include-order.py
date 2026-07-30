@@ -36,6 +36,10 @@ IGNORED_FILES = ()
 INCLUDE_RE = re.compile(r"^\s*#\s*include\s\s*(?P<path>[\"<].+[\">])")
 INCLUDE_RE_DIFF = re.compile(r"^\+?\s*#\s*include\s\s*(?P<path>[\"<].+[\">])")
 
+EXPLICIT_SYSTEM_INCLUDES = {
+    "sys/stat.h",
+}
+
 
 def subprocess_run(cmd, **kwargs):
     logging.debug("Running command: %r %r", cmd, kwargs)
@@ -94,14 +98,21 @@ def inc_order_is_correct(inc_list, path, commit_hash=""):
     incs = collections.defaultdict(list)
     error_msgs = []
 
-    # System (libc) includes
-    inc_groups[0] = dir_include_paths("include/lib/libc")
+    # System (libc) includes plus explicit host headers
+    inc_groups[0] = (
+        dir_include_paths("include/lib/libc")
+        | EXPLICIT_SYSTEM_INCLUDES
+    )
     # Platform includes
     inc_groups[3] = dir_include_paths("plat") | dir_include_paths("include/plat")
     inc_groups[3].difference_update(dir_include_paths("include/plat/common") |
                                     dir_include_paths("include/plat/arm"))
     # Project includes
-    inc_groups[2] = dir_include_paths("include") | dir_include_paths("drivers")
+    inc_groups[2] = (
+        dir_include_paths("include")
+        | dir_include_paths("drivers")
+        | dir_include_paths("tools")
+    )
 
     indices = []
 
