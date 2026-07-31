@@ -109,7 +109,7 @@ def main():
     for s in subjects:
         commit_id, _ = s.split(" ", 1)
         change_id = None
-        for l in os.popen("git log --format=%B -n 1 %s" % commit_id):
+        for l in os.popen("git log --format=%%B -n 1 %s" % commit_id):
             # There can be multiple Change-Id lines in some commits, and
             # we're interested in the last in that case.
             if "Change-Id:" in l:
