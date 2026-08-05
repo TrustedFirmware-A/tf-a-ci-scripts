@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+fetch_tf_resource() {
+	url="$basev2_prebuilts/basev2-fitImage.bin" \
+		saveas="basev2-fitImage.bin" fetch_file
+	archive_file "basev2-fitImage.bin"
+
+	# RSE output is UART1 in the four-UART BaseV2 mapping.
+	uart="1" port="5003" file="hold_uart.exp" track_expect
+
+	get_rse_prov_bins
+}
+
+generate_lava_job_template() {
+	# UART0 is SCP, UART2 is the primary AP console
+	uart="0" port="5002" file="hold_uart.exp" track_expect
+	uart="2" port="5000" file="basev2-fitimage-busybox.exp" set_primary="1" \
+		timeout="1200" track_expect
+
+	set_uart_port "${archive:?}" 1 5003
+	set_uart_port "${archive:?}" 3 5001
+
+	payload_type="linux" gen_yaml_template
+}

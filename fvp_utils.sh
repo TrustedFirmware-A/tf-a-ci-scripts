@@ -68,6 +68,7 @@ fvp_base_revc_aemva="fvp:fvp_base_revc_aemva_${model_version}_${model_build}_lin
 fvp_base_revc_aemva_gicv5="fvp:fvp_base_revc_aemva_gicv5_${model_version}_${model_build}_linux_x86;/opt/model/FVP_Base_RevC_AEMvA_GICv5_${model_version}_${model_build}/bin"
 
 fvp_arm_std_library="fvp:fvp_arm_std_library_${model_version}_${model_build};/opt/model/FVP_ARM_Std_Library_${model_version}_${model_build}"
+fvp_basev2_2xaemva="fvp:fvp_basev2_2xaemva_11.32.basev2_2_linux_x86;/opt/model/FVP_BaseV2_2xAEMvA/bin"
 
 # FVP associate array, run_config are keys and fvp container parameters are the values
 #   Container parameters syntax: <model name>;<model dir>;<model bin>
@@ -78,6 +79,7 @@ fvp_models=(
 [base-aemva-revb]="${fvp_arm_std_library};FVP_Base_AEMvA-AEMvA"
 [base-aemva]="${fvp_base_revc_aemva};FVP_Base_RevC-2xAEMvA"
 [base-aemva-gicv5]="${fvp_base_revc_aemva_gicv5};FVP_Base_RevC-2xAEMvA_GICV5"
+[basev2]="${fvp_basev2_2xaemva};FVP_BaseV2_2xAEMvA"
 [cortex-a32x4]="${fvp_arm_std_library};FVP_Base_Cortex-A32"
 [cortex-a35x4]="${fvp_arm_std_library};FVP_Base_Cortex-A35"
 [cortex-a53x4]="${fvp_arm_std_library};FVP_Base_Cortex-A53"
@@ -257,6 +259,7 @@ gen_fvp_yaml() {
     test_config="${TEST_CONFIG}"
 
     declare -A fvp_artefact_filters=(
+        [basev2_fitimage]="basev2-fitImage.bin"
         [backup_fip]="backup_fip.bin"
         [bl1]="bl1.bin"
         [bl2]="bl2.bin"
@@ -311,6 +314,7 @@ gen_fvp_yaml() {
     )
 
     declare -A fvp_artefact_urls=(
+        [basev2_fitimage]="$(gen_bin_url basev2-fitImage.bin)"
         [backup_fip]="$(gen_bin_url backup_fip.bin)"
         [bl1]="$(gen_bin_url bl1.bin)"
         [bl2]="$(gen_bin_url bl2.bin)"
@@ -369,6 +373,7 @@ gen_fvp_yaml() {
     # replacements to run on the model parameters file before we add them to the
     # LAVA job definition.
     declare -A fvp_artefact_macros=(
+        ["[= ]basev2-fitImage.bin"]="={BASEV2_FITIMAGE}"
         ["[= ]backup_fip.bin"]="={BACKUP_FIP}"
         ["[= ]bl1.bin"]="={BL1}"
         ["[= ]bl2.bin"]="={BL2}"

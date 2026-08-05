@@ -1,0 +1,9 @@
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	poetry -C "$tf_root" install --no-root --with basev2
+}

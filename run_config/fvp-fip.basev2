@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+post_tf_build() {
+	url="$basev2_prebuilts/u-boot.bin" saveas="u-boot.bin" fetch_file
+	archive_file "u-boot.bin"
+
+	fetch_basev2_flashimage_inputs || fail_build
+	local tf_python
+	tf_python="$(cd "$tf_root" && poetry run python -c 'import sys; print(sys.executable)')" || fail_build
+	tf_extra_rules=basev2_flashimage build_tf_extra \
+		PYTHON="$tf_python" \
+		BL33="$archive/u-boot.bin" \
+		BASEV2_RSE_WRAPPER="$basev2_signing_dir/wrapper_scripts/wrapper/wrapper.py" \
+		BASEV2_BL1_SIGN_KEY="$basev2_signing_dir/root-EC-P256.pem" \
+		BASEV2_RSE_BL2="$archive/rse_bl2_signed.bin" \
+		BASEV2_SCP_BL1="$archive/signed_scp-css.bin" \
+		BASEV2_RSE_S="$archive/rse_s_encrypted.bin" \
+		BASEV2_RSE_SIC_TABLES="$archive/rse_s_sic_tables_signed.bin" || fail_build
+}
