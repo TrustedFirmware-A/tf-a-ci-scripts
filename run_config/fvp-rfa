@@ -25,6 +25,7 @@ generate_lava_job() {
 		mpam_has_bw_ctrl="1" \
 		has_trbe="1" \
 		has_fgt2="1" \
+		has_fgwte3="1" \
 		has_fpmr="1" \
 		has_hcx="1" \
 		has_pauth_lr="1" \
