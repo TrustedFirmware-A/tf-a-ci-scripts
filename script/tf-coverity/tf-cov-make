@@ -431,11 +431,22 @@ make PLAT=mt8195 $(common_flags) COREBOOT=1 all
 make PLAT=mt8196 $(common_flags) COREBOOT=1 all
 
 # Platforms from Qualcomm
+curl --fail --retry 6 -LS \
+    --etag-compare libqtisec-rb3gen2.a.etag \
+    --etag-save libqtisec-rb3gen2.a.etag -o libqtisec-rb3gen2.a \
+    https://github.com/coreboot/qc_blobs/raw/master/sc7280/qtiseclib/libqtisec.a
+curl --fail --retry 6 -LS \
+    --etag-compare libqtisec-lemans_evk.a.etag \
+    --etag-save libqtisec-lemans_evk.a.etag -o libqtisec-lemans_evk.a \
+    https://github.com/qualcomm-linux/boot-firmware-ci/raw/main/qc_blobs/qcs9075/qtiseclib/libqtisec.a
+
 make PLAT=sc7180 $(common_flags) COREBOOT=1 all
 make PLAT=qcs615 $(common_flags) COREBOOT=1 all
 make PLAT=sc7280_chrome $(common_flags) COREBOOT=1 all
 make PLAT=rb3gen2 $(common_flags) all
+make PLAT=rb3gen2 $(common_flags) QTISECLIB_PATH=$PWD/libqtisec-rb3gen2.a all
 make PLAT=lemans_evk $(common_flags) all
+make PLAT=lemans_evk $(common_flags) QTISECLIB_PATH=$PWD/libqtisec-lemans_evk.a all
 
 make PLAT=rk3288 CROSS_COMPILE=arm-none-eabi- \
     $(common_flags) ARCH=aarch32 AARCH32_SP=sp_min all
