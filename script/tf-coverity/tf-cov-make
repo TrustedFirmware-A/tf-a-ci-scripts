@@ -40,9 +40,6 @@ fi
 
 cd "$TF_SOURCES"
 
-# Clean TF source dir to make sure we don't analyse temporary files.
-make distclean
-
 #
 # Build TF in different configurations to get as much coverage as possible
 #
@@ -185,8 +182,7 @@ clean_build $fvp_common_flags CTX_INCLUDE_PAUTH_REGS=1 \
 # Undefined Behaviour Sanitizer
 # Building with UBSAN SANITIZE_UB=on increases the executable size.
 # Hence it is only properly supported in bl31 with RESET_TO_BL31 enabled
-make $fvp_common_flags clean
-make $fvp_common_flags SANITIZE_UB=on RESET_TO_BL31=1 FVP_TRUSTED_SRAM_SIZE=384 bl31
+clean_build $fvp_common_flags SANITIZE_UB=on RESET_TO_BL31=1 FVP_TRUSTED_SRAM_SIZE=384 bl31
 
 # debugfs feature
 clean_build $fvp_common_flags DEBUG=1 USE_DEBUGFS=1
@@ -293,29 +289,29 @@ clean_build $juno_common_flags BL32=1 NS_TIMER_SWITCH=1 \
 #
 # Reference Design Platform RD-N2
 #
-make $(common_flags) PLAT=rdn2 ${ARM_TBB_OPTIONS} all
+clean_build $(common_flags) PLAT=rdn2 ${ARM_TBB_OPTIONS} all
 
 # SPMC At EL3 Support
-make $(common_flags) PLAT=rdn2 ${ARM_TBB_OPTIONS} SPMC_AT_EL3=1 SPD=spmd \
+clean_build $(common_flags) PLAT=rdn2 ${ARM_TBB_OPTIONS} SPMC_AT_EL3=1 SPD=spmd \
     SPMD_SPM_AT_SEL2=0 BL32=1 SPMC_AT_EL3_SEL0_SP=1 EL3_EXCEPTION_HANDLING=1 \
     PLAT_RO_XLAT_TABLES=1 all
 
 #
 # Reference Design Platform RD-V3
 #
-make $(common_flags) PLAT=rdv3 ${ARM_TBB_OPTIONS} COT=cca DEBUG=1 \
+clean_build $(common_flags) PLAT=rdv3 ${ARM_TBB_OPTIONS} COT=cca DEBUG=1 \
      ENABLE_FEAT_RME=1 ENABLE_RMM=1 MEASURED_BOOT=1 PLAT_MHU_VERSION=3 \
      RMM=/dev/null RME_GPT_BITLOCK_BLOCK=0 all
 
 #
 # Neoverse N1 SDP platform
 #
-make $(common_flags) PLAT=n1sdp ${ARM_TBB_OPTIONS} all
+clean_build $(common_flags) PLAT=n1sdp ${ARM_TBB_OPTIONS} all
 
 #
 # FVP VE platform
 #
-make $(common_flags) PLAT=fvp_ve AARCH32_SP=sp_min ARCH=aarch32 \
+clean_build $(common_flags) PLAT=fvp_ve AARCH32_SP=sp_min ARCH=aarch32 \
     CROSS_COMPILE=arm-none-eabi- ARM_ARCH_MAJOR=7 \
     ARM_CORTEX_A5=yes ARM_XLAT_TABLES_LIB_V1=1 \
     FVP_HW_CONFIG_DTS=fdts/fvp-ve-Cortex-A5x1.dts all
@@ -338,16 +334,16 @@ corstone700_common_flags="CROSS_COMPILE=arm-none-eabi- \
 
 echo "Info: Building Corstone700 FVP ..."
 
-make TARGET_PLATFORM=fvp ${corstone700_common_flags}
+clean_build TARGET_PLATFORM=fvp ${corstone700_common_flags}
 
 echo "Info: Building Corstone700 FPGA ..."
 
-make TARGET_PLATFORM=fpga ${corstone700_common_flags}
+clean_build TARGET_PLATFORM=fpga ${corstone700_common_flags}
 
 #
 # Arm internal FPGA port
 #
-make PLAT=arm_fpga $(common_flags release) \
+clean_build PLAT=arm_fpga $(common_flags release) \
     FPGA_PRELOADED_DTB_BASE=0x88000000 PRELOADED_BL33_BASE=0x82080000 all
 
 #
@@ -420,20 +416,15 @@ clean_build $(common_flags) \
             bl2 \
             bl31
 
-# Partners' platforms.
-# Enable as many features as possible.
-# We don't need to clean between each build here because we only do one build
-# per platform so we don't hit the build flags dependency problem.
-
 # Platforms from Mediatek
-make PLAT=mt8173 $(common_flags) all
-make PLAT=mt8183 $(common_flags) all
-make PLAT=mt8186 $(common_flags) COREBOOT=1 all
-make PLAT=mt8188 $(common_flags) COREBOOT=1 all
-make PLAT=mt8189 $(common_flags) COREBOOT=1 all
-make PLAT=mt8192 $(common_flags) COREBOOT=1 all
-make PLAT=mt8195 $(common_flags) COREBOOT=1 all
-make PLAT=mt8196 $(common_flags) COREBOOT=1 all
+clean_build PLAT=mt8173 $(common_flags) all
+clean_build PLAT=mt8183 $(common_flags) all
+clean_build PLAT=mt8186 $(common_flags) COREBOOT=1 all
+clean_build PLAT=mt8188 $(common_flags) COREBOOT=1 all
+clean_build PLAT=mt8189 $(common_flags) COREBOOT=1 all
+clean_build PLAT=mt8192 $(common_flags) COREBOOT=1 all
+clean_build PLAT=mt8195 $(common_flags) COREBOOT=1 all
+clean_build PLAT=mt8196 $(common_flags) COREBOOT=1 all
 
 # Platforms from Qualcomm
 curl --fail --retry 6 -LS \
@@ -445,43 +436,40 @@ curl --fail --retry 6 -LS \
     --etag-save libqtisec-lemans_evk.a.etag -o libqtisec-lemans_evk.a \
     https://github.com/qualcomm-linux/boot-firmware-ci/raw/main/qc_blobs/qcs9075/qtiseclib/libqtisec.a
 
-make PLAT=sc7180 $(common_flags) COREBOOT=1 all
-make PLAT=qcs615 $(common_flags) COREBOOT=1 all
-make PLAT=sc7280_chrome $(common_flags) COREBOOT=1 all
-make PLAT=rb3gen2 $(common_flags) all
+clean_build PLAT=sc7180 $(common_flags) COREBOOT=1 all
+clean_build PLAT=qcs615 $(common_flags) COREBOOT=1 all
+clean_build PLAT=sc7280_chrome $(common_flags) COREBOOT=1 all
+clean_build PLAT=rb3gen2 $(common_flags) all
 clean_build PLAT=rb3gen2 $(common_flags) QTISECLIB_PATH=$PWD/libqtisec-rb3gen2.a
-make PLAT=lemans_evk $(common_flags) all
+clean_build PLAT=lemans_evk $(common_flags) all
 clean_build PLAT=lemans_evk $(common_flags) QTISECLIB_PATH=$PWD/libqtisec-lemans_evk.a
 
-make PLAT=rk3288 CROSS_COMPILE=arm-none-eabi- \
+clean_build PLAT=rk3288 CROSS_COMPILE=arm-none-eabi- \
     $(common_flags) ARCH=aarch32 AARCH32_SP=sp_min all
-make PLAT=rk3368 $(common_flags) COREBOOT=1 \
+clean_build PLAT=rk3368 $(common_flags) COREBOOT=1 \
     ENABLE_STACK_PROTECTOR=strong all
-make PLAT=rk3399 $(common_flags) COREBOOT=1 PLAT_RK_DP_HDCP=1 \
+clean_build PLAT=rk3399 $(common_flags) COREBOOT=1 PLAT_RK_DP_HDCP=1 \
     ENABLE_STACK_PROTECTOR=strong all
-make PLAT=rk3328 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
+clean_build PLAT=rk3328 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
     ENABLE_STACK_PROTECTOR=strong all
-make PLAT=rk3576 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
+clean_build PLAT=rk3576 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
     ENABLE_STACK_PROTECTOR=strong all
-make PLAT=rk3588 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
+clean_build PLAT=rk3588 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
     ENABLE_STACK_PROTECTOR=strong all
-make PLAT=px30 $(common_flags) PLAT_RK_SECURE_DDR_MINILOADER=1 \
+clean_build PLAT=px30 $(common_flags) PLAT_RK_SECURE_DDR_MINILOADER=1 \
     ENABLE_STACK_PROTECTOR=strong all
-make PLAT=rk3568 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
+clean_build PLAT=rk3568 $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
     ENABLE_STACK_PROTECTOR=strong all
-make PLAT=rv1126b $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
+clean_build PLAT=rv1126b $(common_flags) COREBOOT=1 PLAT_RK_SECURE_DDR_MINILOADER=1 \
     ENABLE_STACK_PROTECTOR=strong all
 
-# Although we do several consecutive builds for the Tegra platform below, we
-# don't need to clean between each one because the Tegra makefiles specify
-# a different build directory per SoC.
-make PLAT=tegra TARGET_SOC=t194 $(common_flags) all
+clean_build PLAT=tegra TARGET_SOC=t194 $(common_flags) all
 
 # For the Xilinx platform, artificially increase the extents of BL31 memory
 # (using the platform-specific build options ZYNQMP_ATF_MEM_{BASE,SIZE}).
 # If we keep the default values, BL31 doesn't fit when it is built with all
 # these build flags.
-make PLAT=zynqmp $(common_flags) \
+clean_build PLAT=zynqmp $(common_flags) \
     RESET_TO_BL31=1 SPD=tspd \
     SDEI_SUPPORT=1 \
     ZYNQMP_ATF_MEM_BASE=0xFFFC0000 ZYNQMP_ATF_MEM_SIZE=0x00040000 \
@@ -519,15 +507,15 @@ clean_build PLAT=sun50i_r329 $(common_flags) all
 clean_build PLAT=sun50i_a133 $(common_flags) all
 
 # Platforms from i.MX
-make AARCH32_SP=optee ARCH=aarch32 ARM_ARCH_MAJOR=7 ARM_CORTEX_A7=yes \
+clean_build AARCH32_SP=optee ARCH=aarch32 ARM_ARCH_MAJOR=7 ARM_CORTEX_A7=yes \
     CROSS_COMPILE=arm-none-eabi- PLAT=warp7 ${TBB_OPTIONS} \
     $(common_flags) all
-make AARCH32_SP=optee ARCH=aarch32 CROSS_COMPILE=arm-none-eabi- PLAT=picopi \
+clean_build AARCH32_SP=optee ARCH=aarch32 CROSS_COMPILE=arm-none-eabi- PLAT=picopi \
     $(common_flags) all
-make PLAT=imx8mm $(common_flags) NEED_BL2=yes MEASURED_BOOT=1 \
+clean_build PLAT=imx8mm $(common_flags) NEED_BL2=yes MEASURED_BOOT=1 \
     MBOOT_EL_HASH_ALG=sha256 ${TBB_OPTIONS} all
-make PLAT=imx8mn $(common_flags) SDEI_SUPPORT=1 all
-make PLAT=imx8mp $(common_flags) NEED_BL2=yes ${TBB_OPTIONS} all
+clean_build PLAT=imx8mn $(common_flags) SDEI_SUPPORT=1 all
+clean_build PLAT=imx8mp $(common_flags) NEED_BL2=yes ${TBB_OPTIONS} all
 
 # Due to the limited OCRAM space that can be used for TF-A, build test
 # will report failure caused by too small RAM size, so comment out the
@@ -535,22 +523,22 @@ make PLAT=imx8mp $(common_flags) NEED_BL2=yes ${TBB_OPTIONS} all
 # https://developer.trustedfirmware.org/T626
 #make PLAT=imx8mq $(common_flags release) all
 
-make PLAT=imx8qm $(common_flags) all
-make PLAT=imx8qx $(common_flags) all
+clean_build PLAT=imx8qm $(common_flags) all
+clean_build PLAT=imx8qx $(common_flags) all
 
-make PLAT=imx8ulp $(common_flags) all
+clean_build PLAT=imx8ulp $(common_flags) all
 
-make PLAT=imx93 $(common_flags) all
-make PLAT=imx94 $(common_flags) all
-make PLAT=imx95 $(common_flags) all
+clean_build PLAT=imx93 $(common_flags) all
+clean_build PLAT=imx94 $(common_flags) all
+clean_build PLAT=imx95 $(common_flags) all
 
 # Platforms for NXP Layerscape
 nxp_sb_flags="TRUSTED_BOARD_BOOT=1 CST_DIR=$(pwd) SPD=opteed"
 nxp_sb_fuse_flags="${nxp_sb_flags} FUSE_PROG=1"
 
 # Platform lx2
-make PLAT=lx2160aqds $(common_flags) all
-make PLAT=lx2160ardb $(common_flags) all
+clean_build PLAT=lx2160aqds $(common_flags) all
+clean_build PLAT=lx2160ardb $(common_flags) all
 
 # GigaDevice GD55LB02GF FlexSPI NOR vendor support: check
 # drivers/nxp/flexspi/nor/flash_vendor_gigadevice.c, which is only
@@ -570,7 +558,7 @@ clean_build PLAT=lx2160ardb $(common_flags) BOOT_MODE=flexspi_nor \
 
 # Default (NBXV3_BL2_BOOTSTRAP=0): production XIP BL2 with
 # .text/.rodata in the FlexSPI NOR AHB window.
-make PLAT=nbxv3 $(common_flags) all
+clean_build PLAT=nbxv3 $(common_flags) all
 
 # NBXV3_BL2_BOOTSTRAP=1: OCRAM-resident BL2 used by the JTAG
 # semihosting recovery path; alternate linker layout.
@@ -637,11 +625,11 @@ clean_build PLAT=ls1088aqds $(common_flags) all BOOT_MODE=nor $nxp_sb_fuse_flags
 clean_build PLAT=s32g274ardb2 $(common_flags) all
 
 # Platforms from Altera/Intel
-make PLAT=agilex $(common_flags) all
-make PLAT=agilex3 $(common_flags) all
-make PLAT=agilex5 $(common_flags) all
-make PLAT=n5x $(common_flags) all
-make PLAT=stratix10 $(common_flags) all
+clean_build PLAT=agilex $(common_flags) all
+clean_build PLAT=agilex3 $(common_flags) all
+clean_build PLAT=agilex5 $(common_flags) all
+clean_build PLAT=n5x $(common_flags) all
+clean_build PLAT=stratix10 $(common_flags) all
 
 # Platforms from Broadcom
 clean_build PLAT=stingray $(common_flags) BOARD_CFG=bcm958742t \
@@ -681,9 +669,9 @@ clean_build $(common_flags) PLAT=t9130_cex7_eval DEBUG=1 SCP_BL2=/dev/null BL33=
 rm -rf drivers/marvell/mv_ddr 2> /dev/null
 
 # Platforms from Meson
-make PLAT=gxbb $(common_flags) all
-make PLAT=gxl $(common_flags) all
-make PLAT=g12a $(common_flags) all
+clean_build PLAT=gxbb $(common_flags) all
+clean_build PLAT=gxl $(common_flags) all
+clean_build PLAT=g12a $(common_flags) all
 
 # Platforms from Renesas
 # Renesas R-Car D3 Automotive SoC
@@ -936,11 +924,11 @@ clean_build PLAT=qemu_sbsa $(common_flags) BL32=Makefile SPM_MM=1 \
     EL3_EXCEPTION_HANDLING=1 ENABLE_SME_FOR_NS=0 ENABLE_SVE_FOR_NS=0
 
 # For hikey enable PMF to include all files in the platform port
-make PLAT=hikey $(common_flags) ${TBB_OPTIONS} ENABLE_PMF=1 all
-make PLAT=hikey960 $(common_flags) ${TBB_OPTIONS} all
-make PLAT=hikey960 $(common_flags) ${TBB_OPTIONS} SPD=spmd SPMC_AT_EL3=1 \
+clean_build PLAT=hikey $(common_flags) ${TBB_OPTIONS} ENABLE_PMF=1 all
+clean_build PLAT=hikey960 $(common_flags) ${TBB_OPTIONS} all
+clean_build PLAT=hikey960 $(common_flags) ${TBB_OPTIONS} SPD=spmd SPMC_AT_EL3=1 \
     SPMD_SPM_AT_SEL2=0 BL32=optee PLAT_SP_MANIFEST_DTS=foo NEED_FDT=no all
-make PLAT=poplar $(common_flags) all
+clean_build PLAT=poplar $(common_flags) all
 
 # Platforms from Socionext
 clean_build PLAT=uniphier $(common_flags) ${TBB_OPTIONS} SPD=tspd
@@ -959,21 +947,21 @@ clean_build PLAT=synquacer $(common_flags) \
     TRUSTED_BOARD_BOOT=1 \
     SQ_USE_SCMI_DRIVER=1 SPD=opteed all
 
-make PLAT=poplar $(common_flags) all
+clean_build PLAT=poplar $(common_flags) all
 
 # Raspberry Pi Platforms
-make PLAT=rpi3 $(common_flags) ${TBB_OPTIONS} \
+clean_build PLAT=rpi3 $(common_flags) ${TBB_OPTIONS} \
     ENABLE_STACK_PROTECTOR=strong PRELOADED_BL33_BASE=0xDEADBEEF all
 clean_build PLAT=rpi4 $(common_flags) SMC_PCI_SUPPORT=1 all
 clean_build PLAT=rpi5 $(common_flags) SMC_PCI_SUPPORT=1 all
 
 # Raspberry Pi Measured Boot Discrete TPM with Firmware Handoff
-make PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
+clean_build PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
     MEASURED_BOOT=1 TRANSFER_LIST=1 DISCRETE_TPM=1 TPM_INTERFACE=FIFO_SPI \
     MBOOT_TPM_HASH_ALG=sha256 all
 
 # Raspberry Pi Measured Boot Discrete TPM
-make PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
+clean_build PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
     MEASURED_BOOT=1 DISCRETE_TPM=1 TPM_INTERFACE=FIFO_SPI \
     MBOOT_TPM_HASH_ALG=sha256 all
 
@@ -1009,7 +997,7 @@ clean_build PLAT=msm8939 $(common_flags) SPD=tspd
 clean_build PLAT=ast2700 $(common_flags) SPD=opteed
 
 # Nuvoton npcm845x platform
-make PLAT=npcm845x $(common_flags) all SPD=opteed
+clean_build PLAT=npcm845x $(common_flags) all SPD=opteed
 
 if [[ "$rc" -gt 0 ]]; then
     echo "ERROR: tf-cov-make failed with $error_count failures"
