@@ -629,6 +629,7 @@ clean_build PLAT=s32g274ardb2 $(common_flags) all
 clean_build PLAT=agilex $(common_flags) all
 clean_build PLAT=agilex3 $(common_flags) all
 clean_build PLAT=agilex5 $(common_flags) all
+clean_build PLAT=agilex72 $(common_flags) all
 clean_build PLAT=n5x $(common_flags) all
 clean_build PLAT=stratix10 $(common_flags) all
 
