@@ -159,6 +159,12 @@ reset_var has_pfar
 
 reset_var crypto_plugin
 
+# Enable FEAT_ADERR
+reset_var has_aderr
+
+# Enable FEAT_ANERR
+reset_var has_anerr
+
 # Enable FEAT_UINJ
 reset_var has_uinj
 
@@ -245,6 +251,8 @@ if [ "$all_optional_cpu_features" = "1" ]; then
 	has_mops=1
 	has_rng=1
 	has_cpa2=1
+	has_aderr=1
+	has_anerr=1
 	has_uinj=1
 	has_hdbss=1
 	has_hacdbs=1
@@ -732,6 +740,20 @@ if [ "$has_mec" = "1" ]; then
 -C cluster0.rme_mecid_width=16
 -C cluster1.mec_support_level=2
 -C cluster1.rme_mecid_width=16
+EOF
+fi
+
+if [ "$has_aderr" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_ras_aderr=2
+-C cluster1.has_ras_aderr=2
+EOF
+fi
+
+if [ "$has_anerr" = "1" ]; then
+	cat <<EOF >>"$model_param_file"
+-C cluster0.has_ras_anerr=2
+-C cluster1.has_ras_anerr=2
 EOF
 fi
 
