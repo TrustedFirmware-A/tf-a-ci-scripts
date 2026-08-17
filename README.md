@@ -39,8 +39,7 @@ of two parts: the build configuration and the run configuration. It is named in
 the following format:
 
 `{tf-config |
-nil}[,tftf-config][,spm-config][,rmm-config][,rfa-config][,tfut-config]:{run-config
-| nil}`
+nil}[,tftf-config][,spm-config][,rmm-config][,rfa-config]:{run-config | nil}`
 
 Where `nil` is the special name to skip this part. Optional configs can be
 omitted, provided that configs after are omitted too. Each project's config is

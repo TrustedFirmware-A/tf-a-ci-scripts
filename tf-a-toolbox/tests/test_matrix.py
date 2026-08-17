@@ -108,11 +108,11 @@ def test_build_fragments_parse_pads_missing_fragments() -> None:
 
     assert fragments is not None
     assert fragments == ConfigBuildFragmentTuple(tf_a="fvp-default")
-    assert str(fragments) == "fvp-default,nil,nil,nil,nil,nil"
+    assert str(fragments) == "fvp-default,nil,nil,nil,nil"
 
 
 def test_build_fragments_parse_returns_none_for_too_many_fragments() -> None:
-    assert ConfigBuildFragmentTuple.parse("tf-a,tftf,hafnium,rmm,rf-a,tfut,extra") is None
+    assert ConfigBuildFragmentTuple.parse("tf-a,tftf,hafnium,rmm,rf-a,extra") is None
 
 
 @pytest.mark.parametrize(
@@ -142,16 +142,8 @@ def test_build_fragments_parse_returns_none_for_empty_selection() -> None:
     assert ConfigBuildFragmentTuple.parse("nil") is None
 
 
-def test_run_fragments_parse_accepts_tfut_fragment() -> None:
-    fragments = ConfigRunFragmentTuple.parse("nil,memcpy")
-
-    assert fragments is not None
-    assert fragments == ConfigRunFragmentTuple(tfut="memcpy")
-    assert str(fragments) == "nil,memcpy"
-
-
 def test_run_fragments_parse_returns_none_for_too_many_fragments() -> None:
-    assert ConfigRunFragmentTuple.parse("primary,tfut,extra") is None
+    assert ConfigRunFragmentTuple.parse("primary,extra") is None
 
 
 def test_run_fragments_reject_empty_fragment_fields() -> None:
@@ -159,7 +151,7 @@ def test_run_fragments_reject_empty_fragment_fields() -> None:
         ConfigRunFragmentTuple(primary="")
 
 
-@pytest.mark.parametrize("string", ["", ",tfut", "primary,", "nil,"])
+@pytest.mark.parametrize("string", ["", ",primary", "primary,"])
 def test_run_fragments_parse_returns_none_for_empty_fragment_fields(string: str) -> None:
     assert ConfigRunFragmentTuple.parse(string) is None
 
@@ -168,7 +160,7 @@ def test_config_fragments_parse_normalizes_missing_build_fragments() -> None:
     fragments = ConfigFragmentTuples.parse("fvp-default:nil")
 
     assert fragments is not None
-    assert str(fragments) == "fvp-default,nil,nil,nil,nil,nil:nil,nil"
+    assert str(fragments) == "fvp-default,nil,nil,nil,nil:nil"
 
 
 def test_config_fragments_parse_returns_none_for_inactive_suffix() -> None:
@@ -184,8 +176,7 @@ def test_config_fragments_parse_returns_none_for_invalid_separator_count() -> No
     [
         "fvp-default:",
         ":nil",
-        "foo:nil,",
-        "foo:,tfut",
+        "foo:",
     ],
 )
 def test_config_fragments_parse_returns_none_for_empty_fragment_fields(string: str) -> None:
@@ -204,7 +195,7 @@ def test_config_descriptor_string_uses_generated_descriptor_format() -> None:
     )
 
     assert str(descriptor) == (
-        "0003%tf-a-l1-build-arm-fvp%fvp-default,nil,nil,nil,nil,nil:nil,nil.test"
+        "0003%tf-a-l1-build-arm-fvp%fvp-default,nil,nil,nil,nil:nil.test"
     )
 
 

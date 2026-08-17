@@ -328,12 +328,6 @@ class ConfigFragmentTuple(ABC):  # noqa: B024
             >>> build = ConfigBuildFragmentTuple.parse("fvp-default")
             >>> build.tf_a
             'fvp-default'
-            >>> build.tfut is None
-            True
-
-            >>> ConfigRunFragmentTuple.parse("nil,tfut")
-            ConfigRunFragmentTuple(primary=None, tfut='tfut')
-
             >>> ConfigBuildFragmentTuple.parse("nil") is None
             True
         """
@@ -371,8 +365,8 @@ class ConfigFragmentTuple(ABC):  # noqa: B024
         encoded as the special `nil` fragment.
 
         Examples:
-            >>> str(ConfigBuildFragmentTuple(tf_a="fvp-default", tfut="tfut"))
-            'fvp-default,nil,nil,nil,nil,tfut'
+            >>> str(ConfigBuildFragmentTuple(tf_a="fvp-default"))
+            'fvp-default,nil,nil,nil,nil'
 
             >>> str(ConfigRunFragmentTuple())
             'nil,nil'
@@ -408,9 +402,6 @@ class ConfigBuildFragmentTuple(ConfigFragmentTuple):
     rf_a: str | None = None
     """Fragment selecting the RF-A build configuration."""
 
-    tfut: str | None = None
-    """Fragment selecting the TFUT build configuration."""
-
     def __post_init__(self) -> None:
         """Validate that the build fragment tuple is not empty.
 
@@ -438,9 +429,6 @@ class ConfigRunFragmentTuple(ConfigFragmentTuple):
 
     primary: str | None = None
     """Fragment selecting the primary run configuration."""
-
-    tfut: str | None = None
-    """Fragment selecting the TFUT run configuration."""
 
 
 @dataclass(frozen=True, slots=True)

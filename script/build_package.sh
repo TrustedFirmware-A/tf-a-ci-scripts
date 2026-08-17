@@ -21,7 +21,6 @@ fi
 export tf_root="${tf_root:-$workspace/trusted_firmware}"
 export rfa_root="${rfa_root:-$workspace/rusted-firmware-a}"
 export tftf_root="${tftf_root:-$workspace/trusted_firmware_tf}"
-export tfut_root="${tfut_root:-$workspace/tfut}"
 spm_root="${spm_root:-$workspace/spm}"
 rmm_root="${rmm_root:-$workspace/tf-rmm}"
 
@@ -31,7 +30,6 @@ tftf_refspec="$TFTF_REFSPEC"
 spm_refspec="$SPM_REFSPEC"
 rmm_refspec="$RMM_REFSPEC"
 rfa_refspec="$RFA_REFSPEC"
-tfut_gerrit_refspec="$TFUT_GERRIT_REFSPEC"
 
 test_config="${TEST_CONFIG:?}"
 test_group="${TEST_GROUP:?}"
@@ -140,15 +138,6 @@ call_hook() {
 		done
 	fi
 
-	if [ "$run_config_tfut_candidates" ]; then
-		for config_fragment in $run_config_tfut_candidates; do
-			(
-			source "$ci_root/run_config_tfut/$config_fragment"
-			call_func "$func" "$config_fragment"
-			) || fail_build
-		done
-	fi
-
 	# Also source test config file
 	(
 	unset "$func"
@@ -227,22 +216,12 @@ collect_tfut_artefacts() {
                 return
         fi
 
-	pushd "$tfut_root/build"
+	pushd "$from"
 	artefact_list=$(python3 "$ci_root/script/get_ut_test_list.py")
 	for artefact in $artefact_list; do
 		cp -t "${to:?}" "$from/$artefact"
 	done
 	echo "$artefact_list" | tr ' ' '\n' > "${to:?}/tfut_artefacts.txt"
-	popd
-}
-
-collect_tfut_coverage() {
-	if [ "$coverage" != "ON" ]; then
-                return
-        fi
-
-	pushd "$tfut_root/build"
-	touch "${to:?}/tfut_coverage.txt"
 	popd
 }
 
@@ -652,7 +631,7 @@ EOF
 	if upon "$dont_print_memory"; then
 		return
 	fi
-        if [ "$build_targets" != "doc" ]; then
+        if [ "$build_targets" != "doc" ] && [ "$build_targets" != "unit-tests" ]; then
                 (poetry run memory --root "$tf_build_root" symbols 2>&1 || true) | tee -a "${build_log}"
 
                 for map in $(find "${tf_build_root}" -name '*.map'); do
@@ -812,60 +791,6 @@ EOF
         )
 }
 
-build_tfut() {
-	(
-	config_file="${tfut_build_config:-$tfut_config_file}"
-
-        # Build tfut target by default
-        build_targets="${tfut_build_targets:-all}"
-
-        source "$config_file" || fail_build
-
-	mkdir -p "$tfut_root/build"
-        cd "$tfut_root/build"
-
-	#Override build targets only if the run config did not set them.
-	if [ $build_targets == "all" ]; then
-		tests_line=$(cat "$config_file" | { grep "tests=" || :; })
-		if [ -z "$tests_line" ]; then
-			build_targets=$(echo "$tests_line" | awk -F= '{ print $NF }')
-		fi
-	fi
-
-	#TODO: extract vars from env to use them for cmake
-
-	test -f "$config_file"
-
-	config=$(cat "$config_file" | grep -v "tests=") \
-		&& cmake_config=$(echo "$config" | sed -e 's/^/\-D/')
-
-	# Check if cmake is installed
-	if ! command -v cmake &> /dev/null
-	then
-		echo "cmake could not be found"
-		exit 1
-	fi
-
-	# Log build command line
-        cat <<EOF | log_separator
-
-Build command line:
-cmake $(echo "$cmake_config") -G"Unix Makefiles" --debug-output -DCMAKE_VERBOSE_MAKEFILE -DCOVERAGE="$COVERAGE" -DUNIT_TEST_PROJECT_PATH="$tf_root" ..
-        make $(echo "$config" | tr '\n' ' ') DEBUG=$DEBUG $build_targets
-
-EOF
-	cmake $(echo "$cmake_config") -G"Unix Makefiles" --debug-output \
-		-DCMAKE_VERBOSE_MAKEFILE=ON 				\
-		-DCOVERAGE="$COVERAGE" 					\
-		-DUNIT_TEST_PROJECT_PATH="$tf_root" 			\
-		.. 2>&1 | tee -a "$build_log" || fail_build
-	echo "Done with cmake" | tee -a "$build_log"
-        make $(echo "$config") VERBOSE=1 \
-                $build_targets 2>&1 | tee -a "$build_log" || fail_build
-        )
-
-}
-
 # Set metadata for the whole package so that it can be used by both Jenkins and
 # shell
 set_package_var() {
@@ -890,11 +815,6 @@ set_tftf_build_targets() {
 set_spm_build_targets() {
 	echo "Set build target to '${targets:?}'"
 	set_hook_var "spm_build_targets" "$targets"
-}
-
-add_tfut_build_targets() {
-	echo "Add TFUT build targets '${targets:?}'"
-	append_hook_var "tfut_build_targets" "$targets "
 }
 
 set_spm_out_dir() {
@@ -1190,7 +1110,6 @@ tftf_config="$(echo "$build_configs" | awk -F, '{print $2}')"
 spm_config="$(echo "$build_configs" | awk -F, '{print $3}')"
 rmm_config="$(echo "$build_configs" | awk -F, '{print $4}')"
 rfa_config="$(echo "$build_configs" | awk -F, '{print $5}')"
-tfut_config="$(echo "$build_configs" | awk -F, '{print $6}')"
 
 test_config_file="$ci_root/group/$test_group/$test_config"
 
@@ -1199,16 +1118,11 @@ tftf_config_file="$ci_root/tftf_config/$tftf_config"
 spm_config_file="$ci_root/spm_config/$spm_config"
 rmm_config_file="$ci_root/rmm_config/$rmm_config"
 rfa_config_file="$ci_root/rfa_config/$rfa_config"
-tfut_config_file="$ci_root/tfut_config/$tfut_config"
 
 # File that keeps track of applied patches
 tf_patch_record="$workspace/tf_patches"
 spm_patch_record="$workspace/spm_patches"
 rfa_patch_record="$workspace/rfa_patches"
-
-# Split run config into TF and TFUT components
-run_config_tfa="$(echo "$run_config" | awk -F, '{print $1}')"
-run_config_tfut="$(echo "$run_config" | awk -F, '{print $2}')"
 
 pushd "$workspace"
 
@@ -1257,20 +1171,11 @@ else
         echo
 fi
 
-if ! config_valid "$tfut_config"; then
-	tfut_config=
-else
-	echo "TFUT config:"
-	echo
-	sort "$tfut_config_file" | sed '/^\s*$/d;s/^/\t/'
-	echo
+if ! config_valid "$run_config"; then
+	run_config=
 fi
 
-if ! config_valid "$run_config_tfa"; then
-	run_config_tfa=
-fi
-
-if { [ "$tf_config" ] || [ "$tfut_config" ]; } && assert_can_git_clone "tf_root"; then
+if [ "$tf_config" ] && assert_can_git_clone "tf_root"; then
 	# If the Trusted Firmware repository has already been checked out, use
 	# that location. Otherwise, clone one ourselves.
 	echo "Cloning Trusted Firmware..."
@@ -1341,19 +1246,10 @@ if [ "$rmm_config" ] && assert_can_git_clone "rmm_root"; then
 	show_head "$rmm_root"
 fi
 
-if [ "$tfut_config" ] && assert_can_git_clone "tfut_root"; then
-	# If the Trusted Firmware UT repository has already been checked out,
-	# use that location. Otherwise, clone one ourselves.
-	echo "Cloning Trusted Firmware UT..."
-	clone_url="${TFUT_CHECKOUT_LOC:-$tfut_src_repo_url}" where="$tfut_root" \
-		refspec="$TFUT_GERRIT_REFSPEC" clone_repo 2>&1 | tee -a "$build_log"
-	show_head "$tfut_root"
-fi
-
-if [ "$run_config_tfa" ]; then
+if [ "$run_config" ]; then
 	# Get candidates for TF-A run config
 	run_config_candidates="$("$ci_root/script/gen_run_config_candidates.py" \
-		"$run_config_tfa")"
+		"$run_config")"
 	if [ -z "$run_config_candidates" ]; then
 		die "No run config candidates!"
 	else
@@ -1362,20 +1258,6 @@ if [ "$run_config_tfa" ]; then
 		echo
 		echo "$run_config_candidates" | sed 's/^\|\n/\t/g'
 		echo
-	fi
-fi
-
-if [ "$run_config_tfut" ]; then
-	# Get candidates for run TFUT config
-	run_config_tfut_candidates="$("$ci_root/script/gen_run_config_candidates.py" \
-		"--unit-testing" "$run_config_tfut")"
-	if [ -z "$run_config_tfut_candidates" ]; then
-		die "No run TFUT config candidates!"
-	else
-		echo
-		echo "Chosen fragments:"
-		echo
-		echo "$run_config_tfut_candidates" | sed 's/^\|\n/\t/g'
 	fi
 fi
 
@@ -1392,24 +1274,6 @@ if upon "$local_ci"; then
 		if [ "$n_cores" ]; then
 			make_j_opts="-j $n_cores"
 		fi
-	fi
-fi
-
-# Install c-picker dependency
-if config_valid "$tfut_config"; then
-	echo "started building"
-	python3 -m venv .venv
-	source .venv/bin/activate
-
-	if ! python3 -m pip show c-picker &> /dev/null; then
-		echo "Installing c-picker"
-		pip install git+https://git.trustedfirmware.org/${GERRIT_PROJECT_PREFIX:-}TS/trusted-services.git@topics/c-picker || {
-			echo "c-picker was not installed!"
-			exit 1
-		}
-		echo "c-picker was installed"
-	else
-		echo "c-picker is already installed"
 	fi
 fi
 
@@ -1704,39 +1568,10 @@ for mode in $modes; do
 		)
 	fi
 
-	# TFUT build
-	if config_valid "$tfut_config"; then
-		(
-		echo "##########"
-
-		tfut_build_root="$tfut_root/build"
-
-		echo "Building Trusted Firmware UT ($mode) ..." |& log_separator
-
-		# Clean TFUT build targets
-		set_hook_var "tfut_build_targets" ""
-
-		# Call pre-build hook
-		call_hook pre_tfut_build
-
-		build_tfut
-
-		from="$tfut_build_root" to="$archive" collect_tfut_artefacts
-
-		to="$archive" coverage="$COVERAGE" collect_tfut_coverage
-
-		echo "##########"
-		echo
-		)
-	fi
 	echo
 	echo
 done
 archive="$package_archive"
-
-if config_valid "$tfut_config"; then
-	deactivate
-fi
 
 call_hook pre_package
 

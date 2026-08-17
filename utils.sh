@@ -556,9 +556,6 @@ tf_m_tests_src_repo_url="${tf_m_tests_src_repo_url:-$TF_M_TESTS_REPO_URL}"
 tf_m_tests_src_repo_url="${tf_m_tests_src_repo_url:-https://$tforg_gerrit_url/${GERRIT_PROJECT_PREFIX:-}TF-M/tf-m-tests}"
 tf_m_extras_src_repo_url="${tf_m_extras_src_repo_url:-$TF_M_EXTRAS_REPO_URL}"
 tf_m_extras_src_repo_url="${tf_m_extras_src_repo_url:-https://$tforg_gerrit_url/${GERRIT_PROJECT_PREFIX:-}TF-M/tf-m-extras}"
-tfut_src_repo_url="${tfut_src_repo_url:-$TFUT_SRC_REPO_URL}"
-tfut_src_repo_url="${tfut_src_repo_url:-https://$tforg_gerrit_url/${GERRIT_PROJECT_PREFIX:-}TF-A/tf-a-unit-tests}"
-
 css_downloads="${css_downloads:-$DOWNLOAD_SERVER_TF_A_URL/css}"
 
 # DRTM artifacts live under $DOWNLOAD_SERVER_TF_A_URL/drtm/<revision>/

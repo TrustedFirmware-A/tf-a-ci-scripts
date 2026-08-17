@@ -98,9 +98,6 @@ run_one_test() {
 	source "$id/env"
 	set +a
 
-	run_config_tfa="$(echo "$RUN_CONFIG" | awk -F, '{print $1}')"
-	run_config_tfut="$(echo "$RUN_CONFIG" | awk -F, '{print $2}')"
-
 	# Makefiles don't like commas and colons in file names. We therefore
 	# replace them with _
 	config_subst="$(echo "$TEST_CONFIG" | tr ',:' '_')"
@@ -147,41 +144,7 @@ run_one_test() {
 			;;
 
 		"run")
-			#Run unit tests (TFUT)
-			if config_valid "$run_config_tfut"; then
-				echo "running TFUT: $config_string" >&5
-
-				if upon "$skip_tfut_runs"; then
-					#No run config for TFUT
-					if grep -q -e "--BUILD UNSTABLE--" "$log_file"; then
-						print_unstable "$config_string (tfut) (not run)" >&5
-					else
-						print_success "$config_string (tfut) (not run)" >&5
-					fi
-					exit 0
-				fi
-
-				if bash $minus_x "$ci_root/script/run_unit_tests.sh"; then
-					if grep -q -e "--BUILD UNSTABLE--" \
-						"$log_file"; then
-						print_unstable "$config_string (tfut)" >&5
-					else
-						print_success "$config_string (tfut)" >&5
-					fi
-					exit 0
-				else
-					{
-					print_failure "$config_string (tfut) (run)" >&5
-					if [ "$console_file" ]; then
-						echo "	see $console_file"
-					fi
-					} >&5
-					exit 1
-				fi
-			fi
-
-			#Run TF-A
-			if echo "$run_config_tfa" | grep -q "^\(fvp\|qemu\)" && \
+			if echo "$RUN_CONFIG" | grep -q "^\(fvp\|qemu\)" && \
 					not_upon "$skip_runs"; then
 				# Local runs for FVP, QEMU, or arm_fpga unless asked not to
 				echo "running TF-A: $config_string" >&5
@@ -240,7 +203,7 @@ run_one_test() {
 				fi
 			else
 				# Local runs for arm_fpga platform
-				if echo "$run_config_tfa" | grep -q "^arm_fpga" && \
+				if echo "$RUN_CONFIG" | grep -q "^arm_fpga" && \
 					not_upon "$skip_runs"; then
 					echo "running: $config_string" >&5
 					if bash $minus_x "$ci_root/script/test_fpga_payload.sh"; then
@@ -299,13 +262,12 @@ if [ -z "${test_groups}" ]; then
     spm_config="${spm_config:-nil}"
     rmm_config="${rmm_config:-nil}"
     rfa_config="${rfa_config:-nil}"
-    tfut_config="${tfut_config:-nil}"
     run_config="${run_config:-nil}"
 
     # construct the 'long form' so it takes into account all possible configurations
-    tg=$(printf "%s/%s,%s,%s,%s,%s,%s:%s" \
+    tg=$(printf "%s/%s,%s,%s,%s,%s:%s" \
         "${test_group}" "${tf_config}" "${tftf_config}" "${spm_config}" \
-        "${rmm_config}" "${rfa_config}" "${tfut_config}" "${run_config}")
+        "${rmm_config}" "${rfa_config}" "${run_config}")
 
     # trim any ',nil:' from it
     tg="${tg/,nil:/:}" tg="${tg/,nil:/:}"; tg="${tg/,nil:/:}"

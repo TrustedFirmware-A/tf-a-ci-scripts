@@ -8,8 +8,8 @@ This directory contains test groups and test configurations.
 - A file inside a test group is a **test configuration**.
 - In a test configuration name, the text before `:` is the **build fragment tuple**.
 - In a test configuration name, the text after `:` is the **run fragment tuple**.
-- Build fragments refer to files under `tf_config/`, `tftf_config/`, `spm_config/`, `rmm_config/`, `rfa_config/`, and `tfut_config/`.
-- Run fragments refer to files under `run_config/` and, for TFUT, `run_config_tfut/`.
+- Build fragments refer to files under `tf_config/`, `tftf_config/`, `spm_config/`, `rmm_config/`, and `rfa_config/`.
+- Run fragments refer to files under `run_config/`.
 
 ## Layout
 
@@ -28,7 +28,7 @@ Each test configuration file is a shell script and may contain additional test-s
 The canonical build fragment order is:
 
 ``` text
-tf_config,tftf_config,spm_config,rmm_config,rfa_config,tfut_config
+tf_config,tftf_config,spm_config,rmm_config,rfa_config
 ```
 
 Missing build fragments are padded on the right with `nil`.
@@ -61,7 +61,7 @@ If a test configuration has a `.inactive` suffix, it is skipped entirely. Use th
 | `release-line` | Optional release line qualifier | `lts-v2.14`, `lts-v2.8` |
 | `level` | Approximate test duration or intensity | `l1`, `l2`, `l3` |
 | `class` | Broad class of validation | `build`, `docs`, `unit`, `functional`, `integration`, `analysis`, `coverage`, `fuzz`, `instrumentation` |
-| `driver` | Optional harness axis that runs or evaluates the suite | `tftf`, `tfut`, `linux`, `depthcharge` |
+| `driver` | Optional harness axis that runs or evaluates the suite | `tftf`, `tests`, `linux`, `depthcharge` |
 | `campaign` | Optional invariant scenario identity for the group | `reboot`, `psci-system-reset2`, `scan-build`, `tbb`, `undef-injection` |
 | `target` | Optional target platform | `arm-fvp`, `arm-fvp-ve`, `mediatek-mt8195`, `qemu` |
 
@@ -75,7 +75,7 @@ If a test configuration has a `.inactive` suffix, it is skipped entirely. Use th
 
 - `build`: build-generation tests
 - `docs`: documentation-generation tests
-- `unit`: tests driven by a unit-test harness such as TFUT
+- `unit`: tests driven by a unit-test harness such as TF-A's unit tests
 - `functional`: tests that validate the externally visible behavior of the project under test, often through TFTF
 - `integration`: tests that validate the project's interaction with another runtime, operating system, platform stack, or other external component
 - `analysis`: static analysis and similar source-quality tests
@@ -134,7 +134,7 @@ Choose a group name in this order:
 - `tftf-lts-v2.14-l1-build-arm-fvp`
 - `tf-a-l1-docs`
 - `tftf-l1-docs`
-- `tf-a-l1-unit-tfut`
+- `tf-a-l1-unit-tests`
 - `tf-a-l2-functional-tftf-arm-fvp`
 - `tf-a-l2-functional-tftf-rmm-arm-fvp`
 - `tf-a-l2-functional-tftf-spm-arm-fvp`

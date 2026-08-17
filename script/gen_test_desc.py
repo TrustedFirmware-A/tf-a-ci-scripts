@@ -36,9 +36,9 @@ def gen_desc(group, test):
     build_config, run_config = test.split(":")
 
     # Test descriptors are always generated in the following order:
-    #  tf_config, tftf_config, spm_config, rmm_config, rfa_config, tfut_config
+    #  tf_config, tftf_config, spm_config, rmm_config, rfa_config
     # Fill missing configs to the right with "nil".
-    config_list = (build_config.split(",") + ["nil"] * 6)[:6]
+    config_list = (build_config.split(",") + ["nil"] * 5)[:5]
 
     test_config = ",".join(config_list) + ":" + run_config
 

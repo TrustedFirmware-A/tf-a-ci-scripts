@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_tf_build() {
+	poetry -C "$tf_root" install --no-root --with unit-tests
+	targets="unit-tests" set_tf_build_targets
+}
+
+pre_tf_archive() {
+	from="$tf_build_root/unit-tests" to="$archive" collect_tfut_artefacts
+	# the cmake output directories contain duplicate .bin file names which
+	# throws off the standard artefact collection
+	rm -rf "$tf_build_root/unit-tests"
+}

@@ -61,7 +61,6 @@ The build fragment tuple selects what the CI builds. Each non-`nil` build fragme
 | 3     | `spm_config/`  | Hafnium build configuration |
 | 4     | `rmm_config/`  | TF-RMM build configuration  |
 | 5     | `rfa_config/`  | RF-A build configuration    |
-| 6     | `tfut_config/` | TFUT build configuration    |
 
 These directories are found at the top level of the repository, and contain Bash-compatible `KEY=VALUE` assignments that supply inputs to the build system of their associated project.
 
@@ -74,7 +73,6 @@ The run fragment tuple selects how the built artifacts are packaged, executed, a
 | Index | Directory          | Meaning                          |
 |-------|--------------------|----------------------------------|
 | 1     | `run_config/`      | Primary system run configuration |
-| 2     | `run_config_tfut/` | TFUT unit-test run configuration |
 
 Like the test configuration, these resolved fragment files are Bash scripts which can influence packaging, test setup, artifact handling, test expectations, and other runtime behavior.
 

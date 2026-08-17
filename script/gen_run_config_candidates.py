@@ -16,8 +16,6 @@ import sys
 parser = argparse.ArgumentParser(description="Choose run configurations")
 parser.add_argument("--print-only", "-p", action="store_true", default=False,
         help="Print only; don't check for matching run configs.")
-parser.add_argument("--unit-testing", action="store_true", default=False,
-        help="Use to indicate if it is a unit testing config or not")
 parser.add_argument("args", nargs=argparse.REMAINDER, help="Run configuration")
 opts = parser.parse_args()
 
@@ -26,10 +24,7 @@ if len(opts.args) != 1:
 
 # Obtain path to run_config directory
 script_root = os.path.dirname(os.path.abspath(sys.argv[0]))
-if (not opts.unit_testing):
-    run_config_dir = os.path.join(script_root, os.pardir, "run_config")
-else:
-    run_config_dir = os.path.join(script_root, os.pardir, "run_config_tfut")
+run_config_dir = os.path.join(script_root, os.pardir, "run_config")
 
 arg = opts.args[0]
 run_config = arg.split(":")[-1]
