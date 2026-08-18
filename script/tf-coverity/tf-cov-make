@@ -122,9 +122,6 @@ clean_build $fvp_common_flags ARM_XLAT_TABLES_LIB_V1=1 RECLAIM_INIT_CODE=0
 clean_build $fvp_common_flags CROSS_COMPILE=arm-none-eabi- \
     ARCH=aarch32 AARCH32_SP=sp_min ARM_XLAT_TABLES_LIB_V1=1 RECLAIM_INIT_CODE=0
 
-# SPM support based on Management Mode Interface Specification
-clean_build $fvp_common_flags SPM_MM=1 EL3_EXCEPTION_HANDLING=1 ENABLE_SVE_FOR_NS=0
-
 # SPM support with TOS(optee) as SPM sitting at S-EL1
 clean_build $fvp_common_flags SPD=spmd SPMD_SPM_AT_SEL2=0
 
@@ -281,7 +278,7 @@ clean_build $juno_common_flags CSS_USE_SCMI_SDS_DRIVER=0
 clean_build $juno_common_flags TRNG_SUPPORT=1
 
 # SPMC AT EL3 Support with MEASURED_BOOT
-clean_build $juno_common_flags BL32=1 NS_TIMER_SWITCH=1 \
+clean_build $juno_common_flags BL32=1 \
 	CSS_NON_SECURE_UART=1 CSS_USE_SCMI_SDS_DRIVER=1 USE_COHERENT_MEM=0\
 	SPD=spmd  SPMD_SPM_AT_SEL2=0 SPMC_AT_EL3=1 CTX_INCLUDE_EL2_REGS=0 \
 	TRANSFER_LIST=1 HOB_LIST=1 MEASURED_BOOT=1
@@ -928,10 +925,6 @@ clean_build PLAT=qemu_sbsa $(common_flags)
 clean_build PLAT=qemu_sbsa $(common_flags) ENABLE_FEAT_RME=1 ENABLE_RMM=1 \
     RMM=/dev/null RME_GPT_BITLOCK_BLOCK=1
 
-# QEMU with SPM support
-clean_build PLAT=qemu_sbsa $(common_flags) BL32=Makefile SPM_MM=1 \
-    EL3_EXCEPTION_HANDLING=1 ENABLE_SME_FOR_NS=0 ENABLE_SVE_FOR_NS=0
-
 # For hikey enable PMF to include all files in the platform port
 clean_build PLAT=hikey $(common_flags) ${TBB_OPTIONS} ENABLE_PMF=1 all
 clean_build PLAT=hikey960 $(common_flags) ${TBB_OPTIONS} all
@@ -942,10 +935,6 @@ clean_build PLAT=poplar $(common_flags) all
 # Platforms from Socionext
 clean_build PLAT=uniphier $(common_flags) ${TBB_OPTIONS} SPD=tspd
 clean_build PLAT=uniphier $(common_flags) FIP_GZIP=1
-
-clean_build PLAT=synquacer $(common_flags) SPM_MM=1 \
-    RESET_TO_BL31=1 EL3_EXCEPTION_HANDLING=1 ENABLE_SVE_FOR_NS=0 \
-    PRELOADED_BL33_BASE=0x0
 
 # Support for SCP Message Interface protocol with platform specific drivers
 clean_build PLAT=synquacer $(common_flags) \
