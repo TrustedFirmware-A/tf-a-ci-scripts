@@ -52,7 +52,6 @@ class TfaConfig:
 
         self.copyright_line = LINE_START + 'Copyright' + '.*' + TIME_PERIOD + '.*' + EOL
         self.copyright_pattern = re.compile(self.copyright_line, re.MULTILINE)
-        self.copyright_check_year = True
 
 class RfaConfig:
     def __init__(self):
@@ -73,7 +72,6 @@ class RfaConfig:
 
         self.copyright_line = LINE_START + 'Copyright The Rusted Firmware-A Contributors.' + EOL
         self.copyright_pattern = re.compile(self.copyright_line, re.MULTILINE)
-        self.copyright_check_year = False
 
 # Supported comment styles (Python regex)
 COMMENT_PATTERN = '(\*|/\*|\#|//)'
@@ -100,7 +98,7 @@ LICENSE_ID_PATTERN = re.compile(LICENSE_ID_LINE, re.MULTILINE)
 COPYRIGHT_OK = 0
 COPYRIGHT_ERROR = 1
 
-def check_copyright(path, copyright_pattern, check_year, encoding='utf-8'):
+def check_copyright(path, copyright_pattern, encoding='utf-8'):
     '''Checks a file for a correct copyright header.'''
 
     result = COPYRIGHT_OK
@@ -113,9 +111,6 @@ def check_copyright(path, copyright_pattern, check_year, encoding='utf-8'):
     if not copyright_line:
         print("ERROR: Missing copyright in " + file_.name)
         result = COPYRIGHT_ERROR
-    elif check_year and CURRENT_YEAR not in copyright_line.group():
-        print("WARNING: Copyright is out of date in " + file_.name + ": '" +
-              copyright_line.group() + "'")
 
     if not LICENSE_ID_PATTERN.search(file_content):
         print("ERROR: License ID error in " + file_.name)
@@ -170,7 +165,7 @@ def main(args):
         if args.verbose:
             print("Checking file " + f)
 
-        rc = check_copyright(f, config.copyright_pattern, config.copyright_check_year)
+        rc = check_copyright(f, config.copyright_pattern)
 
         if rc == COPYRIGHT_OK:
             count_ok += 1
