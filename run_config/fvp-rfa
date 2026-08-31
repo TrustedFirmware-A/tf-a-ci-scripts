@@ -19,6 +19,7 @@ generate_lava_job() {
 
 	model="$model" \
 		has_brbe="1" \
+		has_enhanced_pan="2" \
 		has_ete="1" \
 		amu_present="1" amu_version="2" \
 		has_mpam="1" \

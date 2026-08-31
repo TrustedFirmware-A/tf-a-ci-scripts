@@ -218,6 +218,9 @@ reset_var has_pauth_lr
 # Enable FEAT_NMI
 reset_var has_nmi
 
+# Enable FEAT_PAN3
+reset_var has_enhanced_pan
+
 # shorthand to enable all optional CPU features
 reset_var all_optional_cpu_features
 
@@ -284,6 +287,7 @@ ${gicd_its_count+-C gic_distributor.ITS-count=$gicd_its_count}
 ${gicd_virtual_lpi+-C gic_distributor.virtual-lpi-support=$gicd_virtual_lpi}
 ${has_gicv4_1+-C has-gicv4.1=$has_gicv4_1}
 
+${has_enhanced_pan+-C cluster0.has_enhanced_pan=2}
 ${has_ete+-C cluster0.has_ete=1}
 ${has_nmi+-C cluster0.has_nmi=$has_nmi}
 ${has_sve+-C cluster0.has_sve=1}
@@ -299,6 +303,7 @@ ${has_sctlr2+-C cluster0.has_sctlr2=2}
 ${has_hcx+-C cluster0.has_hcrx_el2=2}
 ${has_pauth_lr+-C cluster0.enhanced_pac2_level=4}
 
+${has_enhanced_pan+-C cluster1.has_enhanced_pan=2}
 ${has_ete+-C cluster1.has_ete=1}
 ${has_nmi+-C cluster1.has_nmi=$has_nmi}
 ${has_sve+-C cluster1.has_sve=1}

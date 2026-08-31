@@ -37,6 +37,7 @@ generate_lava_job() {
 	model="$model" \
 		secure_memory="0" \
 		has_rme="1" \
+		has_enhanced_pan="2" \
 		has_ete="1" \
 		amu_present="1" \
 		has_mpam="1" \
