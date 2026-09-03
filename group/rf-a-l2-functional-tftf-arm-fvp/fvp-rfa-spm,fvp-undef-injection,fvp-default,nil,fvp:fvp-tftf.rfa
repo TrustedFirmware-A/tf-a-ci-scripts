@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2026, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+pre_rfa_build() {
+	if upon "$skip_patches"; then
+		echo "Skipped patching RF-A Gcs CpuExtension."
+		return 0
+	fi
+
+	echo "Removing existing RF-A Gcs CpuExtension implementation."
+
+	# Manually set up local patch mirror, because we modify the code
+	# before it could run for the first time.
+	if upon "$local_ci"; then
+		setup_patch_mirror "rfa_root" "$rfa_patch_record" "$archive/rfa_mirror"
+	fi
+
+	# Remove any existing GCS CpuExtension implementation.
+	rm -rf "$rfa_root/src/cpu_extensions/gcs"
+	rm -f "$rfa_root/src/cpu_extensions/gcs.rs"
+
+	# Apply a minimal CpuExtension implementation for GCS
+	# that does not do any enablement of the feature
+	# for lower ELs.
+	apply_rfa_patch "rfa/undef_injection_dummy_gcs.patch"
+}

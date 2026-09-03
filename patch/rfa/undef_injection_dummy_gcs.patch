@@ -1,0 +1,28 @@
+diff --git a/src/cpu_extensions/gcs.rs b/src/cpu_extensions/gcs.rs
+new file mode 100644
+index 0000000..c0eeaa9
+--- /dev/null
++++ b/src/cpu_extensions/gcs.rs
+@@ -0,0 +1,22 @@
++//! Dummy CpuExtension module that does not enable
++//! access to lower ELs, intentionally causing
++//! a trap to EL3 when lower EL tries to access
++//! its registers. This is used for testing
++//! the UNDEF exception mechanism.
++
++// Suppress dead code warnings in case GCS is not
++// included in the CpuExtensions list.
++#![allow(dead_code)]
++
++use crate::cpu_extensions::CpuExtension;
++
++/// Dummy struct
++pub struct Gcs;
++/// Minimal implementation of the CpuExtension trait.
++impl CpuExtension for Gcs {
++    /// We do not want any configuration to take place,
++    /// so we return `false` in all cases.
++    fn is_present(&self) -> bool {
++        false
++    }
++}

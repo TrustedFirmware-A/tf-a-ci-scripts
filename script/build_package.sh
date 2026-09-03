@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2025 Arm Limited. All rights reserved.
+# Copyright (c) 2019-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -1051,44 +1051,57 @@ apply_patch() {
 	fi
 }
 
-apply_tf_patch() {
-	root="$tf_root"
-	new_root="$archive/tfa_mirror"
+# Sets up a local copy of the provided repository so
+# as to not modify the original when applying patches.
+# Parameters:
+# $1: Name of the *_root variable as a string.
+#     e.g., "tf_root", "rfa_root"
+# $2: Patch record folder (stored in *_patch_record variable).
+# $3: New location to clone the repo to.
+#     The *_root (global) variable will be overwritten with this value.
+setup_patch_mirror() {
+	local root_var="${1:?}"
+	local patch_record="${2:?}"
+	local new_root="${3:?}"
 
-	# paralell builds are only used locally. Don't do for CI since this will
+	# collect diff on first run for either a fresh or dirty build
+	if [[ ! -d $new_root ]] || [[ ! -e "$patch_record" ]]; then
+		diff=$(mktempfile)
+
+		# get anything still uncommitted (including submodules)
+		pushd  ${!root_var}
+		git diff --submodule=diff HEAD > $diff
+		popd
+	fi
+
+	if [[ ! -d $new_root ]]; then
+		# git will hard link when cloning locally, no need for --depth=1
+		git clone "${!root_var}" $new_root --shallow-submodules --recurse-submodules
+	fi
+
+	export "$root_var"=$new_root # next apply_*_patch will run in the same hook
+	set_hook_var "$root_var" "${!root_var}" # for anyone outside the hook
+
+	if [[ ! -e "$patch_record" ]]; then
+		# apply uncommited changes so they are picked up in the build
+		pushd  ${!root_var}
+		if upon "$dont_clean"; then
+			# tree is dirty, refresh
+			git stash
+		fi
+		git apply $diff &> /dev/null || true
+		popd
+		set +x
+
+	fi
+}
+
+apply_tf_patch() {
+	# Parallel builds are only used locally. Don't do for CI since this will
 	# have a speed penalty. Also skip if this was already done as a single
 	# job may apply many patches.
 	if upon "$local_ci"; then
-		# collect diff on first run for either a fresh or dirty build
-		if [[ ! -d $new_root ]] || [[ ! -e "$tf_patch_record" ]]; then
-			diff=$(mktempfile)
-
-			# get anything still uncommitted (including submodules)
-			pushd  $tf_root
-			git diff --submodule=diff HEAD > $diff
-			popd
-		fi
-
-		if [[ ! -d $new_root ]]; then
-			# git will hard link when cloning locally, no need for --depth=1
-			git clone "$root" $new_root --shallow-submodules --recurse-submodules
-		fi
-
-		tf_root=$new_root # next apply_tf_patch will run in the same hook
-		set_hook_var "tf_root" "$tf_root" # for anyone outside the hook
-
-		if [[ ! -e "$tf_patch_record" ]]; then
-			# apply uncommited changes so they are picked up in the build
-			pushd  $tf_root
-			if upon "$dont_clean"; then
-				# tree is dirty, refresh
-				git stash
-			fi
-			git apply $diff &> /dev/null || true
-			popd
-			set +x
-
-		fi
+		setup_patch_mirror "tf_root" "$tf_patch_record" "$archive/tfa_mirror"
 	fi
 
 	pushd "$tf_root"
@@ -1096,44 +1109,25 @@ apply_tf_patch() {
 	popd
 }
 
-apply_spm_patch() {
-	root="$spm_root"
-	new_root="$archive/spm_mirror"
-
-	# paralell builds are only used locally. Don't do for CI since this will
+apply_rfa_patch() {
+	# Parallel builds are only used locally. Don't do for CI since this will
 	# have a speed penalty. Also skip if this was already done as a single
 	# job may apply many patches.
 	if upon "$local_ci"; then
-		# collect diff on first run for either a fresh or dirty build
-		if [[ ! -d $new_root ]] || [[ ! -e "$spm_patch_record" ]]; then
-			diff=$(mktempfile)
+		setup_patch_mirror "rfa_root" "$rfa_patch_record" "$archive/rfa_mirror"
+	fi
 
-			# get anything still uncommitted (including submodules)
-			pushd  $spm_root
-			git diff --submodule=diff HEAD > $diff
-			popd
-		fi
+	pushd "$rfa_root"
+	patch_record="$rfa_patch_record" apply_patch "$1"
+	popd
+}
 
-		if [[ ! -d $new_root ]]; then
-			# git will hard link when cloning locally, no need for --depth=1
-			git clone "$root" $new_root --shallow-submodules --recurse-submodules
-		fi
-
-		spm_root=$new_root # next apply_spm_patch will run in the same hook
-		set_hook_var "spm_root" "$spm_root" # for anyone outside the hook
-
-		if [[ ! -e "$spm_patch_record" ]]; then
-			# apply uncommited changes so they are picked up in the build
-			pushd  $spm_root
-			if upon "$dont_clean"; then
-				# tree is dirty, refresh
-				git stash
-			fi
-			git apply $diff &> /dev/null || true
-			popd
-			set +x
-
-		fi
+apply_spm_patch() {
+	# Parallel builds are only used locally. Don't do for CI since this will
+	# have a speed penalty. Also skip if this was already done as a single
+	# job may apply many patches.
+	if upon "$local_ci"; then
+		setup_patch_mirror "spm_root" "$spm_patch_record" "$archive/spm_mirror"
 	fi
 
 	pushd "$spm_root"
@@ -1656,6 +1650,9 @@ for mode in $modes; do
 		rfa_build_root="$rfa_root/target"
 
 		echo "Building Rusted Firmware ($mode) ..." |& log_separator
+		# we rely on the patch record to know when to setup a clone.
+		# Remove it to signal we're building again.
+		rm -rf "$rfa_patch_record"
 
 		if not_upon "$local_ci"; then
 			# In the CI Dockerfile, rustup is installed by the root user in the
