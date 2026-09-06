@@ -22,6 +22,7 @@ generate_lava_job() {
 		has_ete="1" \
 		amu_present="1" amu_version="2" \
 		has_mpam="1" \
+		has_nmi="2" \
 		mpam_has_bw_ctrl="1" \
 		has_trbe="1" \
 		has_fgt2="1" \
