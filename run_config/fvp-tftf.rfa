@@ -40,7 +40,7 @@ generate_lava_job() {
 	uart="0" file="tftf.exp" track_expect
 
 	model="$model" \
-		arch_version="9.0" \
+		arch_version="9.4" \
 		has_branch_target_exception="1" \
 		has_smmuv3_params="1" \
 		gicd_are_fixed_one="1" \
@@ -53,6 +53,7 @@ generate_lava_job() {
 		has_trbe="1" \
 		has_fgt2="1" \
 		has_fpmr="1" \
+		has_gcs="1" \
 		has_hcx="1" \
 		has_pauth_lr="1" \
 		has_pfar="1" \

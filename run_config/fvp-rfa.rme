@@ -43,6 +43,7 @@ generate_lava_job() {
 		has_nmi="2" \
 		has_trbe="1" \
 		has_fgt2="1" \
+		has_gcs="1" \
 		has_pmuv3p7="1" \
 		memory_tagging_support_level="2" \
 		has_branch_target_exception="1" \
@@ -56,7 +57,7 @@ generate_lava_job() {
 		gicd_ext_ppi_count="64" \
 		gicd_ext_spi_count="1024" \
 		has_rng="1" \
-		arch_version="9.2" \
+		arch_version="9.4" \
 		gen_model_params
 
 	model="$model" gen_fvp_yaml

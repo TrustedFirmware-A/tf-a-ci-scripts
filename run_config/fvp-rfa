@@ -27,6 +27,7 @@ generate_lava_job() {
 		has_fgt2="1" \
 		has_fgwte3="1" \
 		has_fpmr="1" \
+		has_gcs="1" \
 		has_hcx="1" \
 		has_pauth_lr="1" \
 		has_pfar="1" \
@@ -41,7 +42,7 @@ generate_lava_job() {
 		supports_trace_buffer_control_regs="1" \
 		supports_trace_filter_regs="2" \
 		supports_system_trace_filter_regs="1" \
-		arch_version="9.0" \
+		arch_version="9.4" \
 		gen_model_params
 
 	model="$model" gen_fvp_yaml
