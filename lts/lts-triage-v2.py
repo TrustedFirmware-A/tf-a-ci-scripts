@@ -248,8 +248,23 @@ def main():
 
     if at_least_one_match == True:
         try:
-            # Sort by committer date first (from oldest to newest)
-            csv_data.sort(key=lambda row: int(row["committer date"]))
+            # Sort into base branch ancestry order, oldest ancestor first, so
+            # that the report can be replayed as a cherry-pick sequence.
+            #
+            # The committer date cannot be used as the sort key. Patches that
+            # are merged together share a committer timestamp, and a stable
+            # sort leaves those ties in the newest first order they were
+            # walked in, which reverses every batch. The dates are not in
+            # ancestry order either, because a topic branch keeps its original
+            # committer dates and is merged days later.
+            #
+            # Only the sort uses --topo-order. The walk above stops at the
+            # first Change-Id already on the LTS branch, so walking in another
+            # order would change which patches are selected.
+            sha_column = f"commit id in the {base_branch} branch"
+            topo_pos = {sha: pos for pos, sha in
+                        enumerate(repo.git.rev_list("--topo-order", base_branch).split())}
+            csv_data.sort(key=lambda row: -topo_pos[row[sha_column]])
 
             idx = 1
             with open(args.csv_path, "w", newline='') as csvfile:
