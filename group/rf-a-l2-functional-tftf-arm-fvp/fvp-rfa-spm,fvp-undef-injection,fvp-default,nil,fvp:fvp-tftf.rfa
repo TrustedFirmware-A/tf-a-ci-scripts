@@ -26,5 +26,5 @@ pre_rfa_build() {
 	# Apply a minimal CpuExtension implementation for GCS
 	# that does not do any enablement of the feature
 	# for lower ELs.
-	apply_rfa_patch "rfa/undef_injection_dummy_gcs.patch"
+	apply_rfa_patch "undef_injection_dummy_gcs.patch"
 }

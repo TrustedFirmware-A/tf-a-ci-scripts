@@ -1105,7 +1105,7 @@ apply_tf_patch() {
 	fi
 
 	pushd "$tf_root"
-	patch_record="$tf_patch_record" apply_patch "$1"
+	patch_record="$tf_patch_record" apply_patch "tfa/$1"
 	popd
 }
 
@@ -1118,7 +1118,7 @@ apply_rfa_patch() {
 	fi
 
 	pushd "$rfa_root"
-	patch_record="$rfa_patch_record" apply_patch "$1"
+	patch_record="$rfa_patch_record" apply_patch "rfa/$1"
 	popd
 }
 
@@ -1131,7 +1131,7 @@ apply_spm_patch() {
 	fi
 
 	pushd "$spm_root"
-	patch_record="$spm_patch_record" apply_patch "$1"
+	patch_record="$spm_patch_record" apply_patch "spm/$1"
 	popd
 }
 
