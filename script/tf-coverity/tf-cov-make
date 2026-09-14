@@ -532,6 +532,7 @@ clean_build PLAT=imx8ulp $(common_flags) all
 clean_build PLAT=imx93 $(common_flags) all
 clean_build PLAT=imx94 $(common_flags) all
 clean_build PLAT=imx95 $(common_flags) all
+clean_build PLAT=imx952 $(common_flags) all
 
 # Platforms for NXP Layerscape
 nxp_sb_flags="TRUSTED_BOARD_BOOT=1 CST_DIR=$(pwd) SPD=opteed"
