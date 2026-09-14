@@ -413,6 +413,7 @@ clean_build $(common_flags) \
             COT=tbbr \
             ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem \
             MEASURED_BOOT=1 \
+            PFDI_SUPPORT=1 \
             bl2 \
             bl31
 
