@@ -84,6 +84,7 @@ exclude_paths = [
     ("lib/libc/strtok.c", "Not used by any upstream platform"),
 
     ("tools/.*", "Host tools"),
+    ("tests/.*", "Testing libraries"),
 
     # Temporarily exclude the following files such that tf-coverity job can be
     # reinstated. Appropriate build commands to compile these files should be
