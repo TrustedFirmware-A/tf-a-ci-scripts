@@ -61,6 +61,7 @@ generate_lava_job() {
 		has_sctlr2="1" \
 		memory_tagging_support_level="2" \
 		has_branch_target_exception="1" \
+		restriction_on_speculative_execution="2" \
 		supports_trace_buffer_control_regs="1" \
 		supports_trace_filter_regs="2" \
 		supports_system_trace_filter_regs="1" \
