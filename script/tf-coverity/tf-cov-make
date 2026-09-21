@@ -858,11 +858,35 @@ clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
     DTB_FILE_NAME=stm32mp235f-dk.dtb \
     BUILD_PLAT=build/stm32mp2-mp23-sdmmc/debug
 
+# STM32MP25 Hyperflash boot
+clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_HYPERFLASH=1 \
+    SPD=opteed STM32MP_DDR4_TYPE=1 \
+    PSA_FWU_SUPPORT=1 \
+    BUILD_PLAT=build/stm32mp2-mp25-hyperflash/debug
+
+# STM32MP25 raw NAND boot
+clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_RAW_NAND=1 \
+    SPD=opteed STM32MP_DDR4_TYPE=1 \
+    PSA_FWU_SUPPORT=1 \
+    BUILD_PLAT=build/stm32mp2-mp25-raw-nand/debug
+
 # STM32MP25 SDMMC boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
     SPD=opteed STM32MP_DDR4_TYPE=1 \
     PSA_FWU_SUPPORT=1 \
     BUILD_PLAT=build/stm32mp2-mp25-sdmmc/debug
+
+# STM32MP25 SPI NAND boot
+clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SPI_NAND=1 \
+    SPD=opteed STM32MP_DDR4_TYPE=1 \
+    PSA_FWU_SUPPORT=1 \
+    BUILD_PLAT=build/stm32mp2-mp25-spi-nand/debug
+
+# STM32MP25 SPI NOR boot
+clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SPI_NOR=1 \
+    SPD=opteed STM32MP_DDR4_TYPE=1 \
+    PSA_FWU_SUPPORT=1 \
+    BUILD_PLAT=build/stm32mp2-mp25-spi-nor/debug
 
 # STM32MP25 USB boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_USB_PROGRAMMER=1 \
