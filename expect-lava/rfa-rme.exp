@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2025 Arm Limited. All rights reserved.
+# Copyright (c) 2025-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -9,7 +9,9 @@
 source $ci_root/expect-lava/trusted-firmware.inc
 
 expect_string+=('i;Rust BL31 starting')
+expect_string+=('i;Rust BL32 starting')
+expect_string+=('i;Fake RMM starting at EL 2')
+expect_string+=('i;Rust BL33 starting')
 
-expect_string+=('i;Booting Secure World')
-
-# TODO: expect "Booting Realm World" when we add some realm world payload to run
+expect_string+=('i;([0-9]+)/\1 tests passed in normal world')
+expect_string+=('i;([0-9]+)/\1 tests passed in secure world')

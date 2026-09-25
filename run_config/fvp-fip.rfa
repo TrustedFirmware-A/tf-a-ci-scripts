@@ -11,10 +11,19 @@ pre_tf_build() {
 }
 
 post_rfa_archive() {
-	# Both BL32 and BL33 are STF binaries
-	build_fip BL33="${archive}/bl33.bin" BL32="${archive}/bl32.bin"
+	local fip_args=(BL33="$archive/bl33.bin")
 
-	find $tf_build_root \( -name "fip.bin" \) -exec cp -t "${archive}" '{}' +
+	if [ -f "$archive/bl32.bin" ]; then
+		fip_args+=(BL32="$archive/bl32.bin")
+	fi
+
+	if [ -f "$archive/stf_rmm.bin" ]; then
+		fip_args+=(RMM="$archive/stf_rmm.bin")
+	fi
+
+	build_fip "${fip_args[@]}"
+	archive_file "$tf_build_root/fvp/${bin_mode}/fip.bin"
+
 	fiptool=$(fiptool_path)
 	"$fiptool" update \
 		--soc-fw "$archive/bl31.bin" \

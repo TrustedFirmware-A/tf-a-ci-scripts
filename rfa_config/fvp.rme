@@ -1,2 +1,2 @@
 PLAT=fvp
-FEATURES=sel2,rme
+RME=1

@@ -1512,7 +1512,6 @@ for mode in $modes; do
 		    source "$plat_utils"
 		fi
 
-		tf_build_root="$tf_root/build"
 		rfa_build_root="$rfa_root/target"
 
 		echo "Building Rusted Firmware ($mode) ..." |& log_separator
