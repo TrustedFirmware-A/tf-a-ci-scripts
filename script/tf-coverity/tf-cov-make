@@ -444,6 +444,7 @@ clean_build PLAT=rb3gen2 $(common_flags) all
 clean_build PLAT=rb3gen2 $(common_flags) QTISECLIB_PATH=$PWD/libqtisec-rb3gen2.a
 clean_build PLAT=lemans_evk $(common_flags) all
 clean_build PLAT=lemans_evk $(common_flags) QTISECLIB_PATH=$PWD/libqtisec-lemans_evk.a
+clean_build PLAT=monza $(common_flags) all
 
 clean_build PLAT=rk3288 CROSS_COMPILE=arm-none-eabi- \
     $(common_flags) ARCH=aarch32 AARCH32_SP=sp_min all
