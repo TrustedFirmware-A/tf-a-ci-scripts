@@ -224,6 +224,9 @@ reset_var has_enhanced_pan
 # shorthand to enable all optional CPU features
 reset_var all_optional_cpu_features
 
+# Enable the FVP features shared by all RF-A run configurations
+reset_var rfa_fvp_common_features
+
 source "$ci_root/model/fvp_common.sh"
 
 if [ "$all_optional_cpu_features" = "1" ]; then
@@ -274,6 +277,41 @@ if [ "$all_optional_cpu_features" = "1" ]; then
 	# Enabled by default in v9.6
 	has_srmask=1
 fi
+
+if [ "$rfa_fvp_common_features" = "1" ]; then
+	amu_present=1 amu_version=2
+	arch_version=9.4
+	gicd_are_fixed_one=1
+	gicd_ext_ppi_count=64
+	gicd_ext_spi_count=1024
+	gicv3_ext_interrupt_range=1
+	has_branch_target_exception=1
+	has_enhanced_pan=2
+	has_ete=1
+	has_fgt2=1
+	has_fgwte3=1
+	has_fpmr=1
+	has_gcs=1
+	has_hcx=1
+	has_mpam=1
+	has_nmi=2
+	has_pauth_lr=1
+	has_pfar=1
+	has_pmuv3p7=1
+	has_rng=1
+	has_s1pie=1
+	has_s1poe=1
+	has_s2poe=1
+	has_sctlr2=1
+	has_smmuv3_params=1
+	has_trbe=1
+	memory_tagging_support_level=2
+	restriction_on_speculative_execution=2
+	supports_trace_buffer_control_regs=1
+	supports_trace_filter_regs=2
+	supports_system_trace_filter_regs=1
+fi
+
 
 #------------ Common configuration --------------
 
