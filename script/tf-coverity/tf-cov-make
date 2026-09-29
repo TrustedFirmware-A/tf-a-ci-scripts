@@ -953,6 +953,13 @@ clean_build PLAT=rpi3 $(common_flags) ${TBB_OPTIONS} \
 clean_build PLAT=rpi4 $(common_flags) SMC_PCI_SUPPORT=1 all
 clean_build PLAT=rpi5 $(common_flags) SMC_PCI_SUPPORT=1 all
 
+# Raspberry Pi 4 Measured Boot Discrete TPM
+clean_build PLAT=rpi4 $(common_flags) RESET_TO_BL31=0 \
+    PRELOADED_BL33_BASE=0x200000 RPI3_DIRECT_LINUX_BOOT=0 \
+    TRANSFER_LIST=1 BL32=/dev/null SPD=spmd SPMD_SPM_AT_SEL2=0 \
+    SPMC_OPTEE=1 CTX_INCLUDE_EL2_REGS=0 MEASURED_BOOT=1 DISCRETE_TPM=1 \
+    TPM_INTERFACE=FIFO_SPI MBOOT_TPM_HASH_ALG=sha256 all
+
 # Raspberry Pi Measured Boot Discrete TPM with Firmware Handoff
 clean_build PLAT=rpi3 $(common_flags) PRELOADED_BL33_BASE=0x200000 \
     MEASURED_BOOT=1 TRANSFER_LIST=1 DISCRETE_TPM=1 TPM_INTERFACE=FIFO_SPI \
