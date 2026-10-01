@@ -104,6 +104,18 @@ else
 fi
 echo
 
+# Check dependencies with cargo-deny
+
+cargo deny --workspace check
+
+if [ "$?" != 0 ]; then
+  echo "cargo-deny: FAILURE"
+  ((ERROR_COUNT++))
+else
+  echo "cargo-deny: PASS"
+fi
+echo
+
 if [ "$ERROR_COUNT" != 0 ]; then
   echo "Some static checks have failed."
   exit 1
