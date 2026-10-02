@@ -194,9 +194,7 @@ def test_config_descriptor_string_uses_generated_descriptor_format() -> None:
         fragments=fragments,
     )
 
-    assert str(descriptor) == (
-        "0003%tf-a-l1-build-arm-fvp%fvp-default,nil,nil,nil,nil:nil.test"
-    )
+    assert str(descriptor) == ("0003%tf-a-l1-build-arm-fvp%fvp-default,nil,nil,nil,nil:nil.test")
 
 
 def test_config_info_fragments_strip_inactive_suffix() -> None:
