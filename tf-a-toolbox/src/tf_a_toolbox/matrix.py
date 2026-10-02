@@ -369,7 +369,7 @@ class ConfigFragmentTuple(ABC):  # noqa: B024
             'fvp-default,nil,nil,nil,nil'
 
             >>> str(ConfigRunFragmentTuple())
-            'nil,nil'
+            'nil'
         """
         return ",".join("nil" if fragment is None else fragment for fragment in astuple(self))
 
@@ -460,7 +460,7 @@ class ConfigFragmentTuples:
         Examples:
             >>> fragments = ConfigFragmentTuples.parse("fvp-default:nil")
             >>> str(fragments)
-            'fvp-default,nil,nil,nil,nil,nil:nil,nil'
+            'fvp-default,nil,nil,nil,nil:nil'
 
             >>> ConfigFragmentTuples.parse("fvp-default:nil.inactive") is None
             True
@@ -495,7 +495,7 @@ class ConfigFragmentTuples:
             ... )
             >>>
             >>> str(fragments)
-            'fvp-default,nil,nil,nil,nil,nil:nil,nil'
+            'fvp-default,nil,nil,nil,nil:nil'
         """
         return f"{self.build}:{self.run}"
 
@@ -531,7 +531,7 @@ class ConfigDescriptor:
             ... )
             >>>
             >>> str(ConfigDescriptor(3, "tf-a-l1-build-arm-fvp", fragments))
-            '0003%tf-a-l1-build-arm-fvp%fvp-default,nil,nil,nil,nil,nil:nil,nil.test'
+            '0003%tf-a-l1-build-arm-fvp%fvp-default,nil,nil,nil,nil:nil.test'
         """
         return f"{self.number:04d}%{self.group}%{self.fragments}.test"
 
@@ -567,7 +567,7 @@ class Config:
             >>> info.state
             <ConfigState.INACTIVE: 'inactive'>
             >>> str(info.fragments)
-            'fvp-default,nil,nil,nil,nil,nil:nil,nil'
+            'fvp-default,nil,nil,nil,nil:nil'
 
             >>> try:
             ...     Config(Path("invalid")).info
@@ -602,7 +602,7 @@ class ConfigInfo:
         >>> info.state
         <ConfigState.ACTIVE: 'active'>
         >>> str(info.fragments)
-        'fvp-default,nil,nil,nil,nil,nil:nil,nil'
+        'fvp-default,nil,nil,nil,nil:nil'
     """
 
     fragments: ConfigFragmentTuples
