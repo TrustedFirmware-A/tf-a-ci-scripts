@@ -919,14 +919,15 @@ assert_can_git_clone() {
 		return 0
 	fi
 
-	# If it's a directory, it must be a Git clone already
-	if [ -d "$dir" ] && [ -d "$dir/.git" ]; then
+	# The .git entry is a directory in a regular clone and a file in a
+	# linked worktree. Accept either type of existing checkout.
+	if [ -e "$dir/.git" ]; then
 		# No need to clone again
-		echo "Using existing git clone for $name: $dir"
+		echo "Using existing Git clone or worktree for $name: $dir"
 		return 1
 	fi
 
-	die "Path $dir exists but is not a git clone"
+	die "Path $dir exists but is not a Git clone or worktree"
 }
 
 clone_repo() {
