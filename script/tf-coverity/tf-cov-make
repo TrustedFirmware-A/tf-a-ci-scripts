@@ -766,54 +766,44 @@ stm32mp1_common_flags="ARCH=aarch32 \
 
 # STM32MP1 SDMMC boot
 clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
-    BUILD_PLAT=build/stm32mp1-sdmmc/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 SDMMC boot BL2 without AARCH32_SP
 clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
-    BUILD_PLAT=build/stm32mp1-sdmmc/debug \
     bl2
 
 # STM32MP1 SDMMC boot BL2 with OP-TEE & FWU
 clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
-    BUILD_PLAT=build/stm32mp1-sdmmc/debug \
     PSA_FWU_SUPPORT=1 AARCH32_SP=optee \
     bl2
 
 # STM32MP1 eMMC boot
 clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_EMMC=1 \
-    BUILD_PLAT=build/stm32mp1-emmc/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 Raw NAND boot
 clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_RAW_NAND=1 \
-    BUILD_PLAT=build/stm32mp1-nand/debug \
     PSA_FWU_SUPPORT=1 AARCH32_SP=optee \
     bl2
 
 # STM32MP1 SPI NAND boot
 clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_SPI_NAND=1 \
-    BUILD_PLAT=build/stm32mp1-snand/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 SPI NOR boot
 clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_SPI_NOR=1 \
-    BUILD_PLAT=build/stm32mp1-snor/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 UART boot
 clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_UART_PROGRAMMER=1 \
-    BUILD_PLAT=build/stm32mp1-uart/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 USB boot
 clean_build $(common_flags) ${stm32mp1_common_flags} STM32MP_USB_PROGRAMMER=1 \
-    BUILD_PLAT=build/stm32mp1-usb/debug \
     AARCH32_SP=sp_min bl2 bl32
 
 # STM32MP1 TBBR
 clean_build $(common_flags release) ${stm32mp1_common_flags} STM32MP_SDMMC=1 \
-    BUILD_PLAT=build/stm32mp1-sdmmc-tbbr/debug \
     TRUSTED_BOARD_BOOT=1 \
     AARCH32_SP=sp_min bl2 bl32
 
@@ -824,24 +814,20 @@ stm32mp13_common_flags="${stm32mp1_common_flags} \
 			STM32MP13=1"
 
 # STM32MP13 SDMMC boot
-clean_build $(common_flags) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
-    BUILD_PLAT=build/stm32mp1-mp13-sdmmc/debug bl2
+clean_build $(common_flags) ${stm32mp13_common_flags} STM32MP_SDMMC=1 bl2
 
 # STM32MP13 SDMMC boot with FWU
 clean_build $(common_flags) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
-    PSA_FWU_SUPPORT=1 \
-    BUILD_PLAT=build/stm32mp1-mp13-sdmmc/debug bl2
+    PSA_FWU_SUPPORT=1 bl2
 
 # STM32MP13 TBBR
 clean_build $(common_flags release) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
-    TRUSTED_BOARD_BOOT=1 \
-    BUILD_PLAT=build/stm32mp1-mp13-sdmmc-tbbr/debug bl2
+    TRUSTED_BOARD_BOOT=1 bl2
 
 # STM32MP13 TBBR DECRYPTION AES GCM
 clean_build $(common_flags release) ${stm32mp13_common_flags} STM32MP_SDMMC=1 \
     TRUSTED_BOARD_BOOT=1 \
-    DECRYPTION_SUPPORT=aes_gcm ENCRYPT_BL32=1 \
-    BUILD_PLAT=build/stm32mp1-mp13-sdmmc-tbbr-dec/debug bl2
+    DECRYPTION_SUPPORT=aes_gcm ENCRYPT_BL32=1 bl2
 
 stm32mp2_common_flags="ARCH=aarch64 \
 		       CROSS_COMPILE=aarch64-none-elf- \
@@ -851,50 +837,42 @@ stm32mp2_common_flags="ARCH=aarch64 \
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
     SPD=opteed STM32MP_LPDDR4_TYPE=1 STM32MP21=1 \
     PSA_FWU_SUPPORT=1 \
-    DTB_FILE_NAME=stm32mp215f-dk.dtb \
-    BUILD_PLAT=build/stm32mp2-mp23-sdmmc/debug
+    DTB_FILE_NAME=stm32mp215f-dk.dtb
 
 # STM32MP23 SDMMC boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
     SPD=opteed STM32MP_LPDDR4_TYPE=1 STM32MP23=1 \
     PSA_FWU_SUPPORT=1 \
-    DTB_FILE_NAME=stm32mp235f-dk.dtb \
-    BUILD_PLAT=build/stm32mp2-mp23-sdmmc/debug
+    DTB_FILE_NAME=stm32mp235f-dk.dtb
 
 # STM32MP25 Hyperflash boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_HYPERFLASH=1 \
     SPD=opteed STM32MP_DDR4_TYPE=1 \
-    PSA_FWU_SUPPORT=1 \
-    BUILD_PLAT=build/stm32mp2-mp25-hyperflash/debug
+    PSA_FWU_SUPPORT=1
 
 # STM32MP25 raw NAND boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_RAW_NAND=1 \
     SPD=opteed STM32MP_DDR4_TYPE=1 \
-    PSA_FWU_SUPPORT=1 \
-    BUILD_PLAT=build/stm32mp2-mp25-raw-nand/debug
+    PSA_FWU_SUPPORT=1
 
 # STM32MP25 SDMMC boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
     SPD=opteed STM32MP_DDR4_TYPE=1 \
-    PSA_FWU_SUPPORT=1 \
-    BUILD_PLAT=build/stm32mp2-mp25-sdmmc/debug
+    PSA_FWU_SUPPORT=1
 
 # STM32MP25 SPI NAND boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SPI_NAND=1 \
     SPD=opteed STM32MP_DDR4_TYPE=1 \
-    PSA_FWU_SUPPORT=1 \
-    BUILD_PLAT=build/stm32mp2-mp25-spi-nand/debug
+    PSA_FWU_SUPPORT=1
 
 # STM32MP25 SPI NOR boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SPI_NOR=1 \
     SPD=opteed STM32MP_DDR4_TYPE=1 \
-    PSA_FWU_SUPPORT=1 \
-    BUILD_PLAT=build/stm32mp2-mp25-spi-nor/debug
+    PSA_FWU_SUPPORT=1
 
 # STM32MP25 USB boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_USB_PROGRAMMER=1 \
-    SPD=opteed STM32MP_DDR4_TYPE=1 \
-    BUILD_PLAT=build/stm32mp2-mp25-usb/debug
+    SPD=opteed STM32MP_DDR4_TYPE=1
 
 # Platforms from TI
 clean_build PLAT=k3 $(common_flags) all
