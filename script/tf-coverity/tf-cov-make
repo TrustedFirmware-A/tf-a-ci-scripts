@@ -837,6 +837,16 @@ clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
     PSA_FWU_SUPPORT=1 \
     DTB_FILE_NAME=stm32mp215f-dk.dtb
 
+# STM32MP21 TBBR DECRYPTION AES GCM
+clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
+    SPD=opteed STM32MP_LPDDR4_TYPE=1 STM32MP21=1 \
+    PSA_FWU_SUPPORT=1 \
+    TRUSTED_BOARD_BOOT=1 \
+    DECRYPTION_SUPPORT=aes_gcm KEY_ALG=ecdsa \
+    ENCRYPT_BL31=1 ENCRYPT_BL32=1 \
+    GENERATE_COT=1 \
+    DTB_FILE_NAME=stm32mp215f-dk.dtb
+
 # STM32MP23 SDMMC boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
     SPD=opteed STM32MP_LPDDR4_TYPE=1 STM32MP23=1 \
@@ -871,6 +881,15 @@ clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SPI_NOR=1 \
 # STM32MP25 USB boot
 clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_USB_PROGRAMMER=1 \
     SPD=opteed STM32MP_DDR4_TYPE=1
+
+# STM32MP25 TBBR DECRYPTION AES GCM
+clean_build $(common_flags) ${stm32mp2_common_flags} STM32MP_SDMMC=1 \
+    SPD=opteed STM32MP_DDR4_TYPE=1 \
+    PSA_FWU_SUPPORT=1 \
+    TRUSTED_BOARD_BOOT=1 \
+    DECRYPTION_SUPPORT=aes_gcm KEY_ALG=ecdsa \
+    ENCRYPT_BL31=1 ENCRYPT_BL32=1 \
+    GENERATE_COT=1
 
 # Platforms from TI
 clean_build PLAT=k3 $(common_flags) all
