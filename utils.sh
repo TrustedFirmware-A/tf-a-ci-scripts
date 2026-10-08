@@ -158,6 +158,26 @@ fetch_and_archive() {
 	archive_file "$filename"
 }
 
+fetch_packaged_object() {
+	local url=${url:?}
+	local object=${object:?}
+	local cache_dir=${cache_dir:?}
+
+	local artefact="$(basename "${url%.zip}")"
+
+	if [ ! -e "${cache_dir}/${artefact}/${object}" ]; then
+		mkdir -p "${cache_dir}/${artefact}"
+		local archive="${cache_dir}/${artefact}/archive.zip"
+		{
+			url="${url}" saveas="${archive}" fetch_file
+			extract_tarball "${archive}" "${cache_dir}/${artefact}/"
+			rm -f "${archive}"
+		} >&2
+	fi
+
+	echo "${cache_dir}/${artefact}/${object}"
+}
+
 filter_artefacts(){
 	local model_param_file="${model_param_file-$archive/model_params}"
 
@@ -209,10 +229,22 @@ gen_cc_url(){
 get_boot_image() {
 	local image=${image:?}
 	local type=${type:?}
+	local cache_dir="$workspace/artefact_cache"
 
 	declare -n image_list=${image_list-${image}_list}
 
 	local url="${image_list[${type}]}"
+
+	if is_packaged_asset "$url"; then
+		case "$image" in
+			kernel)
+				url=$(url="$url" object="Image" cache_dir="$cache_dir" fetch_packaged_object)
+			;;
+			initrd)
+				url=$(url="$url" object="ramdisk.img" cache_dir="$cache_dir" fetch_packaged_object)
+			;;
+		esac
+	fi
 
 	url="${url:?}" filename="${image}.bin" fetch_and_archive
 }
@@ -390,6 +422,12 @@ is_abs() {
 	[ "${1:0:1}" = "/" ]
 }
 
+# Check if target path belongs to a packaged asset
+is_packaged_asset() {
+	local path="${1:?}"
+	[[ "$path" == *.zip ]]
+}
+
 # Unset a variable based on its boolean value
 # If foo=, foo will be unset
 # If foo=blah, then leave it as is
@@ -565,8 +603,7 @@ drtm_test_dir="${drtm_test_dir:-$DOWNLOAD_SERVER_TF_A_URL/drtm${drtm_test_disk_r
 # SCP/MCP release binaries.
 scp_mcp_downloads="${scp_mcp_downloads:-$DOWNLOAD_SERVER_TF_A_URL/css_scp_2.16.0.6bf96e3b}"
 
-linaro_2001_release="${linaro_2001_release:-$DOWNLOAD_SERVER_TF_A_URL/linaro/20.01}"
-linaro_release="${linaro_release:-$linaro_2001_release}"
+linaro_release="$DOWNLOAD_SERVER_URL/infra-assets/linaro_artifacts/releases/20.01"
 
 docker_registry="${docker_registry:-}"
 

@@ -113,7 +113,7 @@ Environment variables that are accepted (in rough order of relevance):
     only the status of individual tests. Build/run output for individual test
     can be found under $workspace in respective directories for their test
     configuration.
-    
+
     Note that when this is set to a number greater than 1, the following
     variables are forcefully set: `test_run=0`, `primary_live=0`.
 
@@ -154,9 +154,6 @@ Environment variables that are accepted (in rough order of relevance):
     downloaded from `https://downloads.trustedfirmware.org/` but a local copy
     can be used to speed this up. Note that this copy must be manually kept in
     sync and requires local disk space on the order of 60G.
-
-  - `linaro_release` - similar to `DOWNLOAD_SERVER_URL` but for files which come
-    from the CI's Docker image
 
 ### Local CI quickstart
 

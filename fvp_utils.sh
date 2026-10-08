@@ -36,7 +36,8 @@ romlib_addr="${romlib_addr:-0x03ff2000}"
 
 uefi_ci_bin_url="${DOWNLOAD_SERVER_TF_A_URL}/drtm/FVP_AARCH64_EFI.fd"
 
-uboot32_fip_url="$linaro_release/fvp32-latest-busybox-uboot/fip.bin"
+uboot32_fip_url="$linaro_release/fvp32-latest-busybox-uboot.zip"
+fvp_uboot_bl33_url="$linaro_release/fvp-latest-busybox-uboot.zip"
 optee_version="4.9.0"
 
 # OP-TEE binaries can be bumped using the script in
@@ -117,20 +118,20 @@ fvp_models=(
 # FVP Kernel URLs
 declare -A kernel_list
 kernel_list=(
-[fvp-aarch32-zimage]="$linaro_release/fvp32-latest-busybox-uboot/Image"
-[fvp-busybox-uboot]="$linaro_release/fvp-latest-busybox-uboot/Image"
-[fvp-oe-uboot32]="$linaro_release/fvp32-latest-oe-uboot/Image"
-[fvp-oe-uboot]="$linaro_release/fvp-latest-oe-uboot/Image"
+[fvp-aarch32-zimage]="$linaro_release/fvp32-latest-busybox-uboot.zip"
+[fvp-busybox-uboot]="$linaro_release/fvp-latest-busybox-uboot.zip"
+[fvp-oe-uboot32]="$linaro_release/fvp32-latest-oe-uboot.zip"
+[fvp-oe-uboot]="$linaro_release/fvp-latest-oe-uboot.zip"
 [fvp-quad-busybox-uboot]="$DOWNLOAD_SERVER_TF_A_URL/quad_cluster/Image"
 )
 
 # FVP initrd URLs
 declare -A initrd_list
 initrd_list=(
-[aarch32-ramdisk]="$linaro_release/fvp32-latest-busybox-uboot/ramdisk.img"
-[dummy-ramdisk]="$linaro_release/fvp-latest-oe-uboot/ramdisk.img"
-[dummy-ramdisk32]="$linaro_release/fvp32-latest-oe-uboot/ramdisk.img"
-[default]="$linaro_release/fvp-latest-busybox-uboot/ramdisk.img"
+[aarch32-ramdisk]="$linaro_release/fvp32-latest-busybox-uboot.zip"
+[dummy-ramdisk]="$linaro_release/fvp-latest-oe-uboot.zip"
+[dummy-ramdisk32]="$linaro_release/fvp32-latest-oe-uboot.zip"
+[default]="$linaro_release/fvp-latest-busybox-uboot.zip"
 )
 
 # For Measured Boot tests using a TA based on OPTEE, it is necessary to use a
@@ -649,6 +650,18 @@ gen_gpt_bin() {
     echo "Built $gpt_image"
 
     archive_file "$gpt_image"
+}
+
+get_uboot32_fip_bin() {
+    local cache_dir="$workspace/artefact_cache"
+    local url="$(url="$uboot32_fip_url" object="fip.bin" cache_dir="$cache_dir" fetch_packaged_object)"
+    url="$url" filename="fip.bin" fetch_and_archive
+}
+
+get_uboot_bl33_bin() {
+    local cache_dir="$workspace/artefact_cache"
+    local url="$(url="$fvp_uboot_bl33_url" object="bl33-uboot.bin" cache_dir="$cache_dir" fetch_packaged_object)"
+    url="$url" filename="uboot.bin" fetch_and_archive
 }
 
 #corrupt GPT image header and archive it

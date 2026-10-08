@@ -6,8 +6,7 @@
 #
 
 post_tf_build() {
-	url="$linaro_2001_release/fvp-latest-busybox-uboot/bl33-uboot.bin" \
-		filename="uboot.bin" fetch_and_archive
+	get_uboot_bl33_bin
 }
 
 generate_lava_job() {

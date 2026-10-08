@@ -8,7 +8,8 @@
 post_tf_build() {
 	url="${scp_bl2_url}" filename="scp_bl2.bin" fetch_and_archive
 	get_ml_uboot_bin
-	url="${optee_fip_url}" image="tos-fw.bin" output_name="bl32.bin" \
+	get_fip_bin
+	url="$archive/fip.bin" image="tos-fw.bin" output_name="bl32.bin" \
 		get_boot_image_from_fip
 
 	build_fip BL33="$archive/uboot.bin" BL32="$archive/bl32.bin" SCP_BL2="$archive/scp_bl2.bin"

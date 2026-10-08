@@ -12,23 +12,32 @@ scp_bl1_url="$scp_mcp_downloads/juno/platform_variant_BOARD/release/juno-bl1-byp
 scp_bl2_url="$scp_mcp_downloads/juno/platform_variant_BOARD/release/juno-bl2.bin"
 
 psci_reset2_scp_bl2_url="$scp_mcp_downloads/juno/psci_reset2/juno-bl2.bin"
-uboot_bl33_url="$linaro_release/juno-latest-oe-uboot/SOFTWARE/bl33-uboot.bin"
+uboot_bl33_url="$linaro_release/juno-latest-oe-uboot.zip"
 ml_uboot_bl33_url="$DOWNLOAD_SERVER_TF_A_URL/linux_boot/u-boot-juno.bin"
 uboot_env_url="$DOWNLOAD_SERVER_TF_A_URL/linux_boot/u-boot-env.bin"
-optee_fip_url="$linaro_release/juno-ack-android-uboot/SOFTWARE/fip.bin"
+optee_fip_url="$linaro_release/juno-ack-android-uboot.zip"
 
 linux_image_url="$DOWNLOAD_SERVER_TF_A_URL/linux_boot/Image.gz"
 # Busybox based initrd
 linux_busybox_initrd_url="$DOWNLOAD_SERVER_TF_A_URL/linux_boot/initbb.img"
 
-juno_recovery_root="$linaro_release/juno-latest-oe-uboot"
+juno_recovery_root="$linaro_release/juno-latest-oe-uboot.zip"
 
-uboot32_fip_url="$linaro_release/juno32-latest-oe-uboot/SOFTWARE/fip.bin"
-juno32_recovery_root="$linaro_release/juno32-latest-busybox-uboot"
-juno32_recovery_root_oe="$linaro_release/juno32-latest-oe-uboot"
+juno_recovery_root_busybox="$linaro_release/juno-latest-busybox-uboot.zip"
+uboot32_fip_url="$linaro_release/juno32-latest-oe-uboot.zip"
+juno32_recovery_root="$linaro_release/juno32-latest-busybox-uboot.zip"
+juno32_recovery_root_oe="$linaro_release/juno32-latest-oe-uboot.zip"
 
 juno_rootfs_url="https://downloads.trustedfirmware.org/infra-assets/linaro_artifacts/releases/openembedded/aarch64/17.01/linaro-image-minimal-genericarmv8-20170127-888.rootfs.tar.gz"
 juno32_rootfs_url="https://downloads.trustedfirmware.org/infra-assets/linaro_artifacts/releases/openembedded/aarch32/17.01/linaro-image-minimal-genericarmv7a-20170127-460.rootfs.tar.gz"
+
+get_juno_recovery_tree() {
+	local cache_dir="$workspace/artefact_cache"
+	local object_root="${url:?}"
+
+	local extracted_tree="$(url="$object_root" object="SOFTWARE" cache_dir="$cache_dir" fetch_packaged_object)"
+	dirname "$extracted_tree"
+}
 
 get_juno_recovery_image_url() {
 	local mode="${1:?}"
@@ -40,11 +49,16 @@ get_juno_recovery_image_url() {
 	fi
 }
 
-get_ml_uboot_bin() {
-	url="$ml_uboot_bl33_url" saveas="uboot.bin" fetch_file
-	archive_file "uboot.bin"
-	url="$uboot_env_url" saveas="blank.img" fetch_file
-	archive_file "blank.img"
+get_fip_bin() {
+	local cache_dir="$workspace/artefact_cache"
+	local url="$(url="${optee_fip_url}" object="SOFTWARE/fip.bin" cache_dir="$cache_dir" fetch_packaged_object)"
+	url="$url" filename="fip.bin" fetch_and_archive
+}
+
+get_fip_uboot_bin() {
+	local cache_dir="$workspace/artefact_cache"
+	local url="$(url="${uboot32_fip_url}" object="SOFTWARE/fip.bin" cache_dir="$cache_dir" fetch_packaged_object)"
+	url="$url" filename="fip.bin" fetch_and_archive
 }
 
 get_linux_image() {
@@ -52,6 +66,19 @@ get_linux_image() {
 	archive_file "Image"
 	url="$linux_busybox_initrd_url" saveas="ramdisk.img" fetch_file
 	archive_file "ramdisk.img"
+}
+
+get_ml_uboot_bin() {
+	url="$ml_uboot_bl33_url" saveas="uboot.bin" fetch_file
+	archive_file "uboot.bin"
+	url="$uboot_env_url" saveas="blank.img" fetch_file
+	archive_file "blank.img"
+}
+
+get_uboot_bin() {
+	local cache_dir="$workspace/artefact_cache"
+	local url="$(url="${uboot_bl33_url}" object="SOFTWARE/bl33-uboot.bin" cache_dir="$cache_dir" fetch_packaged_object)"
+	url="$url" filename="uboot.bin" fetch_and_archive
 }
 
 gen_recovery_image32() {
@@ -67,7 +94,9 @@ gen_recovery_image() {
 	local zip_file="${zip_dir}.zip"
 	local url="${url:-$juno_recovery_root}"
 
-	saveas="$zip_dir" url="$url" fetch_directory
+	local recovery_tree="$(get_juno_recovery_tree)"
+	cp -R "$recovery_tree/." "$zip_dir"
+
 	if [ "$*" ]; then
 		# Replace files needed for this test. Copying them first so
 		# that the subsequent copy can replace it if necessary.

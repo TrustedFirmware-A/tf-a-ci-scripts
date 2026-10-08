@@ -7,7 +7,8 @@
 
 post_tf_build() {
 	url="${scp_bl2_url}" filename="scp_bl2.bin" fetch_and_archive
-	url="${uboot32_fip_url}" image="nt-fw.bin" output_name="uboot.bin" \
+	get_fip_uboot_bin
+	url="$archive/fip.bin" image="nt-fw.bin" output_name="uboot.bin" \
 	 get_boot_image_from_fip
 
 	# Building FIP for this config requries a BL32 built in AArch32, but

@@ -6,7 +6,8 @@
 #
 
 post_tf_build() {
-	url="${uboot32_fip_url}" image="nt-fw.bin" output_name="uboot.bin" \
+	get_uboot32_fip_bin
+	url="$archive/fip.bin" image="nt-fw.bin" output_name="uboot.bin" \
 	 get_boot_image_from_fip
 	build_fip BL33="$archive/uboot.bin"
 }

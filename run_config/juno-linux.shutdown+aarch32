@@ -17,7 +17,8 @@ post_tf_build() {
 	bl32="$(mktempfile)"
 
 	url="${scp_bl2_url}" filename="scp_bl2.bin" fetch_and_archive
-	url="${uboot32_fip_url}" image="nt-fw.bin" output_name="uboot.bin" \
+	get_fip_uboot_bin
+	url="$archive/fip.bin" image="nt-fw.bin" output_name="uboot.bin" \
 		get_boot_image_from_fip
 
 	build_fip BL32="${bl32}" BL33="${archive}/uboot.bin" \
