@@ -131,9 +131,32 @@ def query_gerrit(gerrit_user, ssh_key_path, change_id):
         print("Error executing SSH command:", e)
         return {}
 
-# REBASE_DEPTH is number of commits from tip of the LTS branch that we need
-# to check to find the commit that the current patch set is based on
-REBASE_DEPTH = 20
+def find_triage_boundary(repo, base_branch, lts_change_ids):
+    # Find the newest commit on the first-parent chain of the base branch
+    # that brought in a patch already present on the LTS branch. Everything
+    # reachable from it was in the base branch when that patch landed there,
+    # so it has been triaged before. Returns (boundary commit, Change-Id), or
+    # (None, None) if no such patch is found.
+    #
+    # Walking the base branch in committer date order and stopping at the
+    # first common Change-Id is not enough. A patch that stays in review for
+    # a while keeps its older committer date, so when it is merged after a
+    # patch that was already cherry-picked, it sorts past the stop point and
+    # is never checked.
+    for fp_cmt in repo.iter_commits(base_branch, first_parent=True):
+        if len(fp_cmt.parents) > 1:
+            # a merge brings in everything reachable from it but not from its
+            # first parent
+            introduced = repo.iter_commits(f"{fp_cmt.parents[0].hexsha}..{fp_cmt.hexsha}")
+        else:
+            introduced = [fp_cmt]
+
+        for cmt in introduced:
+            change_id_match = re.search(r'Change-Id:\s*(\w+)', cmt.message)
+            if change_id_match and change_id_match.group(1) in lts_change_ids:
+                return fp_cmt, change_id_match.group(1)
+
+    return None, None
 
 
 ## TODO: for case like 921081049ec3 where we need to refactor first for security
@@ -178,29 +201,35 @@ def main():
     supported_cpus = get_supported_cpus(repo, lts_branch)
     debug_print(f"## {lts_branch} supports {len(supported_cpus)} CPUs:", sorted(supported_cpus))
 
-    # collect the LTS hashes in a list
-    lts_change_ids = set()  # Set to store Gerrit Change-Ids from the LTS branch
+    # Collect the Gerrit Change-Ids of every patch on the LTS branch since it
+    # forked from the base branch. A fixed depth from the tip is not enough:
+    # a run of LTS only patches (release notes, backport fixups) longer than
+    # the depth would hide the newest cherry-pick from the boundary search.
+    lts_change_ids = set()
 
-    for cmt in repo.iter_commits(lts_branch):
-        # Extract Gerrit Change-Id from the commit message
+    for cmt in repo.iter_commits(f"{base_branch}..{lts_branch}"):
         change_id_match = re.search(r'Change-Id:\s*(\w+)', cmt.message)
         if change_id_match:
             lts_change_ids.add(change_id_match.group(1))
 
-        if len(lts_change_ids) >= REBASE_DEPTH:
-            break
+    # Only check the patches that were added to the base branch after the
+    # newest patch that the LTS branch has in common with it. If nothing has
+    # been cherry-picked yet, start from where the LTS branch forked.
+    boundary, common_change_id = find_triage_boundary(repo, base_branch, lts_change_ids)
+    if boundary is not None:
+        print("## found common Gerrit Change-Id between the two branches: ", common_change_id)
+    else:
+        boundary = repo.merge_base(base_branch, lts_branch)[0]
+        print(f"## no common Gerrit Change-Id, using the fork point of {lts_branch}")
+    print(f"## checking patches in {boundary.hexsha}..{base_branch}")
+    rev_range = f"{boundary.hexsha}..{base_branch}"
 
-    for cmt in repo.iter_commits(base_branch):
+    for cmt in repo.iter_commits(rev_range):
         score = 0
 
-        # if we find a same Change-Id among the ones we collected from the LTS branch
-        # then we have seen all the new patches in the integration branch, so we should exit.
         change_id_match = re.search(r'Change-Id:\s*(\w+)', cmt.message)
         if change_id_match:
             change_id = change_id_match.group(1)
-            if change_id in lts_change_ids:
-                print("## stopping because found common Gerrit Change-Id between the two branches: ", change_id)
-                break;
 
         # don't process merge commits
         if len(cmt.parents) > 1:
@@ -257,10 +286,6 @@ def main():
             # walked in, which reverses every batch. The dates are not in
             # ancestry order either, because a topic branch keeps its original
             # committer dates and is merged days later.
-            #
-            # Only the sort uses --topo-order. The walk above stops at the
-            # first Change-Id already on the LTS branch, so walking in another
-            # order would change which patches are selected.
             sha_column = f"commit id in the {base_branch} branch"
             topo_pos = {sha: pos for pos, sha in
                         enumerate(repo.git.rev_list("--topo-order", base_branch).split())}
