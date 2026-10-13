@@ -103,7 +103,8 @@ exclude_paths = [
     ("plat/imx/imx8m/imx8mq/imx8mq_psci.c", "Not currently used"),
 
     # Exclude the following files used for STM32MP host tools (cert_create)
-    ("plat/st/stm32mp1/stm32mp1_tbb_cert.c", "Used to build STM32MP cert_create"),
+    ("plat/st/stm32mp1/stm32mp1_tbb_cert.c", "Used to build STM32MP1 cert_create"),
+    ("plat/st/stm32mp2/stm32mp2_tbb_cert.c", "Used to build STM32MP2 cert_create"),
 
     # Exclude The following files used to wrap external test code
     ("plat/arm/board/tc/rse_ap_test_stubs.c", "Only used for testing on arm/tc platform"),
