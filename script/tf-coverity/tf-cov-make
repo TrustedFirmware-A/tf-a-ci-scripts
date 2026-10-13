@@ -361,6 +361,17 @@ clean_build $(common_flags) PLAT=tc TARGET_PLATFORM=4 ${ARM_TBB_OPTIONS} \
     ENABLE_STACK_PROTECTOR=strong WORKAROUND_CVE_2026_0995=1
 
 #
+# BaseV2 platform
+#
+clean_build $(common_flags) PLAT=basev2 ${ARM_TBB_OPTIONS} \
+    ENABLE_STACK_PROTECTOR=strong
+clean_build $(common_flags) PLAT=basev2 ${ARM_TBB_OPTIONS} \
+    ENABLE_STACK_PROTECTOR=strong MEASURED_BOOT=1 QCBOR_DIR=$(pwd)/qcbor
+clean_build $(common_flags) PLAT=basev2 ${ARM_TBB_OPTIONS} \
+    ENABLE_STACK_PROTECTOR=strong MEASURED_BOOT=1 \
+    DICE_PROTECTION_ENVIRONMENT=1 QCBOR_DIR=$(pwd)/qcbor
+
+#
 # Morello platform
 #
 clean_build $(common_flags) PLAT=morello TARGET_PLATFORM=fvp ${ARM_TBB_OPTIONS}
