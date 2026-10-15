@@ -180,7 +180,8 @@ collect_build_artefacts() {
 		return
 	fi
 
-	if ! find "$from" \( -name "*.bin" -o -name '*.elf' -o -name '*.dtb' -o -name '*.axf' -o -name '*.stm32' -o -name '*.img' \) -exec cp -t "${to:?}" '{}' +; then
+	# Exclude CMake compiler probes, which can have duplicate artifact names.
+	if ! find "$from" -path '*/CMakeFiles/*' -prune -o \( -name "*.bin" -o -name '*.elf' -o -name '*.dtb' -o -name '*.axf' -o -name '*.stm32' -o -name '*.img' \) -exec cp -t "${to:?}" '{}' +; then
 		echo "You probably are running local CI on local repositories."
 		echo "Did you set 'dont_clean' but forgot to run 'distclean'?"
 		die
