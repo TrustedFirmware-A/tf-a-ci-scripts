@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2019-2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+# Reintroduced because LTS test configs still reference it.
+# Previously removed by commit 429e2a968cf1ae2a130b3aea4ef6bb6fbc6af4ef
+# ("fix: remove SPM_MM from TFTF").
+
+pre_tftf_build() {
+	# Build TFTF and Cactus-MM images for this config
+	targets="tftf cactus_mm" set_tftf_build_targets
+}
+
+post_tf_build() {
+	# Rename cactus_mm.bin as bl32.bin
+	mv "$archive/cactus_mm.bin" "$archive/bl32.bin"
+}
+
+generate_lava_job_template() {
+	uart="0" lava_timeout="650" file="tftf.exp" track_expect
+	uart="1" file="hold_uart.exp" track_expect
+	uart="2" file="hold_uart.exp" track_expect
+
+	set_run_env "num_uarts" "3"
+
+	payload_type="tftf" gen_yaml_template
+}
