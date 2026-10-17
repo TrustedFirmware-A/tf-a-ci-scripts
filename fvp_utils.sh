@@ -20,7 +20,7 @@ el3_payload_addr="${el3_payload_addr:-0x80000000}"
 
 # SPM requires following addresses for RESET_TO_BL31 case
 spm_addr="${spm_addr:-0x6000000}"
-spmc_manifest_addr="${spmc_addr:-0x0403f000}"
+spmc_manifest_addr="${spmc_addr:-0x0405f000}"
 sp1_addr="${sp1_addr:-0x7000000}"
 sp2_addr="${sp2_addr:-0x7100000}"
 sp3_addr="${sp3_addr:-0x7200000}"
