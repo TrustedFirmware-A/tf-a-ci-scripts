@@ -441,6 +441,7 @@ clean_build PLAT=rb3gen2 $(common_flags) all
 clean_build PLAT=rb3gen2 $(common_flags) QTISECLIB_PATH=$PWD/libqtisec-rb3gen2.a
 clean_build PLAT=lemans_evk $(common_flags) all
 clean_build PLAT=lemans_evk $(common_flags) QTISECLIB_PATH=$PWD/libqtisec-lemans_evk.a
+clean_build PLAT=lemans_evk $(common_flags) SPD=spmd SPMD_SPM_AT_SEL2=0 bl2 bl31
 clean_build PLAT=monza $(common_flags) all
 
 clean_build PLAT=rk3288 CROSS_COMPILE=arm-none-eabi- \
