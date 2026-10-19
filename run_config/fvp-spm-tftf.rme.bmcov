@@ -13,7 +13,7 @@ generate_lava_job() {
 	local model="base-aemva"
 
 	# Use standard TFTF expect script on primary UART.
-	uart="0" file="tftf.exp" track_expect
+	uart="0" lava_timeout="1200" file="tftf.exp" track_expect
 
 	# Track the rest of the UARTs to aid in debugging.
 	uart="1" file="hold_uart.exp" track_expect
