@@ -444,6 +444,7 @@ clean_build PLAT=lemans_evk $(common_flags) QTISECLIB_PATH=$PWD/libqtisec-lemans
 clean_build PLAT=lemans_evk $(common_flags) SPD=spmd SPMD_SPM_AT_SEL2=0 bl2 bl31
 clean_build PLAT=monza $(common_flags) all
 clean_build PLAT=shikra_evk $(common_flags) SPD=opteed all
+clean_build PLAT=uno_q $(common_flags) SPD=opteed all
 
 clean_build PLAT=rk3288 CROSS_COMPILE=arm-none-eabi- \
     $(common_flags) ARCH=aarch32 AARCH32_SP=sp_min all
