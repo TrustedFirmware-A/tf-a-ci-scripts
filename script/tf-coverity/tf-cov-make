@@ -117,6 +117,9 @@ clean_build $fvp_common_flags CROSS_COMPILE=arm-none-eabi- \
 clean_build $fvp_common_flags CROSS_COMPILE=arm-none-eabi- \
     ARCH=aarch32 AARCH32_SP=sp_min
 
+# Dynamic mmap locking
+clean_build $fvp_common_flags PLAT_XLAT_TABLES_DYNAMIC_LOCKING=1
+
 # Xlat tables lib version 1 (AArch64 and AArch32)
 clean_build $fvp_common_flags ARM_XLAT_TABLES_LIB_V1=1 RECLAIM_INIT_CODE=0
 clean_build $fvp_common_flags CROSS_COMPILE=arm-none-eabi- \
