@@ -46,17 +46,30 @@ for uart in "${!ports[@]}"; do
     uart_log_file="${WORKSPACE}/lava-uart${uart}.log"
     uart_log_expect_file="${WORKSPACE}/lava-uart${uart}-expect.log"
 
-    if [ "${uart}" = "$(get_payload_uart "${archive}")" ]; then
-        mv "${WORKSPACE}/lava-common.log" "${uart_log_file}"
-    else
-        mv "${WORKSPACE}/lava-${ports[${uart}]:?}.log" "${uart_log_file}"
-    fi
-
     expscript_stem="$(get_uart_expect_script "${archive}" "${uart}")"
     expscript="${WORKSPACE}/tf-a-ci-scripts/expect/${expscript_stem}"
 
+    if [ "${uart}" = "$(get_payload_uart "${archive}")" ]; then
+        uart_log_source="${WORKSPACE}/lava-common.log"
+    else
+        uart_log_source="${WORKSPACE}/lava-${ports[${uart}]:?}.log"
+    fi
+
+    if [ ! -e "${uart_log_source}" ] && [ ! -L "${uart_log_source}" ]; then
+        if [ -n "${expscript_stem}" ]; then
+            printf 'ERROR: UART%s capture log %s is missing (required by expect/%s)\n' \
+                "${uart}" "${uart_log_source}" "${expscript_stem}" >&2
+            exit 1
+        fi
+
+        echo "UART${uart}: no expectation and no captured log; skipping"
+        continue
+    fi
+
+    mv "${uart_log_source}" "${uart_log_file}"
+
     if [ -z "${expscript_stem}" ]; then
-        continue # Some UARTs may (legitimately) not have expectations
+        continue
     fi
 
     if [ ! -f "${expscript}" ]; then
