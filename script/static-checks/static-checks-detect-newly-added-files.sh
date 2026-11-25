@@ -14,7 +14,7 @@
 LOG_FILE=$(mktemp -t files-detection-check.XXXX)
 TFA_PATCH_NEWFILES_LIST=$(mktemp -t tfa-patch-newfiles-list.XXXX)
 EXIT_VALUE=0
-DOC_URL="https://trustedfirmware-a.readthedocs.io/en/latest/process/contributing.html\
+DOC_URL="https://tf-a.docs.trustedfirmware.org/en/latest/process/contributing.html\
 #add-build-configurations"
 
 # Function    : file_updation_report

@@ -134,7 +134,7 @@ def main():
     if is_sandbox_run():
         rtd_url = "https://trustedfirmware-a-sandbox.readthedocs.io/en/"
     else:
-        rtd_url = "https://trustedfirmware-a.readthedocs.io/en/"
+        rtd_url = "https://tf-a.docs.trustedfirmware.org/en/"
     rtd_slug = args.release_tag.lower().replace("/", "-")
     rtd_url += rtd_slug
 

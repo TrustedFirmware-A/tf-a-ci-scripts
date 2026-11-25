@@ -34,7 +34,7 @@ else
   echo >> "$LOG_TEST_FILENAME"
   cat "$LOG_FILE" >> "$LOG_TEST_FILENAME"
   echo >> "$LOG_TEST_FILENAME"
-  echo -e "Please refer to the docs for further information on include statement ordering: https://trustedfirmware-a.readthedocs.io/en/latest/process/coding-style.html#include-statement-ordering." >> "$LOG_TEST_FILENAME"
+  echo -e "Please refer to the docs for further information on include statement ordering: https://tf-a.docs.trustedfirmware.org/en/latest/process/coding-style.html#include-statement-ordering." >> "$LOG_TEST_FILENAME"
 fi
 echo >> "$LOG_TEST_FILENAME"
 
